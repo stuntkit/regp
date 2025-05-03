@@ -1,0 +1,20 @@
+{
+  "configurations": [
+    {
+      "name": "MSVC600",
+      "defines": [],
+      "cStandard": "c89",
+      "cppStandard": "c++98",
+      "compilerPath": ".\\3rdparty\\MSVC600\\VC98\\Bin\\CL.EXE",
+      "compilerArgs": [
+        "/std:c++98"
+      ],
+      "intelliSenseMode": "windows-msvc-x86",
+      "includePath": [
+        ".\\3rdparty\\dx6\\include",
+        ".\\3rdparty\\MSVC600\\VC98\\Include"
+      ]
+    }
+  ],
+  "version": 4
+}
