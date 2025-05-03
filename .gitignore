@@ -1,1 +1,12 @@
 build
+
+/.vs
+/.vscode
+/.idea
+
+#original game files, each user has to providde their own files
+/originals/
+
+# reccmp files
+reccmp-user.yml
+reccmp-build.yml
