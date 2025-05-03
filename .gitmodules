@@ -1,0 +1,4 @@
+[submodule "3rdparty/MSVC600"]
+	path = 3rdparty/MSVC600
+	url = https://github.com/halamix2/MSVC600.git
+	branch = 6.00.8168
