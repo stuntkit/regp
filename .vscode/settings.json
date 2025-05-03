@@ -1,8 +1,0 @@
-{
-  "C_Cpp.default.cppStandard": "c++98",
-  "C_Cpp.default.cStandard": "c89",
-  "C_Cpp.default.compilerPath": ".\\3rdparty\\MSVC600\\VC98\\Bin\\CL.EXE",
-  "C_Cpp.default.forcedInclude": [
-    "preinclude.h"
-  ]
-}
