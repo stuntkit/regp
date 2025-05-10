@@ -1,7 +1,7 @@
 targets:
   STUNTGP_D3D:
     filename: StuntGP_D3D.exe
-    source_root: .
+    source_root: STUNTGP_D3D
     hash:
       sha256: 4a1d234ce1f095a427bb7f2f0174294b8c85a8fdbbc29b62a3863156b2f16a1b
     # ghidra:
