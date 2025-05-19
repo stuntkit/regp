@@ -1,4 +1,4 @@
-build
+/build*
 
 /.vs
 /.vscode
@@ -6,6 +6,8 @@ build
 
 #original game files, each user has to providde their own files
 /originals/
+
+/result
 
 # reccmp files
 reccmp-user.yml
