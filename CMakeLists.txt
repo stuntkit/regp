@@ -81,7 +81,11 @@ endif()
 add_executable(STUNTGP_D3D WIN32
 # TODO
   STUNTGP_D3D/main.cpp
+  STUNTGP_D3D/globals.cpp
+  STUNTGP_D3D/constants.cpp
   STUNTGP_D3D/uwu.cpp
+  STUNTGP_D3D/windowInit.cpp
+  STUNTGP_D3D/pure_api.cpp
 )
 reccmp_add_target(STUNTGP_D3D ID STUNTGP_D3D)
 
@@ -93,11 +97,17 @@ target_include_directories(STUNTGP_D3D PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/STUNT
 target_link_libraries(STUNTGP_D3D PRIVATE $<$<BOOL:${STUNTGP_USE_DX6}>:DirectX6::DirectX6>)
 target_link_libraries(STUNTGP_D3D PRIVATE ddraw dinput dsound winmm)
 
-
-set_property(TARGET STUNTGP_D3D PROPERTY OUTPUT_NAME "StuntGP_D3D")
+set_property(TARGET STUNTGP_D3D PROPERTY OUTPUT_NAME "GameEngine")
 set_property(TARGET STUNTGP_D3D PROPERTY PREFIX "")
 set_property(TARGET STUNTGP_D3D PROPERTY SUFFIX ".exe")
-
+# configure_file("${CMAKE_CURRENT_BINARY_DIR}/GameEngine.exe" "${CMAKE_CURRENT_BINARY_DIR}/StuntGP_D3D.exe" COPYONLY)
+# file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/GameEngine.exe" "${CMAKE_CURRENT_BINARY_DIR}/StuntGP_D3D.exe")
+add_custom_command( TARGET STUNTGP_D3D
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:STUNTGP_D3D>" "${CMAKE_CURRENT_BINARY_DIR}/StuntGP_D3D.exe"
+            COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_PDB_FILE:STUNTGP_D3D>" "${CMAKE_CURRENT_BINARY_DIR}/StuntGP_D3D.pdb"
+            COMMENT "make reccmp happy, keeping the internal GameEngine.exe name"
+            )
 
 # Compiler flags
 # TODO - this will be important for compiling with MSVC later than the original one
@@ -112,32 +122,37 @@ target_compile_definitions(STUNTGP_D3D PRIVATE "ENABLE_DECOMP_ASSERTS")
 endif()
 
 if (MSVC_FOR_DECOMP)
-    # These flags have been taken from the defaults for a Visual C++ 6.0 project (the compiler the
-    # game was originally built with) and tweaked slightly to produce more debugging info for reccmp.
-    # They ensure a recompilation that can be byte/instruction accurate to the original binaries.
-    target_link_options(STUNTGP_D3D PRIVATE "/OPT:REF")
-    # set_property(TARGET STUNTGP_D3D PROPERTY MSVC_RUNTIME_LIBRARY "$<$<CONFIG:Release>:Release>")
-    set_property(TARGET STUNTGP_D3D PROPERTY MSVC_RUNTIME_LIBRARY "$<$<CONFIG:Debug>:Debug>")
+  # These flags have been taken from the defaults for a Visual C++ 6.0 project (the compiler the
+  # game was originally built with) and tweaked slightly to produce more debugging info for reccmp.
+  # They ensure a recompilation that can be byte/instruction accurate to the original binaries.
+  target_link_options(STUNTGP_D3D PRIVATE "/OPT:REF")
+  # set_property(TARGET STUNTGP_D3D PROPERTY MSVC_RUNTIME_LIBRARY "$<$<CONFIG:Release>:Release>")
+  set_property(TARGET STUNTGP_D3D PROPERTY MSVC_RUNTIME_LIBRARY "$<$<CONFIG:Debug>:Debug>")
 
 
-    # /Gr? fastcall or not
-    # /ML - the only possible /M option
-    # doesn't matter (So far) - /FD /Gy /GR /GB?, /ZI
-    # disabled /Ge
-    #  testing  /GNumber
-  set(CMAKE_CXX_FLAGS "/Gr /ML /W3 /GX /G5 /c /D \"WIN32\" /D \"_WINDOWS\"") # G6???
+  # /Gr? fastcall or not
+  # /ML - the only possible /M option
+  # doesn't matter (So far) - /FD /Gy /GR /GB?, /ZI
+  # disabled /Ge
+  #  testing  /GNumber
+  # defaults:
+  # ADD CPP      /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /c
+  # ADD RSC      /l 0x415 /d "NDEBUG"
+  # ADD LINK32   /subsystem:windows /machine:I386
+
+  set(CMAKE_CXX_FLAGS "/FD /Gr /ML /W3 /GX /G5 /c /D \"WIN32\" /D \"_WINDOWS\"") # G6???
   set(CMAKE_CXX_FLAGS_DEBUG "/Gm /ZI /Od /D \"_DEBUG\"")
   set(CMAKE_CXX_FLAGS_RELEASE "/EHs /O2 /D \"NDEBUG\"")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/EHs /Zp4 /Ox /Zi /D \"NDEBUG\"") #/ZI in debug
+  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/EHs /Zp4 /O2 /Zi /D \"NDEBUG\"") #/ZI in debug
   set(CMAKE_CXX_FLAGS_MINSIZEREL "/Os /D \"NDEBUG\"")
 
-  set(CMAKE_EXE_LINKER_FLAGS "/machine:I386")
+  set(CMAKE_EXE_LINKER_FLAGS "/subsystem:windows /machine:I386")
   set(CMAKE_EXE_LINKER_FLAGS_DEBUG "/incremental:yes /debug /pdbtype:con")
   set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/incremental:no")
   set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "/incremental:no /debug /pdbtype:con")
   set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "/incremental:no")
 
-  set(CMAKE_STATIC_LINKER_FLAGS "/machine:I386 /pdbtype:con")
+  set(CMAKE_STATIC_LINKER_FLAGS "/subsystem:windows /machine:I386 /pdbtype:con")
 
   # TODO check if we need to bump this to 13, or simply ignore
   # Older MSVC versions don't support building in parallel.

@@ -21,15 +21,6 @@ const char g_VERSION_FORMAT[] = "Version: %s - %s";
 // STRING: STUNTGP_D3D 0x612bf8
 static char g_VERSION_STRING[255];
 
-// GLOBAL: STUNTGP_D3D 0x576bcc
-int g_DISPLAYRESWIDTH = 0;
-
-// GLOBAL: STUNTGP_D3D 0x576bd0
-int g_DISPLAYRESHEIGHT = 0;
-
-// GLOBAL: STUNTGP_D3D 0x576bd4
-int g_DISPLAYRESDEPTH = 0;
-
 // FUNCTION: STUNTGP_D3D 0x442010
 void GetGameBuildVersion()
 {
@@ -63,29 +54,4 @@ void Script_ParseGameConfig()
     size = size_of_file(path);
     // mem alloc etc
     return;
-}
-
-// FUNCTION: STUNTGP_D3D 0x422700
-HWND windowCreateInternal(HINSTANCE hInstance, LPCSTR className, LPCSTR windowName)
-{
-    HWND wHandle = CreateWindowEx(
-        WS_EX_APPWINDOW,
-        className,
-        windowName,
-        WS_POPUP,
-        0,
-        0,
-        GetSystemMetrics(SM_CXFULLSCREEN),
-        GetSystemMetrics(SM_CYFULLSCREEN),
-        NULL,
-        NULL,
-        hInstance,
-        NULL);
-    if (!wHandle)
-    {
-        return NULL;
-    }
-    ShowWindow(wHandle, SW_NORMAL);
-    UpdateWindow(wHandle);
-    return wHandle;
 }

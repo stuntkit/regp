@@ -6,16 +6,16 @@
 #include <windows.h>
 
 #include "uwu.h"
+#include "windowInit.h"
 
-// TODO: move this where it is needed, global stuff
-// 0-1
-// GLOBAL: STUNTGP_D3D 0x612994
-BOOL g_sth = 0;
+#include "globals.h"
+
+#include "pure.h"
 
 // FUNCTION: STUNTGP_D3D 0x44e490
 void FUN_44e490()
 {
-    g_sth = 0;
+    g_612994 = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x44e4a0
@@ -24,44 +24,69 @@ void exitError()
     exit(1);
 }
 
-// fastcall
+// fastcall ?
 // STUB: STUNTGP_D3D 0x44e4b0
-void FUN_0044e4b0(int windowMessage)
+void FUN_44e4b0(BOOL windowMessage)
 {
     if (windowMessage)
     {
-        if (false)
+        if (!g_WindowMessage)
         {
+            g_WindowMessage = windowMessage;
+            // TODO: class sth
+            DrawMenuBar(g_Hwnd);
+            RedrawWindow(g_Hwnd, NULL, NULL, RDW_FRAME);
+            FUN_44e490();
+            return;
         }
     }
     else
     {
+        g_WindowMessage = 0;
+        // FUN_44ea10();
+        // FUN_4411c0();
+        // g_6244f4 = 0;
+        // FUN_4320c0(1.0);
     }
 }
 
-// STUB: STUNTGP_D3D 0x44e5d0
-void FUN_0044e5d0()
+// FUNCTION: STUNTGP_D3D 0x44e5d0
+void FUN_44e5d0()
 {
-    GetTickCount();
+    g_61c37c = GetTickCount();
+    g_61c394 = 0;
+    g_61c390 = g_61c37c;
+    g_61c370 = g_61c37c;
+    g_61c388 = g_61c37c;
 }
 
-// STUB: STUNTGP_D3D 0x44e610
+// FUNCTION: STUNTGP_D3D 0x44e610
 void FUN_44e610()
 {
-    GetTickCount();
+    g_61c388 = g_61c390;
+    g_61c390 = GetTickCount();
+    g_61c394 = g_61c394 + 1;
+    g_61c36c = (float)(g_61c390 - g_61c388) * 0.06;
+    // if over a second?
+    if (1000 < g_61c390 - g_61c370)
+    {
+        g_61c39c = (g_61c394 * 1000 + g_61c35c * -1000) / (g_61c390 - g_61c370);
+        g_61c35c = g_61c394;
+        g_61c370 = g_61c390;
+    }
 }
 
 // thunk
-// STUB: STUNTGP_D3D 0x44e6b0
+// FUNCTION: STUNTGP_D3D 0x44e6b0
 void thunk_FUN_44e6b0()
 {
     FUN_44e610();
 }
 
-// STUB: STUNTGP_D3D 0x44e6c0
+// FUNCTION: STUNTGP_D3D 0x44e6c0
 void FUN_44e6c0()
 {
-    GetTickCount();
+    g_61c390 = GetTickCount();
 }
 
 // FUNCTION: STUNTGP_D3D 0x44e6d0
@@ -73,7 +98,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     // #define WM_MOVE                         0x0003
     // #define WM_SIZE                         0x0005
     // #define WM_ACTIVATE                     0x0006
-    int windowMessage;
+    BOOL windowMessage;
     if (uMsg < WM_ACTIVATE)
     {
         if (uMsg != WM_SIZE)
@@ -99,41 +124,52 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         if (uMsg != WM_ACTIVATEAPP)
         {
-            // TODO: not true, DAT_0062ddfc == '\0'
-            if ((uMsg == WM_CHAR) && (true))
+            if ((uMsg == WM_CHAR) && (g_62ddfc == '\0'))
             {
+                g_62ddfc = wParam;
                 // TODO: save wparam to static
                 return DefWindowProc(hWnd, WM_CHAR, wParam, lParam);
             }
+            goto exit;
         }
         // TODO wparam blah
-        if ((wParam == 0) || (true))
+        g_61c374 = wParam;
+        if ((wParam == 0) || (!g_WindowMessage))
         {
             goto exit;
         }
         windowMessage = 0;
     }
-    FUN_0044e4b0(windowMessage);
+    FUN_44e4b0(windowMessage);
 exit:
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-// STUB: STUNTGP_D3D 0x44e7a0
+// unused: STUNTGP_D3D 0x44e7a0
 
+// TODO: is this even correct? check assembly
 // STUB: STUNTGP_D3D 0x44e870
+void m_keyboard()
+{
+    int i = 10;
+    for (i = 10; i >= 0; i--)
+    {
+        GetKeyboardState(g_62d480[i]);
+    }
+}
 
 // FUNCTION: STUNTGP_D3D 0x44e890
 BOOL windowCreate(HINSTANCE hInstance, HINSTANCE hPrevInstance)
 {
-    WNDCLASS windowInfo;
 
-    // TOIDO: global?
+    // TODO: global?
     static HINSTANCE g_HINSTANCE = hInstance;
 
     const char menuName[] = "AppMenu";
     const char className[] = "Stunt GP";
     if (!hPrevInstance)
     {
+        WNDCLASS windowInfo;
         windowInfo.style = CS_OWNDC;
         windowInfo.lpfnWndProc = WndProc;
         windowInfo.cbClsExtra = 0;
@@ -144,35 +180,69 @@ BOOL windowCreate(HINSTANCE hInstance, HINSTANCE hPrevInstance)
         windowInfo.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);
         windowInfo.lpszMenuName = menuName;
         windowInfo.lpszClassName = className;
-        ATOM registered = RegisterClass(&windowInfo);
-        if (!registered)
+        if (!RegisterClass(&windowInfo))
         {
             return FALSE;
         }
     }
-    HWND wHandle = windowCreateInternal(hInstance, "Stunt GP", "Stunt GP");
-    if (!wHandle)
+    g_Hwnd = windowCreateInternal(hInstance, "Stunt GP", "Stunt GP");
+    if (!g_Hwnd)
     {
         return FALSE;
     }
 
-    //  ???
-    return FALSE;
+    //  TODO: DirectX init
+    // FUN_4227e0(&g_61c378_dd, NULL, g_Hwnd);
+    // FUN_422820(&g_61c378_dd, &g_61c380, g_Hwnd);
+    // FUN_422950(&g_61c380, &local_10, &local_c, &local_8);
+    // FUN_4229e0();
+    // FUN_422f30(g_61c380, &g_61c368, &g_61c3a0, 640, 480, 8);
+    // m_keyboard();
+    // return !FUN_4230b0(&g_61c384, g_571fd4);
+    return NULL;
 }
 
 // FUNCTION: STUNTGP_D3D 0x44e9b0
-// FUNCTION: STUNTGP_D3D 0x44e9c0
-
-// STUB: STUNTGP_D3D 0x44e9d0
-void loopy()
+int FUN_44e9b0(int *param_1)
 {
+    if (param_1)
+    {
+        // TODO: objects
+    }
+    return NULL;
+}
+// FUNCTION: STUNTGP_D3D 0x44e9c0
+int *FUN_44e9c0(int *param_1)
+{
+    if (param_1)
+    {
+        // TODO: objects
+    }
+    return NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x44e9d0
+void FUN_44e9d0()
+{
+    if (!FUN_44e9b0(&g_61c368))
+    {
+        if (!FUN_44e9b0(&g_61c3a0))
+        {
+            // if (FUN_4314c0() == 1)
+            // {
+            //     return;
+            // }
+        }
+    }
+    FUN_44e4b0(1);
+
     return;
 }
 
 // FUNCTION: STUNTGP_D3D 0x44ea10
 
 // FUNCTION: STUNTGP_D3D 0x44ea50
-void FUN_0044ea50()
+void FUN_44ea50()
 {
 }
 
@@ -207,7 +277,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
         BOOL availableMessage = PeekMessageA(&uMsg, NULL, 0, 0, PM_REMOVE);
         if (!availableMessage)
         {
-            loopy();
+            FUN_44e9d0();
             if ((false) && (false))
             {
                 // TODO: replace with switch?
@@ -240,6 +310,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
     // shutdowny();
     // fuckery();
 
-    FUN_0044ea50();
+    FUN_44ea50();
     return uMsg.wParam;
 }

@@ -3,13 +3,7 @@
 #include <cstdio>
 #include <windows.h>
 
-extern int g_DISPLAYRESWIDTH;
-
-extern int g_DISPLAYRESHEIGHT;
-
-extern int g_DISPLAYRESDEPTH;
+#include "globals.h"
 
 void GetGameBuildVersion();
 void Script_ParseGameConfig();
-
-HWND windowCreateInternal(HINSTANCE hInstance, LPCSTR className, LPCSTR windowName);
