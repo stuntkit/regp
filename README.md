@@ -27,15 +27,13 @@ For now, the code is only checked and compiled against MSVC 6.0, like in the ori
 You'll need:
 
 - CMake
-- Microsoft Visual C++ 6.0. [portable ver](https://github.com/itsmattkc/MSVC600)
-  - put in a directory without any spaces in path just in case
-  - `checkout 17bae53fa330df7b576f25f1f604e4214076a650 commit`
-  - a [fork](https://github.com/halamix2/MSVC600/tree/6.00.8168) with thePowerShell support is added as a git submodule. You can download it by issuing the `git submodule update --init --recursive` command
-- ~~DirectX 6 SDK~~, a copy is icluded in 3rdparty directory
+- Microsoft Visual C++ 6.0. [portable ver](hhttps://github.com/halamix2/MSVC600/tree/6.00.8168)
+  - the portable version with the PowerShell support was added as a git submodule. You can download it by issuing the `git submodule update --init --recursive` command.
+- DirectX 6 SDK, a copy is included in the 3rdparty directory.
 
 Nice to have:
 
-- Compilation should always work under both CMD and PowerShell, but the primary command line for the development is PowerShell 7.
+- Compilation should always work under both CMD and PowerShell, but the primary command line I've used for the development is PowerShell 7.
 
 ### Compiling
 
