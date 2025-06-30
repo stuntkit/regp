@@ -27,7 +27,7 @@ For now, the code is only checked and compiled against MSVC 6.0, like in the ori
 You'll need:
 
 - CMake
-- Microsoft Visual C++ 6.0. [portable ver](hhttps://github.com/halamix2/MSVC600/tree/6.00.8168)
+- Microsoft Visual C++ 6.0. [portable ver](https://github.com/halamix2/MSVC600/tree/6.00.8168)
   - the portable version with the PowerShell support was added as a git submodule. You can download it by issuing the `git submodule update --init --recursive` command.
 - DirectX 6 SDK, a copy is included in the 3rdparty directory.
 
