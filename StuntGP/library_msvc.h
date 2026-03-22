@@ -1,5 +1,7 @@
 #if 0
 
+// TODO: sort by address someday
+
 // LIBRARY: STUNTGP 0x00404d1c
 // __except_handler3
 
@@ -31,43 +33,119 @@
 // LIBRARY: STUNTGP 0x00402190
 // __exit
 
-// FUNCTION: STUNTGP 0x00404511
-// __XcptFilter 
+// LIBRARY: STUNTGP 0x00404511
+// __XcptFilter
 
 // GLOBAL: STUNTGP 0x00417a3c
 // __acmdln
 
-// FUNCTION: STUNTGP 0x004049e7
+// LIBRARY: STUNTGP 0x004049e7
 // ___crtGetEnvironmentStringsA
 
 // GLOBAL: STUNTGP 0x00416308
 // __aenvptr
 
-// FUNCTION: STUNTGP 0x0040479a
+// LIBRARY: STUNTGP 0x0040479a
 // __setargv
 
-// FUNCTION: STUNTGP 0x004046e1
+// LIBRARY: STUNTGP 0x004046e1
 // __setenvp
 
-// FUNCTION: STUNTGP 0x0000402152
+// LIBRARY: STUNTGP 0x0000402152
 // __cinit
 
-// FUNCTION: STUNTGP 0x0000404689
+// LIBRARY: STUNTGP 0x0000404689
 // __wincmdln
 
 
-// FUNCTION: STUNTGP 0x004032d4
+// LIBRARY: STUNTGP 0x004032d4
 // __spawnve
 
-// FUNCTION: STUNTGP 0x00401b88
+// LIBRARY: STUNTGP 0x00401b88
 // _fopen
 
-// FUNCTION: STUNTGP 0x00401ada
+// LIBRARY: STUNTGP 0x00401ada
 // _fclose
 
-// FUNCTION: STUNTGP 0x00401a78
+// LIBRARY: STUNTGP 0x401b0b
+// __fclose_lk
+
+// LIBRARY: STUNTGP 0x00401a78
 // _fgets
 
-// FUNCTION: STUNTGP 0x00401a40
-// _strncmp 
+// LIBRARY: STUNTGP 0x00401a40
+// _strncmp
+
+// LIBRARY: STUNTGP 0x0040352a
+// __lock_file
+
+// LIBRARY: STUNTGP 0x0040357c
+// __unlock_file
+
+// LIBRARY: STUNTGP 0x004035ce
+// __filbuf
+
+// GLOBAL: STUNTGP 0x00417a38
+// __FPinit
+
+// GLOBAL: STUNTGP 0x00413078
+// ___xi_a
+
+// GLOBAL: STUNTGP 0x0041308c
+// ___xi_z
+
+// GLOBAL: STUNTGP 0x00413000
+// ___xc_a
+
+// GLOBAL: STUNTGP 0x00413074
+// ___xc_z
+
+
+// LIBRARY: STUNTGP 0x401e84
+// __global_unwind2
+
+// LIBRARY: STUNTGP 0x401ec6
+// __local_unwind2
+
+// GLOBAL: STUNTGP 0x401f5a
+// __NLG_Notify
+
+// LIBRARY: STUNTGP 0x407d56
+// _RtlUnwind@16
+
+// LIBRARY: STUNTGP 0x408e34
+// operator delete
+
+// LIBRARY: STUNTGP 0x4037e3
+// __flush
+
+// LIBRARY: STUNTGP 0x40378a
+// __freebuf
+
+// LIBRARY: STUNTGP 0x004036aa
+// __close
+
+// LIBRARY: STUNTGP 0x00402272
+// _free
+
+
+// LIBRARY: STUNTGP 0x00401b57
+// __fsopen
+
+
+// LIBRARY: STUNTGP 0x00403a5c
+// __getstream
+
+// LIBRARY: STUNTGP 0x004038ec
+// __openfile
+
+// LIBRARY: STUNTGP 0x004023cc
+// _malloc
+
+// LIBRARY: STUNTGP 0x00402a30
+// _memcpy
+
+// LIBRARY: STUNTGP 0x407d6e
+// WinMain
+
 #endif

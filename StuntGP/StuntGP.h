@@ -27,6 +27,7 @@ class CStuntGPApp : public CWinApp
 public:
 	CStuntGPApp(LPCTSTR lpszAppName = NULL);
 
+
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CStuntGPApp)
@@ -89,6 +90,11 @@ public:
 // GLOBAL: STUNTGP 0x0040f378
 // CStuntGPApp::_messageEntries
 
+// FUNCTION: STUNTGP 0x00401050
+// CStuntGPApp::~CStuntGPApp
+
+// FUNCTION: STUNTGP 0x0040cfa9
+// CWinApp::~CWinApp
 #define BUFFER_SIZE 200
 
 extern "C" {
