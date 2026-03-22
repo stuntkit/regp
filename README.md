@@ -11,12 +11,11 @@ This decompilation is based on the international PC version of the game with the
 4a1d234ce1f095a427bb7f2f0174294b8c85a8fdbbc29b62a3863156b2f16a1b  StuntGP_D3D.exe
 e4d2c2641c0028c6106de0e18d23ebd305d9af08fda4fbcc891540e92a1207a9  StuntGP.exe
 2c1513cb0438180db0099850d5a449afe1ac5658c89348e49bb952386a872655  StuntGP_Glide.exe
-
 ```
 
 ## Status
 
-Only compilation of a dummy main.cpp through MSVC 6 works.
+![config.exe](./status/config.svg)  ![StuntGP.exe](./status/StuntGP.svg)  ![StuntGP_D3D.exe](./status/StuntGP_D3D.svg) 
 
 ## Building
 
@@ -40,10 +39,19 @@ Nice to have:
 1. Open your favourite command prompt, `cmd` , or `PowerShell` will do.
 1. From the `MSVC600` directory, run `VC98\Bin\VCVars32.BAT`, or `VC98\Bin\VCVARS32.ps1`, depending on your command prompt, to set enviroment variables necessary for compilation.
 1. Create `build` directory if it doesn't exists already.
+1. `cmake . -B build -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=RelWithDebInfo`
+   - You can also use `DCMAKE_BUILD_TYPE` of `RelWithDebInfo`/`Release`/`Debug`
+1. `cmake --build build` - run it twice, as some things get compiled/referenced/whatever only on the second run (TODO: check if still valid with cmake build instead of manul nmake).
+
+### Compiling with a modern compiler
+
+1. Open your favourite command prompt, `cmd` , ~~or `PowerShell` will do~~.
+1. Run ~~`& 'C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars32.bat'` in pwsh or~~ `"C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars32.bat"` in cmd.
+1. Create `build_modern` directory if it doesn't exists already.
 1. `cd` to the build directory.
-1. `cmake .. -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=RelWithDebInfo`
-    - You can also use `DCMAKE_BUILD_TYPE` of `RelWithDebInfo`/`Release`/`Debug`
-1. `nmake` - run it twice, as some things get compiled/referenced/whatever only on the second run.
+1. `cmake . -B build_modern -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=RelWithDebInfo`
+   - You can also use `DCMAKE_BUILD_TYPE` of `RelWithDebInfo`/`Release`/`Debug`
+1. `cmake --build build`
 
 ## Comparison
 

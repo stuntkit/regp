@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <windows.h>
 
-#include "globals.h"
+#include "../../globals.h"
+#include "io_wad.h"
 
-void GetGameBuildVersion();
 void Script_ParseGameConfig();

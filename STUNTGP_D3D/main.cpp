@@ -5,7 +5,8 @@
 #include <cstdio>
 #include <windows.h>
 
-#include "uwu.h"
+#include "Game/GameEngine/Game.h"
+#include "Game/GameEngine/Engine_LevelScript.h"
 #include "windowInit.h"
 
 #include "globals.h"

@@ -67,3 +67,6 @@ int g_61c3a0;
 
 // GLOBAL: STUNTGP_D3D 0x61c378
 LPDIRECTDRAW g_61c378_dd = NULL;
+
+// GLOBAL: STUNTGP_D3D 0x48489c
+char g_GameDirectory[128] = "D:\\Game\\";

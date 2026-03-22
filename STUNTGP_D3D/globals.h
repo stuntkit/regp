@@ -37,4 +37,6 @@ extern int g_61c368;
 extern int g_61c3a0;
 
 extern LPDIRECTDRAW g_61c378_dd;
+
+extern char g_GameDirectory[128];
 #endif /* GLOBALS_H */

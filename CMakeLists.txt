@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 # MSVC runtime library flags are selected by an abstraction
 cmake_policy(SET CMP0091 NEW)
 
-project(STUNTGP CXX)
+project(stuntgp C CXX)
 
 include(CheckCXXSourceCompiles)
 include(CMakeDependentOption)
@@ -11,12 +11,12 @@ include(CMakePushCheckState)
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/reccmp.cmake")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
-option(ENABLE_CLANG_TIDY "Enable clang-tidy")
-if (ENABLE_CLANG_TIDY)
-  find_program(CLANG_TIDY_BIN NAMES "clang-tidy")
-  set(CMAKE_C_CLANG_TIDY "${CLANG_TIDY_BIN}")
-  set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_BIN}")
-endif()
+# option(ENABLE_CLANG_TIDY "Enable clang-tidy")
+# if (ENABLE_CLANG_TIDY)
+#   find_program(CLANG_TIDY_BIN NAMES "clang-tidy")
+#   set(CMAKE_C_CLANG_TIDY "${CLANG_TIDY_BIN}")
+#   set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_BIN}")
+# endif()
 
 math(EXPR bits "8 * ${CMAKE_SIZEOF_VOID_P}")
 message(STATUS "Building ${bits}-bit binaries")
@@ -58,15 +58,17 @@ endfunction()
 message(STATUS "MSVC for decompilation: ${MSVC_FOR_DECOMP}")
 
 option(STUNTGP_WERROR "Treat warnings as errors" OFF)
-# option(STUNTGP_BUILD_APP "Build StuntGP_D3D.exe application" ON)
+cmake_dependent_option(STUNTGP_BUILD_CONFIG "Build config.exe application" OFF "NOT MINGW" OFF)
+cmake_dependent_option(STUNTGP_BUILD_STUNTGP "Build StuntGP.exe application" ON "NOT MINGW" OFF)
+option(STUNTGP_BUILD_D3D "Build StuntGP_D3D.exe application" ON)
+# option(STUNTGP_BUILD_GLIDE "Build StuntGP_Glide.exe application" ON)
 option(STUNTGP_USE_DX6 "Build with internal DirectX 6 SDK" ON)
 option(STUNTGP_DECOMP_ASSERT "Assert struct size" ${MSVC_FOR_DECOMP})
 cmake_dependent_option(STUNTGP_USE_DX6_LIBS "Build with internal DirectX 6 SDK Libraries" ON ISLE_USE_DX5 OFF)
 # option(ISLE_INCLUDE_ENTROPY "Build with entropy.h" OFF)
 # option(ISLE_ENTROPY_FILENAME "Entropy header filename" "entropy.h")
 
-# add_cxx_warning(parentheses)
-
+add_cxx_warning(parentheses)
 
 add_library(DirectX6::DirectX6 INTERFACE IMPORTED)
 target_include_directories(DirectX6::DirectX6 INTERFACE "${PROJECT_SOURCE_DIR}/3rdparty/dx6/include")
@@ -74,60 +76,109 @@ if(STUNTGP_USE_DX6)
   target_link_directories(DirectX6::DirectX6 INTERFACE "${PROJECT_SOURCE_DIR}/3rdparty/dx6/lib")
 endif()
 
-# TODO
+# TODO: if anything shares files then put it in here
 # function(add_lego_libraries NAME)
 
 
-add_executable(STUNTGP_D3D WIN32
+if(STUNTGP_BUILD_CONFIG)
 # TODO
-  STUNTGP_D3D/main.cpp
-  STUNTGP_D3D/globals.cpp
-  STUNTGP_D3D/constants.cpp
-  STUNTGP_D3D/uwu.cpp
-  STUNTGP_D3D/windowInit.cpp
-  STUNTGP_D3D/pure_api.cpp
+add_executable(config WIN32
 )
-reccmp_add_target(STUNTGP_D3D ID STUNTGP_D3D)
+
+reccmp_add_target(config ID CONFIG)
+# target_compile_definitions(config PRIVATE _AFXDLL MXDIRECTX_FOR_CONFIG)
+#   target_include_directories(config PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/util" "${CMAKE_CURRENT_SOURCE_DIR}/LEGO1")
+#   if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 14)
+#     target_link_libraries(config PRIVATE DirectX5::DirectX5)
+#   endif()
+#   target_compile_definitions(config PRIVATE DIRECT3D_VERSION=0x500)
+#   target_link_libraries(config PRIVATE ddraw dxguid)
+#   set_property(TARGET config PROPERTY OUTPUT_NAME "CONFIG")
+#   set_property(TARGET config PROPERTY SUFFIX ".EXE")
+#   set_property(TARGET config PROPERTY MSVC_RUNTIME_LIBRARY MultiThreaded$<$<CONFIG:Debug>:Debug>DLL)
+endif()
+
+if(STUNTGP_BUILD_STUNTGP)
+add_executable(StuntGP WIN32
+  StuntGP/StdAfx.cpp
+  StuntGP/StuntGP.cpp
+  StuntGP/res/config.rc)
+reccmp_add_target(StuntGP ID STUNTGP)
+
+# target_compile_definitions(StuntGP PRIVATE _AFXDLL MXDIRECTX_FOR_CONFIG)
+#   target_include_directories(config PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/util" "${CMAKE_CURRENT_SOURCE_DIR}/LEGO1")
+
+#   set_property(TARGET config PROPERTY OUTPUT_NAME "CONFIG")
+#   set_property(TARGET config PROPERTY SUFFIX ".EXE")
+#   set_property(TARGET config PROPERTY MSVC_RUNTIME_LIBRARY MultiThreaded$<$<CONFIG:Debug>:Debug>DLL)
+endif()
+
+if(STUNTGP_BUILD_D3D)
+  message(STATUS "Added StuntGP_D3D.exe")
+  add_executable(StuntGP_D3D WIN32
+  # TODO
+    STUNTGP_D3D/main.cpp
+    STUNTGP_D3D/globals.cpp
+    STUNTGP_D3D/constants.cpp
+    STUNTGP_D3D/windowInit.cpp
+    STUNTGP_D3D/pure_api.cpp
+    STUNTGP_D3D/Game/GameEngine/Game.cpp
+    STUNTGP_D3D/Game/GameEngine/Engine_LevelScript.cpp
+    STUNTGP_D3D/Game/GameEngine/io_wad.cpp
+  )
+  reccmp_add_target(StuntGP_D3D ID STUNTGP_D3D)
 
 
-target_compile_definitions(STUNTGP_D3D PRIVATE STUNTGP_D3D_APP)
+  target_compile_definitions(StuntGP_D3D PRIVATE STUNTGP_D3D_APP)
 
-target_include_directories(STUNTGP_D3D PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/STUNTGP_D3D")
-# Use internal DirectX 6 if required
-target_link_libraries(STUNTGP_D3D PRIVATE $<$<BOOL:${STUNTGP_USE_DX6}>:DirectX6::DirectX6>)
-target_link_libraries(STUNTGP_D3D PRIVATE ddraw dinput dsound winmm)
+  target_include_directories(StuntGP_D3D PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/STUNTGP_D3D")
+  # Use internal DirectX 6 if required
+  target_link_libraries(StuntGP_D3D PRIVATE $<$<BOOL:${STUNTGP_USE_DX6}>:DirectX6::DirectX6>)
+  target_link_libraries(StuntGP_D3D PRIVATE ddraw dinput dsound winmm)
 
-set_property(TARGET STUNTGP_D3D PROPERTY OUTPUT_NAME "GameEngine")
-set_property(TARGET STUNTGP_D3D PROPERTY PREFIX "")
-set_property(TARGET STUNTGP_D3D PROPERTY SUFFIX ".exe")
-# configure_file("${CMAKE_CURRENT_BINARY_DIR}/GameEngine.exe" "${CMAKE_CURRENT_BINARY_DIR}/StuntGP_D3D.exe" COPYONLY)
-# file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/GameEngine.exe" "${CMAKE_CURRENT_BINARY_DIR}/StuntGP_D3D.exe")
-add_custom_command( TARGET STUNTGP_D3D
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:STUNTGP_D3D>" "${CMAKE_CURRENT_BINARY_DIR}/StuntGP_D3D.exe"
-            COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_PDB_FILE:STUNTGP_D3D>" "${CMAKE_CURRENT_BINARY_DIR}/StuntGP_D3D.pdb"
-            COMMENT "make reccmp happy, keeping the internal GameEngine.exe name"
-            )
+  # set_property(TARGET STUNTGP_D3D PROPERTY OUTPUT_NAME "GameEngine")
+  # set_property(TARGET STUNTGP_D3D PROPERTY PREFIX "")
+  # set_property(TARGET STUNTGP_D3D PROPERTY SUFFIX ".exe")
+  # configure_file("${CMAKE_CURRENT_BINARY_DIR}/GameEngine.exe" "${CMAKE_CURRENT_BINARY_DIR}/StuntGP_D3D.exe" COPYONLY)
+  # file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/GameEngine.exe" "${CMAKE_CURRENT_BINARY_DIR}/StuntGP_D3D.exe")
+  # add_custom_command( TARGET STUNTGP_D3D
+  #           POST_BUILD
+  #           COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:STUNTGP_D3D>" "${CMAKE_CURRENT_BINARY_DIR}/StuntGP_D3D.exe"
+  #           COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_PDB_FILE:STUNTGP_D3D>" "${CMAKE_CURRENT_BINARY_DIR}/StuntGP_D3D.pdb"
+  #           COMMENT "make reccmp happy, keeping the internal GameEngine.exe name"
+  #           )
+endif()
 
 # Compiler flags
 # TODO - this will be important for compiling with MSVC later than the original one
-# if (MSVC)
-# endif()
-
+if (MSVC)
+endif()
 
 
 if (STUNTGP_DECOMP_ASSERT)
-message(STATUS "Decomp asserts enabled")
-target_compile_definitions(STUNTGP_D3D PRIVATE "ENABLE_DECOMP_ASSERTS")
+  message(STATUS "Decomp asserts enabled")
+  if (TARGET config)
+    target_compile_definitions(config PRIVATE "ENABLE_DECOMP_ASSERTS")
+  endif()
+  if (TARGET StuntGP)
+    target_compile_definitions(StuntGP PRIVATE "ENABLE_DECOMP_ASSERTS")
+  endif()
+  if (TARGET StuntGP_D3D)
+    target_compile_definitions(StuntGP_D3D PRIVATE "ENABLE_DECOMP_ASSERTS")
+  endif()
 endif()
 
 if (MSVC_FOR_DECOMP)
   # These flags have been taken from the defaults for a Visual C++ 6.0 project (the compiler the
   # game was originally built with) and tweaked slightly to produce more debugging info for reccmp.
   # They ensure a recompilation that can be byte/instruction accurate to the original binaries.
-  target_link_options(STUNTGP_D3D PRIVATE "/OPT:REF")
+  
+  target_link_options(StuntGP_D3D PRIVATE "/OPT:REF")
   # set_property(TARGET STUNTGP_D3D PROPERTY MSVC_RUNTIME_LIBRARY "$<$<CONFIG:Release>:Release>")
-  set_property(TARGET STUNTGP_D3D PROPERTY MSVC_RUNTIME_LIBRARY "$<$<CONFIG:Debug>:Debug>")
+  if (TARGET StuntGP)
+    set_property(TARGET StuntGP PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  endif()
+  set_property(TARGET StuntGP_D3D PROPERTY MSVC_RUNTIME_LIBRARY "$<$<CONFIG:Debug>:Debug>")
 
 
   # /Gr? fastcall or not
@@ -158,9 +209,22 @@ if (MSVC_FOR_DECOMP)
   # Older MSVC versions don't support building in parallel.
   # Force non-parallel builds of isle and lego1 by putting them in a pool with 1 available job.
   if (CMAKE_CXX_COMPILER_ID VERSION_LESS 12)
-    set_property(GLOBAL APPEND PROPERTY JOB_POOLS "msvc_stuntgp_d3d=1")
-    set_property(TARGET STUNTGP_D3D PROPERTY JOB_POOL_COMPILE "msvc_config")
-    set_property(TARGET STUNTGP_D3D PROPERTY JOB_POOL_LINK "msvc_config")
+    if (TARGET config)
+      set_property(GLOBAL APPEND PROPERTY JOB_POOLS "msvc_stuntgp_d3d=1")
+      set_property(TARGET config PROPERTY JOB_POOL_COMPILE "msvc_config")
+      set_property(TARGET config PROPERTY JOB_POOL_LINK "msvc_config")
+    endif()
+    
+    if (TARGET StuntGP_D3D)
+      set_property(GLOBAL APPEND PROPERTY JOB_POOLS "msvc_stuntgp=1")
+      set_property(TARGET StuntGP_D3D PROPERTY JOB_POOL_COMPILE "msvc_stuntgp")
+      set_property(TARGET StuntGP_D3D PROPERTY JOB_POOL_LINK "msvc_stuntgp")
+    endif()
+    if (TARGET StuntGP_D3D)
+      set_property(GLOBAL APPEND PROPERTY JOB_POOLS "msvc_stuntgp_d3d=1")
+      set_property(TARGET StuntGP_D3D PROPERTY JOB_POOL_COMPILE "msvc_stuntgp_d3d")
+      set_property(TARGET StuntGP_D3D PROPERTY JOB_POOL_LINK "msvc_stuntgp_d3d")
+    endif()
   endif()
 endif()
 
