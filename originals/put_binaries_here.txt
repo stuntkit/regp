@@ -1,0 +1,2 @@
+Put the original binary files here
+You can find expected SHA256 hashes in the `reccmp-project.yaml` file.
