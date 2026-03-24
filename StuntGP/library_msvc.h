@@ -145,7 +145,91 @@
 // LIBRARY: STUNTGP 0x00402a30
 // _memcpy
 
-// LIBRARY: STUNTGP 0x407d6e
+// LIBRARY: STUNTGP 0x00407d6e
 // WinMain
+
+// LIBRARY: STUNTGP 0x0040c016
+// AfxWinMain
+
+// GLOBAL: STUNTGP 0x004166dc
+// __crtheap
+
+// LIBRARY: STUNTGP 0x000040521b
+// ___sbh_heap_init
+
+
+// GLOBAL: STUNTGP 0x004166d8
+// ___sbh_pHeaderList
+
+// GLOBAL: STUNTGP 0x004166d0
+// ___sbh_pHeaderDefer
+
+// GLOBAL: STUNTGP 0x004166d4
+// ___sbh_cntHeaderList
+
+// GLOBAL: STUNTGP 0x004166cc
+// ___sbh_pHeaderScan
+
+// GLOBAL: STUNTGP 0x004166c4
+// ___sbh_sizeHeaderList
+
+// LIBRARY: STUNTGP 0x00404fa9
+// __lock
+
+// LIBRARY: STUNTGP 0x00405259
+// ___sbh_find_block
+
+// LIBRARY: STUNTGP 0x00405284
+// ___sbh_free_block
+
+// LIBRARY: STUNTGP 0x0040500a
+// __unlock
+
+// GLOBAL: STUNTGP 0x00416510
+// __newmode
+
+// LIBRARY: STUNTGP 0x004023de
+// __nh_malloc
+
+// LIBRARY: STUNTGP 0x0040240a
+// __heap_alloc
+
+// LIBRARY: STUNTGP 0x00405de7
+// __callnewh
+
+// LIBRARY: STUNTGP 0x004055af
+// ___sbh_alloc_block
+
+// LIBRARY: STUNTGP 0x004058b8
+// ___sbh_alloc_new_region
+
+// LIBRARY: STUNTGP 0x00405969
+// ___sbh_alloc_new_group
+
+
+// GLOBAL: STUNTGP 0x00413de0
+// ___sbh_threshold
+
+// TODO: change compilation flags
+// GLOBAL: STUNTGP 0x00416514
+// _pnhHeap
+
+// LIBRARY: STUNTGP 0x00402d70
+// _memmove
+
+// GLOBAL: STUNTGP 0x004167e0
+// __nhandle
+
+// GLOBAL: STUNTGP 0x004166e0
+// ___pioinfo
+
+// LIBRARY: STUNTGP 0x0040207a
+// __amsg_exit
+
+// GLOBAL: STUNTGP 0x00413d18
+// __locktable
+
+// GLOBAL: STUNTGP 0x004166c8
+// ___sbh_indGroupDefer
 
 #endif

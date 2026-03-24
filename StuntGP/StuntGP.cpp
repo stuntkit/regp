@@ -107,20 +107,19 @@ BOOL CStuntGPApp::InitInstance()
 			do {
 				char *line = fgets(buffer, BUFFER_SIZE, gameConfigFile);
 				if(!line) {
-					break;
+					// TOOD: find code that doesn't use goto
+					goto end;
 				}
 				found = strncmp(buffer, CONFIG_END, 4);
 			} while(!found);
 			char *line = fgets(buffer, BUFFER_SIZE, gameConfigFile);
 			if (!line) {
-				break;
+				goto end;
 			}
 			found = strncmp(buffer, CONFIG_GLIDE, 5);
-			if (found) {
-				glideMode = 1;
-			}
 		} while(!found);
-
+		glideMode = 1;
+end:
 		fclose(gameConfigFile);
 		if(glideMode) {
 			exePath = EXE_STUNTGP_GLIDE;
