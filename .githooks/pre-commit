@@ -1,0 +1,2 @@
+#!/bin/sh
+pwsh.exe -ExecutionPolicy RemoteSigned -Command '.githooks\pre-commit.ps1'
