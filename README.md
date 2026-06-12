@@ -15,7 +15,9 @@ e4d2c2641c0028c6106de0e18d23ebd305d9af08fda4fbcc891540e92a1207a9  StuntGP.exe
 
 ## Status
 
-<!--<img src="./status/config.svg" alt="config" width="256"/>--> <img src="./status/StuntGP.svg" alt="StuntGP" width="256"/><img src="./status/StuntGP_D3D.svg" alt="StuntGP_D3D" width="256"/>
+<!--<img src="./status/config.svg" alt="config" width="33%"/>-->
+
+<img src="./status/StuntGP.svg" alt="StuntGP" width="33%"/><img src="./status/StuntGP_D3D.svg" alt="StuntGP_D3D" width="33%"/>
 
 ## Building
 
