@@ -97,8 +97,4 @@ public:
 // CWinApp::~CWinApp
 #define BUFFER_SIZE 200
 
-extern "C" {
-	void __cdecl run(int mode, const char *cmdname, const  char *const *argv);
-}
-
 #endif // !defined(AFX_STUNTGP_H__BA89FE99_6AF5_4378_9C99_CAF4B0C5997B__INCLUDED_)

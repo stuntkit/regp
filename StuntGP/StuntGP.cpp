@@ -53,22 +53,6 @@ BEGIN_MESSAGE_MAP(CStuntGPApp, CWinApp)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CStuntGPApp construction
-
-// FUNCTION: STUNTGP 0x004090bf
-CStuntGPApp::CStuntGPApp(LPCTSTR lpszAppName) :CWinApp(lpszAppName)
-{
-	// TODO: add construction code here,
-	// Place all significant initialization in InitInstance
-
-	//   FUN_0040893e((int)this);
-  // *(undefined ***)this = &PTR_LAB_0040fc80;
-  // _memset(this + 0x1c,0,0x20);
-  // *(undefined4 *)(this + 0x1c) = param_1;
-  // return this;
-}
-
-/////////////////////////////////////////////////////////////////////////////
 // The one and only CStuntGPApp object
 
 CStuntGPApp theApp;
@@ -85,7 +69,6 @@ BOOL CStuntGPApp::InitInstance()
 	//  the specific initialization routines you do not need.
 
 	char *exePath;
-	// char *exeName;
 	char buffer[200];
 	BOOL glideMode = false;
 
@@ -123,23 +106,26 @@ end:
 		fclose(gameConfigFile);
 		if(glideMode) {
 			exePath = EXE_STUNTGP_GLIDE;
-			// exeName = EXE_STUNTGP_GLIDE;
 		} else {
 			exePath = EXE_STUNTGP_D3D;
-		  // exeName = EXE_STUNTGP_D3D;
 		}
 	}
 
-	run(_P_NOWAIT, exePath, &exePath);
+	_spawnv(_P_NOWAIT, exePath, (const char *const *)exePath);
 	// Since the dialog has been closed, return FALSE so that we exit the
 	//  application, rather than start the application's message pump.
 	return FALSE;
 }
 
+// FUNCTION: STUNTGP 0x004090bf
+CStuntGPApp::CStuntGPApp(LPCTSTR lpszAppName) :CWinApp(lpszAppName)
+{
+	// TODO: add construction code here,
+	// Place all significant initialization in InitInstance
 
-// FUNCTION: STUNTGP 0x00401a1a
-void __cdecl run(int mode, const char *cmdname, const  char *const *argv) {
-    // one of the spawn commands
-    _spawnve(mode, cmdname, argv, NULL);
-		return;
+	//   FUN_0040893e((int)this);
+  // *(undefined ***)this = &PTR_LAB_0040fc80;
+  // _memset(this + 0x1c,0,0x20);
+  // *(undefined4 *)(this + 0x1c) = param_1;
+  // return this;
 }

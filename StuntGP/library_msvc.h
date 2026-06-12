@@ -58,6 +58,10 @@
 // __wincmdln
 
 
+
+// LIBRARY: STUNTGP 0x00401a1a
+// __spawnv
+
 // LIBRARY: STUNTGP 0x004032d4
 // __spawnve
 
@@ -212,7 +216,7 @@
 
 // TODO: change compilation flags
 // GLOBAL: STUNTGP 0x00416514
-// _pnhHeap
+// ?_pnhHeap@@3P6AHI@ZA
 
 // LIBRARY: STUNTGP 0x00402d70
 // _memmove
@@ -231,5 +235,54 @@
 
 // GLOBAL: STUNTGP 0x004166c8
 // ___sbh_indGroupDefer
+
+// GLOBAL: STUNTGP 0x00416310
+// ___error_mode
+
+// LIBRARY: STUNTGP 0x00404df4
+// __FF_MSGBANNER
+
+// LIBRARY: STUNTGP 0x00404e2d
+// __NMSG_WRITE
+
+// LIBRARY: STUNTGP 0x0004030a5
+// __mbsrchr
+
+// LIBRARY: STUNTGP 0x000402492
+// __mbschr
+
+// GLOBAL: STUNTGP 0x0041781c
+// ___ismbcodepage
+
+// LIBRARY: STUNTGP 0x004051a0
+// _strlen
+
+// LIBRARY: STUNTGP 0x004050b0
+// _strcpy
+
+// LIBRARY: STUNTGP 0x004050c0
+// _strcat
+
+// LIBRARY: STUNTGP 0x00406500
+// __access
+
+
+// LIBRARY: STUNTGP 0x00405f30
+// _strchr
+
+// LIBRARY: STUNTGP 0x00406400
+// _strrchr
+
+// GLOBAL: STUNTGP 0x00413940
+// __iob
+
+
+/// Globals from libraries without symbols???
+
+
+// ??_C@_02OFKN@?4?2?$AA@
+// STRING: STUNTGP 0x0041046c
+static const char* ___crtSpawnveSth_str =  ".\\";
+
 
 #endif
