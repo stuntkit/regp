@@ -6,6 +6,8 @@
 
 extern BOOL g_612994;
 
+extern void * g_571fd4;
+
 extern int g_DISPLAYRESWIDTH;
 
 extern int g_DISPLAYRESHEIGHT;
@@ -37,6 +39,9 @@ extern int g_61c368;
 extern int g_61c3a0;
 
 extern LPDIRECTDRAW g_61c378_dd;
+extern LPDIRECTDRAW4 g_61c380_dd4;
+
+extern LPDIRECTDRAWPALETTE g_61c384;
 
 extern char g_GameDirectory[128];
 #endif /* GLOBALS_H */

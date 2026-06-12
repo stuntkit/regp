@@ -1,17 +1,17 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include <cstdio>
+#include <ddraw.h>
 #include <windows.h>
 
 #include "globals.h"
 
 HWND windowCreateInternal(HINSTANCE hInstance, LPCSTR className, LPCSTR windowName);
 
-
 void FUN_422780();
 void FUN_4227b0();
-void FUN_4227e0();
-void FUN_422820();
+int windowDDCreate(LPDIRECTDRAW *lplpDD, GUID *lpGUID, HWND hWnd);
+int ddGetDD4(LPDIRECTDRAW lplpDD, LPDIRECTDRAW4 *ppvObj, HWND hWnd);
 void FUN_422860();
 void FUN_422880();
 void FUN_4228a0();
@@ -19,7 +19,7 @@ void FUN_4228c0();
 void FUN_4228e0();
 void FUN_422910();
 void FUN_422930();
-void FUN_422950();
+int ddGetMemory(LPDIRECTDRAW4 lpDD4, LPDWORD totalVideoMem, LPDWORD totalTextureMem, LPDWORD freeMem);
 void FUN_4229e0();
 void FUN_422a00();
 void FUN_422a20();
@@ -36,29 +36,4 @@ void FUN_422df0();
 void FUN_422ea0();
 void FUN_422f30();
 void FUN_423070();
-void FUN_4230b0();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+int FUN_4230b0(LPDIRECTDRAWPALETTE outPalette, void *sth);

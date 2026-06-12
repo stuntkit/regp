@@ -67,6 +67,7 @@ option(STUNTGP_DECOMP_ASSERT "Assert struct size" ${MSVC_FOR_DECOMP})
 cmake_dependent_option(STUNTGP_USE_DX6_LIBS "Build with internal DirectX 6 SDK Libraries" ON ISLE_USE_DX5 OFF)
 # option(ISLE_INCLUDE_ENTROPY "Build with entropy.h" OFF)
 # option(ISLE_ENTROPY_FILENAME "Entropy header filename" "entropy.h")
+option(STUNTGP_DEBUG "Enable additional debugging paths" OFF)
 
 add_cxx_warning(parentheses)
 
@@ -134,7 +135,7 @@ if(STUNTGP_BUILD_D3D)
   target_include_directories(StuntGP_D3D PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/STUNTGP_D3D")
   # Use internal DirectX 6 if required
   target_link_libraries(StuntGP_D3D PRIVATE $<$<BOOL:${STUNTGP_USE_DX6}>:DirectX6::DirectX6>)
-  target_link_libraries(StuntGP_D3D PRIVATE ddraw dinput dsound winmm)
+  target_link_libraries(StuntGP_D3D PRIVATE ddraw dxguid dinput dsound winmm)
 
   # set_property(TARGET STUNTGP_D3D PROPERTY OUTPUT_NAME "GameEngine")
   # set_property(TARGET STUNTGP_D3D PROPERTY PREFIX "")
@@ -168,6 +169,14 @@ if (STUNTGP_DECOMP_ASSERT)
   endif()
 endif()
 
+if(STUNTGP_DEBUG)
+  message(STATUS "Additional debug enabled")
+  # foreach(tgt IN StuntGP StuntGP_D3D)
+      target_compile_definitions(StuntGP PRIVATE "SGP_DEBUG")
+      target_compile_definitions(StuntGP_D3D PRIVATE "SGP_DEBUG")
+  # endforeach()
+endif()
+
 if (MSVC_FOR_DECOMP)
   # These flags have been taken from the defaults for a Visual C++ 6.0 project (the compiler the
   # game was originally built with) and tweaked slightly to produce more debugging info for reccmp.
@@ -178,8 +187,10 @@ if (MSVC_FOR_DECOMP)
   if (TARGET StuntGP)
     set_property(TARGET StuntGP PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
   endif()
-  set_property(TARGET StuntGP_D3D PROPERTY MSVC_RUNTIME_LIBRARY "$<$<CONFIG:Debug>:Debug>")
-
+  if (TARGET StuntGP_D3D)
+    # no SingleThreaded option ._.
+    set_property(TARGET StuntGP_D3D PROPERTY MSVC_RUNTIME_LIBRARY "")
+  endif()
 
   # /Gr? fastcall or not
   # /ML - the only possible /M option
@@ -191,14 +202,22 @@ if (MSVC_FOR_DECOMP)
   # ADD RSC      /l 0x415 /d "NDEBUG"
   # ADD LINK32   /subsystem:windows /machine:I386
 
+  if (TARGET config)
+    set(CMAKE_CXX_FLAGS "/nologo /MT /W3 /GX /G5 /O2 /D \"WIN32\" /D \"NDEBUG\" /D \"_WINDOWS\" /Yu\"stdafx.h\" /FD /c") # _MBCS???
+    set(CMAKE_CXX_FLAGS_DEBUG "/Gm /ZI /Od /D \"_DEBUG\"")
+    set(CMAKE_CXX_FLAGS_RELEASE " /D \"NDEBUG\"")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/Zi /D \"NDEBUG\"") #/ZI in debug
+    set(CMAKE_CXX_FLAGS_MINSIZEREL "/Os /D \"NDEBUG\"")
+  elif (TARGET StuntGP_D3D)
   set(CMAKE_CXX_FLAGS "/FD /Gr /ML /W3 /GX /G5 /c /D \"WIN32\" /D \"_WINDOWS\"") # G6???
   set(CMAKE_CXX_FLAGS_DEBUG "/Gm /ZI /Od /D \"_DEBUG\"")
   set(CMAKE_CXX_FLAGS_RELEASE "/EHs /O2 /D \"NDEBUG\"")
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/EHs /Zp4 /O2 /Zi /D \"NDEBUG\"") #/ZI in debug
   set(CMAKE_CXX_FLAGS_MINSIZEREL "/Os /D \"NDEBUG\"")
+  endif()
 
-  set(CMAKE_EXE_LINKER_FLAGS "/subsystem:windows /machine:I386")
-  set(CMAKE_EXE_LINKER_FLAGS_DEBUG "/incremental:yes /debug /pdbtype:con")
+  set(CMAKE_EXE_LINKER_FLAGS "/nologo /subsystem:windows /machine:I386")
+  set(CMAKE_EXE_LINKER_FLAGS_DEBUG "/incremental:no /debug /pdbtype:con")
   set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/incremental:no")
   set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "/incremental:no /debug /pdbtype:con")
   set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "/incremental:no")

@@ -1,12 +1,12 @@
 #define WIN32_LEAN_AND_MEAN
 
+#include <cstdio>
 #include <cstdlib>
 #include <ctime>
-#include <cstdio>
 #include <windows.h>
 
-#include "Game/GameEngine/Game.h"
 #include "Game/GameEngine/Engine_LevelScript.h"
+#include "Game/GameEngine/Game.h"
 #include "windowInit.h"
 
 #include "globals.h"
@@ -166,6 +166,10 @@ BOOL windowCreate(HINSTANCE hInstance, HINSTANCE hPrevInstance)
     // TODO: global?
     static HINSTANCE g_HINSTANCE = hInstance;
 
+    DWORD totalVideoMem = 0;
+    DWORD totalTextureMem = 0;
+    DWORD freeMem = 0;
+
     const char menuName[] = "AppMenu";
     const char className[] = "Stunt GP";
     if (!hPrevInstance)
@@ -193,14 +197,13 @@ BOOL windowCreate(HINSTANCE hInstance, HINSTANCE hPrevInstance)
     }
 
     //  TODO: DirectX init
-    // FUN_4227e0(&g_61c378_dd, NULL, g_Hwnd);
-    // FUN_422820(&g_61c378_dd, &g_61c380, g_Hwnd);
-    // FUN_422950(&g_61c380, &local_10, &local_c, &local_8);
+    windowDDCreate(&g_61c378_dd, NULL, g_Hwnd);
+    ddGetDD4(g_61c378_dd, &g_61c380_dd4, g_Hwnd);
+    ddGetMemory(g_61c380_dd4, &totalVideoMem, &totalTextureMem, &freeMem);
     // FUN_4229e0();
-    // FUN_422f30(g_61c380, &g_61c368, &g_61c3a0, 640, 480, 8);
+    // FUN_422f30(g_61c380_dd4, &g_61c368, &g_61c3a0, 640, 480, 8);
     // m_keyboard();
-    // return !FUN_4230b0(&g_61c384, g_571fd4);
-    return NULL;
+    return !FUN_4230b0(g_61c384, g_571fd4);
 }
 
 // FUNCTION: STUNTGP_D3D 0x44e9b0
@@ -262,7 +265,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
         return 0;
     }
 
+#if defined(SGP_DEBUG)
+    OutputDebugString("Woo, window created!");
+#endif
+
+#if !defined(SGP_DEBUG)
     ShowCursor(false);
+#endif
 
     Script_ParseGameConfig();
     GetGameBuildVersion();
@@ -273,27 +282,30 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
     static HINSTANCE owo = hPrevInstance;
 
     static int mode_current = 2;
+
+    // FUN_00442120();  // bigger setup
+    // FUN_0044e5d0(); // some variables setup?
     do
     {
-        BOOL availableMessage = PeekMessageA(&uMsg, NULL, 0, 0, PM_REMOVE);
+        BOOL availableMessage = PeekMessageA(&uMsg, NULL, WM_NULL, WM_NULL, PM_REMOVE);
         if (!availableMessage)
         {
             FUN_44e9d0();
-            if ((false) && (false))
-            {
-                // TODO: replace with switch?
-                if (mode_current == 1)
-                {
-                    OutputDebugString("Game logic");
-                    printf("game logic");
-                }
-                else if (mode_current == 2)
-                {
-                    OutputDebugString("Frontend logic");
-                    printf("Frontend logic");
-                }
-                // thunk
-            }
+            // if ((false) && (false))
+            // {
+            //     // TODO: replace with switch?
+            //     if (mode_current == 1)
+            //     {
+            //         OutputDebugString("Game logic");
+            //         printf("game logic");
+            //     }
+            //     else if (mode_current == 2)
+            //     {
+            //         OutputDebugString("Frontend logic");
+            //         printf("Frontend logic");
+            //     }
+            //     // thunk
+            // }
         }
         else
         {

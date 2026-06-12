@@ -1,6 +1,6 @@
 #include "Engine_LevelScript.h"
 
-// FUNCTION: STUNTGP_D3D 0x42d660
+// STUB: STUNTGP_D3D 0x42d660
 void Script_ParseGameConfig()
 {
     int size = {0};
@@ -19,6 +19,6 @@ void Script_ParseGameConfig()
         }
     }
     size = size_of_file(path);
-    // mem alloc etc
+    // TODO: mem alloc etc
     return;
 }

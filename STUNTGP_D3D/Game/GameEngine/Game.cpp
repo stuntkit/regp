@@ -2,7 +2,7 @@
 
 // TODO: update this based on currrent date and a compile-time define?
 
-#ifndef REGP_FIXES
+#if !defined(REGP_FIXES)
 // STRING: STUNTGP_D3D 0x4826a4
 const char g_VERSION_DATE[] = "Nov 21 2000";
 
@@ -25,5 +25,8 @@ static char g_VERSION_STRING[255];
 void GetGameBuildVersion()
 {
     sprintf(g_VERSION_STRING, g_VERSION_FORMAT, g_VERSION_DATE, g_VERSION_TIME);
+#if defined(SGP_DEBUG)
+    OutputDebugString(g_VERSION_STRING);
+#endif
     return;
 }
