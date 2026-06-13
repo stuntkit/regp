@@ -217,7 +217,7 @@ if (MSVC_FOR_DECOMP)
   set(CMAKE_CXX_FLAGS_MINSIZEREL "/Os /D \"NDEBUG\"")
   endif()
 
-  set(CMAKE_EXE_LINKER_FLAGS "/nologo /subsystem:windows /machine:I386")
+  set(CMAKE_EXE_LINKER_FLAGS "/opt:noicf /nologo /subsystem:windows /machine:I386")
   set(CMAKE_EXE_LINKER_FLAGS_DEBUG "/incremental:no /debug /pdbtype:con")
   set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/incremental:no")
   set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "/incremental:no /debug /pdbtype:con")

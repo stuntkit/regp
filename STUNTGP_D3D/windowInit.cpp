@@ -133,11 +133,12 @@ errorMessage errorMessages[] = {
     {NULL, NULL}};
 
 // FUNCTION: STUNTGP_D3D 0x422700
-HWND windowCreateInternal(HINSTANCE hInstance, LPCSTR className, LPCSTR windowName)
+HWND windowCreateInternal(HINSTANCE hInstance, LPCTSTR className, LPCTSTR windowName)
 {
-    HWND wHandle =
-        CreateWindowEx(WS_EX_APPWINDOW, className, windowName, WS_POPUP, 0, 0, GetSystemMetrics(SM_CXFULLSCREEN),
-                       GetSystemMetrics(SM_CYFULLSCREEN), NULL, NULL, hInstance, NULL);
+    int height = GetSystemMetrics(SM_CYFULLSCREEN);
+    int width = GetSystemMetrics(SM_CXFULLSCREEN);
+    HWND wHandle = CreateWindowEx(WS_EX_APPWINDOW, className, windowName, WS_POPUP, 0, 0, width, height, NULL, NULL,
+                                  hInstance, NULL);
     if (!wHandle)
     {
         return NULL;
@@ -184,8 +185,9 @@ char *ddGetResMessage(int res)
 // {
 // }
 
-// TODO: move
-int setCoopLevel(LPDIRECTDRAW lplpDD, HWND hWnd)
+// TODO: move to another file, this shouldn't inline at all
+// FUNCTION: STUNTGP_D3D 0x422780
+int ddSetCoopLevel(LPDIRECTDRAW lplpDD, HWND hWnd)
 {
     int res = lplpDD->SetCooperativeLevel(hWnd, DDSCL_FULLSCREEN | DDSCL_ALLOWREBOOT | DDSCL_EXCLUSIVE);
     if (res != DD_OK)
@@ -206,12 +208,12 @@ int windowDDCreate(LPDIRECTDRAW *lplpDD, GUID *lpGUID, HWND hWnd)
         ddGetResMessage(res);
         exitError();
     }
-    setCoopLevel(*lplpDD, hWnd);
+    ddSetCoopLevel(*lplpDD, hWnd);
     return res;
 }
 
-// TODO: move
-int FUN_004227b0(LPDIRECTDRAW4 ppvObj, HWND hWnd)
+// FUNCTION: STUNTGP_D3D 0x4227b0
+int dd4SetCoopLevel(LPDIRECTDRAW4 ppvObj, HWND hWnd)
 {
     // TODO; move the last parameter to define and use in both SetCooperativeLevel?
     int res = ppvObj->SetCooperativeLevel(hWnd, DDSCL_FULLSCREEN | DDSCL_ALLOWREBOOT | DDSCL_EXCLUSIVE);
@@ -232,7 +234,7 @@ int ddGetDD4(LPDIRECTDRAW lplpDD, LPDIRECTDRAW4 *ppvObj, HWND hWnd)
         ddGetResMessage(res);
         exitError();
     }
-    FUN_004227b0(*ppvObj, hWnd);
+    dd4SetCoopLevel(*ppvObj, hWnd);
     return res;
 }
 

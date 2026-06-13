@@ -13,12 +13,14 @@ struct errorMessage
     int code;
 };
 
-HWND windowCreateInternal(HINSTANCE hInstance, LPCSTR className, LPCSTR windowName);
+HWND windowCreateInternal(HINSTANCE hInstance, LPCTSTR className, LPCTSTR windowName);
 
 char *ddGetResMessage(int res);
 void FUN_422780();
 void FUN_4227b0();
+int ddSetCoopLevel(LPDIRECTDRAW lplpDD, HWND hWnd);
 int windowDDCreate(LPDIRECTDRAW *lplpDD, GUID *lpGUID, HWND hWnd);
+int dd4SetCoopLevel(LPDIRECTDRAW4 ppvObj, HWND hWnd);
 int ddGetDD4(LPDIRECTDRAW lplpDD, LPDIRECTDRAW4 *ppvObj, HWND hWnd);
 void FUN_422860();
 void FUN_422880();
