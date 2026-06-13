@@ -72,3 +72,7 @@ For comparison with the original files we're using the [reccmp](https://github.c
 ## Usage
 
 In theory when enough work is done you could just put the compiled executables in the game directory and run them. Currently this is a very bad ise, as nothing works (yet).
+
+## TODO
+
+- check if init of all varaibles is done in a `{}` manner.

@@ -11,18 +11,13 @@
 
 #include "globals.h"
 
-#include "pure.h"
+#include "common.h"
+// #include "pure.h"
 
 // FUNCTION: STUNTGP_D3D 0x44e490
 void FUN_44e490()
 {
     g_612994 = 0;
-}
-
-// FUNCTION: STUNTGP_D3D 0x44e4a0
-void exitError()
-{
-    exit(1);
 }
 
 // fastcall ?

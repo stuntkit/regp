@@ -1,0 +1,4 @@
+
+#include <cstdlib>
+
+void exitError();

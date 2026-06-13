@@ -4,10 +4,18 @@
 #include <ddraw.h>
 #include <windows.h>
 
+#include "common.h"
 #include "globals.h"
+
+struct errorMessage
+{
+    char *message;
+    int code;
+};
 
 HWND windowCreateInternal(HINSTANCE hInstance, LPCSTR className, LPCSTR windowName);
 
+char *ddGetResMessage(int res);
 void FUN_422780();
 void FUN_4227b0();
 int windowDDCreate(LPDIRECTDRAW *lplpDD, GUID *lpGUID, HWND hWnd);

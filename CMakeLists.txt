@@ -121,6 +121,7 @@ if(STUNTGP_BUILD_D3D)
     STUNTGP_D3D/main.cpp
     STUNTGP_D3D/globals.cpp
     STUNTGP_D3D/constants.cpp
+    STUNTGP_D3D/common.cpp
     STUNTGP_D3D/windowInit.cpp
     STUNTGP_D3D/pure_api.cpp
     STUNTGP_D3D/Game/GameEngine/Game.cpp
