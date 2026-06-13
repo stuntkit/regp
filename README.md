@@ -71,8 +71,13 @@ For comparison with the original files we're using the [reccmp](https://github.c
 
 ## Usage
 
-In theory when enough work is done you could just put the compiled executables in the game directory and run them. Currently this is a very bad ise, as nothing works (yet).
+In theory when enough work is done you could just put the compiled executables in the game directory and run them. Currently this is a very bad idea, as not much works (yet).
+
+## What's working
+
+- Fullscreen window gets created, no DirectX surface yet
 
 ## TODO
 
 - check if init of all varaibles is done in a `{}` manner.
+- make sure TCHAR is used everywhere, the Polish version was compiled with UNICODE support.
