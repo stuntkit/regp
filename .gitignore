@@ -9,6 +9,9 @@
 
 /result
 
+/status/*.html
+/status/*.json
+
 # reccmp files
 reccmp-user.yml
 reccmp-build.yml
