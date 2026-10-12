@@ -1,5 +1,8 @@
 /build*
 
+# python virtual env (uv)
+.venv/
+
 /.vs
 /.vscode
 /.idea

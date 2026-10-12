@@ -1,0 +1,13 @@
+[project]
+name = "regp"
+version = "0.1.0"
+description = "Python tooling for the ReGP Stunt GP decompilation (reccmp comparison)"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "reccmp @ git+https://github.com/isledecomp/reccmp",
+    "clang==16.*",
+    "pyyaml",
+]
+
+[tool.uv]
+package = false
