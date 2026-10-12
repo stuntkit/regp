@@ -18,8 +18,9 @@ This decompilation is based on the international PC version of the game, identif
 ## Status
 
 <!--<img src="./status/config.svg" alt="config" width="33%"/>-->
+<!--<img src="./status/StuntGP.svg" alt="StuntGP" width="33%"/>-->
 
-<img src="./status/StuntGP.svg" alt="StuntGP" width="33%"/><img src="./status/StuntGP_D3D.svg" alt="StuntGP_D3D" width="33%"/>
+<img src="./status/StuntGP_D3D.svg" alt="StuntGP_D3D" width="33%"/>
 
 ## Building and comparison
 
@@ -27,7 +28,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for how to set up your environment, build
 
 ## Usage
 
-In theory when enough work is done you could just put the compiled executables in the game directory and run them. Currently this is a very bad idea, as not much works (yet).
+In theory when enough work is done you could just put the compiled executables in the game directory and run them. In practice nothing works yet.
 
 ## What's working
 
@@ -36,4 +37,4 @@ In theory when enough work is done you could just put the compiled executables i
 ## TODO
 
 - check if init of all variables is done in a `{}` manner.
-- make sure TCHAR is used everywhere, the Polish version was compiled with UNICODE support.
+- make sure TCHAR is used everywhere, the Polish version was compiled with Unicode support.
