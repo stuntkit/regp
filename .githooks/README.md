@@ -9,5 +9,5 @@ git config core.hooksPath .githooks
 ## Uninstallation
 
 ```shell
-git config --unset core.hookPaths
+git config --unset core.hookPath
 ```
