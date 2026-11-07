@@ -1664,28 +1664,6 @@ char *FeCsv_Load(char *name)
     return text;
 }
 
-// Menu entry; entries with a negative id are skipped, a NULL unk0c ends the list.
-struct MenuItem
-{
-    int id;     // 0x00
-    int unk04;  // 0x04
-    int unk08;  // 0x08
-    void *unk0c; // 0x0c
-    int unk10;  // 0x10
-    int unk14;  // 0x14
-    int unk18;  // 0x18
-    int unk1c;  // 0x1c
-};
-
-struct MenuDef
-{
-    BYTE unk00[0xc];
-    int unk0c;       // 0x0c
-    int unk10;       // 0x10
-    BYTE unk14[0x14];
-    MenuItem *items; // 0x28
-};
-
 struct MenuList
 {
     BYTE unk00[0x14];
@@ -1708,7 +1686,7 @@ struct MenuList
 // FUNCTION: STUNTGP_D3D 0x43c900
 int FUN_43c900(MenuDef *def)
 {
-    for (int i = 0; def->items[i].unk0c; i++)
+    for (int i = 0; def->items[i].text; i++)
     {
         if (def->items[i].id >= 0)
         {
@@ -1752,7 +1730,7 @@ int FUN_43cef0(MenuDef *def, int index)
 // FUNCTION: STUNTGP_D3D 0x43cf20
 int FUN_43cf20(MenuDef *def, int index)
 {
-    for (index++; def->items[index].unk0c; index++)
+    for (index++; def->items[index].text; index++)
     {
         if (def->items[index].id >= 0)
         {

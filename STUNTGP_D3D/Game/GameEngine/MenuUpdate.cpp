@@ -139,6 +139,18 @@ struct Unk457e70
 
 typedef Unk457e70 Unk458860;
 
+// GLOBAL: STUNTGP_D3D 0x486800
+MenuItem g_486800[5] = {
+    {0, 0xffc8c8ff, 0xffffffff, 0x9c, 0x9e, 1, 0, 0},
+    {1, 0xffc8c8ff, 0xffffffff, 0x9f, 0xa0, 1, 0, 0},
+    {2, 0xffc8c8ff, 0xffffffff, 0xa1, 0xa2, 1, 0, 0},
+    {4, 0xffc8c8ff, 0xffffffff, 0xa5, 0xa6, 1, 0, 0},
+    {0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x4868a0
+MenuDef g_4868a0 = {0xb, 1.0f, 0, 510.0f, 240.0f, 1.0f, 2, 1.25f, 4, 0xaa, g_486800, 0};
+
 // Character grid for name entry, eight per row.
 // GLOBAL: STUNTGP_D3D 0x4881b0
 char *g_4881b0[4] = {
@@ -1882,6 +1894,13 @@ void FUN_450ac0(MenuObject *object)
 {
     object->unk1c = FUN_43d7b0(object->unk1c, -31.0f, 31.0f);
     object->unk20 = FUN_43d7b0(object->unk20, -31.0f, 31.0f);
+}
+
+// FUNCTION: STUNTGP_D3D 0x450dd0
+void FUN_450dd0()
+{
+    g_486800[0].text = (g_menuState.unk19d7c.unk008 >= 2) + 0x9c;
+    g_486800[2].id = g_menuState.unk4398 <= 0 ? -2 : 2;
 }
 
 // FUNCTION: STUNTGP_D3D 0x450e10

@@ -26,7 +26,9 @@ struct ScoreTable
 
 struct MenuSlot160
 {
-    BYTE data[0x160];
+    BYTE unk000[8];
+    int unk008; // 0x008
+    BYTE unk00c[0x160 - 0xc];
 };
 
 struct MenuSlot20
@@ -39,6 +41,35 @@ struct MenuRecord
 {
     int unk00;
     BYTE unk04[0x80];
+};
+
+// Menu entry; entries with a negative id are skipped, a zero text ends the list.
+struct MenuItem
+{
+    int id;      // 0x00
+    DWORD unk04; // 0x04, ARGB
+    DWORD unk08; // 0x08, ARGB
+    int text;    // 0x0c, front-end text id
+    int unk10;   // 0x10
+    int unk14;   // 0x14
+    int unk18;   // 0x18
+    int unk1c;   // 0x1c
+};
+
+struct MenuDef
+{
+    int unk00;       // 0x00
+    float unk04;     // 0x04
+    int unk08;       // 0x08
+    float x;         // 0x0c
+    float y;         // 0x10
+    float scale;     // 0x14
+    int unk18;       // 0x18
+    float unk1c;     // 0x1c
+    int unk20;       // 0x20
+    int unk24;       // 0x24
+    MenuItem *items; // 0x28
+    int unk2c;       // 0x2c
 };
 
 struct MenuLanguage
@@ -92,7 +123,10 @@ struct MenuState
     int language;               // 0x4258, id of the loaded front-end language
     MenuLanguage languages[8];  // 0x425c, from Setup\languagePC.csv
     int languageCount;          // 0x437c
-    BYTE unk4380[0x4408 - 0x4380];
+    BYTE unk4380[0x4398 - 0x4380];
+    int unk4398;     // 0x4398, entries used in unk439c
+    int unk439c[20]; // 0x439c
+    BYTE unk43ec[0x4408 - 0x43ec];
     int unk4408;     // 0x4408, entries used in unk440c
     int unk440c[26]; // 0x440c
     int unk4474;     // 0x4474
