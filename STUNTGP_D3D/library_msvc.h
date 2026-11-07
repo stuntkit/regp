@@ -16,6 +16,7 @@
 // _sscanf
 
 // LIBRARY: LEGO1 0x1008a100
+// LIBRARY: STUNTGP_D3D 0x46d0c0
 // _calloc
 
 // LIBRARY: STUNTGP_D3D 0x462f9e
@@ -32,6 +33,7 @@
 // __local_unwind2
 
 // LIBRARY: LEGO1 0x1008b319
+// LIBRARY: STUNTGP_D3D 0x46a7dd
 // __NLG_Notify1
 
 // LIBRARY: STUNTGP_D3D 0x46a7e6
@@ -172,6 +174,7 @@
 // _isdigit
 
 // LIBRARY: LEGO1 0x1008c6d0
+// LIBRARY: STUNTGP_D3D 0x46c3ef
 // _isspace
 
 // LIBRARY: LEGO1 0x1008c700
@@ -211,18 +214,23 @@
 // __freeptd
 
 // LIBRARY: LEGO1 0x1008dd90
+// LIBRARY: STUNTGP_D3D 0x465020
 // __cintrindisp2
 
 // LIBRARY: LEGO1 0x1008e000
+// LIBRARY: STUNTGP_D3D 0x4682cb
 // __isctype
 
 // LIBRARY: LEGO1 0x1008e0a0
+// LIBRARY: STUNTGP_D3D 0x468340
 // __allmul
 
 // LIBRARY: LEGO1 0x1008e0e0
+// LIBRARY: STUNTGP_D3D 0x46462a
 // __flsbuf
 
 // LIBRARY: LEGO1 0x1008e230
+// LIBRARY: STUNTGP_D3D 0x46473f
 // __output
 
 // LIBRARY: LEGO1 0x1008ecf0
@@ -259,6 +267,7 @@
 // __ftbuf
 
 // LIBRARY: LEGO1 0x1008f080
+// LIBRARY: STUNTGP_D3D 0x4695e5
 // __write
 
 // LIBRARY: LEGO1 0x1008f100
@@ -297,6 +306,7 @@
 // __freebuf
 
 // LIBRARY: LEGO1 0x1008fc90
+// LIBRARY: STUNTGP_D3D 0x46d580
 // __chkstk
 
 // LIBRARY: LEGO1 0x1008fcc0
@@ -307,6 +317,7 @@
 // __lseek_lk
 
 // LIBRARY: LEGO1 0x1008fdd0
+// LIBRARY: STUNTGP_D3D 0x4699d7
 // __dosmaperr
 
 // LIBRARY: LEGO1 0x1008fe50
@@ -316,9 +327,11 @@
 // ___doserrno
 
 // LIBRARY: LEGO1 0x1008fe70
+// LIBRARY: STUNTGP_D3D 0x466671
 // __openfile
 
 // LIBRARY: LEGO1 0x10090080
+// LIBRARY: STUNTGP_D3D 0x4667e1
 // __getstream
 
 // LIBRARY: LEGO1 0x100901f0
@@ -328,6 +341,7 @@
 // __spawnve
 
 // LIBRARY: LEGO1 0x10090580
+// LIBRARY: STUNTGP_D3D 0x468436
 // __input
 
 // LIBRARY: LEGO1 0x100912e0
@@ -337,6 +351,7 @@
 // ?_inconsistency@@YAXXZ
 
 // LIBRARY: LEGO1 0x100913e0
+// LIBRARY: STUNTGP_D3D 0x46c4ad
 // ___crtLCMapStringA
 
 // LIBRARY: STUNTGP_D3D 0x46749c
@@ -376,72 +391,94 @@
 // _siglookup
 
 // LIBRARY: LEGO1 0x100928c0
+// LIBRARY: STUNTGP_D3D 0x46b455
 // __fptrap
 
 // LIBRARY: LEGO1 0x100928d0
+// LIBRARY: STUNTGP_D3D 0x46ab37
 // __ZeroTail
 
 // LIBRARY: LEGO1 0x10092940
+// LIBRARY: STUNTGP_D3D 0x46ab80
 // __IncMan
 
 // LIBRARY: LEGO1 0x100929b0
+// LIBRARY: STUNTGP_D3D 0x46abd6
 // __RoundMan
 
 // LIBRARY: LEGO1 0x10092a60
+// LIBRARY: STUNTGP_D3D 0x46ac62
 // __CopyMan
 
 // LIBRARY: LEGO1 0x10092a80
+// LIBRARY: STUNTGP_D3D 0x46ac7d
 // __FillZeroMan
 
 // LIBRARY: LEGO1 0x10092a90
+// LIBRARY: STUNTGP_D3D 0x46ac89
 // __IsZeroMan
 
 // LIBRARY: LEGO1 0x10092ab0
+// LIBRARY: STUNTGP_D3D 0x46aca4
 // __ShrMan
 
 // LIBRARY: LEGO1 0x10092b60
+// LIBRARY: STUNTGP_D3D 0x46ad31
 // __ld12cvt
 
 // LIBRARY: LEGO1 0x10092d30
+// LIBRARY: STUNTGP_D3D 0x46ae9d
 // __ld12tod
 
 // LIBRARY: LEGO1 0x10093037
+// LIBRARY: STUNTGP_D3D 0x4652d7
 // __trandisp2
 
 // LIBRARY: LEGO1 0x10093480
+// LIBRARY: STUNTGP_D3D 0x46c1de
 // ___crtGetStringTypeA
 
 // LIBRARY: LEGO1 0x100935b0
+// LIBRARY: STUNTGP_D3D 0x46b45e
 // __getbuf
 
 // LIBRARY: LEGO1 0x10093600
+// LIBRARY: STUNTGP_D3D 0x46b4a2
 // __isatty
 
 // LIBRARY: LEGO1 0x10093630
+// LIBRARY: STUNTGP_D3D 0x46b581
 // _wctomb
 
 // LIBRARY: LEGO1 0x10093690
 // __wctomb_lk
 
 // LIBRARY: LEGO1 0x10093730
+// LIBRARY: STUNTGP_D3D 0x46b5f0
 // __aulldiv
 
 // LIBRARY: LEGO1 0x100937a0
+// LIBRARY: STUNTGP_D3D 0x46b660
 // __aullrem
 
 // LIBRARY: LEGO1 0x10093820
+// LIBRARY: STUNTGP_D3D 0x46bd0d
 // ___strgtold12
 
 // LIBRARY: LEGO1 0x10093f70
+// LIBRARY: STUNTGP_D3D 0x46b7a5
 // __alloc_osfhnd
 
 // LIBRARY: LEGO1 0x100940b0
+// LIBRARY: STUNTGP_D3D 0x46b83a
 // __set_osfhnd
 
 // LIBRARY: LEGO1 0x10094160
+// LIBRARY: STUNTGP_D3D 0x46b8b1
 // __free_osfhnd
 
 // LIBRARY: LEGO1 0x10094200
+// LIBRARY: STUNTGP_D3D 0x46b92b
 // __get_osfhandle
 
 // LIBRARY: LEGO1 0x10094250
@@ -451,15 +488,18 @@
 // __unlock_fhandle
 
 // LIBRARY: LEGO1 0x100943a0
+// LIBRARY: STUNTGP_D3D 0x46b9bf
 // __sopen
 
 // LIBRARY: LEGO1 0x10095820
 // __mbsrchr
 
 // LIBRARY: LEGO1 0x100958b0
+// LIBRARY: STUNTGP_D3D 0x46dce0
 // __mbschr
 
 // LIBRARY: LEGO1 0x10095f90
+// LIBRARY: STUNTGP_D3D 0x46c327
 // _mbtowc
 
 // LIBRARY: LEGO1 0x10095ff0
@@ -472,24 +512,31 @@
 // ___crtMessageBoxA
 
 // LIBRARY: LEGO1 0x10096490
+// LIBRARY: STUNTGP_D3D 0x46cc8c
 // ___addl
 
 // LIBRARY: LEGO1 0x100964c0
+// LIBRARY: STUNTGP_D3D 0x46ccad
 // ___add_12
 
 // LIBRARY: LEGO1 0x10096530
+// LIBRARY: STUNTGP_D3D 0x46cd0b
 // ___shl_12
 
 // LIBRARY: LEGO1 0x10096570
+// LIBRARY: STUNTGP_D3D 0x46cd39
 // ___shr_12
 
 // LIBRARY: LEGO1 0x100965b0
+// LIBRARY: STUNTGP_D3D 0x46cd66
 // ___mtold12
 
 // LIBRARY: LEGO1 0x10097190
+// LIBRARY: STUNTGP_D3D 0x46d2db
 // ___ld12mul
 
 // LIBRARY: LEGO1 0x10097440
+// LIBRARY: STUNTGP_D3D 0x46d4fb
 // ___multtenpow12
 
 // LIBRARY: LEGO1 0x100974c0
@@ -502,6 +549,7 @@
 // _strrchr
 
 // LIBRARY: LEGO1 0x10097b10
+// LIBRARY: STUNTGP_D3D 0x464f60
 // _strchr
 
 // LIBRARY: LEGO1 0x10097d70
@@ -763,6 +811,7 @@
 // memset
 
 // LIBRARY: BETA10 0x100ff82b
+// LIBRARY: STUNTGP_D3D 0x465205
 // __ctrandisp1
 
 // LIBRARY: BETA10 0x100f8a92
@@ -888,13 +937,13 @@
 // GLOBAL: STUNTGP_D3D 0x637bc8
 // ___sbh_indGroupDefer
 
-// GLOBAL: STUNTGP_D3D 0x46b120
+// LIBRARY: STUNTGP_D3D 0x46b120
 // _memmove
 
-// GLOBAL: STUNTGP_D3D 0x467b75
+// LIBRARY: STUNTGP_D3D 0x467b75
 // ___sbh_alloc_new_region
 
-// GLOBAL: STUNTGP_D3D 0x467c26
+// LIBRARY: STUNTGP_D3D 0x467c26
 // ___sbh_alloc_new_group
 
 // LIBRARY: STUNTGP_D3D 0x46e09c
@@ -923,5 +972,419 @@
 
 // LIBRARY: STUNTGP_D3D 0x462ecf
 // _floor
+
+// LIBRARY: STUNTGP_D3D 0x4627bc
+// __fpmath
+
+// LIBRARY: STUNTGP_D3D 0x4627d4
+// __cfltcvt_init
+
+// LIBRARY: STUNTGP_D3D 0x462910
+// _fmod
+
+// LIBRARY: STUNTGP_D3D 0x463076
+// __controlfp
+
+// LIBRARY: STUNTGP_D3D 0x462bc9
+// _pow
+
+// LIBRARY: STUNTGP_D3D 0x464037
+// _WinMainCRTStartup
+
+// LIBRARY: STUNTGP_D3D 0x464176
+// __setdefaultprecision
+
+// LIBRARY: STUNTGP_D3D 0x464188
+// __ms_p5_test_fdiv
+
+// LIBRARY: STUNTGP_D3D 0x4641c6
+// __ms_p5_mp_test_fdiv
+
+// LIBRARY: STUNTGP_D3D 0x4641ef
+// __forcdecpt
+
+// LIBRARY: STUNTGP_D3D 0x464249
+// __cropzeros
+
+// LIBRARY: STUNTGP_D3D 0x464297
+// __positive
+
+// LIBRARY: STUNTGP_D3D 0x4642af
+// __fassign
+
+// LIBRARY: STUNTGP_D3D 0x4642ed
+// __cftoe
+
+// LIBRARY: STUNTGP_D3D 0x4643f1
+// __cftof
+
+// LIBRARY: STUNTGP_D3D 0x4644cf
+// __cftog
+
+// LIBRARY: STUNTGP_D3D 0x4645b4
+// __cfltcvt
+
+// LIBRARY: STUNTGP_D3D 0x467d21
+// ___sbh_resize_block
+
+// LIBRARY: STUNTGP_D3D 0x4681b6
+// __fltin
+
+// LIBRARY: STUNTGP_D3D 0x466564
+// _fflush
+
+// LIBRARY: STUNTGP_D3D 0x4665fb
+// __flushall
+
+// LIBRARY: STUNTGP_D3D 0x46a162
+// __getcwd
+
+// LIBRARY: STUNTGP_D3D 0x46a175
+// __getdcwd
+
+// LIBRARY: STUNTGP_D3D 0x46a246
+// __validdrive
+
+// LIBRARY: STUNTGP_D3D 0x46505e
+// __cintrindisp1
+
+// LIBRARY: STUNTGP_D3D 0x465094
+// __ctrandisp2
+
+// LIBRARY: STUNTGP_D3D 0x465231
+// __fload
+
+// LIBRARY: STUNTGP_D3D 0x465270
+// __trandisp1
+
+// LIBRARY: STUNTGP_D3D 0x465363
+// __rttospopde
+
+// LIBRARY: STUNTGP_D3D 0x465368
+// __rttospop
+
+// LIBRARY: STUNTGP_D3D 0x46536a
+// __rtnospop
+
+// LIBRARY: STUNTGP_D3D 0x46536c
+// __rttosnpop
+
+// LIBRARY: STUNTGP_D3D 0x46536d
+// __rtnospopde
+
+// LIBRARY: STUNTGP_D3D 0x465374
+// __rtzeropop
+
+// LIBRARY: STUNTGP_D3D 0x465376
+// __rtzeronpop
+
+// LIBRARY: STUNTGP_D3D 0x46537b
+// __rtonepop
+
+// LIBRARY: STUNTGP_D3D 0x46537d
+// __rtonenpop
+
+// LIBRARY: STUNTGP_D3D 0x465382
+// __tosnan1
+
+// LIBRARY: STUNTGP_D3D 0x4653ad
+// __nosnan2
+
+// LIBRARY: STUNTGP_D3D 0x4653af
+// __tosnan2
+
+// LIBRARY: STUNTGP_D3D 0x4653d7
+// __nan2
+
+// LIBRARY: STUNTGP_D3D 0x465416
+// __rtindfpop
+
+// LIBRARY: STUNTGP_D3D 0x465418
+// __rtindfnpop
+
+// LIBRARY: STUNTGP_D3D 0x465429
+// __rttosnpopde
+
+// LIBRARY: STUNTGP_D3D 0x465433
+// __rtchsifneg
+
+// LIBRARY: STUNTGP_D3D 0x465440
+// _fdiv_main_routine
+
+// LIBRARY: STUNTGP_D3D 0x465557
+// __adj_fdiv_r
+
+// LIBRARY: STUNTGP_D3D 0x4659f6
+// __fdivp_sti_st
+
+// LIBRARY: STUNTGP_D3D 0x465a09
+// __fdivrp_sti_st
+
+// LIBRARY: STUNTGP_D3D 0x465a1c
+// __adj_fdiv_m32
+
+// LIBRARY: STUNTGP_D3D 0x465a68
+// __adj_fdiv_m64
+
+// LIBRARY: STUNTGP_D3D 0x465ab4
+// __adj_fdiv_m16i
+
+// LIBRARY: STUNTGP_D3D 0x465ae8
+// __adj_fdiv_m32i
+
+// LIBRARY: STUNTGP_D3D 0x465b1c
+// __adj_fdivr_m32
+
+// LIBRARY: STUNTGP_D3D 0x465b68
+// __adj_fdivr_m64
+
+// LIBRARY: STUNTGP_D3D 0x465bb4
+// __adj_fdivr_m16i
+
+// LIBRARY: STUNTGP_D3D 0x465be8
+// __adj_fdivr_m32i
+
+// LIBRARY: STUNTGP_D3D 0x465c1c
+// __safe_fdiv
+
+// LIBRARY: STUNTGP_D3D 0x465c31
+// __safe_fdivr
+
+// LIBRARY: STUNTGP_D3D 0x465c46
+// __fprem_common
+
+// LIBRARY: STUNTGP_D3D 0x465e4c
+// __adj_fprem
+
+// LIBRARY: STUNTGP_D3D 0x465efe
+// __fprem1_common
+
+// LIBRARY: STUNTGP_D3D 0x466104
+// __adj_fprem1
+
+// LIBRARY: STUNTGP_D3D 0x4661b9
+// __safe_fprem
+
+// LIBRARY: STUNTGP_D3D 0x4661bf
+// __safe_fprem1
+
+// LIBRARY: STUNTGP_D3D 0x4661c5
+// __adj_fpatan
+
+// LIBRARY: STUNTGP_D3D 0x4661c8
+// __adj_fptan
+
+// LIBRARY: STUNTGP_D3D 0x468374
+// ___loctotime_t
+
+// LIBRARY: STUNTGP_D3D 0x467111
+// __fFEXP
+
+// LIBRARY: STUNTGP_D3D 0x467178
+// __rtinfpopse
+
+// LIBRARY: STUNTGP_D3D 0x46717a
+// __rtinfnpopse
+
+// LIBRARY: STUNTGP_D3D 0x46718a
+// __fFLN
+
+// LIBRARY: STUNTGP_D3D 0x46723f
+// __rtinfpop
+
+// LIBRARY: STUNTGP_D3D 0x467241
+// __rtinfnpop
+
+// LIBRARY: STUNTGP_D3D 0x46725e
+// __ffexpm1
+
+// LIBRARY: STUNTGP_D3D 0x4661d0
+// __startTwoArgErrorHandling
+
+// LIBRARY: STUNTGP_D3D 0x4661e7
+// __startOneArgErrorHandling
+
+// LIBRARY: STUNTGP_D3D 0x466230
+// __twoToTOS
+
+// LIBRARY: STUNTGP_D3D 0x466245
+// __load_CW
+
+// LIBRARY: STUNTGP_D3D 0x46625c
+// __convertTOStoQNaN
+
+// LIBRARY: STUNTGP_D3D 0x466275
+// __fload_withFB
+
+// LIBRARY: STUNTGP_D3D 0x4662b8
+// __checkTOS_withFB
+
+// LIBRARY: STUNTGP_D3D 0x4662ce
+// __fast_exit
+
+// LIBRARY: STUNTGP_D3D 0x4662db
+// __math_exit
+
+// LIBRARY: STUNTGP_D3D 0x466305
+// __check_overflow_exit
+
+// LIBRARY: STUNTGP_D3D 0x466319
+// __check_range_exit
+
+// LIBRARY: STUNTGP_D3D 0x467307
+// __powhlp
+
+// LIBRARY: STUNTGP_D3D 0x467437
+// __d_inttype
+
+// LIBRARY: STUNTGP_D3D 0x466859
+// __handle_qnan1
+
+// LIBRARY: STUNTGP_D3D 0x4668ac
+// __except1
+
+// LIBRARY: STUNTGP_D3D 0x466944
+// __raise_exc
+
+// LIBRARY: STUNTGP_D3D 0x466bf7
+// __handle_exc
+
+// LIBRARY: STUNTGP_D3D 0x466e0e
+// __umatherr
+
+// LIBRARY: STUNTGP_D3D 0x466e96
+// __set_errno
+
+// LIBRARY: STUNTGP_D3D 0x466ee1
+// __errcode
+
+// LIBRARY: STUNTGP_D3D 0x466f0e
+// __frnd
+
+// LIBRARY: STUNTGP_D3D 0x466f20
+// __set_exp
+
+// LIBRARY: STUNTGP_D3D 0x466f49
+// __sptype
+
+// LIBRARY: STUNTGP_D3D 0x466fa3
+// __decomp
+
+// LIBRARY: STUNTGP_D3D 0x467064
+// __statfp
+
+// LIBRARY: STUNTGP_D3D 0x467072
+// __clrfp
+
+// LIBRARY: STUNTGP_D3D 0x467081
+// __ctrlfp
+
+// LIBRARY: STUNTGP_D3D 0x4670a4
+// __set_statfp
+
+// LIBRARY: STUNTGP_D3D 0x46a7aa
+// __NLG_Return2
+
+// LIBRARY: STUNTGP_D3D 0x46a7ba
+// __abnormal_termination
+
+// LIBRARY: STUNTGP_D3D 0x46a7f9
+// __NLG_Dispatch
+
+// LIBRARY: STUNTGP_D3D 0x46a8c5
+// __seh_longjmp_unwind@4
+
+// LIBRARY: STUNTGP_D3D 0x46af23
+// __fptostr
+
+// LIBRARY: STUNTGP_D3D 0x46af9a
+// __fltout
+
+// LIBRARY: STUNTGP_D3D 0x46affe
+// ___dtold
+
+// LIBRARY: STUNTGP_D3D 0x46b0c0
+// _memset
+
+// LIBRARY: STUNTGP_D3D 0x46b4c8
+// ___initstdio
+
+// LIBRARY: STUNTGP_D3D 0x46b56d
+// ___endstdio
+
+// LIBRARY: STUNTGP_D3D 0x46b968
+// __commit
+
+// LIBRARY: STUNTGP_D3D 0x46b6d5
+// __87except
+
+// LIBRARY: STUNTGP_D3D 0x46c420
+// __allshl
+
+// LIBRARY: STUNTGP_D3D 0x46c43f
+// _ungetc
+
+// LIBRARY: STUNTGP_D3D 0x469b0a
+// ___tzset
+
+// LIBRARY: STUNTGP_D3D 0x469b1f
+// __tzset
+
+// LIBRARY: STUNTGP_D3D 0x469d7d
+// __isindst
+
+// LIBRARY: STUNTGP_D3D 0x46bc7b
+// __fpclass
+
+// LIBRARY: STUNTGP_D3D 0x46ce2d
+// _$I10_OUTPUT
+
+// LIBRARY: STUNTGP_D3D 0x46d13d
+// __fcloseall
+
+// LIBRARY: STUNTGP_D3D 0x46d195
+// __chsize
+
+// LIBRARY: STUNTGP_D3D 0x46c6e0
+// _strcmp
+
+// LIBRARY: STUNTGP_D3D 0x46c764
+// _getenv
+
+// LIBRARY: STUNTGP_D3D 0x46d65c
+// __setmode
+
+// LIBRARY: STUNTGP_D3D 0x46d5af
+// __mbsnbicoll
+
+// LIBRARY: STUNTGP_D3D 0x46d5ee
+// ___wtomb_environ
+
+// LIBRARY: STUNTGP_D3D 0x46d6d2
+// ___crtCompareStringA
+
+// LIBRARY: STUNTGP_D3D 0x46d97a
+// ___crtsetenv
+
+// LIBRARY: STUNTGP_D3D 0x46dbc0
+// _realloc
+
+// LIBRARY: STUNTGP_D3D 0x46dd53
+// __strdup
+
+// LIBRARY: STUNTGP_D3D 0x4627d3
+// __fpclear
+
+// LIBRARY: STUNTGP_D3D 0x46bc78
+// __matherr
+
+// LIBRARY: STUNTGP_D3D 0x46aeb3
+// __ld12tof
+
+// LIBRARY: STUNTGP_D3D 0x46aec9
+// __atodbl
+
+// LIBRARY: STUNTGP_D3D 0x46aef6
+// __atoflt
 
 #endif
