@@ -39,6 +39,7 @@ extern int g_489720;
 #include "../../sintable.h"
 #include "../../sound.h"
 #include "io_wad.h"
+#include "game_state.h"
 #include "../../random.h"
 #include "../../surface.h"
 #include "../../timer.h"
@@ -875,8 +876,28 @@ void FUN_418d10()
     g_4d5ca8 = g_4d5cac = 0;
 }
 
+// GLOBAL: STUNTGP_D3D 0x4d5ca4
+int g_4d5ca4;
+
+extern float g_60f010;
+void FUN_447aa0(Fader *fader);
+
+// FUNCTION: STUNTGP_D3D 0x418d20
+void FUN_418d20(Car *car)
+{
+    int t = car->unk7674;
+    if (t)
+    {
+        car->unk24a4 = t - (int)(5000.0f / (g_60f010 / (float)g_624474[1].count));
+        if (g_4d5ca4 == 1)
+        {
+            FUN_447aa0(&g_498248[0].fx.faders[6]);
+            g_4d5ca4 = 0;
+        }
+    }
+}
+
 GameSlot *FUN_402590(Car *car);
-void FUN_402580();
 void FUN_419180();
 
 // FUNCTION: STUNTGP_D3D 0x418d90
