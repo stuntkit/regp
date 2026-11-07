@@ -382,6 +382,46 @@ int FUN_437400(int track)
     return 0;
 }
 
+// FUNCTION: STUNTGP_D3D 0x437790
+int FUN_437790(ScoreEntry *table, int count, Initials *name, int score)
+{
+    for (int i = 0; i < count; i++)
+    {
+        if (score > table[i].time)
+        {
+            for (int j = count - 1; j > i; j--)
+            {
+                table[j] = table[j - 1];
+            }
+            table[i].name[3] = 1;
+            table[i].time = score;
+            *(Initials *)table[i].name = *name;
+            return i;
+        }
+    }
+    return -1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437800
+int FUN_437800(ScoreEntry *table, int count, Initials *name, int time)
+{
+    for (int i = 0; i < count; i++)
+    {
+        if (time < table[i].time)
+        {
+            for (int j = count - 1; j > i; j--)
+            {
+                table[j] = table[j - 1];
+            }
+            table[i].name[3] = 1;
+            table[i].time = time;
+            *(Initials *)table[i].name = *name;
+            return i;
+        }
+    }
+    return -1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x437870
 void FUN_437870()
 {
@@ -635,6 +675,20 @@ void FUN_43b2b0(BitWriter *writer, int bit)
         writer->bit = 0;
         writer->flagPos = writer->count++;
         writer->buffer[writer->flagPos] = 0;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x43b300
+void FUN_43b300(BitWriter *writer, int value, int count)
+{
+    while (count >= 8)
+    {
+        FUN_43b2a0(writer, value >> (count - 8));
+        count -= 8;
+    }
+    while (count--)
+    {
+        FUN_43b2b0(writer, (value >> count) & 1);
     }
 }
 
