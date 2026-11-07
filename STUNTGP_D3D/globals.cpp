@@ -111,3 +111,31 @@ int g_612948 = 0;
 
 // GLOBAL: STUNTGP_D3D 0x61c38c
 HINSTANCE g_hInstance = NULL;
+
+// --- windowInit ---
+
+// Back buffer pointer handed to the display mode setup.
+// GLOBAL: STUNTGP_D3D 0x61c358
+LPDIRECTDRAWSURFACE4 *g_61c358 = NULL;
+
+// GLOBAL: STUNTGP_D3D 0x576b88
+int g_DD_DISPLAYPITCH = 0;
+
+// 16-bit RGB mask layout of the back buffer: lowest set bit and number of bits per channel.
+// GLOBAL: STUNTGP_D3D 0x576bec
+int g_DD_RSHIFT = 0;
+
+// GLOBAL: STUNTGP_D3D 0x576bf0
+int g_DD_GSHIFT = 0;
+
+// GLOBAL: STUNTGP_D3D 0x576bf4
+int g_DD_BSHIFT = 0;
+
+// GLOBAL: STUNTGP_D3D 0x576bf8
+int g_DD_RBITS = 0;
+
+// GLOBAL: STUNTGP_D3D 0x576bfc
+int g_DD_GBITS = 0;
+
+// GLOBAL: STUNTGP_D3D 0x576c00
+int g_DD_BBITS = 0;

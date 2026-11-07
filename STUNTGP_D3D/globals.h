@@ -66,4 +66,14 @@ extern int g_612be8;
 extern int g_612bec;
 extern int g_612948;
 extern HINSTANCE g_hInstance;
+
+// --- windowInit ---
+extern LPDIRECTDRAWSURFACE4 *g_61c358;
+extern int g_DD_DISPLAYPITCH;
+extern int g_DD_RSHIFT;
+extern int g_DD_GSHIFT;
+extern int g_DD_BSHIFT;
+extern int g_DD_RBITS;
+extern int g_DD_GBITS;
+extern int g_DD_BBITS;
 #endif /* GLOBALS_H */

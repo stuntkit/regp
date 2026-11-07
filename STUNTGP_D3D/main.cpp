@@ -151,11 +151,6 @@ void m_keyboard()
     }
 }
 
-// STUB: STUNTGP_D3D 0x4229e0
-void FUN_4229e0()
-{
-}
-
 // FUNCTION: STUNTGP_D3D 0x44e890
 BOOL windowCreate(HINSTANCE hInstance, HINSTANCE hPrevInstance)
 {
@@ -194,12 +189,12 @@ BOOL windowCreate(HINSTANCE hInstance, HINSTANCE hPrevInstance)
     }
 
     windowDDCreate(&g_dd, NULL, g_Hwnd);
-    ddGetDD4(g_dd, &g_dd4, g_Hwnd);
-    ddGetMemory(g_dd4, &totalVideoMem, &totalTextureMem, &freeMem);
+    ddGetDD4(&g_dd, &g_dd4, g_Hwnd);
+    ddGetMemory(&g_dd4, &totalVideoMem, &totalTextureMem, &freeMem);
     FUN_4229e0();
     FUN_422f30(g_dd4, &g_surface, &g_surface2, 640, 480, 8);
     m_keyboard();
-    return !FUN_4230b0(g_61c384, &g_571fd4);
+    return !FUN_4230b0(&g_61c384, (BYTE *)&g_571fd4);
 }
 
 // FUNCTION: STUNTGP_D3D 0x44e9b0
