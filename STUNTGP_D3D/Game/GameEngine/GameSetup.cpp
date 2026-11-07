@@ -643,6 +643,26 @@ int FUN_419a40(Replay *replay)
     return replay->size = replay->count * sizeof(ReplayFrame) + sizeof(Replay);
 }
 
+void FUN_41aac0(Replay *replay);
+
+// Finalises a recorded replay: checksum, size and the driver it belongs to.
+// FUNCTION: STUNTGP_D3D 0x419a60
+void FUN_419a60(Car *car, Replay *replay)
+{
+    FUN_41aac0(replay);
+    unsigned int bytes = replay->count * sizeof(ReplayFrame);
+    int size = FUN_419a40(replay);
+    replay->unk14 = 1;
+    replay->checksum = FUN_4199d0((BYTE *)replay->frames, bytes);
+    replay->size = size;
+    int index = car - g_49a1f8;
+    strcpy(replay->name, g_60f02c[index].name);
+    replay->unk20 = g_60f02c[index].unk08;
+    replay->unk22 = g_60f02c[index].unk0c;
+    replay->unk26 = g_60f02c[index].unk10;
+    replay->unk24 = g_60f02c[index].unk14;
+}
+
 void FUN_40fb30();
 
 // FUNCTION: STUNTGP_D3D 0x419e30

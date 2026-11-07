@@ -450,6 +450,36 @@ void FUN_408d80()
     }
 }
 
+extern float g_60f2d0[31];
+void FUN_405820(Car *car, float *v);
+
+// FUNCTION: STUNTGP_D3D 0x408dc0
+void FUN_408dc0(float amount)
+{
+    if (g_4d5bb8->unk24e0 != 1 && g_4d5bb8->unk257c <= g_60f2d0[28])
+    {
+        amount = (float)fabs(amount) * g_60f2d0[27];
+        if (amount >= g_60f2d0[25])
+        {
+            if (amount > g_60f2d0[26])
+            {
+                amount = g_60f2d0[26];
+            }
+            if (g_4d5bb8->unk2640 == 1)
+            {
+                FUN_405820(g_4d5bb8, &amount);
+            }
+            g_4d5bb8->unk2570 -= amount;
+            g_4d5bb8->unk257c += amount;
+            g_4d5bb8->unk2580 = g_60f2d0[29];
+            if (g_4d5bb8->unk2570 < 0.0f)
+            {
+                g_4d5bb8->unk2570 = 0;
+            }
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x408f90
 void FUN_408f90()
 {

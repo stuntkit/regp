@@ -523,6 +523,44 @@ void FUN_40d410(Car *car)
     }
 }
 
+void FUN_444c40(Car *car);
+void FUN_443e10(Car *car);
+void FUN_40e360(Car *sub);
+void FUN_40e380(Car *sub);
+
+// FUNCTION: STUNTGP_D3D 0x40d430
+void FUN_40d430()
+{
+    Car *car = g_49a1f8;
+    for (int i = 0; i < 6; i++, car++)
+    {
+        car->unk7640 = 0;
+        car->unk260c = 1.0f;
+        car->unk2614 = 1.0f;
+        car->unk2610 = 0;
+        car->unk2278 = 1;
+        car->unk1f10 = 1;
+        car->unk2250 = 0;
+        car->unk2254 = 0;
+        car->unk2258 = 0;
+        car->unk225c = 0;
+        car->unk2260 = 0;
+        car->unk2264 = 0;
+        car->unk2268 = 0;
+        car->race.unk74 = 0;
+        car->unk226c = 0;
+        car->unk1cf4 = 0;
+        for (int j = 0; j < 4; j++)
+        {
+            car->wheels[j].unk84 = 1.0f;
+        }
+        FUN_444c40(car);
+        FUN_443e10(car);
+        FUN_40e360(car);
+        FUN_40e380(car);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x4039b0
 void FUN_4039b0()
 {

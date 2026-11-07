@@ -131,7 +131,8 @@ struct Wheel
     int unk78;          // 0x0078
     BYTE unk007c[0x4];  // 0x007c
     float unk80;        // 0x0080
-    BYTE unk0084[0x8];  // 0x0084
+    float unk84;        // 0x0084
+    BYTE unk0088[0x4];  // 0x0088
     float unk8c;        // 0x008c
     float unk90;        // 0x0090
     float unk94;        // 0x0094
@@ -402,7 +403,7 @@ struct Car
     int unk2250;              // 0x2250
     float unk2254;            // 0x2254
     float unk2258;            // 0x2258
-    BYTE unk225c[0x4];        // 0x225c
+    float unk225c;            // 0x225c
     int unk2260;              // 0x2260
     float unk2264;            // 0x2264
     int unk2268;              // 0x2268
@@ -509,7 +510,7 @@ struct Car
     DWORD unk25dc[6];         // 0x25dc
     int unk25f4[6];           // 0x25f4
     float unk260c;            // 0x260c
-    BYTE unk2610[0x4];        // 0x2610
+    int unk2610;              // 0x2610
     float unk2614;            // 0x2614
     float unk2618;            // 0x2618
     float unk261c;            // 0x261c
