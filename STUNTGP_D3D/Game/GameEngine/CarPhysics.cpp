@@ -405,6 +405,17 @@ void FUN_414b30()
 {
 }
 
+// Static description of a trail's look; the ring length is size.
+struct TrailParams
+{
+    int unk00;        // 0x000
+    DWORD size;       // 0x004
+    int unk08;        // 0x008
+    int unk0c;        // 0x00c
+    void *unk10;      // 0x010
+    BYTE unk14[0xfc]; // 0x014
+};
+
 // GLOBAL: STUNTGP_D3D 0x474c08
 TrailParams g_474c08 = {1, 16, 2, 8};
 
@@ -443,11 +454,11 @@ void FUN_414f90()
 {
     if (g_61297c >= 60 && g_4d5bb8->unk28a0)
     {
-        Car *car = g_4d5bb8;
-        Vec4 pos = car->unk2d04.pos;
-        FUN_41e510(car->unk2d04.points, &car->unk2d04.head, &car->unk2d04.count, &pos, &g_474d18);
-        pos = car->unk2f1c.pos;
-        FUN_41e510(car->unk2f1c.points, &car->unk2f1c.head, &car->unk2f1c.count, &pos, &g_474d18);
+        Trail *trail = g_4d5bb8->unk2d04;
+        Vec4 pos = trail[0].pos;
+        FUN_41e510(trail[0].points, &trail[0].head, &trail[0].count, &pos, &g_474d18);
+        pos = trail[1].pos;
+        FUN_41e510(trail[1].points, &trail[1].head, &trail[1].count, &pos, &g_474d18);
     }
 }
 
@@ -456,13 +467,13 @@ void FUN_4152d0()
 {
     if (g_61297c >= 60 && g_4d5bb8->unk28a0)
     {
-        Car *car = g_4d5bb8;
-        Vec4 pos = car->unk28c0.pos;
+        TrailSlot *slot = g_4d5bb8->unk28bc;
+        Vec4 pos = slot[0].trail.pos;
         pos.y -= 20.0f;
-        FUN_41e510(car->unk28c0.points, &car->unk28c0.head, &car->unk28c0.count, &pos, &g_474e28);
-        pos = car->unk2adc.pos;
+        FUN_41e510(slot[0].trail.points, &slot[0].trail.head, &slot[0].trail.count, &pos, &g_474e28);
+        pos = slot[1].trail.pos;
         pos.y -= 20.0f;
-        FUN_41e510(car->unk2adc.points, &car->unk2adc.head, &car->unk2adc.count, &pos, &g_474e28);
+        FUN_41e510(slot[1].trail.points, &slot[1].trail.head, &slot[1].trail.count, &pos, &g_474e28);
     }
 }
 
@@ -904,15 +915,15 @@ void FUN_414c50(Car *car)
 // FUNCTION: STUNTGP_D3D 0x414ef0
 void FUN_414ef0(Car *car)
 {
-    car->unk2d04.count = 0;
-    car->unk2f1c.count = 0;
+    car->unk2d04[0].count = 0;
+    car->unk2d04[1].count = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4152c0
 void FUN_4152c0(Car *car)
 {
-    car->unk28c0.count = 0;
-    car->unk2adc.count = 0;
+    car->unk28bc[0].trail.count = 0;
+    car->unk28bc[1].trail.count = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4128f0
@@ -954,8 +965,8 @@ void FUN_414f00()
     {
         if (car->active == 1 && car->unk26b0->meshCount >= 23)
         {
-            car->unk2d04.pos = *car->unk26b0->parts[0]->meshes[23].matrix;
-            car->unk2f1c.pos = *car->unk26b0->parts[0]->meshes[24].matrix;
+            car->unk2d04[0].pos = *car->unk26b0->parts[0]->meshes[23].matrix;
+            car->unk2d04[1].pos = *car->unk26b0->parts[0]->meshes[24].matrix;
         }
         car++;
     }
@@ -968,17 +979,17 @@ void FUN_4150d0()
     Car *car = g_49a1f8;
     for (int i = 0; i < 6; i++)
     {
-        car->unk2ad8 = car->unk28bc = 0;
+        car->unk28bc[1].active = car->unk28bc[0].active = 0;
         if (car->active == 1 && car->unk26b0->meshCount >= 21)
         {
             ModelMesh *mesh = &car->unk26b0->parts[0]->meshes[21];
-            car->unk28bc = 1;
-            car->unk28c0.pos = *mesh->matrix;
+            car->unk28bc[0].active = 1;
+            car->unk28bc[0].trail.pos = *mesh->matrix;
             if (car->unk26b0->meshCount >= 22)
             {
                 mesh = &car->unk26b0->parts[0]->meshes[22];
-                car->unk2ad8 = 1;
-                car->unk2adc.pos = *mesh->matrix;
+                car->unk28bc[1].active = 1;
+                car->unk28bc[1].trail.pos = *mesh->matrix;
             }
         }
         car++;
