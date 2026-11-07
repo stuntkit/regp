@@ -198,8 +198,8 @@ void FUN_447ab0(Fader *fader)
             fader->value -= step;
             if (fader->value < fader->target)
             {
-                fader->active = 0;
                 fader->value = fader->target;
+                fader->active = 0;
             }
         }
     }
@@ -265,8 +265,8 @@ void FUN_447c90()
         if (g_498248[i].active == 1)
         {
             g_4722d0 = &g_498248[i];
-            g_61b740 = &g_498248[i].fx;
-            if (g_498248[i].data->unk23c4 != -1)
+            g_61b740 = &g_4722d0->fx;
+            if (g_4722d0->data->unk23c4 != -1)
             {
                 FUN_447ab0(&g_61b740->faders[3]);
                 FUN_447ab0(&g_61b740->faders[4]);
