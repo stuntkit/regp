@@ -1692,6 +1692,26 @@ void FUN_446700(char *script)
     FUN_4460e0();
 }
 
+extern FILE *g_5da2e4;
+
+// FUNCTION: STUNTGP_D3D 0x446290
+void FUN_446290()
+{
+    // STRING: STUNTGP_D3D 0x484b4c
+    fprintf(g_5da2e4, "-CarAI_StuntKnotList[] =\n");
+    for (int i = 0; g_499fb8[i].pathPosition > 0.0f; i++)
+    {
+        // STRING: STUNTGP_D3D 0x484b68
+        fprintf(g_5da2e4, "   -PathPosition = %12f\n", g_499fb8[i].pathPosition);
+        // STRING: STUNTGP_D3D 0x484b84
+        fprintf(g_5da2e4, "   -Width        = %12f\n", g_499fb8[i].width);
+        // STRING: STUNTGP_D3D 0x484ba0
+        fprintf(g_5da2e4, "   -Grade        = %d\n", g_499fb8[i].grade);
+        // STRING: STUNTGP_D3D 0x484bb8
+        fprintf(g_5da2e4, "\n");
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x4467b0
 void FUN_4467b0(char *script)
 {
@@ -1882,6 +1902,18 @@ void FUN_45be00(MenuHolder *object)
     child->destroy(child);
     Pool_Free(child);
     object->child = NULL;
+}
+
+void FUN_43dc40();
+void FUN_45c050(MenuObject *object);
+
+// FUNCTION: STUNTGP_D3D 0x45c030
+int FUN_45c030(MenuObject *object)
+{
+    FUN_43dc40();
+    FUN_43c400();
+    FUN_45c050(object);
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x45c050

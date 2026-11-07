@@ -3093,6 +3093,28 @@ int FUN_45e880(BYTE *pixels, PcxHeader *header, BYTE *palette, int width, int he
     return size + 0x380;
 }
 
+// GLOBAL: STUNTGP_D3D 0x62d47c
+BYTE *g_62d47c;
+
+void *Mem_Alloc(int size, int type);
+int Mem_Free(void *ptr);
+void FUN_4234d0(char *msg);
+int FUN_44aff0(char *name, void *data, int size);
+
+// FUNCTION: STUNTGP_D3D 0x45e8e0
+void FUN_45e8e0(char *path, BYTE *pixels, BYTE *palette, int width, int height)
+{
+    g_62d47c = (BYTE *)Mem_Alloc(0x100000, 0);
+    if (!g_62d47c)
+    {
+        // STRING: STUNTGP_D3D 0x489724
+        FUN_4234d0("Could not allocate enought memory...\n");
+    }
+    int size = FUN_45e880(pixels, (PcxHeader *)g_62d47c, palette, width, height);
+    FUN_44aff0(path, g_62d47c, size);
+    Mem_Free(g_62d47c);
+}
+
 // FUNCTION: STUNTGP_D3D 0x45e950
 int FUN_45e950(BYTE *pcx, BYTE *out, BYTE *palette, int size)
 {
@@ -3111,6 +3133,31 @@ int FUN_45e950(BYTE *pcx, BYTE *out, BYTE *palette, int size)
         FUN_45e670(pcx, out);
     }
     return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e9b0
+void FUN_45e9b0(char *path, BYTE *out, BYTE *palette)
+{
+    char msg[0x80];
+    int size = size_of_file(path);
+    if (!size)
+    {
+        // STRING: STUNTGP_D3D 0x48974c
+        sprintf(msg, "File: %s not found...", path);
+        FUN_4234d0(msg);
+    }
+    g_62d47c = (BYTE *)Mem_Alloc(size, 0);
+    if (g_62d47c)
+    {
+        bload(path, (char *)g_62d47c, size);
+        if (size)
+        {
+            FUN_45e950(g_62d47c, out, palette, size);
+            g_489714 = g_48971c;
+            g_489718 = g_489720;
+        }
+        Mem_Free(g_62d47c);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x45ea50
