@@ -258,11 +258,11 @@ void FUN_404360()
 void FUN_404450()
 {
     Vec4 right;
-    Vec4 c;
     Vec4 fwd;
-    Vec4 v;
+    Vec4 side;
+    Vec4 off;
     Vec4 tmp;
-    Vec4 b;
+    Vec4 v;
     float dot;
     float h;
     float k;
@@ -330,36 +330,36 @@ void FUN_404450()
         right.z = fwd.x * v.y - fwd.y * v.x;
         Vec3_Normalize(&right.x);
 
-        tmp.x = g_4722d0->data->camOffset.x * right.x;
-        tmp.y = g_4722d0->data->camOffset.x * right.y;
-        tmp.z = g_4722d0->data->camOffset.x * right.z;
-        b.x = g_4722d0->data->camOffset.y * v.x;
-        b.y = g_4722d0->data->camOffset.y * v.y;
-        b.z = g_4722d0->data->camOffset.y * v.z;
-        c.x = g_4722d0->data->camOffset.z * fwd.x;
-        c.y = g_4722d0->data->camOffset.z * fwd.y;
-        c.z = g_4722d0->data->camOffset.z * fwd.z;
+        tmp.x = right.x * g_4722d0->data->camOffset.x;
+        tmp.y = right.y * g_4722d0->data->camOffset.x;
+        tmp.z = right.z * g_4722d0->data->camOffset.x;
+        off.x = g_4722d0->data->camOffset.y * v.x;
+        off.y = g_4722d0->data->camOffset.y * v.y;
+        off.z = g_4722d0->data->camOffset.y * v.z;
+        side.x = g_4722d0->data->camOffset.z * fwd.x;
+        side.y = g_4722d0->data->camOffset.z * fwd.y;
+        side.z = g_4722d0->data->camOffset.z * fwd.z;
         dot = g_482688 * v.x + g_48268c * v.y + g_482690 * v.z;
         if (dot >= 0.0f)
         {
-            b.x = -b.x;
-            b.y = -b.y;
-            b.z = -b.z;
+            off.x = -off.x;
+            off.y = -off.y;
+            off.z = -off.z;
         }
-        b.x += tmp.x;
-        b.y += tmp.y;
-        b.z += tmp.z;
-        b.x = c.x + b.x;
-        b.y = c.y + b.y;
-        b.z = c.z + b.z;
-        tmp.x = b.x + g_4722d0->data->posX;
-        tmp.y = b.y + g_4722d0->data->posY;
-        tmp.z = b.z + g_4722d0->data->posZ;
+        off.x += tmp.x;
+        off.y += tmp.y;
+        off.z += tmp.z;
+        off.x = side.x + off.x;
+        off.y = side.y + off.y;
+        off.z = side.z + off.z;
+        tmp.x = off.x + g_4722d0->data->posX;
+        tmp.y = off.y + g_4722d0->data->posY;
+        tmp.z = off.z + g_4722d0->data->posZ;
         v = tmp;
 
-        tmp.x = v.x - g_4722d0->data->posX;
-        tmp.y = v.y - g_4722d0->data->posY;
-        tmp.z = v.z - g_4722d0->data->posZ;
+        tmp.x -= g_4722d0->data->posX;
+        tmp.y -= g_4722d0->data->posY;
+        tmp.z -= g_4722d0->data->posZ;
         h = g_482688 * tmp.x + g_48268c * tmp.y + g_482690 * tmp.z;
         if (h < 100.0f)
         {
@@ -385,12 +385,12 @@ void FUN_404450()
         {
             k = 0.0f;
         }
-        c.x = k * g_4722d0->data->axisY.x;
-        c.y = k * g_4722d0->data->axisY.y;
-        c.z = k * g_4722d0->data->axisY.z;
-        v.x -= c.x;
-        v.y -= c.y;
-        v.z -= c.z;
+        side.x = k * g_4722d0->data->axisY.x;
+        side.y = k * g_4722d0->data->axisY.y;
+        side.z = k * g_4722d0->data->axisY.z;
+        v.x -= side.x;
+        v.y -= side.y;
+        v.z -= side.z;
         v.y = v.y - g_4722d0->unk1c4 + g_4722d0->unk1c0;
 
         tmp.x = g_4722d0->cam.pos.x - g_4722d0->data->posX;
@@ -420,7 +420,12 @@ void FUN_404450()
                 FUN_403650(1);
                 if (g_4722d0->data->unk71ec < 4)
                 {
-                    goto damp;
+                    g_4722d0->accelX *= 0.9f;
+                    g_4722d0->accelY *= 0.9f;
+                    g_4722d0->accelZ *= 0.9f;
+                    FUN_403460();
+                    FUN_403340();
+                    return;
                 }
             }
             else if (car->unk1fd8 == 1)
@@ -428,7 +433,12 @@ void FUN_404450()
                 FUN_403650(1);
                 if (g_4722d0->data->unk71ec >= 2)
                 {
-                    goto damp;
+                    g_4722d0->accelX *= 0.9f;
+                    g_4722d0->accelY *= 0.9f;
+                    g_4722d0->accelZ *= 0.9f;
+                    FUN_403460();
+                    FUN_403340();
+                    return;
                 }
             }
         }
@@ -445,9 +455,9 @@ void FUN_404450()
         tmp.y = v.y - g_4722d0->data->posY;
         tmp.z = v.z - g_4722d0->data->posZ;
         Vec3_Normalize(&tmp.x);
-        tmp.x = -g_4722d0->data->unk22fc * tmp.x;
-        tmp.y = -g_4722d0->data->unk22fc * tmp.y;
-        tmp.z = -g_4722d0->data->unk22fc * tmp.z;
+        tmp.x *= -g_4722d0->data->unk22fc;
+        tmp.y *= -g_4722d0->data->unk22fc;
+        tmp.z *= -g_4722d0->data->unk22fc;
         tmp.x += g_4722d0->data->posX;
         tmp.y += g_4722d0->data->posY;
         tmp.z += g_4722d0->data->posZ;
@@ -474,13 +484,6 @@ void FUN_404450()
         FUN_403460();
         FUN_403340();
         return;
-    damp:
-        g_4722d0->accelX *= 0.9f;
-        g_4722d0->accelY *= 0.9f;
-        g_4722d0->accelZ *= 0.9f;
-        FUN_403460();
-        FUN_403340();
-        return;
     case 6:
         car = g_4722d0->data;
         car->camOffset.x = 0.0f;
@@ -489,18 +492,18 @@ void FUN_404450()
         tmp.x = g_4722d0->data->camOffset.x * g_4722d0->data->axisX.x;
         tmp.y = g_4722d0->data->camOffset.x * g_4722d0->data->axisX.y;
         tmp.z = g_4722d0->data->camOffset.x * g_4722d0->data->axisX.z;
-        b.x = g_4722d0->data->camOffset.y * g_4722d0->data->axisY.x;
-        b.y = g_4722d0->data->camOffset.y * g_4722d0->data->axisY.y;
-        b.z = g_4722d0->data->camOffset.y * g_4722d0->data->axisY.z;
-        c.x = g_4722d0->data->camOffset.z * g_4722d0->data->axisZ.x;
-        c.y = g_4722d0->data->camOffset.z * g_4722d0->data->axisZ.y;
-        c.z = g_4722d0->data->camOffset.z * g_4722d0->data->axisZ.z;
-        tmp.x = b.x + tmp.x;
-        tmp.y = b.y + tmp.y;
-        tmp.z = b.z + tmp.z;
-        tmp.x = c.x + tmp.x;
-        tmp.y = c.y + tmp.y;
-        tmp.z = c.z + tmp.z;
+        off.x = g_4722d0->data->camOffset.y * g_4722d0->data->axisY.x;
+        off.y = g_4722d0->data->camOffset.y * g_4722d0->data->axisY.y;
+        off.z = g_4722d0->data->camOffset.y * g_4722d0->data->axisY.z;
+        side.x = g_4722d0->data->camOffset.z * g_4722d0->data->axisZ.x;
+        side.y = g_4722d0->data->camOffset.z * g_4722d0->data->axisZ.y;
+        side.z = g_4722d0->data->camOffset.z * g_4722d0->data->axisZ.z;
+        tmp.x = off.x + tmp.x;
+        tmp.y = off.y + tmp.y;
+        tmp.z = off.z + tmp.z;
+        tmp.x = side.x + tmp.x;
+        tmp.y = side.y + tmp.y;
+        tmp.z = side.z + tmp.z;
         g_4722d0->cam.pos.x = tmp.x + g_4722d0->data->posX;
         g_4722d0->cam.pos.y = tmp.y + g_4722d0->data->posY;
         g_4722d0->cam.pos.z = tmp.z + g_4722d0->data->posZ;
@@ -515,16 +518,16 @@ void FUN_404450()
                              tmp.z * g_4722d0->data->matrix[10];
         tmp = ((Scene *)g_4722d0->data->unk26b0)->objects->matrix[2];
         tmp.y = -tmp.y;
-        b.x = tmp.x * g_4722d0->data->matrix[0] + tmp.y * g_4722d0->data->matrix[4] + tmp.z * g_4722d0->data->matrix[8];
-        b.y = tmp.x * g_4722d0->data->matrix[1] + tmp.y * g_4722d0->data->matrix[5] + tmp.z * g_4722d0->data->matrix[9];
-        b.z =
+        off.x = tmp.x * g_4722d0->data->matrix[0] + tmp.y * g_4722d0->data->matrix[4] + tmp.z * g_4722d0->data->matrix[8];
+        off.y = tmp.x * g_4722d0->data->matrix[1] + tmp.y * g_4722d0->data->matrix[5] + tmp.z * g_4722d0->data->matrix[9];
+        off.z =
             tmp.x * g_4722d0->data->matrix[2] + tmp.y * g_4722d0->data->matrix[6] + tmp.z * g_4722d0->data->matrix[10];
-        b.x *= 256.0f;
-        b.y *= 256.0f;
-        b.z *= 256.0f;
-        g_4722d0->cam.target.x = b.x + g_4722d0->cam.pos.x;
-        g_4722d0->cam.target.y = b.y + g_4722d0->cam.pos.y;
-        g_4722d0->cam.target.z = b.z + g_4722d0->cam.pos.z;
+        off.x *= 256.0f;
+        off.y *= 256.0f;
+        off.z *= 256.0f;
+        g_4722d0->cam.target.x = off.x + g_4722d0->cam.pos.x;
+        g_4722d0->cam.target.y = off.y + g_4722d0->cam.pos.y;
+        g_4722d0->cam.target.z = off.z + g_4722d0->cam.pos.z;
         g_4722d0->roll = 0.0f;
         FUN_403460();
         FUN_403340();
@@ -534,27 +537,29 @@ void FUN_404450()
         FUN_403770(g_4722d0->data);
         GameSlot *slot = g_4722d0;
         car = slot->data;
-        float diff = car->unk23b0 - g_499f8c - (car->unk23b0 < g_499f8c ? -2.0f : 2.0f);
+        float diff = car->unk23b0 - g_499f8c;
+        if (car->unk23b0 < g_499f8c)
+        {
+            diff -= -2.0f;
+        }
+        else
+        {
+            diff -= 2.0f;
+        }
         if ((float)fabs(diff) > 0.01f)
         {
             diff *= 0.02f;
             if ((float)fabs(diff) > 0.2f)
             {
-                if (diff < 0.0f)
-                {
-                    g_499f8c = -0.2f + g_499f8c;
-                    goto wrapped;
-                }
-                diff = 0.2f;
+                diff = diff < 0.0f ? -0.2f : 0.2f;
             }
-            g_499f8c = diff + g_499f8c;
+            g_499f8c += diff;
         }
-    wrapped:
         float t = g_499f8c * 0.01f;
         float frac;
         if (t < 0.0f)
         {
-            frac = 1.0f - fmod(-t, 1.0);
+            frac = 1.0f - (float)fmod(-t, 1.0);
         }
         else
         {
@@ -563,10 +568,10 @@ void FUN_404450()
         FUN_428520(slot->path, &tmp, slot->path->count * frac);
         g_4722d0->cam.pos = tmp;
         tmp = *(Vec4 *)&g_4722d0->data->posX;
-        b = g_4722d0->cam.pos;
+        off = g_4722d0->cam.pos;
         tmp.y = 0.0f;
-        float dx = b.x - tmp.x;
-        float dz = b.z - tmp.z;
+        float dx = off.x - tmp.x;
+        float dz = off.z - tmp.z;
         float lift = (float)sqrt(dx * dx + dz * dz) * 0.1f;
         lift *= 0.1f;
         lift *= lift;
@@ -578,12 +583,12 @@ void FUN_404450()
         {
             lift = 3000.0f;
         }
-        b.x = g_482688 * lift;
-        b.y = g_48268c * lift;
-        b.z = lift * g_482690;
-        g_4722d0->cam.pos.x -= b.x;
-        g_4722d0->cam.pos.y -= b.y;
-        g_4722d0->cam.pos.z -= b.z;
+        off.x = g_482688 * lift;
+        off.y = g_48268c * lift;
+        off.z = lift * g_482690;
+        g_4722d0->cam.pos.x -= off.x;
+        g_4722d0->cam.pos.y -= off.y;
+        g_4722d0->cam.pos.z -= off.z;
         break;
     }
     }
