@@ -1,5 +1,8 @@
 #include "io_wad.h"
 
+// The original keeps EBP frames everywhere (/Oy-). Drop this once the global flags do.
+#pragma optimize("y", off)
+
 // TODO: should it be here?
 // FUNCTION: STUNTGP_D3D 0x44b170
 int FUN_44b170(char *in)
@@ -39,79 +42,39 @@ void FUN_44b140(char *out, char *in)
     return;
 }
 
-// inline int findLast(char *buffer, int len)
-// {
-//     char tmp = buffer[len];
-//     while ((tmp != '\\') && (len > 0))
-//     {
-//         len--;
-//         tmp = buffer[len];
-//     }
-//     return len;
-// }
-
-// inline void skipDoubled(char *buffer, int last)
-// {
-//     char tmp = buffer[last];
-//     int len2 = last;
-//     // skip doubled '\\'
-//     while (tmp == '\\')
-//     {
-//         len2++;
-//         tmp = buffer[len2];
-//     }
-//     // return len2;
-// }
-
-// TODO: shitty 38%
 // FUNCTION: STUNTGP_D3D 0x44b050
-void WAD_SplitFileName(char *in, char *a, char *filename)
+void WAD_SplitFileName(char *path, char *dir, char *filename)
 {
     char buffer[128];
-    // char *dwojeczka = a;
+    strcpy(buffer, path);
 
-    strcpy(buffer, in);
-    int len = strlen(buffer) - 1; //-1/-2?
-
-    char tmp = buffer[len];
-
-    // find last '\\'
-    while ((tmp != '\\') && (0 < len))
+    char last = strlen(buffer) - 1;
+    while ((buffer[last] != '\\') && (last > 0))
     {
-        len--;
-        tmp = buffer[len];
+        last--;
     }
 
-    tmp = buffer[len];
-    int len2 = len;
-
-    // skip doubled '\\'
-    while (tmp == '\\')
+    char i = last;
+    while (buffer[i] == '\\')
     {
-        len2++;
-        tmp = buffer[len2];
+        i++;
     }
 
-    // tmp = buffer[len2]; // ???? whyy, useless?
+    i = FUN_44b170(buffer);
+    FUN_44b140(filename, buffer + i);
 
-    int afterGameDir = FUN_44b170(buffer);
-    FUN_44b140(filename, buffer + afterGameDir);
-
-    char *orig = a;
-    if (len < 0)
+    if (last < 0)
     {
-        *a = '\0';
+        *dir = '\0';
     }
     else
     {
-        buffer[len] = '\0';
-        FUN_44b140(orig, buffer + afterGameDir);
+        buffer[last] = '\0';
+        FUN_44b140(dir, buffer + i);
     }
-    orig = a;
 
     tolower(filename, filename);
-    tolower(orig, orig);
-    return;
+    tolower(dir, dir);
 }
 
 // // FUNCTION: STUNTGP_D3D 0x44b260
