@@ -224,12 +224,17 @@ void FUN_427040(AnimObject *obj, int step)
 // FUNCTION: STUNTGP_D3D 0x427050
 void FUN_427050(AnimObject *obj, ObjectDef *def)
 {
-    float dx = obj->spinX * (1.0f / 60.0f);
-    float dy = obj->spinY * (1.0f / 60.0f);
-    float dz = obj->spinZ * (1.0f / 60.0f);
-    float x = obj->rotX += dx;
-    float y = obj->rotY += dy;
-    float z = obj->rotZ += dz;
+    // four lanes to match the original frame layout; w is never used
+    float delta[4];
+    float x;
+    float y;
+    float z;
+    delta[0] = obj->spinX * (1.0f / 60.0f);
+    delta[1] = obj->spinY * (1.0f / 60.0f);
+    delta[2] = obj->spinZ * (1.0f / 60.0f);
+    obj->rotX = x = obj->rotX + delta[0];
+    obj->rotY = y = obj->rotY + delta[1];
+    obj->rotZ = z = obj->rotZ + delta[2];
     if (x < 0.0f)
     {
         obj->rotX = x + 360.0f;
