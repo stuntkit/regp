@@ -336,9 +336,14 @@ int g_48971c = 0;
 // GLOBAL: STUNTGP_D3D 0x489720
 int g_489720 = 0;
 
-// STUB: STUNTGP_D3D 0x4234d0
+void FUN_442180();
+
+// Fatal error: shuts the game down and exits; the message is not shown.
+// FUNCTION: STUNTGP_D3D 0x4234d0
 void FUN_4234d0(char *msg)
 {
+    FUN_442180();
+    exit(1);
 }
 
 // Decodes an uncompressed 24-bit TGA into top-down RGB.
