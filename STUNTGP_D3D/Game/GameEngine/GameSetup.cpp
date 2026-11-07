@@ -54,6 +54,75 @@ extern float g_482668;
 
 void FUN_441f90();
 void FUN_45e0e0();
+
+extern char g_GraphicsDirectory[128];
+extern char g_GameLocation[256];
+extern int g_D3DUVFix;
+extern int g_61c50c;
+
+// Scene render list entry; a list runs until a NULL scene.
+struct SceneSlot
+{
+    Scene *scene; // 0x00
+    int unk04;    // 0x04
+    int unk08;    // 0x08
+    int unk0c;    // 0x0c
+};
+
+// The in-race list at 0x636438 continues into g_636448.
+// GLOBAL: STUNTGP_D3D 0x636418
+SceneSlot g_636418[2];
+
+// GLOBAL: STUNTGP_D3D 0x636438
+SceneSlot g_636438;
+
+struct RenderMaterial
+{
+    DWORD unk00;    // 0x00
+    DWORD unk04;    // 0x04
+    float alpha;    // 0x08
+    BYTE unk0c[0x84];
+};
+
+// GLOBAL: STUNTGP_D3D 0x62447c
+RenderMaterial *g_62447c;
+
+// GLOBAL: STUNTGP_D3D 0x62449c
+DWORD g_62449c;
+
+// GLOBAL: STUNTGP_D3D 0x6249a0
+int g_6249a0;
+
+// GLOBAL: STUNTGP_D3D 0x6249a4
+int g_6249a4;
+
+// GLOBAL: STUNTGP_D3D 0x477c30
+DWORD g_477c30 = 0x200000;
+
+// GLOBAL: STUNTGP_D3D 0x4955e0
+DWORD *g_4955e0;
+
+// GLOBAL: STUNTGP_D3D 0x4955e4
+DWORD *g_4955e4;
+
+// GLOBAL: STUNTGP_D3D 0x62f5d8
+DWORD g_62f5d8;
+
+// GLOBAL: STUNTGP_D3D 0x632cf8
+DWORD g_632cf8;
+
+// GLOBAL: STUNTGP_D3D 0x59207c
+BYTE g_59207c[255];
+
+// GLOBAL: STUNTGP_D3D 0x592028
+BYTE *g_592028;
+
+void FUN_42e240(Scene *scene);
+void FUN_4311c0(Scene *scene);
+void FUN_42b7f0(Scene *scene, Camera *camera, int arg);
+void FUN_42b6e0();
+void FUN_434030();
+void FUN_430690();
 void Timer_Reset();
 
 // GLOBAL: STUNTGP_D3D 0x5fd248
@@ -412,8 +481,40 @@ void FUN_428fa0()
 {
 }
 
-// STUB: STUNTGP_D3D 0x42b740
+// FUNCTION: STUNTGP_D3D 0x42b740
 void FUN_42b740()
+{
+    g_4955e4 = &g_632cf8;
+    g_4955e0 = &g_62f5d8;
+    g_632cf8 = 0;
+    g_62f5d8 = 0;
+    if (g_612be8 != 2)
+    {
+        if (g_636448)
+        {
+            FUN_42b7f0(g_636448, &g_4864e8, 0);
+        }
+        FUN_42b6e0();
+        FUN_434030();
+        if (g_636418[0].scene)
+        {
+            FUN_42b7f0(g_636418[0].scene, &g_4864e8, 0);
+        }
+    }
+}
+
+// STUB: STUNTGP_D3D 0x42b7f0
+void FUN_42b7f0(Scene *scene, Camera *camera, int arg)
+{
+}
+
+// STUB: STUNTGP_D3D 0x42b6e0
+void FUN_42b6e0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x434030
+void FUN_434030()
 {
 }
 
@@ -432,14 +533,36 @@ void FUN_42d700()
 {
 }
 
-// STUB: STUNTGP_D3D 0x42e380
-void FUN_42e380()
+// STUB: STUNTGP_D3D 0x42e240
+void FUN_42e240(Scene *scene)
 {
 }
 
-// STUB: STUNTGP_D3D 0x42e3e0
+// FUNCTION: STUNTGP_D3D 0x42e380
+void FUN_42e380()
+{
+    SceneSlot *slot = g_6244f8 == 1 ? &g_636438 : g_636418;
+    while (slot->scene)
+    {
+        FUN_42e240(slot->scene);
+        slot++;
+    }
+    for (DWORD i = 0; i < g_62449c; i++)
+    {
+        g_62447c[i].alpha = g_62447c[i].alpha * 255.0f * (1.0f / 255.0f);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42e3e0
 void FUN_42e3e0()
 {
+    g_6249a0 = 0;
+    g_6249a4 = 256;
+    if (g_477c30 >= 0x3ffff8)
+    {
+        // STRING: STUNTGP_D3D 0x477c34
+        sprintf(g_GraphicsDirectory, "%s\\Graphics24\\", g_GameLocation);
+    }
 }
 
 // STUB: STUNTGP_D3D 0x42e430
@@ -516,9 +639,24 @@ void FUN_42f090()
 {
 }
 
-// STUB: STUNTGP_D3D 0x431300
+// FUNCTION: STUNTGP_D3D 0x431300
 void FUN_431300()
 {
+    FUN_4328c0(0);
+    FUN_432a60();
+    FUN_4328c0(0);
+    FUN_432a60();
+    FUN_4328c0(0);
+    FUN_432a60();
+    FUN_431790();
+    FUN_430690();
+}
+
+// FUNCTION: STUNTGP_D3D 0x430690
+void FUN_430690()
+{
+    memset(g_59207c, 0, sizeof(g_59207c));
+    g_592028 = g_59207c;
 }
 
 // STUB: STUNTGP_D3D 0x431360
@@ -531,8 +669,22 @@ void FUN_431420()
 {
 }
 
-// STUB: STUNTGP_D3D 0x4312c0
+// FUNCTION: STUNTGP_D3D 0x4312c0
 void FUN_4312c0()
+{
+    if (g_D3DUVFix)
+    {
+        SceneSlot *slot = g_6244f8 == 1 ? &g_636438 : g_636418;
+        while (slot->scene)
+        {
+            FUN_4311c0(slot->scene);
+            slot++;
+        }
+    }
+}
+
+// STUB: STUNTGP_D3D 0x4311c0
+void FUN_4311c0(Scene *scene)
 {
 }
 
