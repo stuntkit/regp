@@ -1,7 +1,9 @@
 #include "Engine_LevelScript.h"
 
 #include "../../sound.h"
+#include "GameUpdate.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -80,6 +82,25 @@ void Script_ReadString(char *pos, char **next, char *out)
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x42c650
+void FUN_42c650(char *text, char **end, float *value)
+{
+    while (*text == ' ' || *text == '\r' || *text == '\n')
+    {
+        text++;
+    }
+    *value = atof(text);
+    if (end)
+    {
+        int i = 0;
+        while (text[i] != ' ')
+        {
+            i++;
+        }
+        *end = &text[i + 1];
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x42c6a0
 void Script_ReadInt(char *pos, char **next, int *out)
 {
@@ -96,6 +117,109 @@ void Script_ReadInt(char *pos, char **next, int *out)
             len++;
         }
         *next = pos + len + 1;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42c6f0
+void FUN_42c6f0(char *text, char **end, char *value)
+{
+    while (*text == ' ' || *text == '\r' || *text == '\n')
+    {
+        text++;
+    }
+    *value = atol(text);
+    if (end)
+    {
+        int i = 0;
+        while (text[i] != ' ')
+        {
+            i++;
+        }
+        *end = &text[i + 1];
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42c9b0
+void FUN_42c9b0(char *script)
+{
+    char key[64];
+    char *value;
+    int i;
+    for (i = 0; i < 6; i++)
+    {
+        g_60f02c[i].unk0c = 1;
+    }
+    for (i = 0; i < 6; i++)
+    {
+        // STRING: STUNTGP_D3D 0x47782c
+        sprintf(key, "L_CAR%d_CONFIG", i + 1);
+        if (Script_FindKey(script, &value, key) == 1)
+        {
+            Script_ReadInt(value, NULL, &g_60f02c[i].unk0c);
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42ca20
+void FUN_42ca20(char *script)
+{
+    char key[64];
+    char *value;
+    int i;
+    for (i = 0; i < 6; i++)
+    {
+        g_60f02c[i].unk10 = 0;
+    }
+    for (i = 0; i < 6; i++)
+    {
+        // STRING: STUNTGP_D3D 0x47783c
+        sprintf(key, "L_CAR%d_TYRE", i + 1);
+        if (Script_FindKey(script, &value, key) == 1)
+        {
+            Script_ReadInt(value, NULL, &g_60f02c[i].unk10);
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42ca90
+void FUN_42ca90(char *script)
+{
+    char key[64];
+    char *value;
+    int i;
+    for (i = 0; i < 6; i++)
+    {
+        g_60f02c[i].unk14 = 0;
+    }
+    for (i = 0; i < 6; i++)
+    {
+        // STRING: STUNTGP_D3D 0x47784c
+        sprintf(key, "L_CAR%d_LIVERY", i + 1);
+        if (Script_FindKey(script, &value, key) == 1)
+        {
+            Script_ReadInt(value, NULL, &g_60f02c[i].unk14);
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42cb00
+void FUN_42cb00(char *script)
+{
+    char key[64];
+    char *value;
+    int i;
+    for (i = 0; i < 6; i++)
+    {
+        g_60f02c[i].unk18 = 0;
+    }
+    for (i = 0; i < 6; i++)
+    {
+        // STRING: STUNTGP_D3D 0x47785c
+        sprintf(key, "L_CAR%d_REPLAY", i + 1);
+        if (Script_FindKey(script, &value, key) == 1)
+        {
+            Script_ReadInt(value, NULL, &g_60f02c[i].unk18);
+        }
     }
 }
 

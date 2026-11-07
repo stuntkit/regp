@@ -65,6 +65,7 @@ extern FrontEnd g_frontEnd;
 
 void Pool_Init();
 void Pool_Free(void *ptr);
+void *Pool_Alloc(int size);
 int FUN_43ef10(int a, int screen);
 int FUN_43eef0();
 PoolObject *FUN_43e000(int a, int screen);

@@ -1,6 +1,11 @@
 #include "objects.h"
 
+#include <stdio.h>
 #include <stdlib.h>
+
+// Lap time text from FUN_43d550.
+// GLOBAL: STUNTGP_D3D 0x5ff3a8
+char g_5ff3a8[0x40];
 
 void FUN_45f8f0(int track, int loop);
 int FUN_43eee0(int screen);
@@ -50,6 +55,21 @@ void FUN_43d460()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x43d470
+void *Pool_Alloc(int size)
+{
+    PoolBlockHeader *block = g_pool.freeBlocks[--g_pool.freeCount];
+    g_pool.allocCount++;
+    block->size = size;
+    block->magic = 0xac1dcafe;
+    g_pool.usedBytes += size;
+    if (g_pool.usedBytes > g_pool.peakBytes)
+    {
+        g_pool.peakBytes = g_pool.usedBytes;
+    }
+    return block + 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43d4c0
 void Pool_Free(void *ptr)
 {
@@ -58,6 +78,26 @@ void Pool_Free(void *ptr)
     g_pool.freeBlocks[g_pool.freeCount] = block;
     g_pool.freeCount++;
     g_pool.allocCount--;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d550
+char *FUN_43d550(int frames)
+{
+    int hundredths = frames * 100 / 60;
+    // STRING: STUNTGP_D3D 0x479654
+    sprintf(g_5ff3a8, "%d:%02d:%02d", hundredths / 6000 % 60, hundredths / 100 % 60, hundredths % 100);
+    return g_5ff3a8;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d5d0
+unsigned int FUN_43d5d0(BYTE *data, int len)
+{
+    unsigned int hash = 0;
+    for (int i = 0; i < len; i++)
+    {
+        hash = ((hash >> 29) | (hash << 3)) + *data++;
+    }
+    return hash;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43eef0

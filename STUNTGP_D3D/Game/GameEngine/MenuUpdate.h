@@ -35,6 +35,12 @@ struct MenuSlot20
     BYTE unk04[0x1c];
 };
 
+struct MenuRecord
+{
+    int unk00;
+    BYTE unk04[0x80];
+};
+
 struct MenuLanguage
 {
     char name[0x20];
@@ -114,7 +120,9 @@ struct MenuState
     BYTE unk1a604[0x1a6a4 - 0x1a604];
     int unk1a6a4; // 0x1a6a4
     int unk1a6a8; // 0x1a6a8
-    BYTE unk1a6ac[0x1dae8 - 0x1a6ac];
+    BYTE unk1a6ac[0x1a6b0 - 0x1a6ac];
+    MenuRecord unk1a6b0[64]; // 0x1a6b0, count unknown
+    BYTE unk1c7b0[0x1dae8 - 0x1c7b0];
 };
 
 extern MenuState g_menuState;

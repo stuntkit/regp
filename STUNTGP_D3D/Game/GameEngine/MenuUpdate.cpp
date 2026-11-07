@@ -4,11 +4,14 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include "../../globals.h"
 #include "../../sound.h"
 #include "../../d3drender.h"
 #include "../../objects.h"
 #include "../../sprite.h"
+#include "Game.h"
+#include "GameSetup.h"
 
 // Menu button state per player, indexed 1..4.
 struct MenuInput
@@ -170,7 +173,44 @@ FrontEnd g_frontEnd;
 // GLOBAL: STUNTGP_D3D 0x61297c
 DWORD g_61297c;
 
+// High-score initials, copied as one 3-byte block.
+struct Initials
+{
+    char c[3];
+};
+
+// GLOBAL: STUNTGP_D3D 0x47966c
+Initials g_47966c = {'!', '!', '!'};
+
+// GLOBAL: STUNTGP_D3D 0x479668
+Initials *g_479668 = &g_47966c;
+
+// Byte-oriented decompressor input; bits holds the current flag byte with a sentinel bit.
+struct BitReader
+{
+    int size;    // 0x00
+    BYTE *start; // 0x04
+    BYTE *cur;   // 0x08
+    BYTE bits;   // 0x0c
+    BYTE carry;  // 0x0d
+};
+
+// Byte-oriented compressor output; flag bits for the following bytes are packed into buffer[flagPos].
+struct BitWriter
+{
+    int count;    // 0x00
+    int flagPos;  // 0x04
+    int bit;      // 0x08
+    BYTE *buffer; // 0x0c
+    int size;     // 0x10
+    BYTE *start;  // 0x14
+};
+
 void FUN_437eb0();
+void FUN_441e20();
+int FUN_43d730(int id);
+int FeCsv_ReadInt(int *value, char *text, int *pos);
+int FUN_43d760(int id);
 void FUN_442ad0(int type, int duration, int delay, int end, int from, int to, float scale);
 int FUN_43efc0();
 void FUN_441210();
@@ -214,6 +254,43 @@ void FUN_424bd0(float x, float y)
 // STUB: STUNTGP_D3D 0x434b50
 void FUN_434b50()
 {
+}
+
+// FUNCTION: STUNTGP_D3D 0x435f60
+void FUN_435f60(void *unused, int *out, char *text, int *pos)
+{
+    out[0] = 0;
+    FeCsv_ReadInt(&out[1], text, pos);
+    FeCsv_ReadInt(&out[2], text, pos);
+    FeCsv_ReadInt(&out[3], text, pos);
+}
+
+// FUNCTION: STUNTGP_D3D 0x436400
+void FUN_436400(const char *name, int *value)
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x436410
+void FUN_436410()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x436e90
+void FUN_436e90(int *p)
+{
+    if (*p == 0)
+    {
+        *p = 5;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x436ea0
+void FUN_436ea0(int *p)
+{
+    if (*p == 0)
+    {
+        *p = 3;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x436eb0
@@ -268,6 +345,19 @@ int FUN_436fd0(int player, int button)
     return 0;
 }
 
+// FUNCTION: STUNTGP_D3D 0x437040
+int FUN_437040()
+{
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437050
+int FUN_437050(int player)
+{
+    FUN_437090(player);
+    return 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x436f60
 BYTE FUN_436f60(BYTE *keys, int button)
 {
@@ -311,6 +401,20 @@ int FUN_437090(int player)
         }
     }
     return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437100
+int FUN_437100()
+{
+    int count = 0;
+    for (int i = 1; i < 5; i++)
+    {
+        if (FUN_437090(i))
+        {
+            count++;
+        }
+    }
+    return count;
 }
 
 // FUNCTION: STUNTGP_D3D 0x437360
@@ -372,6 +476,260 @@ int FUN_437360(int track)
     return 0;
 }
 
+// FUNCTION: STUNTGP_D3D 0x437400
+int FUN_437400(int track)
+{
+    switch (track)
+    {
+    case 1:
+    case 7:
+        return 2;
+    case 2:
+    case 3:
+    case 5:
+    case 6:
+    case 12:
+    case 13:
+    case 14:
+    case 20:
+        return 6;
+    case 4:
+    case 9:
+    case 10:
+    case 11:
+    case 15:
+        return 1;
+    case 17:
+    case 18:
+        return 4;
+    case 8:
+    case 16:
+    case 19:
+        return 3;
+    case 21:
+        return 5;
+    }
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437790
+int FUN_437790(ScoreEntry *table, int count, Initials *name, int score)
+{
+    for (int i = 0; i < count; i++)
+    {
+        if (score > table[i].time)
+        {
+            for (int j = count - 1; j > i; j--)
+            {
+                table[j] = table[j - 1];
+            }
+            table[i].name[3] = 1;
+            table[i].time = score;
+            *(Initials *)table[i].name = *name;
+            return i;
+        }
+    }
+    return -1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437800
+int FUN_437800(ScoreEntry *table, int count, Initials *name, int time)
+{
+    for (int i = 0; i < count; i++)
+    {
+        if (time < table[i].time)
+        {
+            for (int j = count - 1; j > i; j--)
+            {
+                table[j] = table[j - 1];
+            }
+            table[i].name[3] = 1;
+            table[i].time = time;
+            *(Initials *)table[i].name = *name;
+            return i;
+        }
+    }
+    return -1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437870
+void FUN_437870()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x437880
+void FUN_437880(int index)
+{
+    if (!g_menuState.unlocked[index])
+    {
+        g_menuState.unlocked[index] = 2;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x4378a0
+void FUN_4378a0(int index)
+{
+    if (!g_menuState.unlocked[index + 0x18])
+    {
+        g_menuState.unlocked[index + 0x18] = 2;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x4378c0
+void FUN_4378c0(int id)
+{
+    int index = 0;
+    switch (id)
+    {
+    case 1:
+        index = 2;
+        break;
+    case 2:
+        index = 6;
+        break;
+    case 3:
+        index = 3;
+        break;
+    case 4:
+        index = 14;
+        break;
+    case 5:
+        index = 16;
+        break;
+    case 6:
+        index = 5;
+        break;
+    }
+    FUN_437880(index);
+}
+
+// FUNCTION: STUNTGP_D3D 0x437920
+int FUN_437920(int index)
+{
+    return g_menuState.unk1a6b0[index].unk00;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437a90
+int FUN_437a90(int id)
+{
+    switch (id)
+    {
+    case 1:
+        return 0x14;
+    case 2:
+        return 0x18;
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+        return 5;
+    case 13:
+        return 3;
+    }
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437af0
+int FUN_437af0(int track)
+{
+    switch (track)
+    {
+    case 1:
+        return 0xad;
+    case 2:
+        return 0xc2;
+    case 3:
+        return 0x96;
+    case 4:
+        return 0x78;
+    case 5:
+        return 0x87;
+    case 6:
+        return 0x82;
+    case 7:
+        return 0x9b;
+    case 8:
+        return 0x7d;
+    case 9:
+        return 0x91;
+    case 10:
+        return 0x8c;
+    case 11:
+        return 0xa5;
+    case 12:
+        return 0xa0;
+    case 13:
+        return 0xaa;
+    }
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437cc0
+int FUN_437cc0(int track)
+{
+    switch (track)
+    {
+    case 2:
+    case 6:
+    case 7:
+    case 10:
+    case 11:
+    case 13:
+        return 1;
+    case 1:
+    case 5:
+    case 8:
+    case 9:
+    case 16:
+        return 3;
+    case 3:
+    case 4:
+    case 12:
+    case 14:
+    case 15:
+        return 2;
+    case 17:
+    case 18:
+    case 19:
+    case 20:
+    case 21:
+        return 4;
+    }
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437d20
+int FUN_437d20(ScoreEntry *entry, Initials *name, int score)
+{
+    if (score > entry->time)
+    {
+        entry->name[3] = 1;
+        entry->time = score;
+        *(Initials *)entry->name = *name;
+        return 1;
+    }
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437d60
+int FUN_437d60(ScoreEntry *entry, Initials *name, int time)
+{
+    if (time < entry->time)
+    {
+        entry->name[3] = 1;
+        entry->time = time;
+        *(Initials *)entry->name = *name;
+        return 1;
+    }
+    return 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x437da0
 int FUN_437da0(int track)
 {
@@ -396,10 +754,159 @@ void FUN_437eb0()
     FUN_441210();
 }
 
+// FUNCTION: STUNTGP_D3D 0x439e10
+void FUN_439e10()
+{
+    FUN_43d420();
+    FUN_441e20();
+    Timer_Reset();
+    FUN_43d420();
+}
+
 // FUNCTION: STUNTGP_D3D 0x439e30
 void FUN_439e30()
 {
     memset(g_5df528, 0, sizeof(g_5df528));
+}
+
+// FUNCTION: STUNTGP_D3D 0x43b210
+short FUN_43b210(short a, short b)
+{
+    return a - b;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43b270
+void FUN_43b270(BitWriter *writer, BYTE *buffer, int size)
+{
+    writer->start = buffer;
+    writer->size = size;
+    writer->buffer = buffer;
+    writer->flagPos = 0;
+    writer->count = 1;
+    *buffer = 0;
+    writer->bit = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43b2a0
+void FUN_43b2a0(BitWriter *writer, BYTE value)
+{
+    writer->buffer[writer->count++] = value;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43b2b0
+void FUN_43b2b0(BitWriter *writer, int bit)
+{
+    if (bit)
+    {
+        writer->buffer[writer->flagPos] |= 0x80 >> writer->bit;
+    }
+    if (++writer->bit == 8)
+    {
+        writer->bit = 0;
+        writer->flagPos = writer->count++;
+        writer->buffer[writer->flagPos] = 0;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x43b300
+void FUN_43b300(BitWriter *writer, int value, int count)
+{
+    while (count >= 8)
+    {
+        FUN_43b2a0(writer, value >> (count - 8));
+        count -= 8;
+    }
+    while (count--)
+    {
+        FUN_43b2b0(writer, (value >> count) & 1);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x43b370
+BYTE FUN_43b370(BitReader *reader)
+{
+    return *reader->cur++;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43b380
+void FUN_43b380(BitReader *reader, BYTE *data, int size)
+{
+    reader->start = data;
+    reader->size = size;
+    reader->cur = data;
+    BYTE b = FUN_43b370(reader);
+    reader->carry = b >> 7;
+    reader->bits = (b << 1) | 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43b3b0
+int FUN_43b3b0(BitReader *reader)
+{
+    int bit = reader->carry;
+    reader->carry = reader->bits >> 7;
+    reader->bits <<= 1;
+    if (!reader->bits)
+    {
+        BYTE b = FUN_43b370(reader);
+        reader->carry = b >> 7;
+        reader->bits = (b << 1) | 1;
+    }
+    return bit;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43b3f0
+int FUN_43b3f0(BitReader *reader, int count)
+{
+    int value = 0;
+    while (count >= 8)
+    {
+        value = (value << 8) | FUN_43b370(reader);
+        count -= 8;
+    }
+    while (count--)
+    {
+        value = value * 2 + FUN_43b3b0(reader);
+    }
+    return value;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43b5f0
+int FUN_43b5f0(int value, BitWriter *writer)
+{
+    if (value == 0)
+    {
+        FUN_43b300(writer, 0, 1);
+        return 0;
+    }
+    if (value < 0)
+    {
+        FUN_43b300(writer, 1, 1);
+        FUN_43b300(writer, 0, 1);
+        return -1;
+    }
+    FUN_43b300(writer, 1, 1);
+    FUN_43b300(writer, 1, 1);
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43bb90
+int FUN_43bb90(BitReader *reader)
+{
+    if (!FUN_43b3b0(reader))
+    {
+        return 0;
+    }
+    return FUN_43b3b0(reader) ? 1 : -1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43bfd0
+void FUN_43bfd0()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x43bfe0
+void FUN_43bfe0()
+{
 }
 
 // FUNCTION: STUNTGP_D3D 0x43c000
@@ -552,6 +1059,14 @@ void FUN_43c130()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x43c310
+void FUN_43c310(char value)
+{
+    memset(&g_menuState.unlocked[1], value, 21);
+    memset(&g_menuState.unlocked[25], value, 24);
+    g_menuState.unk0074 = 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43c370
 void FUN_43c370()
 {
@@ -637,10 +1152,80 @@ float FUN_43d810(float current, float target, float rate)
     return current;
 }
 
+// FUNCTION: STUNTGP_D3D 0x43d880
+float FUN_43d880(float current, float target, float rate)
+{
+    float dist = FUN_43d9e0(target - current);
+    if (dist != 0.0f)
+    {
+        float step = dist * 0.05f + rate;
+        if (dist > step)
+        {
+            if (target < current)
+            {
+                step = -step;
+            }
+            return step + current;
+        }
+        return target;
+    }
+    return current;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d8f0
+float FUN_43d8f0(float current, float target, float step)
+{
+    if (current != target)
+    {
+        return fabs(target - current) > step ? (target < current ? -step : step) + current : target;
+    }
+    return current;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d9b0
+int FUN_43d9b0(int value)
+{
+    if (value < 0)
+    {
+        value = -value;
+    }
+    return value;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d9c0
+int FUN_43d9c0(int a, int b)
+{
+    if (a < b)
+    {
+        return a;
+    }
+    return b;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43d9e0
 float FUN_43d9e0(float value)
 {
     return value < 0.0f ? -value : value;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43da00
+float FUN_43da00(float a, float b)
+{
+    if (a < b)
+    {
+        return a;
+    }
+    return b;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43da20
+float FUN_43da20(float a, float b)
+{
+    if (a > b)
+    {
+        return a;
+    }
+    return b;
 }
 
 // Reads the detail level and language overrides next to the executable.
@@ -675,6 +1260,67 @@ void FUN_43d280()
         }
         fclose(file);
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d690
+Initials *FUN_43d690(Initials *name)
+{
+    *g_479668 = *name;
+    return g_479668;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d6d0
+void FUN_43d6d0(BYTE *bits, int index, BYTE value)
+{
+    int i = index >> 3;
+    BYTE mask = 1 << (index & 7);
+    bits[i] &= ~mask;
+    if (value)
+    {
+        bits[i] |= mask;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d710
+int FUN_43d710(int id)
+{
+    if (FUN_43d730(id) || FUN_43d760(id))
+    {
+        return 1;
+    }
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d730
+int FUN_43d730(int id)
+{
+    switch (id)
+    {
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 9:
+    case 10:
+        return 1;
+    }
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d760
+int FUN_43d760(int id)
+{
+    switch (id)
+    {
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 16:
+    case 17:
+        return 1;
+    }
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43dcc0

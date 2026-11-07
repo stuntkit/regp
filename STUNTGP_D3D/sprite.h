@@ -38,6 +38,13 @@ struct SpriteDesc
     SpritePoint points[4]; // 0x4c, used when flags & 4
 };
 
+// SpriteNode types 2 and 3.
+struct CommandData
+{
+    float x; // 0x00
+    float y; // 0x04
+};
+
 // Queued textured quad (SpriteNode type 1).
 struct SpriteData
 {
@@ -77,6 +84,7 @@ struct SpriteNode
     {
         SpriteData sprite;
         TextData text;
+        CommandData command;
     };
 };
 

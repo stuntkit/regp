@@ -16,6 +16,12 @@
 
 extern int g_61b634;
 
+void FUN_436400(const char *name, int *value);
+void FUN_439da0(int type, int layer, float x0, float y0, float x1, float y1);
+
+// GLOBAL: STUNTGP_D3D 0x4793f0
+char g_4793f0[] = "!";
+
 // GLOBAL: STUNTGP_D3D 0x576c38
 SpriteDesc g_spriteDesc;
 
@@ -62,6 +68,10 @@ int g_5df524 = 0;
 
 // GLOBAL: STUNTGP_D3D 0x4793d4
 int g_4793d4 = -1;
+
+// Line spacing as a fraction of the font height.
+// GLOBAL: STUNTGP_D3D 0x4793d8
+float g_4793d8 = 0.85f;
 
 // Frame texture layout used by FUN_439520: shadow inset, corner size, row end.
 // GLOBAL: STUNTGP_D3D 0x4793dc
@@ -447,10 +457,39 @@ void FUN_438990(float x, float y, int layer, int sub, int style, const char *tex
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x438a20
+void FUN_438a20(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color, DWORD flags, float unk18)
+{
+    FUN_4291a0(unk18);
+    FUN_438990(x, y, layer, sub, style, text, size, color, flags, unk18);
+}
+
+// FUNCTION: STUNTGP_D3D 0x438a60
+float FUN_438a60(const char *text, float size)
+{
+    int lines = 1;
+    float height = FUN_438950(size) * g_4793d8;
+    for (int i = 0; text[i]; i++)
+    {
+        if (text[i] == '|' || text[i] == (char)0xff)
+        {
+            lines++;
+        }
+    }
+    return height * lines;
+}
+
 // FUNCTION: STUNTGP_D3D 0x438be0
 void FUN_438be0(float x, float y, int layer, int style, int textId, float size, D3DCOLOR color, DWORD flags)
 {
     FUN_438990(x, y, layer, 1, style, FUN_441170(textId), size, color, flags, 0.0f);
+}
+
+// FUNCTION: STUNTGP_D3D 0x438c20
+void FUN_438c20(float x, float y, int layer, int style, char c, float size, D3DCOLOR color, DWORD flags)
+{
+    g_4793f0[0] = c;
+    FUN_438990(x, y, layer, 1, style, g_4793f0, size, color, flags, 0.0f);
 }
 
 // FUNCTION: STUNTGP_D3D 0x439380
@@ -712,6 +751,31 @@ void FUN_439b80(int def, float x, float y0, float y1, float total, float visible
     FUN_438370(&s, layer, 0);
 }
 
+// FUNCTION: STUNTGP_D3D 0x439d70
+void FUN_439d70(int layer, float x0, float y0, float x1, float y1)
+{
+    FUN_439da0(2, layer, x0, y0, x1, y1);
+}
+
+// FUNCTION: STUNTGP_D3D 0x439da0
+void FUN_439da0(int type, int layer, float x0, float y0, float x1, float y1)
+{
+    SpriteNode *node = (SpriteNode *)FUN_438550(0x38);
+    if (node)
+    {
+        node->command.x = x0;
+        node->command.y = y0;
+        node->type = type;
+        FUN_438590(layer, 0, node);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x439de0
+void FUN_439de0(int layer, float x0, float y0, float x1, float y1)
+{
+    FUN_439da0(3, layer, x0, y0, x1, y1);
+}
+
 // FUNCTION: STUNTGP_D3D 0x43d7b0
 float FUN_43d7b0(float value, float lo, float hi)
 {
@@ -724,6 +788,16 @@ float FUN_43d7b0(float value, float lo, float hi)
         return hi;
     }
     return value;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d940
+char FUN_43d940(char c)
+{
+    if (c >= 'a' && c <= 'z')
+    {
+        return c - 0x20;
+    }
+    return c;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43d960
@@ -1246,7 +1320,7 @@ struct ImageEntry
 };
 
 // GLOBAL: STUNTGP_D3D 0x583594
-int g_583594[256];
+int g_583594[255];
 
 // GLOBAL: STUNTGP_D3D 0x587998
 ImageEntry g_587998[256];
@@ -1319,5 +1393,41 @@ void FUN_430d40(int slot, int id)
         g_6243b8->unk04[0] = (DWORD)target;
         FUN_4300f0(texture);
         ddReleaseSurface(&surface);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x430f50
+void FUN_430f50(D3DLIGHT *light, D3DLIGHTTYPE type, float x, float y, float z)
+{
+    memset(light, 0, sizeof(D3DLIGHT));
+    light->dltType = type;
+    light->dcvColor.r = 1.0f;
+    light->dcvColor.g = 1.0f;
+    light->dcvColor.b = 1.0f;
+    light->dvPosition.x = light->dvDirection.x = x;
+    light->dwSize = sizeof(D3DLIGHT);
+    light->dvPosition.y = light->dvDirection.y = y;
+    light->dvPosition.z = light->dvDirection.z = z;
+}
+
+// FUNCTION: STUNTGP_D3D 0x430fa0
+void FUN_430fa0(D3DMATERIAL *material, float r, float g, float b)
+{
+    memset(material, 0, sizeof(D3DMATERIAL));
+    material->dwSize = sizeof(D3DMATERIAL);
+    material->dcvDiffuse.r = material->dcvAmbient.r = r;
+    material->dcvDiffuse.g = material->dcvAmbient.g = g;
+    material->dcvDiffuse.b = material->dcvAmbient.b = b;
+    material->dcvDiffuse.a = material->dcvAmbient.a = 1.0f;
+    material->dwRampSize = 16;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437e20
+void FUN_437e20(int *settings)
+{
+    if (settings[6])
+    {
+        // STRING: STUNTGP_D3D 0x4793c0
+        FUN_436400("Campaign Settings", &settings[5]);
     }
 }

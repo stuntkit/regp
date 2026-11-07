@@ -58,6 +58,96 @@ OverlayPoly *g_61c5f0 = NULL;
 // GLOBAL: STUNTGP_D3D 0x61c604
 DWORD g_61c604 = 0;
 
+// Set when the device offers an ARGB1555 texture format.
+// GLOBAL: STUNTGP_D3D 0x5d91c4
+int g_5d91c4;
+
+// GLOBAL: STUNTGP_D3D 0x592068
+int g_592068;
+
+// GLOBAL: STUNTGP_D3D 0x59206c
+int g_59206c;
+
+// GLOBAL: STUNTGP_D3D 0x592070
+int g_592070;
+
+// GLOBAL: STUNTGP_D3D 0x592074
+int g_592074;
+
+// GLOBAL: STUNTGP_D3D 0x592078
+int g_592078;
+
+// GLOBAL: STUNTGP_D3D 0x6244f0
+int g_6244f0;
+
+// Four corner records reset by FUN_425ae0.
+extern int g_6249a4;
+
+// GLOBAL: STUNTGP_D3D 0x5775d0
+float g_5775d0[4][8];
+
+// GLOBAL: STUNTGP_D3D 0x577660
+int g_577660[10];
+
+// GLOBAL: STUNTGP_D3D 0x583990
+char g_583990[0x4000];
+
+// GLOBAL: STUNTGP_D3D 0x587990
+int g_587990;
+
+// GLOBAL: STUNTGP_D3D 0x587994
+int g_587994;
+
+// GLOBAL: STUNTGP_D3D 0x5895b0
+int g_5895b0;
+
+// GLOBAL: STUNTGP_D3D 0x5895b4
+char *g_5895b4;
+
+// GLOBAL: STUNTGP_D3D 0x5895b8
+int *g_5895b8;
+
+// DirectDraw devices collected by FUN_42f530.
+struct DisplayDevices
+{
+    int count;
+    BYTE unk04[0x1fa38 - 4];
+};
+
+// GLOBAL: STUNTGP_D3D 0x5ba788
+DisplayDevices g_5ba788;
+
+// Display modes collected by FUN_42f3c0.
+struct DisplayModeList
+{
+    BYTE unk000[0x360];
+    DWORD count;                // 0x360
+    DDSURFACEDESC2 modes[64];   // 0x364
+};
+
+// Texture formats collected by FUN_42f780.
+struct TextureFormatList
+{
+    BYTE unk000[0x170];
+    DWORD count;               // 0x170
+    DDPIXELFORMAT formats[16]; // 0x174
+};
+
+// Z-buffer formats collected by FUN_42fe40.
+struct ZBufferFormatList
+{
+    BYTE unk000[0x374];
+    DWORD count;               // 0x374
+    DDPIXELFORMAT formats[1];  // 0x378, count unknown
+};
+
+// Name storage for g_textureFiles.
+// GLOBAL: STUNTGP_D3D 0x57eb0c
+char g_57eb0c[0x1fe0];
+
+// GLOBAL: STUNTGP_D3D 0x582710
+ResourceFile *g_582710;
+
 // GLOBAL: STUNTGP_D3D 0x58332c
 int g_58332c = 0;
 
@@ -335,6 +425,12 @@ void FUN_430690()
 {
     memset(g_59207c, 0, sizeof(g_59207c));
     g_592028 = g_59207c;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4306b0
+int FUN_4306b0(int a, int b, int c, int d, int e)
+{
+    return 1;
 }
 
 // GLOBAL: STUNTGP_D3D 0x583330
@@ -667,6 +763,12 @@ void FUN_427270()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x427520
+void FUN_427520(int *p)
+{
+    *p = 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x431a80
 void FUN_431a80()
 {
@@ -766,6 +868,183 @@ void FUN_42f380()
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, FALSE);
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 0xa0);
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42f3c0
+HRESULT WINAPI FUN_42f3c0(LPDDSURFACEDESC2 desc, LPVOID context)
+{
+    DisplayModeList *list = (DisplayModeList *)context;
+    if (list->count >= 64)
+    {
+        return DDENUMRET_CANCEL;
+    }
+    list->modes[list->count] = *desc;
+    list->count++;
+    return DDENUMRET_OK;
+}
+
+// STUB: STUNTGP_D3D 0x42f530
+BOOL WINAPI FUN_42f530(GUID *guid, LPSTR description, LPSTR name, LPVOID context, HMONITOR monitor)
+{
+    return TRUE;
+}
+
+// FUNCTION: STUNTGP_D3D 0x42f6a0
+void FUN_42f6a0()
+{
+    memset(&g_5ba788, 0, sizeof(g_5ba788));
+    g_5ba788.count = 0;
+    DirectDrawEnumerateEx(FUN_42f530, &g_5ba788, DDENUM_ATTACHEDSECONDARYDEVICES | DDENUM_NONDISPLAYDEVICES);
+}
+
+// FUNCTION: STUNTGP_D3D 0x42f6d0
+int FUN_42f6d0(DDPIXELFORMAT *format)
+{
+    if (format->dwRGBBitCount != 16)
+    {
+        return 0;
+    }
+    if (!(format->dwFlags & DDPF_ALPHAPIXELS))
+    {
+        return 0;
+    }
+    if (!(format->dwFlags & DDPF_RGB))
+    {
+        return 0;
+    }
+    if (format->dwRBitMask != 0x7c00)
+    {
+        return 0;
+    }
+    if (format->dwGBitMask != 0x3e0)
+    {
+        return 0;
+    }
+    if (format->dwBBitMask != 0x1f)
+    {
+        return 0;
+    }
+    if (format->dwRGBAlphaBitMask != 0x8000)
+    {
+        return 0;
+    }
+    g_5d91c4 = 1;
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x42f780
+HRESULT WINAPI FUN_42f780(LPDDPIXELFORMAT format, LPVOID context)
+{
+    TextureFormatList *list = (TextureFormatList *)context;
+    DWORD count = list->count;
+    DDPIXELFORMAT *slot = &list->formats[count];
+    if (count >= 16)
+    {
+        return DDENUMRET_CANCEL;
+    }
+    if (g_58332c == 1)
+    {
+        if (FUN_42f6d0(format) == 1)
+        {
+            g_5d91c0 = slot;
+        }
+    }
+    else if (format->dwFlags & DDPF_PALETTEINDEXED8)
+    {
+        g_5d91c0 = slot;
+    }
+    *slot = *format;
+    list->count = count + 1;
+    return DDENUMRET_OK;
+}
+
+// FUNCTION: STUNTGP_D3D 0x42f7f0
+void FUN_42f7f0(D3DVIEWPORT2 *viewport, DWORD width, DWORD height)
+{
+    memset(viewport, 0, sizeof(D3DVIEWPORT2));
+    viewport->dwSize = sizeof(D3DVIEWPORT2);
+    viewport->dwWidth = width;
+    viewport->dwHeight = height;
+    viewport->dvMaxZ = 1.0f;
+    viewport->dvClipX = -1.0f;
+    viewport->dvClipWidth = 2.0f;
+    viewport->dvClipY = 1.0f;
+    viewport->dvClipHeight = 2.0f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x42f930
+void FUN_42f930()
+{
+    if (g_61c358)
+    {
+        if (g_5d91b4[57] & ~0x81)
+        {
+            g_592068 = 1;
+            g_59206c = 0;
+            return;
+        }
+        DDCOLORKEY key;
+        key.dwColorSpaceLowValue = 0x10001;
+        key.dwColorSpaceHighValue = 0x10001;
+        (*g_61c358)->SetColorKey(DDCKEY_SRCBLT, &key);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, TRUE);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, FALSE);
+        g_592068 = 0;
+        g_59206c = 1;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42f9c0
+void FUN_42f9c0()
+{
+    if (g_5d91b4[60] & ~5)
+    {
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAG, D3DFILTER_LINEAR);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMIN, D3DFILTER_LINEAR);
+        g_592078 = 1;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42fa00
+void FUN_42fa00()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x42fa10
+void FUN_42fa10()
+{
+    int caps = g_5d91b4[58];
+    if (!(caps & 0x5000))
+    {
+        if (caps & 0xa000)
+        {
+            g_d3dDevice->SetRenderState(D3DRENDERSTATE_STIPPLEDALPHA, TRUE);
+        }
+        g_592070 = 1;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42fa40
+void FUN_42fa40()
+{
+    g_6244f0 = 0;
+    if (((WORD *)g_5d91b4)[0xb0] >= 2 && ((WORD *)g_5d91b4)[0xb1] >= 2)
+    {
+        g_592074 = g_6244f0 = 1;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42fe40
+HRESULT WINAPI FUN_42fe40(LPDDPIXELFORMAT format, LPVOID context)
+{
+    if (!(format->dwFlags & DDPF_ZBUFFER))
+    {
+        return D3DENUMRET_OK;
+    }
+    ZBufferFormatList *list = (ZBufferFormatList *)context;
+    list->formats[list->count] = *format;
+    list->count++;
+    return D3DENUMRET_OK;
 }
 
 // FUNCTION: STUNTGP_D3D 0x432190
@@ -986,15 +1265,6 @@ void FUN_432a60()
     }
 }
 
-// Queued primitives per render pass.
-struct RenderBucket
-{
-    void *data;   // 0x00
-    int count;    // 0x04
-    void *unk08;  // 0x08
-    int unk0c;    // 0x0c
-};
-
 // Queued primitive; type 0x3f marks one that needs no depth key.
 struct RenderItem
 {
@@ -1002,8 +1272,20 @@ struct RenderItem
     int type; // 0x10
 };
 
+// GLOBAL: STUNTGP_D3D 0x6243c0
+void *g_6243c0;
+
+// GLOBAL: STUNTGP_D3D 0x6243c8
+void *g_6243c8;
+
 // GLOBAL: STUNTGP_D3D 0x6243cc
 int g_6243cc;
+
+// GLOBAL: STUNTGP_D3D 0x6243d0
+void *g_6243d0;
+
+// GLOBAL: STUNTGP_D3D 0x6243d8
+void *g_6243d8;
 
 // GLOBAL: STUNTGP_D3D 0x6243dc
 int g_6243dc;
@@ -1067,6 +1349,62 @@ void FUN_4277d0()
     {
         FUN_4277b0((RenderItem *)g_6243e0[6].unk08, g_6243e0[6].unk0c);
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42bc00
+void FUN_42bc00()
+{
+    g_5895b4 = g_583990;
+    g_5895b0 = 0;
+    g_583990[0] = 0;
+    g_587994 = 0;
+    g_5895b8 = &g_587990;
+}
+
+// Reads the size of a .PC image; returns whether it fits the texture size limit.
+// FUNCTION: STUNTGP_D3D 0x42bc30
+int FUN_42bc30(char *suffix, char *base, char *path)
+{
+    BYTE header[20];
+    // STRING: STUNTGP_D3D 0x4777d4
+    sprintf(path, "%s%s.PC", base, suffix);
+    if (!size_of_file(path))
+    {
+        return 0;
+    }
+    if (!bload(path, (char *)header, 10))
+    {
+        return 0;
+    }
+    int width = *(WORD *)&header[6];
+    int height = *(WORD *)&header[8];
+    g_489718 = height;
+    g_489714 = width;
+    g_583330 = 1;
+    return width <= g_6249a4;
+}
+
+// FUNCTION: STUNTGP_D3D 0x42bdd0
+void FUN_42bdd0()
+{
+    memset(g_textureFiles, 0, sizeof(g_textureFiles));
+    memset(g_57eb0c, 0, sizeof(g_57eb0c));
+    memset(g_fontFiles, 0, sizeof(g_fontFiles));
+    g_582710 = g_textureFiles;
+    g_580aec = g_57eb0c;
+    g_5895bc = g_fontFiles;
+}
+
+// Records a texture file so it can be reloaded when surfaces are lost.
+// FUNCTION: STUNTGP_D3D 0x42be20
+void FUN_42be20(char *path)
+{
+    g_582710->name = g_580aec;
+    g_582710->slot = g_58271c;
+    g_582710++;
+    g_582710->name = NULL;
+    strcpy(g_580aec, path);
+    g_580aec += strlen(path) + 1;
 }
 
 // STUB: STUNTGP_D3D 0x433290
@@ -1534,8 +1872,51 @@ void FUN_425870()
     g_61c604 = 0;
 }
 
+// FUNCTION: STUNTGP_D3D 0x425880
+void FUN_425880()
+{
+    memset(g_577660, 0, sizeof(g_577660));
+}
+
+// FUNCTION: STUNTGP_D3D 0x425ae0
+void FUN_425ae0()
+{
+    memset(g_5775d0, 0, sizeof(g_5775d0));
+    g_5775d0[0][0] = 10000.0f;
+    g_5775d0[1][0] = -10000.0f;
+    g_5775d0[2][0] = 10000.0f;
+    g_5775d0[3][0] = -10000.0f;
+    g_5775d0[0][1] = 10000.0f;
+    g_5775d0[1][1] = 10000.0f;
+    g_5775d0[2][1] = -10000.0f;
+    g_5775d0[3][1] = -10000.0f;
+}
+
 // FUNCTION: STUNTGP_D3D 0x42e420
 void FUN_42e420()
 {
     g_61c5e4 = -1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x42f2e0
+void FUN_42f2e0(char *dst, const char *src)
+{
+    char c;
+    while ((c = *src) != 0)
+    {
+        src++;
+        if (c >= 'A' && c <= 'Z')
+        {
+            c += 0x20;
+        }
+        *dst++ = c;
+    }
+    *dst = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x42f300
+void FUN_42f300()
+{
+    g_592050 = g_592054 = g_592058 = g_59205c = g_592060 = g_592064 = g_592068 = g_59206c = g_592070 = g_592074 =
+        g_592078 = 0;
 }
