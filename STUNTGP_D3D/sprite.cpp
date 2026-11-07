@@ -479,21 +479,21 @@ void FUN_4398a0(float x0, float y0, float x1, float y1, int layer, int def, int 
     FUN_439450(x0, y0, x1, y1, layer, def, flags);
     if (a0 > 0.0f && a1 > 0.0f && a2 <= a0)
     {
-        FUN_4399b0(0x75, layer, x0 + 10.0f, x1 - 10.0f, y1 + 10.0f - g_4793e8, a0, a1, a2);
+        FUN_4399b0(0x75, x0 + 10.0f, x1 - 10.0f, y1 + 10.0f - g_4793e8, a0, a1, a2, layer);
     }
     if (b0 > 0.0f && b1 > 0.0f && b2 <= b0)
     {
-        FUN_439b80(0x75, layer, x1 + 10.0f - g_4793e8, y0 + 10.0f, y1 - 10.0f, b0, b1, b2);
+        FUN_439b80(0x75, x1 + 10.0f - g_4793e8, y0 + 10.0f, y1 - 10.0f, b0, b1, b2, layer);
     }
 }
 
 // STUB: STUNTGP_D3D 0x4399b0
-void FUN_4399b0(int def, int layer, float x0, float x1, float y, float a0, float a1, float a2)
+void FUN_4399b0(int def, float x0, float x1, float y, float a0, float a1, float a2, int layer)
 {
 }
 
 // STUB: STUNTGP_D3D 0x439b80
-void FUN_439b80(int def, int layer, float x, float y0, float y1, float b0, float b1, float b2)
+void FUN_439b80(int def, float x, float y0, float y1, float b0, float b1, float b2, int layer)
 {
 }
 

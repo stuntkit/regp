@@ -148,8 +148,8 @@ void FUN_439380(float x0, float y0, float x1, float y1, int layer, int scroll, i
 void FUN_439450(float x0, float y0, float x1, float y1, int layer, int def, int flags);
 void FUN_439520(float x0, float y0, float x1, float y1, int layer, int sub, int def, int a, int blend);
 void FUN_4398a0(float x0, float y0, float x1, float y1, int layer, int def, int flags, float a0, float a1, float a2, float b0, float b1, float b2);
-void FUN_4399b0(int def, int layer, float x0, float x1, float y, float a0, float a1, float a2);
-void FUN_439b80(int def, int layer, float x, float y0, float y1, float b0, float b1, float b2);
+void FUN_4399b0(int def, float x0, float x1, float y, float a0, float a1, float a2, int layer);
+void FUN_439b80(int def, float x, float y0, float y1, float b0, float b1, float b2, int layer);
 float FUN_43d7b0(float value, float lo, float hi);
 void FUN_43d960(ScreenRect *dst, ScreenRect *from, ScreenRect *to, float t);
 int FUN_43dd60();
