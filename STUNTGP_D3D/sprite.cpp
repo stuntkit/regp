@@ -840,6 +840,25 @@ char *FUN_4401e0(int card)
     return g_5ff4bc;
 }
 
+// Free space left in the 256K save area.
+// FUNCTION: STUNTGP_D3D 0x440200
+int FUN_440200(int *freeSpace)
+{
+    char *dir = FUN_4401e0(g_4798bc);
+    *freeSpace = 0;
+    if (!FUN_4401c0(dir))
+    {
+        return 1;
+    }
+    int used = FUN_440250(dir);
+    if (used < 0)
+    {
+        return 9;
+    }
+    *freeSpace = 0x40000 - used;
+    return 0;
+}
+
 // Total size of the files in a directory, or -1 if it does not exist.
 // FUNCTION: STUNTGP_D3D 0x440250
 int FUN_440250(char *dir)

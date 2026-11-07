@@ -120,24 +120,21 @@ struct Unk457e70Entry
 
 struct Unk457e70
 {
-    BYTE unk000[0x20];            // 0x000
-    int unk20;                    // 0x020, selected entry
-    BYTE unk024[0x40];            // 0x024
-    Unk457e70Entry entries[8];    // 0x064
-    int count;                    // 0x1e4
+    BYTE unk000[0x20];         // 0x000
+    int unk20;                 // 0x020, selected entry
+    BYTE unk024[0x1c];         // 0x024
+    PoolObject *unk40;         // 0x040
+    BYTE unk044[0x20];         // 0x044
+    Unk457e70Entry entries[8]; // 0x064
+    int count;                 // 0x1e4
+    int unk1e8;                // 0x1e8
+    int unk1ec;                // 0x1ec
+    int unk1f0;                // 0x1f0
+    int unk1f4;                // 0x1f4
+    int unk1f8;                // 0x1f8
 };
 
-struct Unk458860
-{
-    BYTE unk000[0x40];  // 0x000
-    PoolObject *unk40;  // 0x040
-    BYTE unk044[0x1a4]; // 0x044
-    int unk1e8;         // 0x1e8
-    int unk1ec;         // 0x1ec
-    int unk1f0;         // 0x1f0
-    int unk1f4;         // 0x1f4
-    int unk1f8;         // 0x1f8
-};
+typedef Unk457e70 Unk458860;
 
 // Character grid for name entry, eight per row.
 // GLOBAL: STUNTGP_D3D 0x4881b0
@@ -1868,6 +1865,111 @@ void FUN_458a60(Unk458860 *object, int a, int b, int c)
     else
     {
         object->unk40->message(object->unk40, 0x1c, 0);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x458ad0
+void FUN_458ad0(Unk457e70 *object, int a)
+{
+    switch (object->entries[object->unk20].unk08)
+    {
+    case 1:
+    case 3:
+        FUN_440880(9);
+        break;
+    case 2:
+        FUN_458a60(object, a, 1, 1);
+        break;
+    case 4:
+        FUN_458a60(object, a, 2, 0);
+        break;
+    case 5:
+        FUN_458a60(object, a, 3, 0);
+        break;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x458b30
+void FUN_458b30(Unk457e70 *object, int a)
+{
+    int type = object->entries[object->unk20].unk08;
+    if (type <= 0)
+    {
+        return;
+    }
+    if (type > 4)
+    {
+        if (type == 5)
+        {
+            FUN_458a60(object, a, 3, 0);
+        }
+    }
+    else
+    {
+        FUN_440880(9);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x458b60
+void FUN_458b60(Unk457e70 *object, int a)
+{
+    switch (object->entries[object->unk20].unk08)
+    {
+    case 1:
+    case 3:
+        FUN_440880(9);
+        break;
+    case 2:
+        FUN_458a60(object, a, 1, 1);
+        break;
+    case 5:
+        FUN_458a60(object, a, 2, 1);
+        break;
+    case 4:
+        FUN_458a60(object, a, 2, 0);
+        break;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x458bc0
+void FUN_458bc0(Unk457e70 *object, int a)
+{
+    int type = object->entries[object->unk20].unk08;
+    if (type <= 0)
+    {
+        return;
+    }
+    if (type > 4)
+    {
+        if (type == 5)
+        {
+            FUN_458a60(object, a, type, 0);
+        }
+    }
+    else
+    {
+        FUN_440880(9);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x458bf0
+void FUN_458bf0(Unk457e70 *object, int a)
+{
+    switch (object->entries[object->unk20].unk08)
+    {
+    case 1:
+    case 3:
+        FUN_440880(9);
+        break;
+    case 2:
+        FUN_458a60(object, a, 1, 1);
+        break;
+    case 5:
+        FUN_458a60(object, a, 4, 1);
+        break;
+    case 4:
+        FUN_458a60(object, a, 4, 0);
+        break;
     }
 }
 
