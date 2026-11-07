@@ -1,4 +1,5 @@
 #include "objects.h"
+#include "Game/GameEngine/MenuUpdate.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,10 +19,6 @@ int g_5fd250;
 
 // GLOBAL: STUNTGP_D3D 0x5fd258
 Pool g_pool;
-
-// Music track per front-end screen.
-// GLOBAL: STUNTGP_D3D 0x5fcab0
-int g_5fcab0[64];
 
 // GLOBAL: STUNTGP_D3D 0x6087a0
 char *g_6087a0;
@@ -170,7 +167,7 @@ int FUN_43ee40(PoolObject *object)
 // FUNCTION: STUNTGP_D3D 0x43eee0
 int FUN_43eee0(int screen)
 {
-    return g_5fcab0[screen];
+    return g_menuState.screenMusic[screen];
 }
 
 // FUNCTION: STUNTGP_D3D 0x43dc20

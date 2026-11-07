@@ -329,6 +329,7 @@ void FUN_441e20();
 int FUN_43d730(int id);
 int FeCsv_ReadInt(int *value, char *text, int *pos);
 int FeCsv_SkipLine(char *text, int *pos);
+int FeCsv_ReadField(char *out, char *text, int *pos);
 int FUN_43c600(const char *expected, char *text, int *pos);
 int FUN_43d760(int id);
 void FUN_442ad0(int type, int duration, int delay, int end, int from, int to, float scale);
@@ -374,6 +375,224 @@ void FUN_424bd0(float x, float y)
 // STUB: STUNTGP_D3D 0x434b50
 void FUN_434b50()
 {
+}
+
+// FUNCTION: STUNTGP_D3D 0x434e10
+int FUN_434e10(char *text, int *pos)
+{
+    char key[64];
+    int i;
+
+    FeCsv_SkipLine(text, pos);
+    for (i = 0; i < 6; i++)
+    {
+        // STRING: STUNTGP_D3D 0x478ca0
+        sprintf(key, "Position%d", i + 1);
+        FUN_43c600(key, text, pos);
+        FeCsv_ReadInt(&g_menuState.unk1da5c[i][0], text, pos);
+        FeCsv_ReadInt(&g_menuState.unk1da5c[i][1], text, pos);
+        FeCsv_SkipLine(text, pos);
+    }
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x434e90
+int FUN_434e90(char *text, int *pos)
+{
+    char key[64];
+    const char *names[3];
+    int d;
+    int j;
+
+    // STRING: STUNTGP_D3D 0x478cac
+    names[0] = "Easy";
+    // STRING: STUNTGP_D3D 0x478cb4
+    names[1] = "Medium";
+    // STRING: STUNTGP_D3D 0x478cbc
+    names[2] = "Hard";
+    FeCsv_SkipLine(text, pos);
+    for (d = 0; d < 3; d++)
+    {
+        for (j = 0; j < 4; j++)
+        {
+            // STRING: STUNTGP_D3D 0x478cc4
+            sprintf(key, "Car%02d%s", j + 1, names[d]);
+            FUN_43c600(key, text, pos);
+            FeCsv_ReadField(g_menuState.unk1d888[d][j].name, text, pos);
+            FeCsv_ReadInt(&g_menuState.unk1d888[d][j].unk08, text, pos);
+            FeCsv_ReadInt(&g_menuState.unk1d888[d][j].unk0c, text, pos);
+            FeCsv_ReadInt(&g_menuState.unk1d888[d][j].unk10, text, pos);
+            FeCsv_ReadInt(&g_menuState.unk1d888[d][j].unk14, text, pos);
+            FeCsv_SkipLine(text, pos);
+        }
+    }
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x434f60
+int FUN_434f60(char *text, int *pos)
+{
+    char key[64];
+    int i;
+
+    FeCsv_SkipLine(text, pos);
+    for (i = 1; i < 26; i++)
+    {
+        // STRING: STUNTGP_D3D 0x478cd0
+        sprintf(key, "%d", i);
+        FUN_43c600(key, text, pos);
+        FeCsv_ReadInt(&g_menuState.unk1d630[i - 1][0], text, pos);
+        FeCsv_ReadInt(&g_menuState.unk1d630[i - 1][1], text, pos);
+        FeCsv_ReadInt(&g_menuState.unk1d630[i - 1][2], text, pos);
+        FeCsv_ReadInt(&g_menuState.unk1d630[i - 1][3], text, pos);
+        FeCsv_ReadInt(&g_menuState.unk1d630[i - 1][4], text, pos);
+        FeCsv_ReadInt(&g_menuState.unk1d630[i - 1][5], text, pos);
+        FeCsv_SkipLine(text, pos);
+    }
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4356f0
+int FUN_4356f0(char *text, int *pos)
+{
+    // STRING: STUNTGP_D3D 0x47911c
+    FUN_43c600("Car18UnlockScore", text, pos);
+    FeCsv_ReadInt(&g_menuState.car18UnlockScore, text, pos);
+    FeCsv_SkipLine(text, pos);
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x435730
+int FUN_435730(char *text, int *pos)
+{
+    char key[64];
+    int i;
+    int j;
+
+    // STRING: STUNTGP_D3D 0x479130
+    FUN_43c600("NumberOfRaces", text, pos);
+    FeCsv_ReadInt(&g_menuState.numberOfRaces, text, pos);
+    FeCsv_SkipLine(text, pos);
+    for (i = 0; i < 8; i++)
+    {
+        // STRING: STUNTGP_D3D 0x479140
+        sprintf(key, "Race%dTrack", i + 1);
+        FUN_43c600(key, text, pos);
+        FeCsv_ReadInt(&g_menuState.races[i].track, text, pos);
+        FeCsv_SkipLine(text, pos);
+    }
+    FeCsv_SkipLine(text, pos);
+    for (i = 0; i < 8; i++)
+    {
+        for (j = 0; j < 6; j++)
+        {
+            // STRING: STUNTGP_D3D 0x47914c
+            sprintf(key, "Race%dCar%d", i + 1, j + 1);
+            FUN_43c600(key, text, pos);
+            FeCsv_ReadField(g_menuState.races[i].cars[j].name, text, pos);
+            FeCsv_ReadInt(&g_menuState.races[i].cars[j].unk08, text, pos);
+            FeCsv_ReadInt(&g_menuState.races[i].cars[j].unk0c, text, pos);
+            FeCsv_ReadInt(&g_menuState.races[i].cars[j].unk10, text, pos);
+            FeCsv_ReadInt(&g_menuState.races[i].cars[j].unk14, text, pos);
+            FeCsv_SkipLine(text, pos);
+        }
+    }
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x435860
+int FUN_435860(char *text, int *pos)
+{
+    char key[64];
+    const char *names[3];
+    int i;
+    int d;
+    int j;
+
+    // STRING: STUNTGP_D3D 0x479158
+    names[0] = "Easy";
+    // STRING: STUNTGP_D3D 0x479160
+    names[1] = "Medium";
+    // STRING: STUNTGP_D3D 0x479168
+    names[2] = "Hard";
+    for (i = 1; i < 22; i++)
+    {
+        // STRING: STUNTGP_D3D 0x479170
+        sprintf(key, "Car%02d", i);
+        FUN_43c600(key, text, pos);
+        FeCsv_SkipLine(text, pos);
+        for (d = 0; d < 3; d++)
+        {
+            for (j = 0; j < 5; j++)
+            {
+                // STRING: STUNTGP_D3D 0x479178
+                sprintf(key, "%s-Car%d", names[d], j + 1);
+                FUN_43c600(key, text, pos);
+                FeCsv_ReadField(g_menuState.aiCars[i - 1].entries[d][j].name, text, pos);
+                FeCsv_ReadInt(&g_menuState.aiCars[i - 1].entries[d][j].unk08, text, pos);
+                FeCsv_ReadInt(&g_menuState.aiCars[i - 1].entries[d][j].unk0c, text, pos);
+                FeCsv_ReadInt(&g_menuState.aiCars[i - 1].entries[d][j].unk10, text, pos);
+                FeCsv_ReadInt(&g_menuState.aiCars[i - 1].entries[d][j].unk14, text, pos);
+                FeCsv_SkipLine(text, pos);
+            }
+        }
+    }
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x435980
+int FUN_435980(char *text, int *pos)
+{
+    char key[64];
+    int i;
+    int j;
+
+    FeCsv_SkipLine(text, pos);
+    for (i = 0; i < 6; i++)
+    {
+        // STRING: STUNTGP_D3D 0x479184
+        sprintf(key, "Position%d", i + 1);
+        FUN_43c600(key, text, pos);
+        FeCsv_ReadInt(&g_menuState.nodePositions[i], text, pos);
+        FeCsv_SkipLine(text, pos);
+    }
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x479190
+    FUN_43c600("Gold", text, pos);
+    FeCsv_ReadInt(&g_menuState.gold, text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x479198
+    FUN_43c600("Silver", text, pos);
+    FeCsv_ReadInt(&g_menuState.silver, text, pos);
+    FeCsv_SkipLine(text, pos);
+    FeCsv_SkipLine(text, pos);
+    for (i = 1; i < 19; i++)
+    {
+        // STRING: STUNTGP_D3D 0x4791a0
+        sprintf(key, "Node%d", i);
+        FUN_43c600(key, text, pos);
+        FeCsv_ReadInt(&g_menuState.nodes[i].unk00, text, pos);
+        FeCsv_ReadInt(&g_menuState.nodes[i].unk08, text, pos);
+        FeCsv_ReadInt(&g_menuState.nodes[i].unk04, text, pos);
+        FeCsv_SkipLine(text, pos);
+    }
+    FeCsv_SkipLine(text, pos);
+    for (i = 1; i < 19; i++)
+    {
+        for (j = 0; j < 5; j++)
+        {
+            // STRING: STUNTGP_D3D 0x4791a8
+            sprintf(key, "Node%dCar%d", i, j + 1);
+            FUN_43c600(key, text, pos);
+            FeCsv_ReadField(g_menuState.nodes[i].cars[j].name, text, pos);
+            FeCsv_ReadInt(&g_menuState.nodes[i].cars[j].unk08, text, pos);
+            FeCsv_ReadInt(&g_menuState.nodes[i].cars[j].unk0c, text, pos);
+            FeCsv_ReadInt(&g_menuState.nodes[i].cars[j].unk10, text, pos);
+            FeCsv_ReadInt(&g_menuState.nodes[i].cars[j].unk14, text, pos);
+            FeCsv_SkipLine(text, pos);
+        }
+    }
+    return 1;
 }
 
 // Reads the championship settings rows of the front-end csv.
@@ -1221,7 +1440,7 @@ void FUN_4378c0(int id)
 // FUNCTION: STUNTGP_D3D 0x437920
 int FUN_437920(int index)
 {
-    return g_menuState.unk1a6b0[index].unk00;
+    return g_menuState.nodes[index].unk04;
 }
 
 // FUNCTION: STUNTGP_D3D 0x437a90

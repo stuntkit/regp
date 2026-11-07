@@ -1319,6 +1319,47 @@ struct ImageEntry
     DWORD unk14;    // 0x14
 };
 
+int size_of_file(char *path);
+int bload(char *path, char *buffer, int maxSize);
+void FUN_4623c0(char *path, void *buffer, void *arg);
+extern char g_GraphicsDirectory[128];
+extern int g_5895b0;
+
+// Loads a TGA image from the graphics directory and converts it to 16-bit.
+// FUNCTION: STUNTGP_D3D 0x430b80
+WORD *FUN_430b80(char *name, int type)
+{
+    char path[128];
+    WORD *result;
+    BYTE *image = (BYTE *)Mem_Alloc(0x30100, 0);
+    // STRING: STUNTGP_D3D 0x47885c
+    sprintf(path, "%s\\%s.TGA", g_GraphicsDirectory, name);
+    FUN_4623c0(path, image, &g_571fd4);
+    FUN_430280(image, (WORD *)image, g_489714, g_489718);
+    DWORD size = g_489714 * g_489718 * 2;
+    g_5895b0 += size;
+    result = (WORD *)Mem_Alloc(size, type);
+    memcpy(result, image, size);
+    Mem_Free(image);
+    return result;
+}
+
+// Loads a 16-bit .PC image from the graphics directory.
+// FUNCTION: STUNTGP_D3D 0x430c30
+BYTE *FUN_430c30(char *name, int type)
+{
+    char path[128];
+    // STRING: STUNTGP_D3D 0x478868
+    sprintf(path, "%s\\%s.PC", g_GraphicsDirectory, name);
+    int size = size_of_file(path);
+    BYTE *buffer = (BYTE *)Mem_Alloc(size, type);
+    bload(path, (char *)buffer, size);
+    g_5895b0 += size;
+    g_489714 = *(WORD *)(buffer + 6);
+    g_489718 = *(WORD *)(buffer + 8);
+    return buffer;
+}
+
 // GLOBAL: STUNTGP_D3D 0x583594
 int g_583594[255];
 

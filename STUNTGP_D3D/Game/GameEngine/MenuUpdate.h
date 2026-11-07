@@ -63,10 +63,33 @@ struct MenuSlot20
     BYTE unk04[0x1c];
 };
 
-struct MenuRecord
+// One "<name>, a, b, c, d" row of the front-end csv car tables.
+struct MenuCarEntry
 {
-    int unk00;
-    BYTE unk04[0x80];
+    char name[8]; // 0x00
+    int unk08;    // 0x08
+    int unk0c;    // 0x0c
+    int unk10;    // 0x10
+    int unk14;    // 0x14
+};
+
+struct MenuNode
+{
+    int unk00;              // 0x00
+    int unk04;              // 0x04
+    int unk08;              // 0x08
+    MenuCarEntry cars[5];   // 0x0c
+};
+
+struct MenuAiCar
+{
+    MenuCarEntry entries[3][5]; // Easy, Medium, Hard
+};
+
+struct MenuRace
+{
+    int track;            // 0x00
+    MenuCarEntry cars[6]; // 0x04
 };
 
 struct MenuSponsor
@@ -312,12 +335,24 @@ struct MenuState
     MenuRound rounds[21];        // 0x19fa8
     BYTE unk1a53c[0x1a544 - 0x1a53c];
     MenuSlot20 unk1a544[6]; // 0x1a544
-    BYTE unk1a604[0x1a6a4 - 0x1a604];
-    int unk1a6a4; // 0x1a6a4
-    int unk1a6a8; // 0x1a6a8
-    BYTE unk1a6ac[0x1a6b0 - 0x1a6ac];
-    MenuRecord unk1a6b0[64]; // 0x1a6b0, count unknown
-    BYTE unk1c7b0[0x1dae4 - 0x1c7b0];
+    BYTE unk1a604[0x1a68c - 0x1a604];
+    // Read by FUN_435980; names are the csv keys.
+    int nodePositions[6]; // 0x1a68c
+    int gold;             // 0x1a6a4
+    int silver;           // 0x1a6a8
+    MenuNode nodes[19];   // 0x1a6ac, [1..18] used
+    BYTE unk1b078[0x1b320 - 0x1b078];
+    MenuAiCar aiCars[21]; // 0x1b320, read by FUN_435860
+    MenuRace races[8];    // 0x1d0a8, read by FUN_435730
+    int numberOfRaces;    // 0x1d548
+    int car18UnlockScore; // 0x1d54c
+    int screenMusic[50];  // 0x1d550, music track per front-end screen
+    BYTE unk1d618[0x1d630 - 0x1d618];
+    int unk1d630[25][6];          // 0x1d630, read by FUN_434f60
+    MenuCarEntry unk1d888[3][4];  // 0x1d888, Easy, Medium, Hard; read by FUN_434e90
+    BYTE unk1d9a8[0x1da5c - 0x1d9a8];
+    int unk1da5c[6][2];           // 0x1da5c, read by FUN_434e10
+    BYTE unk1da8c[0x1dae4 - 0x1da8c];
     int unk1dae4; // 0x1dae4
 };
 

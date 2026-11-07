@@ -8,6 +8,15 @@
 // LIBRARY: STUNTGP_D3D 0x462798
 // _DirectInputCreateA@16
 
+// GLOBAL: STUNTGP_D3D 0x46fb10
+// GUID_Square
+
+// GLOBAL: STUNTGP_D3D 0x46fb20
+// GUID_Sine
+
+// GLOBAL: STUNTGP_D3D 0x46fb30
+// GUID_Triangle
+
 // GLOBAL: STUNTGP_D3D 0x46fb60
 // GUID_Spring
 
@@ -38,8 +47,27 @@ LPDIRECTINPUT g_directInput;
 // GLOBAL: STUNTGP_D3D 0x576b6c
 InputState *g_576b6c;
 
+// Set once force feedback has been started by FUN_4240e0.
+// GLOBAL: STUNTGP_D3D 0x576b70
+int g_576b70;
+
 // GLOBAL: STUNTGP_D3D 0x576b74
 BOOL g_576b74;
+
+// GLOBAL: STUNTGP_D3D 0x576b78
+LONG g_576b78[2];
+
+// GLOBAL: STUNTGP_D3D 0x477640
+DWORD g_477640[2] = {DIJOFS_X, DIJOFS_Y};
+
+// GLOBAL: STUNTGP_D3D 0x477648
+DWORD g_477648 = 1;
+
+// GLOBAL: STUNTGP_D3D 0x47764c
+DWORD g_47764c = DI_FFNOMINALMAX;
+
+// GLOBAL: STUNTGP_D3D 0x477650
+LONG g_477650 = 100;
 
 // GLOBAL: STUNTGP_D3D 0x462780
 // c_dfDIJoystick
@@ -178,6 +206,145 @@ BOOL CALLBACK FUN_423b00(LPCDIDEVICEINSTANCE instance, LPVOID ref)
     g_inputDeviceCount++;
     g_576b74 = TRUE;
     return DIENUM_CONTINUE;
+}
+
+// FUNCTION: STUNTGP_D3D 0x423d30
+BOOL FUN_423d30(InputDevice *dev, DICONDITION *condition, int index)
+{
+    DIEFFECT *desc;
+    dev->effects[index].condition = *condition;
+    desc = &dev->effects[index].desc;
+    desc->dwSize = sizeof(DIEFFECT);
+    desc->dwFlags = DIEFF_CARTESIAN | DIEFF_OBJECTOFFSETS;
+    desc->dwDuration = INFINITE;
+    desc->dwSamplePeriod = 0;
+    desc->dwGain = g_47764c;
+    desc->dwTriggerButton = DIEB_NOTRIGGER;
+    desc->dwTriggerRepeatInterval = 0;
+    desc->cAxes = g_477648;
+    desc->rgdwAxes = g_477640;
+    desc->rglDirection = g_576b78;
+    desc->lpEnvelope = NULL;
+    desc->cbTypeSpecificParams = sizeof(DICONDITION);
+    desc->lpvTypeSpecificParams = &dev->effects[index].condition;
+    return dev->device->CreateEffect(g_576558[index], desc, &dev->effects[index].effect, NULL) == DI_OK;
+}
+
+// FUNCTION: STUNTGP_D3D 0x423dd0
+void FUN_423dd0(InputDevice *dev, DICONDITION *condition, int index)
+{
+    if (dev->effects[index].effect)
+    {
+        dev->effects[index].condition = *condition;
+        dev->effects[index].desc.dwSize = sizeof(DIEFFECT);
+        dev->effects[index].desc.cbTypeSpecificParams = sizeof(DICONDITION);
+        dev->effects[index].desc.lpvTypeSpecificParams = &dev->effects[index].condition;
+        dev->effects[index].effect->SetParameters(&dev->effects[index].desc, DIEP_TYPESPECIFICPARAMS | DIEP_START);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x423e40
+int FUN_423e40(InputDevice *dev)
+{
+    DICONDITION condition;
+    condition.lOffset = 0;
+    condition.lPositiveCoefficient = DI_FFNOMINALMAX;
+    condition.lNegativeCoefficient = DI_FFNOMINALMAX;
+    condition.dwPositiveSaturation = DI_FFNOMINALMAX;
+    condition.dwNegativeSaturation = DI_FFNOMINALMAX;
+    condition.lDeadBand = g_477650;
+    FUN_423d30(dev, &condition, 0);
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x423e80
+int FUN_423e80(InputDevice *dev)
+{
+    DICONDITION condition;
+    condition.lOffset = 0;
+    condition.lPositiveCoefficient = 2000;
+    condition.lNegativeCoefficient = 2000;
+    condition.dwPositiveSaturation = DI_FFNOMINALMAX;
+    condition.dwNegativeSaturation = DI_FFNOMINALMAX;
+    condition.lDeadBand = g_477650;
+    FUN_423d30(dev, &condition, 1);
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x423ec0
+int FUN_423ec0(InputDevice *dev)
+{
+    DICONDITION condition;
+    condition.lOffset = 0;
+    condition.lPositiveCoefficient = 2000;
+    condition.lNegativeCoefficient = 2000;
+    condition.dwPositiveSaturation = DI_FFNOMINALMAX;
+    condition.dwNegativeSaturation = DI_FFNOMINALMAX;
+    condition.lDeadBand = g_477650;
+    FUN_423d30(dev, &condition, 3);
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x423f00
+int FUN_423f00(InputDevice *dev)
+{
+    DICONDITION condition;
+    condition.lOffset = 0;
+    condition.lPositiveCoefficient = 2000;
+    condition.lNegativeCoefficient = 2000;
+    condition.dwPositiveSaturation = DI_FFNOMINALMAX;
+    condition.dwNegativeSaturation = DI_FFNOMINALMAX;
+    condition.lDeadBand = g_477650;
+    FUN_423d30(dev, &condition, 2);
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x423f40
+void FUN_423f40(InputDevice *dev, int index, GUID guid, DWORD duration)
+{
+    DIPERIODIC periodic;
+    DIEFFECT *desc;
+    periodic.dwMagnitude = DI_FFNOMINALMAX;
+    periodic.lOffset = 0;
+    periodic.dwPhase = 0;
+    periodic.dwPeriod = 100000;
+    desc = &dev->effects[index].desc;
+    desc->dwSize = sizeof(DIEFFECT);
+    desc->dwFlags = DIEFF_CARTESIAN | DIEFF_OBJECTOFFSETS;
+    desc->dwDuration = duration;
+    desc->dwSamplePeriod = 0;
+    desc->dwGain = g_47764c;
+    desc->dwTriggerButton = DIEB_NOTRIGGER;
+    desc->dwTriggerRepeatInterval = 0;
+    desc->cAxes = g_477648;
+    desc->rgdwAxes = g_477640;
+    desc->rglDirection = g_576b78;
+    desc->lpEnvelope = NULL;
+    desc->cbTypeSpecificParams = sizeof(DIPERIODIC);
+    desc->lpvTypeSpecificParams = &periodic;
+    dev->device->CreateEffect(guid, desc, &dev->effects[index].effect, NULL);
+    if (g_576550->effects[index].effect)
+    {
+        g_576550->effects[index].effect->Start(1, 0);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x423ff0
+void FUN_423ff0(InputDevice *dev)
+{
+    FUN_423f40(dev, 4, GUID_Sine, INFINITE);
+}
+
+// FUNCTION: STUNTGP_D3D 0x424030
+void FUN_424030(InputDevice *dev)
+{
+    FUN_423f40(dev, 5, GUID_Square, 100000);
+}
+
+// FUNCTION: STUNTGP_D3D 0x424070
+void FUN_424070(InputDevice *dev)
+{
+    FUN_423f40(dev, 6, GUID_Triangle, INFINITE);
 }
 
 // FUNCTION: STUNTGP_D3D 0x424680
