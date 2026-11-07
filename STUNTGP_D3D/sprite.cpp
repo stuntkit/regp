@@ -1171,6 +1171,32 @@ void FUN_430d40(int slot, int id)
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x430f50
+void FUN_430f50(D3DLIGHT *light, D3DLIGHTTYPE type, float x, float y, float z)
+{
+    memset(light, 0, sizeof(D3DLIGHT));
+    light->dltType = type;
+    light->dcvColor.r = 1.0f;
+    light->dcvColor.g = 1.0f;
+    light->dcvColor.b = 1.0f;
+    light->dvPosition.x = light->dvDirection.x = x;
+    light->dwSize = sizeof(D3DLIGHT);
+    light->dvPosition.y = light->dvDirection.y = y;
+    light->dvPosition.z = light->dvDirection.z = z;
+}
+
+// FUNCTION: STUNTGP_D3D 0x430fa0
+void FUN_430fa0(D3DMATERIAL *material, float r, float g, float b)
+{
+    memset(material, 0, sizeof(D3DMATERIAL));
+    material->dwSize = sizeof(D3DMATERIAL);
+    material->dcvDiffuse.r = material->dcvAmbient.r = r;
+    material->dcvDiffuse.g = material->dcvAmbient.g = g;
+    material->dcvDiffuse.b = material->dcvAmbient.b = b;
+    material->dcvDiffuse.a = material->dcvAmbient.a = 1.0f;
+    material->dwRampSize = 16;
+}
+
 // FUNCTION: STUNTGP_D3D 0x437e20
 void FUN_437e20(int *settings)
 {

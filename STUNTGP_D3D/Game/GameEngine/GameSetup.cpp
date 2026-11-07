@@ -107,7 +107,12 @@ struct TrackHeader
     int unk064;               // 0x064
     BYTE unk068[0x70 - 0x68];
     int unk070;               // 0x070
-    BYTE unk074[0xd4 - 0x74];
+    BYTE unk074[0x7c - 0x74];
+    int unk07c;               // 0x07c
+    int unk080;               // 0x080
+    int unk084;               // 0x084
+    int unk088;               // 0x088
+    BYTE unk08c[0xd4 - 0x8c];
     DWORD unk0d4;             // 0x0d4
     BYTE unk0d8[0xe4 - 0xd8];
     int unk0e4;               // 0x0e4
@@ -124,6 +129,18 @@ Scene *g_58c800;
 
 // GLOBAL: STUNTGP_D3D 0x58d810
 TrackHeader *g_58d810;
+
+// GLOBAL: STUNTGP_D3D 0x624464
+BYTE *g_624464;
+
+// GLOBAL: STUNTGP_D3D 0x624468
+BYTE *g_624468;
+
+// GLOBAL: STUNTGP_D3D 0x62446c
+BYTE *g_62446c;
+
+// GLOBAL: STUNTGP_D3D 0x624470
+BYTE *g_624470;
 
 // GLOBAL: STUNTGP_D3D 0x624478
 BYTE *g_624478;
@@ -926,6 +943,15 @@ void FUN_42ebb0()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x42ed30
+void FUN_42ed30()
+{
+    g_624470 = &g_58d810->data[g_58d810->unk088];
+    g_62446c = &g_58d810->data[g_58d810->unk07c];
+    g_624468 = &g_58d810->data[g_58d810->unk084];
+    g_624464 = &g_58d810->data[g_58d810->unk080];
+}
+
 // FUNCTION: STUNTGP_D3D 0x42eee0
 void FUN_42eee0()
 {
@@ -1008,6 +1034,29 @@ void FUN_42a840(Scene *scene)
         return;
     }
     g_62497c = scene->lod != scene->unk64 ? 1 : 4;
+}
+
+// FUNCTION: STUNTGP_D3D 0x42a870
+void FUN_42a870(Scene *scene, ObjectDef *object)
+{
+    if (g_576be0)
+    {
+        g_62497c = 1;
+        return;
+    }
+    if (scene->lod != scene->unk64)
+    {
+        g_62497c = 1;
+        return;
+    }
+    if (object->unk04 >= 2 && object->unk04 <= 5)
+    {
+        g_62497c = 1;
+    }
+    else
+    {
+        g_62497c = 4;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x42e6d0

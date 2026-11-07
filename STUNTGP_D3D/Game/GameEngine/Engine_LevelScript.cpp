@@ -80,6 +80,25 @@ void Script_ReadString(char *pos, char **next, char *out)
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x42c650
+void FUN_42c650(char *text, char **end, float *value)
+{
+    while (*text == ' ' || *text == '\r' || *text == '\n')
+    {
+        text++;
+    }
+    *value = atof(text);
+    if (end)
+    {
+        int i = 0;
+        while (text[i] != ' ')
+        {
+            i++;
+        }
+        *end = &text[i + 1];
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x42c6a0
 void Script_ReadInt(char *pos, char **next, int *out)
 {
@@ -96,6 +115,25 @@ void Script_ReadInt(char *pos, char **next, int *out)
             len++;
         }
         *next = pos + len + 1;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42c6f0
+void FUN_42c6f0(char *text, char **end, char *value)
+{
+    while (*text == ' ' || *text == '\r' || *text == '\n')
+    {
+        text++;
+    }
+    *value = atol(text);
+    if (end)
+    {
+        int i = 0;
+        while (text[i] != ' ')
+        {
+            i++;
+        }
+        *end = &text[i + 1];
     }
 }
 

@@ -662,7 +662,8 @@ struct ObjectDef
 {
     WORD type;        // 0x00
     WORD flags;       // 0x02
-    BYTE unk04[0x4];  // 0x04
+    WORD unk04;       // 0x04
+    BYTE unk06[0x2];  // 0x06
     Vec4 *matrix;     // 0x08
     BYTE unk0c[0x18]; // 0x0c
     WORD unk24;       // 0x24

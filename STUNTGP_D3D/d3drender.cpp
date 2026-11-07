@@ -115,6 +115,14 @@ struct DisplayModeList
     DDSURFACEDESC2 modes[64];   // 0x364
 };
 
+// Z-buffer formats collected by FUN_42fe40.
+struct ZBufferFormatList
+{
+    BYTE unk000[0x374];
+    DWORD count;               // 0x374
+    DDPIXELFORMAT formats[1];  // 0x378, count unknown
+};
+
 // Name storage for g_textureFiles.
 // GLOBAL: STUNTGP_D3D 0x57eb0c
 char g_57eb0c[0x1fe0];
@@ -923,6 +931,19 @@ void FUN_42fa40()
     {
         g_592074 = g_6244f0 = 1;
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42fe40
+HRESULT WINAPI FUN_42fe40(LPDDPIXELFORMAT format, LPVOID context)
+{
+    if (!(format->dwFlags & DDPF_ZBUFFER))
+    {
+        return D3DENUMRET_OK;
+    }
+    ZBufferFormatList *list = (ZBufferFormatList *)context;
+    list->formats[list->count] = *format;
+    list->count++;
+    return D3DENUMRET_OK;
 }
 
 // FUNCTION: STUNTGP_D3D 0x432190
