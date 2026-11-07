@@ -41,8 +41,14 @@ GameSlot *g_4722d0 = g_498248;
 // GLOBAL: STUNTGP_D3D 0x498248
 GameSlot g_498248[4];
 
+// GLOBAL: STUNTGP_D3D 0x612bf0
+int g_612bf0;
+
 // GLOBAL: STUNTGP_D3D 0x612bf4
 int g_612bf4;
+
+// GLOBAL: STUNTGP_D3D 0x612cf8
+int g_612cf8;
 
 // GLOBAL: STUNTGP_D3D 0x612cfc
 DWORD g_612cfc;
@@ -57,7 +63,9 @@ DWORD g_612d04;
 DWORD g_612d08;
 
 void FUN_441dc0();
+void FUN_441e20();
 void FUN_441ec0();
+void FUN_445530();
 void FUN_441f70();
 void FUN_4420e0();
 int FUN_4423d0();
@@ -153,6 +161,33 @@ void FUN_441dc0()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x441e20
+void FUN_441e20()
+{
+    if (g_612bf4 != 1)
+    {
+        if (g_612be8 == 1)
+        {
+            g_612bec = 2;
+            FUN_445530();
+            if (g_612bf0 != 1)
+            {
+                FUN_442a40(2, 60, 0, 60, g_61294c == 1 ? 60 : 0, 100, 1.0f);
+            }
+            FUN_460ca0();
+            FUN_45f8e0(0, -5);
+            g_612cf8 = 0;
+            g_612bf4 = 1;
+        }
+        else
+        {
+            g_612bec = 1;
+            g_612bf4 = 1;
+            g_612cf8 = 0;
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x441ec0
 void FUN_441ec0()
 {
@@ -174,6 +209,11 @@ void FUN_441f70()
             FUN_45f8f0(0, 1);
         }
     }
+}
+
+// STUB: STUNTGP_D3D 0x445530
+void FUN_445530()
+{
 }
 
 // STUB: STUNTGP_D3D 0x442030

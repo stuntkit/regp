@@ -48,6 +48,26 @@ SlotFx *g_61b740;
 
 int FUN_4278a0(float *bounds, float *point);
 
+// GLOBAL: STUNTGP_D3D 0x473a24
+int g_473a24 = 720;
+
+// GLOBAL: STUNTGP_D3D 0x473a28
+float g_473a28 = -5.0f;
+
+// GLOBAL: STUNTGP_D3D 0x4d5b18
+float g_4d5b18;
+
+// GLOBAL: STUNTGP_D3D 0x4d5b1c
+int g_4d5b1c;
+
+// GLOBAL: STUNTGP_D3D 0x612990
+int g_612990;
+
+// GLOBAL: STUNTGP_D3D 0x61299c
+int g_61299c;
+
+void FUN_441e20();
+
 // --- per-tick game logic ---
 
 // STUB: STUNTGP_D3D 0x401770
@@ -77,9 +97,59 @@ void FUN_40dad0()
 {
 }
 
-// STUB: STUNTGP_D3D 0x40de30
+// STUB: STUNTGP_D3D 0x40dd30
+void FUN_40dd30()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x40dd80
+void FUN_40dd80()
+{
+    if (g_612994 != 1)
+    {
+        g_612994 = 1;
+        g_473a24 = 720;
+        g_4d5b18 = 0.0f;
+        g_473a28 = -5.0f;
+        g_4d5b1c = 0;
+        FUN_40dd30();
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x40ddd0
+void FUN_40ddd0()
+{
+    FUN_40dd80();
+    FUN_447b60();
+    if (g_473a24 > 0)
+    {
+        g_473a24--;
+        return;
+    }
+    g_473a28 -= 0.35f;
+    g_4d5b18 += g_473a28;
+    if (g_4d5b18 < 0.0f)
+    {
+        g_4d5b18 = 0.0f;
+        g_473a28 = 5.0f;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x40de30
 void FUN_40de30()
 {
+    if (g_61299c == 1)
+    {
+        g_60f2c0 = 1;
+        FUN_40ddd0();
+        if (--g_612990 == 0 || g_612968 == 1)
+        {
+            g_612994 = 0;
+            g_61299c = 0;
+            g_612990 = 0;
+            FUN_441e20();
+        }
+    }
 }
 
 // STUB: STUNTGP_D3D 0x415df0
@@ -205,6 +275,12 @@ void FUN_447ab0(Fader *fader)
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x447b60
+void FUN_447b60()
+{
+    g_61b740->unk000 = 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x447b70
 void FUN_447b70(int delay)
 {
@@ -312,25 +388,5 @@ void FUN_45f8f0(int a, int b)
 
 // STUB: STUNTGP_D3D 0x41bdd0
 void FUN_41bdd0()
-{
-}
-
-// STUB: STUNTGP_D3D 0x45fa00
-void FUN_45fa00()
-{
-}
-
-// STUB: STUNTGP_D3D 0x45fa30
-void FUN_45fa30()
-{
-}
-
-// STUB: STUNTGP_D3D 0x460cb0
-void FUN_460cb0(int a)
-{
-}
-
-// STUB: STUNTGP_D3D 0x460dd0
-void FUN_460dd0()
 {
 }

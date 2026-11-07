@@ -189,6 +189,8 @@ void FUN_40de30();
 void FUN_446110();
 
 // sound
+void FUN_45f8e0(int target, int step);
+void FUN_460ca0();
 void FUN_45f7d0(int a, int b);
 void FUN_45f880();
 void FUN_460af0(int a);
@@ -196,6 +198,8 @@ void FUN_460ce0();
 void FUN_460df0();
 void FUN_462200();
 void FUN_462280();
+
+void FUN_447b60();
 
 // controller connect/disconnect
 void FUN_4422c0();

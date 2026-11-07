@@ -40,6 +40,9 @@ int g_62e0ac;
 // GLOBAL: STUNTGP_D3D 0x62e0f0
 int g_62e0f0;
 
+// GLOBAL: STUNTGP_D3D 0x62e100
+int g_62e100;
+
 // GLOBAL: STUNTGP_D3D 0x62e0f8
 int g_62e0f8;
 
@@ -54,10 +57,13 @@ int g_62e110;
 
 // The first 72 slots are fixed sounds, the remaining 32 are one-shot copies.
 // GLOBAL: STUNTGP_D3D 0x62e118
-SoundSlot g_62e118[104];
+SoundSlot g_62e118[128];
 
 // GLOBAL: STUNTGP_D3D 0x62f11c
 LPDIRECTSOUND3DLISTENER g_62f11c;
+
+// GLOBAL: STUNTGP_D3D 0x62f5ac
+int g_62f5ac;
 
 // GLOBAL: STUNTGP_D3D 0x62f5b0
 DWORD g_62f5b0;
@@ -76,6 +82,33 @@ void FUN_461ae0(LPDIRECTSOUND3DLISTENER listener, GameSlot *slot);
 // STUB: STUNTGP_D3D 0x45f7d0
 void FUN_45f7d0(int a, int b)
 {
+}
+
+// FUNCTION: STUNTGP_D3D 0x45f8e0
+void FUN_45f8e0(int target, int step)
+{
+    g_62e100 = target;
+    g_62e108 = step;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45fa00
+void FUN_45fa00()
+{
+    if (g_62f5ac == 1 && g_62e0f8)
+    {
+        FUN_45f8e0(0, -10);
+        g_62f5ac = 2;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45fa30
+void FUN_45fa30()
+{
+    if (g_62f5ac == 2 && g_62e0f8)
+    {
+        FUN_45f8e0(255, 10);
+        g_62f5ac = 1;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x45f880
@@ -182,6 +215,22 @@ void FUN_460bc0()
     g_48979c = g_489798;
 }
 
+// FUNCTION: STUNTGP_D3D 0x460ca0
+void FUN_460ca0()
+{
+    g_48979c = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x460cb0
+void FUN_460cb0(int volume)
+{
+    if (volume != -1)
+    {
+        g_489798 = volume;
+    }
+    g_48979c = g_489790 * g_62e0f0 * 255 / 10000;
+}
+
 // FUNCTION: STUNTGP_D3D 0x460ce0
 void FUN_460ce0()
 {
@@ -203,6 +252,28 @@ void FUN_460ce0()
                 g_489798 = g_48979c;
             }
         }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x460d60
+void FUN_460d60(int index)
+{
+    if (g_62e0ac)
+    {
+        if (g_62e118[index].buffer)
+        {
+            g_62e118[index].buffer->Stop();
+        }
+        g_62f5b4--;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x460dd0
+void FUN_460dd0()
+{
+    for (unsigned int i = 0; i < 128; i++)
+    {
+        FUN_460d60(i);
     }
 }
 
