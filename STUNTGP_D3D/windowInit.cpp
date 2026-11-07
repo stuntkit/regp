@@ -363,19 +363,17 @@ int FUN_422ac0(LPDIRECTDRAW4 dd, LPDIRECTDRAWSURFACE4 *surface, int width, int h
     ZeroMemory(&ddsd, sizeof(ddsd));
     ddsd.dwWidth = width;
     ddsd.dwHeight = height;
-    ddsd.ddsCaps.dwCaps = DAT_CAPS | memCaps | DDSCAPS_OFFSCREENPLAIN;
     ddsd.dwSize = sizeof(ddsd);
     ddsd.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
-    if (memCaps == DDSCAPS_VIDEOMEMORY)
+    ddsd.ddsCaps.dwCaps = DAT_CAPS | memCaps | DDSCAPS_OFFSCREENPLAIN;
+
+    int res;
+    if (memCaps != DDSCAPS_VIDEOMEMORY || (res = FUN_422a80(dd, surface, &ddsd, 2)) != DD_OK)
     {
-        int res = FUN_422a80(dd, surface, &ddsd, 2);
-        if (res == DD_OK)
-        {
-            return res;
-        }
+        ddsd.ddsCaps.dwCaps = (ddsd.ddsCaps.dwCaps & ~DDSCAPS_VIDEOMEMORY) | DDSCAPS_SYSTEMMEMORY;
+        res = FUN_422a80(dd, surface, &ddsd, 2);
     }
-    ddsd.ddsCaps.dwCaps = (ddsd.ddsCaps.dwCaps & ~DDSCAPS_VIDEOMEMORY) | DDSCAPS_SYSTEMMEMORY;
-    return FUN_422a80(dd, surface, &ddsd, 2);
+    return res;
 }
 
 // // STUB: STUNTGP_D3D 0x422b50
@@ -395,11 +393,12 @@ void FUN_422bb0(DWORD mask, int *bits, int *shift)
     int first = -1;
     for (int i = 0; i < 16; i++)
     {
-        if (first < 0 && (mask & 1))
+        int bit = mask & 1;
+        if (first < 0 && bit)
         {
             first = i;
         }
-        if (mask & 1)
+        if (bit)
         {
             count++;
         }
@@ -462,9 +461,9 @@ int FUN_422d50(LPDIRECTDRAW4 dd, LPDIRECTDRAWSURFACE4 *surface, LPDIRECTDRAWSURF
 {
     DDSURFACEDESC2 ddsd;
     ZeroMemory(&ddsd, sizeof(ddsd));
-    ddsd.ddsCaps.dwCaps = DAT_CAPS | DDSCAPS_VIDEOMEMORY | DDSCAPS_PRIMARYSURFACE;
     ddsd.dwSize = sizeof(ddsd);
     ddsd.dwFlags = DDSD_CAPS;
+    ddsd.ddsCaps.dwCaps = DAT_CAPS | DDSCAPS_VIDEOMEMORY | DDSCAPS_PRIMARYSURFACE;
     if (FUN_422a80(dd, surface, &ddsd, 1) != DD_OK)
     {
         return -1;
@@ -613,8 +612,9 @@ int FUN_4230b0(LPDIRECTDRAWPALETTE *palette, BYTE *src)
         res = g_dd->CreatePalette(DDPCAPS_8BIT | DDPCAPS_INITIALIZE, g_5723d4, palette, NULL) == DD_OK;
         if (res)
         {
-            g_surface->SetPalette(*palette);
-            res = g_surface2->SetPalette(*palette);
+            LPDIRECTDRAWPALETTE pal = *palette;
+            g_surface->SetPalette(pal);
+            res = g_surface2->SetPalette(pal);
         }
     }
     ReleaseDC(NULL, hDC);
