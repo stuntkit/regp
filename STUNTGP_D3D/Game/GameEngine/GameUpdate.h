@@ -17,9 +17,25 @@ struct GameSlotData
 struct GameSlot
 {
     int active;           // 0x000
-    BYTE unk004[0xa8];    // 0x004
+    int unk004;           // 0x004
+    float unk008;         // 0x008
+    float unk00c;         // 0x00c
+    float unk010;         // 0x010
+    BYTE unk014[0x78];    // 0x014
+    float unk08c;         // 0x08c
+    float unk090;         // 0x090
+    float unk094;         // 0x094
+    int unk098;           // 0x098
+    float unk09c;         // 0x09c
+    float unk0a0;         // 0x0a0
+    float unk0a4;         // 0x0a4
+    int unk0a8;           // 0x0a8
     GameSlotData *data;   // 0x0ac
-    BYTE unk0b0[0x28];    // 0x0b0
+    BYTE unk0b0[0x14];    // 0x0b0
+    float unk0c4;         // 0x0c4
+    float unk0c8;         // 0x0c8
+    float unk0cc;         // 0x0cc
+    BYTE unk0d0[0x8];     // 0x0d0
     int unk0d8;           // 0x0d8
     int unk0dc;           // 0x0dc
     int unk0e0;           // 0x0e0
@@ -153,8 +169,13 @@ void FUN_40de30();
 void FUN_446110();
 
 // sound
-void FUN_462280();
+void FUN_45f7d0(int a, int b);
+void FUN_45f880();
 void FUN_460af0(int a);
+void FUN_460ce0();
+void FUN_460df0();
+void FUN_462200();
+void FUN_462280();
 
 // controller connect/disconnect
 void FUN_4422c0();

@@ -147,10 +147,6 @@ void FUN_460af0(int a)
 {
 }
 
-// STUB: STUNTGP_D3D 0x462280
-void FUN_462280()
-{
-}
 
 // STUB: STUNTGP_D3D 0x41bdd0
 void FUN_41bdd0()
