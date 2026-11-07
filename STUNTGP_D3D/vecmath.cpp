@@ -1,5 +1,7 @@
 #include "vecmath.h"
 
+#include "Game/GameEngine/GameUpdate.h"
+
 #include <math.h>
 #include <string.h>
 
@@ -50,9 +52,52 @@ float g_61c3e8[16];
 // GLOBAL: STUNTGP_D3D 0x61c468
 float g_61c468[16];
 
-// STUB: STUNTGP_D3D 0x44f4e0
+// Multiplies m in place by the matrix given row by row.
+// FUNCTION: STUNTGP_D3D 0x44f1a0
+void Matrix_Multiply(float *m, float b00, float b01, float b02, float b03, float b10, float b11, float b12, float b13,
+                     float b20, float b21, float b22, float b23, float b30, float b31, float b32, float b33)
+{
+    float t[16];
+    for (int i = 0; i < 4; i++)
+    {
+        t[i * 4 + 0] = m[i * 4 + 0] * b00 + m[i * 4 + 1] * b10 + m[i * 4 + 2] * b20 + m[i * 4 + 3] * b30;
+        t[i * 4 + 1] = m[i * 4 + 0] * b01 + m[i * 4 + 1] * b11 + m[i * 4 + 2] * b21 + m[i * 4 + 3] * b31;
+        t[i * 4 + 2] = m[i * 4 + 0] * b02 + m[i * 4 + 1] * b12 + m[i * 4 + 2] * b22 + m[i * 4 + 3] * b32;
+        t[i * 4 + 3] = m[i * 4 + 0] * b03 + m[i * 4 + 1] * b13 + m[i * 4 + 2] * b23 + m[i * 4 + 3] * b33;
+        m[i * 4 + 0] = t[i * 4 + 0];
+        m[i * 4 + 1] = t[i * 4 + 1];
+        m[i * 4 + 2] = t[i * 4 + 2];
+        m[i * 4 + 3] = t[i * 4 + 3];
+    }
+}
+
+// GLOBAL: STUNTGP_D3D 0x61c534
+float g_61c534;
+
+// GLOBAL: STUNTGP_D3D 0x61c538
+float g_61c538;
+
+// Builds the current view's perspective projection.
+// FUNCTION: STUNTGP_D3D 0x44f4e0
 void FUN_44f4e0(float *m)
 {
+    float w = g_4722d0->fov;
+    float n = g_4722d0->unk0b4;
+    float f = g_4722d0->unk0b8 * 4096.0f;
+    float l = -g_4722d0->unk0bc;
+    float r = g_4722d0->unk0bc;
+    float b = -g_4722d0->unk0c0;
+    float t = g_4722d0->unk0c0;
+    Matrix_Identity(m);
+    w += w;
+    Matrix_Multiply(m, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, (r + l) / w, (t + b) / w, 1.0f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f);
+    Matrix_Multiply(m, w / (r - l), 0.0f, 0.0f, 0.0f, 0.0f, w / (t - b), 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f);
+    Matrix_Multiply(m, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, f / (f - n), 1.0f, 0.0f, 0.0f,
+                    -(f * n) / (f - n), 0.0f);
+    g_61c534 = 1.0f / m[10];
+    g_61c538 = m[14];
 }
 
 // FUNCTION: STUNTGP_D3D 0x44f4c0
@@ -63,9 +108,102 @@ void FUN_44f4c0()
     Matrix_Identity(g_61c468);
 }
 
-// STUB: STUNTGP_D3D 0x450190
+// Multiplies the 3x3 part of a in place by b.
+// FUNCTION: STUNTGP_D3D 0x44ef40
+void Matrix_Multiply3(float *a, float *b)
+{
+    float t[16];
+    for (int i = 0; i < 3; i++)
+    {
+        t[i * 4 + 0] = a[i * 4 + 0] * b[0] + a[i * 4 + 1] * b[4] + a[i * 4 + 2] * b[8];
+        t[i * 4 + 1] = a[i * 4 + 0] * b[1] + a[i * 4 + 1] * b[5] + a[i * 4 + 2] * b[9];
+        t[i * 4 + 2] = a[i * 4 + 0] * b[2] + a[i * 4 + 1] * b[6] + a[i * 4 + 2] * b[10];
+        a[i * 4 + 0] = t[i * 4 + 0];
+        a[i * 4 + 1] = t[i * 4 + 1];
+        a[i * 4 + 2] = t[i * 4 + 2];
+    }
+}
+
+extern BYTE *g_6227cc;
+extern int g_6227d0;
+
+// Builds the camera's view matrix and its transpose from pos, target, up and the view roll.
+// FUNCTION: STUNTGP_D3D 0x450190
 void FUN_450190(Camera *cam)
 {
+    Vec4 up = cam->up;
+    up.x = -up.x;
+    up.y = -up.y;
+    up.z = -up.z;
+    Vec4 dir;
+    dir.x = cam->target.x - cam->pos.x;
+    dir.y = cam->target.y - cam->pos.y;
+    dir.z = cam->target.z - cam->pos.z;
+    Vec3_Normalize(&dir.x);
+    if ((float)fabs(dir.x + up.x) + (float)fabs(dir.y + up.y) + (float)fabs(dir.z + up.z) < 1e-05f)
+    {
+        up.z += 1.0f;
+        Vec3_Normalize(&up.x);
+    }
+    float d = dir.x * up.x + dir.y * up.y + dir.z * up.z;
+    up.x -= d * dir.x;
+    up.y -= d * dir.y;
+    up.z -= d * dir.z;
+    Vec3_Normalize(&up.x);
+    Vec4 side;
+    side.x = dir.y * up.z - dir.z * up.y;
+    side.y = dir.z * up.x - dir.x * up.z;
+    side.z = dir.x * up.y - dir.y * up.x;
+    Vec3_Normalize(&side.x);
+    float rows[16];
+    Matrix_FromRows(&side.x, &up.x, &dir.x, rows);
+    float rot[16];
+    Matrix_RotationZ(rot, g_4722d0->roll);
+    Matrix_Multiply3(rot, rows);
+    side = *(Vec4 *)&rot[0];
+    up = *(Vec4 *)&rot[4];
+    dir = *(Vec4 *)&rot[8];
+
+    float *m = (float *)g_6227cc;
+    cam->matrix = (Vec4 *)m;
+    m[0] = side.x;
+    m[1] = side.y;
+    m[2] = side.z;
+    m[3] = 0.0f;
+    m[4] = up.x;
+    m[5] = up.y;
+    m[6] = up.z;
+    m[7] = 0.0f;
+    m[8] = dir.x;
+    m[9] = dir.y;
+    m[10] = dir.z;
+    m[11] = 0.0f;
+    m[12] = 0.0f;
+    m[13] = 0.0f;
+    m[14] = 0.0f;
+    m[15] = 1.0f;
+    m += 16;
+    g_6227d0++;
+    cam->unk44 = (Vec4 *)m;
+    m[0] = side.x;
+    m[1] = up.x;
+    m[2] = dir.x;
+    m[3] = 0.0f;
+    m[4] = side.y;
+    m[5] = up.y;
+    m[6] = dir.y;
+    m[7] = 0.0f;
+    m[8] = side.z;
+    m[9] = up.z;
+    m[10] = dir.z;
+    m[11] = 0.0f;
+    m[12] = 0.0f;
+    m[13] = 0.0f;
+    m[14] = 0.0f;
+    m[15] = 1.0f;
+    m += 16;
+    g_6227d0++;
+    g_6227cc = (BYTE *)m;
 }
 
 // GLOBAL: STUNTGP_D3D 0x61c3a4
@@ -150,9 +288,22 @@ void Matrix_Set(float *m, float m00, float m01, float m02, float m03, float m10,
 }
 
 // Normalizes v in place and writes its original length.
-// STUB: STUNTGP_D3D 0x44eda0
+// FUNCTION: STUNTGP_D3D 0x44eda0
 void FUN_44eda0(float *v, float *len)
 {
+    float l = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+    if (l == 0.0f)
+    {
+        *len = 0.0f;
+        v[0] = v[1] = v[2] = 0.0f;
+        return;
+    }
+    l = (float)sqrt(l);
+    *len = l;
+    l = 1.0f / l;
+    v[0] *= l;
+    v[1] *= l;
+    v[2] *= l;
 }
 
 // FUNCTION: STUNTGP_D3D 0x44f790

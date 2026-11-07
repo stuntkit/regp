@@ -31,7 +31,7 @@ struct CameraPath
     unsigned int count; // 0x08
     int unk0c;          // 0x0c
     int mode;           // 0x10
-    BYTE unk14[0x4];    // 0x14
+    int unk14;          // 0x14
     float unk18;        // 0x18
 };
 
@@ -52,11 +52,12 @@ struct Fader
     float x;          // 0x00
     float y;          // 0x04
     float unk08;      // 0x08
-    BYTE unk0c[0x4];  // 0x0c
+    float unk0c;      // 0x0c
     int active;       // 0x10
     float value;      // 0x14
     float target;     // 0x18
-    BYTE unk1c[0x8];  // 0x1c
+    int dx;           // 0x1c, offset at value 100, in 1/100 units
+    int dy;           // 0x20
 };
 
 struct SlotFx
@@ -66,12 +67,17 @@ struct SlotFx
     Fader faders[18]; // 0x008
 };
 
+struct Car;
+
+// On-screen message; count is the frames it has left.
 struct SlotEvent
 {
     int count;        // 0x00
-    int unk04;        // 0x04
+    int duration;     // 0x04
     DWORD order;      // 0x08
-    BYTE unk0c[0x48]; // 0x0c
+    char text[0x40];  // 0x0c
+    Car *car;         // 0x4c
+    int mode;         // 0x50
 };
 
 struct CarRace
@@ -80,13 +86,13 @@ struct CarRace
     BYTE unk04[0x14]; // 0x04
     int unk18;        // 0x18
     int unk1c;        // 0x1c
-    BYTE unk20[0x4];  // 0x20
+    int unk20;        // 0x20
     DWORD unk24;      // 0x24
     BYTE unk28[0x4];  // 0x28
     DWORD unk2c;      // 0x2c
     BYTE unk30[0x14]; // 0x30
     int unk44;        // 0x44
-    int unk48;        // 0x48
+    DWORD unk48;      // 0x48
     DWORD unk4c[12];   // 0x4c ([7] 0x68, [8] 0x6c)
     int unk7c;         // 0x7c
     DWORD unk80[7];    // 0x80 ([5] 0x94, [6] 0x98)
@@ -723,6 +729,19 @@ struct Controller
 extern InputSlot g_576618[10];
 extern Controller g_62d580[4];
 extern Controller *g_61b744;
+
+// Line of the in-race pause menu; the list ends at text 0.
+struct PauseItem
+{
+    int active;       // 0x00
+    int text;         // 0x04
+    int x;            // 0x08
+    int y;            // 0x0c
+    void (*action)(); // 0x10
+    int value;        // 0x14, text drawn to the right, 0 for none
+};
+
+extern PauseItem g_485120[8];
 
 extern GameSlot *g_4722d0;
 extern SlotFx *g_61b740;

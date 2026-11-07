@@ -921,4 +921,10 @@
 // LIBRARY: STUNTGP_D3D 0x463f7b
 // __fullpath
 
+// LIBRARY: STUNTGP_D3D 0x462ecf
+// _floor
+
+// LIBRARY: STUNTGP_D3D 0x46291a
+// __CIfmod
+
 #endif

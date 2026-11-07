@@ -12,6 +12,7 @@ void FUN_4028f0(CameraPreset *preset, int mode);
 
 extern CameraPreset g_4722d8[32];
 
+extern BYTE g_62d480[256];
 extern float g_482688;
 extern float g_48268c;
 extern float g_482690;
@@ -608,7 +609,123 @@ void FUN_4051e0()
     FUN_4028f0(g_4722d8, 10);
 }
 
-// STUB: STUNTGP_D3D 0x428520
+// Uniform cubic B-spline basis weights, written to m[0], m[4], m[8], m[12].
+// FUNCTION: STUNTGP_D3D 0x4282a0
+void FUN_4282a0(float *m, float t)
+{
+    float t2 = t * t;
+    float t3 = t2 * t;
+    m[12] = t3 * 0.16666667f;
+    m[8] = (((3.0f - t * 3.0f) * t + 3.0f) * t + 1.0f) * 0.16666667f;
+    m[4] = (t3 * 3.0f - t2 * 6.0f + 4.0f) * 0.16666667f;
+    m[0] = (t2 * 3.0f - t3 - t * 3.0f + 1.0f) * 0.16666667f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x428460
+void FUN_428460(CameraPath *path, Vec4 *out, float t)
+{
+    Vec4 *points = path->points;
+    unsigned int i = (int)floor(t);
+    if (i >= path->count)
+    {
+        i = 0;
+    }
+    unsigned int j = i + 1;
+    if (j >= path->count)
+    {
+        j = 0;
+    }
+    float f = fmod(t, 1.0);
+    Vec4 d;
+    d.x = points[j].x - points[i].x;
+    d.y = points[j].y - points[i].y;
+    d.z = points[j].z - points[i].z;
+    d.x *= f;
+    d.y *= f;
+    d.z *= f;
+    d.x += points[i].x;
+    d.y += points[i].y;
+    d.z += points[i].z;
+    *out = d;
+}
+
+// FUNCTION: STUNTGP_D3D 0x428520
 void FUN_428520(CameraPath *path, Vec4 *out, float t)
 {
+    if (path->unk0c == 1)
+    {
+        FUN_428460(path, out, t);
+        return;
+    }
+    t += 3.0f;
+    unsigned int idx = (int)floor(t);
+    t = fmod(t, 1.0);
+    Vec4 *points = path->points;
+    Vec4 acc;
+    acc.x = 0.0f;
+    acc.y = 0.0f;
+    acc.z = 0.0f;
+    float basis[16];
+    FUN_4282a0(basis, t);
+    float *w = &basis[12];
+    unsigned int count = path->count;
+    for (int n = 0; n < 4; n++)
+    {
+        unsigned int k = idx;
+        if (idx >= count)
+        {
+            if (path->mode == 2)
+            {
+                k = idx % count;
+            }
+            else
+            {
+                k = count - 1;
+            }
+        }
+        acc.x += *w * points[k].x;
+        acc.y += points[k].y * *w;
+        acc.z += points[k].z * *w;
+        if (idx > 0)
+        {
+            idx--;
+        }
+        w -= 4;
+    }
+    out->x = acc.x;
+    out->y = acc.y;
+    out->z = acc.z;
+}
+
+// GLOBAL: STUNTGP_D3D 0x499f88
+float g_499f88;
+
+// Advances the path position *t by *speed, steered by the L and apostrophe keys.
+// FUNCTION: STUNTGP_D3D 0x428740
+void FUN_428740(float *t, float *speed)
+{
+    float s = *speed * 0.95f;
+    *speed = s;
+    if ((g_62d480[0x26] & 0x80) && s < 0.0015f)
+    {
+        *speed = s + 2.5e-5f;
+    }
+    if ((g_62d480[0x28] & 0x80) && *speed > -0.0015f)
+    {
+        *speed -= 2.5e-5f;
+    }
+    float v = *t + *speed;
+    *t = v;
+    if (v < 0.0f)
+    {
+        *t = v + 1.0;
+    }
+    else
+    {
+        *t = fmod(v, 1.0);
+    }
+    if ((float)fabs(*speed) < 1.5625e-6f)
+    {
+        *speed = 0.0f;
+    }
 }
