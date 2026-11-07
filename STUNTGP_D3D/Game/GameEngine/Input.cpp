@@ -519,6 +519,29 @@ void FUN_4243f0()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x424450
+int FUN_424450(int index)
+{
+    DWORD state;
+    if (g_inputDevices[index].device && g_inputDevices[index].device->GetForceFeedbackState(&state) == DI_OK)
+    {
+        switch (state)
+        {
+        case DIGFFS_EMPTY:
+        case DIGFFS_DEVICELOST:
+            return 0;
+        case DIGFFS_ACTUATORSOFF:
+        case DIGFFS_POWEROFF:
+        case DIGFFS_SAFETYSWITCHOFF:
+        case DIGFFS_USERFFSWITCHOFF:
+            return 1;
+        default:
+            return 2;
+        }
+    }
+    return 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x4244c0
 void FUN_4244c0()
 {

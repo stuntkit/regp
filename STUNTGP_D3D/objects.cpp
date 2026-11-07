@@ -1,6 +1,11 @@
 #include "objects.h"
 
+#include <stdio.h>
 #include <stdlib.h>
+
+// Lap time text from FUN_43d550.
+// GLOBAL: STUNTGP_D3D 0x5ff3a8
+char g_5ff3a8[0x40];
 
 void FUN_45f8f0(int track, int loop);
 int FUN_43eee0(int screen);
@@ -71,6 +76,15 @@ void Pool_Free(void *ptr)
     g_pool.freeBlocks[g_pool.freeCount] = block;
     g_pool.freeCount++;
     g_pool.allocCount--;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d550
+char *FUN_43d550(int frames)
+{
+    int hundredths = frames * 100 / 60;
+    // STRING: STUNTGP_D3D 0x479654
+    sprintf(g_5ff3a8, "%d:%02d:%02d", hundredths / 6000 % 60, hundredths / 100 % 60, hundredths % 100);
+    return g_5ff3a8;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43d5d0

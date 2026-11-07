@@ -50,3 +50,24 @@ void FUN_434890()
     // STRING: STUNTGP_D3D 0x478afc
     fprintf(g_5da2e4, "***********************************************************************\n");
 }
+
+// FUNCTION: STUNTGP_D3D 0x434900
+void FUN_434900(float *values, DWORD count)
+{
+    // STRING: STUNTGP_D3D 0x478b48
+    fprintf(g_5da2e4, " ");
+    int n = 0;
+    for (DWORD i = 0; i < count; i++)
+    {
+        // STRING: STUNTGP_D3D 0x478b4c
+        fprintf(g_5da2e4, "%8f, ", values[i]);
+        n++;
+        if (!(n & 7))
+        {
+            // STRING: STUNTGP_D3D 0x478b54
+            fprintf(g_5da2e4, "\n ");
+        }
+    }
+    // STRING: STUNTGP_D3D 0x478b58
+    fprintf(g_5da2e4, "\n");
+}
