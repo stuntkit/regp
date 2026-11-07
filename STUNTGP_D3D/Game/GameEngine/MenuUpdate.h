@@ -59,8 +59,13 @@ struct MenuSlot160
 
 struct MenuSlot20
 {
-    int unk00;
-    BYTE unk04[0x1c];
+    int unk00;   // 0x00
+    int unk04;   // 0x04
+    int unk08;   // 0x08
+    int unk0c;   // 0x0c
+    int unk10;   // 0x10
+    char name[8]; // 0x14
+    int unk1c;   // 0x1c
 };
 
 struct MenuRecord
@@ -279,7 +284,9 @@ struct MenuState
     BYTE unk4380[0x4398 - 0x4380];
     int unk4398;     // 0x4398, entries used in unk439c
     int unk439c[20]; // 0x439c
-    BYTE unk43ec[0x4408 - 0x43ec];
+    BYTE unk43ec[0x43f4 - 0x43ec];
+    int unk43f4[4];  // 0x43f4, random car per entry of unk46ac
+    BYTE unk4404[0x4408 - 0x4404];
     int unk4408;     // 0x4408, entries used in unk440c
     int unk440c[26]; // 0x440c
     int unk4474;     // 0x4474

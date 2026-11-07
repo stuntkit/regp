@@ -85,6 +85,28 @@ float g_61c534;
 // GLOBAL: STUNTGP_D3D 0x61c538
 float g_61c538;
 
+// Rotation angle and axis of the 3x3 part of m.
+// FUNCTION: STUNTGP_D3D 0x44f420
+void FUN_44f420(float *m, float *angle, Vec4 *axis)
+{
+    Vec4 v;
+    *angle = acos((m[10] + m[5] + m[0] - 1.0f) * 0.5f);
+    float s = sin(*angle) * 2.0f;
+    if (s != 0.0f)
+    {
+        s = 1.0f / s;
+    }
+    else
+    {
+        s = 1.0f;
+    }
+    v.x = (m[9] - m[6]) * s;
+    v.y = (m[2] - m[8]) * s;
+    v.z = (m[4] - m[1]) * s;
+    Vec3_Normalize(&v.x);
+    *axis = v;
+}
+
 // Builds the current view's perspective projection.
 // FUNCTION: STUNTGP_D3D 0x44f4e0
 void FUN_44f4e0(float *m)

@@ -1800,6 +1800,49 @@ void FUN_443560()
     }
 }
 
+extern int g_60f284;
+
+// FUNCTION: STUNTGP_D3D 0x443590
+void FUN_443590()
+{
+    if (g_60d628[0].unk00 == 1)
+    {
+        if (g_60f284 == 1)
+        {
+            g_60d628[0].unk00 = 0;
+            return;
+        }
+        g_60d628[1].unk00 = 0;
+        g_60d628[2].unk00 = 0;
+        g_60d628[3].unk00 = 0;
+        return;
+    }
+    if (g_60d628[1].unk00 == 1)
+    {
+        GhostRecord *best = NULL;
+        DWORD bestTime = 0;
+        DWORD count = 0;
+        for (int i = 1; i < 4; i++)
+        {
+            GhostRecord *rec = &g_60d628[i];
+            if (rec->time && rec->time < 7200)
+            {
+                rec->unk00 = 1;
+                if (rec->time > bestTime)
+                {
+                    best = rec;
+                    bestTime = best->time;
+                }
+                count++;
+            }
+        }
+        if (best && count > 2)
+        {
+            best->unk00 = 0;
+        }
+    }
+}
+
 // STUB: STUNTGP_D3D 0x443630
 void FUN_443630()
 {
@@ -3036,6 +3079,38 @@ void FUN_45e850(BYTE *dst, BYTE *src)
         *dst++ = *++src;
         src++;
     }
+}
+
+// Encodes an 8-bit image as a PCX file; returns the file size.
+// FUNCTION: STUNTGP_D3D 0x45e880
+int FUN_45e880(BYTE *pixels, PcxHeader *header, BYTE *palette, int width, int height)
+{
+    g_48971c = width;
+    g_489720 = height;
+    FUN_45e7b0(header);
+    int size = FUN_45e720(pixels, (BYTE *)header + 0x80, width * height);
+    FUN_45e850((BYTE *)header + size + 0x80, palette);
+    return size + 0x380;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e950
+int FUN_45e950(BYTE *pcx, BYTE *out, BYTE *palette, int size)
+{
+    if (!palette)
+    {
+        palette = out;
+    }
+    g_48971c = (pcx[0x43] << 8) | pcx[0x42];
+    g_489720 = ((pcx[0xb] << 8) | pcx[0xa]) + 1;
+    if (pcx[0] == 10 && pcx[1] == 5)
+    {
+        if (palette)
+        {
+            FUN_45e620(pcx, palette, size);
+        }
+        FUN_45e670(pcx, out);
+    }
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x45ea50

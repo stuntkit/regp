@@ -1768,6 +1768,31 @@ int FUN_43cf20(MenuDef *def, int index)
     return -1;
 }
 
+// Counts the lines of wrapped text, leaving the last one in g_5ff8c4.
+// FUNCTION: STUNTGP_D3D 0x440920
+int FUN_440920(char *text)
+{
+    int lines = 1;
+    int start = 0;
+    int end = 0;
+    while (text[start] != 0)
+    {
+        if (text[end] == (char)0xff || text[end] == '|' || text[end] == 0)
+        {
+            memcpy(g_5ff8c4, &text[start], end - start);
+            g_5ff8c4[end - start] = 0;
+            if (text[end] == 0)
+            {
+                break;
+            }
+            lines++;
+            start = end + 1;
+        }
+        end++;
+    }
+    return lines;
+}
+
 // Word-wraps text in place by turning spaces into 0xff; returns the line count, or 0 if it does not fit.
 // FUNCTION: STUNTGP_D3D 0x4409c0
 int FUN_4409c0(char *text, int width, float size, int maxLines)

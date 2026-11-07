@@ -395,6 +395,34 @@ void FUN_448110()
     FUN_449e80();
 }
 
+// Splits value into count decimal digits; leading zeros become -1 unless
+// leadingZeros is set. Returns the number of blanked digits.
+// FUNCTION: STUNTGP_D3D 0x448150
+int FUN_448150(DWORD value, int *digits, DWORD count, int leadingZeros)
+{
+    int blanks = 0;
+    leadingZeros = leadingZeros != 0;
+    DWORD div = 1;
+    for (DWORD i = count - 1; i > 0; i--)
+    {
+        div *= 10;
+    }
+    for (DWORD j = 0; j < count; j++)
+    {
+        DWORD d = value / div;
+        leadingZeros |= d;
+        digits[j] = d;
+        if (!leadingZeros && j != count - 1)
+        {
+            digits[j] = -1;
+            blanks++;
+        }
+        value -= d * div;
+        div /= 10;
+    }
+    return blanks;
+}
+
 // FUNCTION: STUNTGP_D3D 0x4473f0
 void FUN_4473f0()
 {
@@ -766,6 +794,176 @@ void FUN_4425d0()
     FUN_401b00();
     FUN_432f60();
     FUN_431830(0);
+}
+
+// FUNCTION: STUNTGP_D3D 0x4495e0
+void FUN_4495e0(float unused)
+{
+    g_spriteDesc.flags = 5;
+    g_spriteDesc.x = g_61b740->faders[1].x + 68.8f;
+    g_spriteDesc.y = g_61b740->faders[1].y - 6.4f;
+    g_spriteDesc.points[0].x = 7.12f;
+    g_spriteDesc.points[0].y = 0.0f;
+    g_spriteDesc.points[0].u = 848.0f;
+    g_spriteDesc.points[0].v = 556.0f;
+    g_spriteDesc.points[1].x = 6.8f;
+    g_spriteDesc.points[1].y = 0.0f;
+    g_spriteDesc.points[1].u = 848.0f;
+    g_spriteDesc.points[1].v = 556.0f;
+    g_spriteDesc.points[2].x = 18.800001f;
+    g_spriteDesc.points[2].y = 64.8f;
+    g_spriteDesc.points[2].u = 912.0f;
+    g_spriteDesc.points[2].v = 880.0f;
+    g_spriteDesc.points[3].x = 0.4f;
+    g_spriteDesc.points[3].y = 64.8f;
+    g_spriteDesc.points[3].u = 820.0f;
+    g_spriteDesc.points[3].v = 880.0f;
+    g_spriteDesc.z = 0.95f;
+    g_spriteDesc.texture = 11;
+    g_spriteDesc.blendMode = 0x20;
+    g_spriteDesc.originX = 7.6f;
+    g_spriteDesc.originY = 56.0f;
+    g_spriteDesc.angle = g_4722d0->data->unk1cfc / g_4722d0->data->unk045c * 220.0f - 130.0f;
+    FUN_432e00(&g_spriteDesc);
+}
+
+// FUNCTION: STUNTGP_D3D 0x449720
+void FUN_449720()
+{
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.x = g_61b740->faders[1].x;
+    g_spriteDesc.y = g_61b740->faders[1].y;
+    g_spriteDesc.z = 0.94f;
+    g_spriteDesc.u0 = 0.0f;
+    g_spriteDesc.v0 = 0.0f;
+    g_spriteDesc.u1 = 800.0f;
+    g_spriteDesc.v1 = 500.0f;
+    g_spriteDesc.width = 160.0f;
+    g_spriteDesc.height = 100.0f;
+    g_spriteDesc.texture = 11;
+    g_spriteDesc.blendMode = 0x20;
+    FUN_432e00(&g_spriteDesc);
+}
+
+// FUNCTION: STUNTGP_D3D 0x4497b0
+void FUN_4497b0()
+{
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.x = g_61b740->faders[1].x + 43.0f;
+    g_spriteDesc.y = g_61b740->faders[1].y + 77.0f;
+    g_spriteDesc.z = 0.94f;
+    g_spriteDesc.u0 = 172.0f;
+    g_spriteDesc.v0 = 396.0f;
+    g_spriteDesc.u1 = 800.0f;
+    g_spriteDesc.v1 = 500.0f;
+    g_spriteDesc.width = 125.6f;
+    g_spriteDesc.height = 20.800001f;
+    g_spriteDesc.texture = 11;
+    g_spriteDesc.blendMode = 0x20;
+    FUN_432e00(&g_spriteDesc);
+}
+
+// FUNCTION: STUNTGP_D3D 0x449850
+void FUN_449850()
+{
+    DWORD t;
+    DWORD alpha;
+    DWORD color;
+
+    if (g_61294c == 1)
+    {
+        return;
+    }
+    t = g_4722d0->data->unk7678;
+    if (t < 30)
+    {
+        return;
+    }
+    alpha = abs((int)(t % 60) - 30) * 510 / 60;
+    if (alpha > 255)
+    {
+        alpha = 255;
+    }
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.x = 270.4f;
+    g_spriteDesc.y = 172.0f;
+    g_spriteDesc.z = 0.98f;
+    g_spriteDesc.u0 = 524.0f;
+    g_spriteDesc.v0 = 16.0f;
+    g_spriteDesc.u1 = 1020.0f;
+    g_spriteDesc.v1 = 352.0f;
+    g_spriteDesc.width = 99.200001f;
+    g_spriteDesc.height = 67.200001f;
+    g_spriteDesc.texture = 13;
+    g_spriteDesc.alpha = alpha;
+    g_spriteDesc.blendMode = 0x48;
+    FUN_432e00(&g_spriteDesc);
+    if (alpha < 127)
+    {
+        color = 0xff404000;
+    }
+    else
+    {
+        color = 0xffffff00;
+    }
+    Font_Select(1);
+    FUN_4291f0(g_6127a0[7], 1, 320.0f, g_spriteDesc.y + 80.0f, 0.99f, color, 2.0f, 6);
+    Font_Select(0);
+}
+
+// FUNCTION: STUNTGP_D3D 0x4499a0
+void FUN_4499a0()
+{
+    CarRace *race = &g_4722d0->data->race;
+    DWORD t;
+    DWORD alpha;
+
+    if (race->unk4c[7] != 1 || g_61b634 != 0x14)
+    {
+        return;
+    }
+    t = race->unk4c[8];
+    if (t < 30)
+    {
+        alpha = t * 224 / 30;
+    }
+    else if (t > 90)
+    {
+        alpha = (120 - t) * 224 / 30;
+    }
+    else
+    {
+        alpha = 224;
+    }
+    float offset;
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.x = (offset = t * 5.3333335f) - 66.0f;
+    g_spriteDesc.y = 73.6f;
+    g_spriteDesc.z = 0.98f;
+    g_spriteDesc.u0 = 0.0f;
+    g_spriteDesc.v0 = 0.0f;
+    g_spriteDesc.u1 = 660.0f;
+    g_spriteDesc.v1 = 384.0f;
+    g_spriteDesc.width = 132.0f;
+    g_spriteDesc.height = 76.8f;
+    g_spriteDesc.texture = 15;
+    g_spriteDesc.blendMode = 0x48;
+    g_spriteDesc.alpha = alpha;
+    FUN_432e00(&g_spriteDesc);
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.x = 574.0f - offset;
+    g_spriteDesc.y = 150.4f;
+    g_spriteDesc.z = 0.98f;
+    g_spriteDesc.u0 = 0.0f;
+    g_spriteDesc.v0 = 388.0f;
+    g_spriteDesc.u1 = 832.0f;
+    g_spriteDesc.v1 = 644.0f;
+    g_spriteDesc.width = 166.40001f;
+    g_spriteDesc.height = 51.2f;
+    g_spriteDesc.texture = 15;
+    g_spriteDesc.blendMode = 0x48;
+    g_spriteDesc.alpha = alpha;
+    FUN_432e00(&g_spriteDesc);
 }
 
 // FUNCTION: STUNTGP_D3D 0x449b50
@@ -1143,6 +1341,34 @@ void FUN_443010(int enable)
         g_60d628[1].unk04 = (int)&g_49a1f8[3];
         g_60d628[1].time = g_4d5cc0[2].unk1c;
     }
+}
+
+// GLOBAL: STUNTGP_D3D 0x60d674
+int g_60d674;
+
+// FUNCTION: STUNTGP_D3D 0x443060
+void FUN_443060()
+{
+    g_60d668 = 0;
+    g_60d66c = 0;
+    g_60d670 = 0;
+    g_60d674 = 0;
+    g_60d628[0].unk00 = 0;
+    g_60d628[0].unk04 = (int)&g_49a1f8[4];
+    g_60d628[0].ghost = &g_4d5cc0[1];
+    g_60d628[0].time = -1;
+    g_60d628[1].unk00 = 0;
+    g_60d628[1].unk04 = (int)&g_49a1f8[3];
+    g_60d628[1].ghost = &g_4d5cc0[2];
+    g_60d628[1].time = -1;
+    g_60d628[2].unk00 = 0;
+    g_60d628[2].unk04 = (int)&g_49a1f8[1];
+    g_60d628[2].ghost = &g_4d5cc0[3];
+    g_60d628[2].time = -1;
+    g_60d628[3].unk00 = 0;
+    g_60d628[3].unk04 = (int)&g_49a1f8[2];
+    g_60d628[3].ghost = &g_4d5cc0[4];
+    g_60d628[3].time = -1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x443300

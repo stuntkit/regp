@@ -361,6 +361,33 @@ void FUN_4234d0(char *msg)
     exit(1);
 }
 
+// Bubble sort, highest unk08 first, then unk04, then unk10.
+// FUNCTION: STUNTGP_D3D 0x44be80
+void FUN_44be80(MenuSlot20 *slots, int count)
+{
+    for (int i = count - 1; i >= 0; i--)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            int d = slots[j].unk08 - slots[j + 1].unk08;
+            if (d == 0)
+            {
+                d = slots[j].unk04 - slots[j + 1].unk04;
+                if (d == 0)
+                {
+                    d = slots[j].unk10 - slots[j + 1].unk10;
+                }
+            }
+            if (d < 0)
+            {
+                MenuSlot20 t = slots[j];
+                slots[j] = slots[j + 1];
+                slots[j + 1] = t;
+            }
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x44cc90
 int FUN_44cc90(int value)
 {
@@ -406,6 +433,29 @@ void FUN_44cd10(int track, Initials *name, int time0, int time1, int score2, int
     FUN_437d60(&g_menuState.unk1a1c[track][1], name, time1);
     FUN_437d20(&g_menuState.unk1a1c[track][2], name, score2);
     FUN_437d20(&g_menuState.unk1a1c[track][3], name, score3);
+}
+
+// Bubble sort, highest unk04 first, then unk08.
+// FUNCTION: STUNTGP_D3D 0x44d070
+void FUN_44d070(MenuSlot *slots, int count)
+{
+    for (int i = count - 1; i >= 0; i--)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            int d = slots[j].unk04 - slots[j + 1].unk04;
+            if (d == 0)
+            {
+                d = slots[j].unk08 - slots[j + 1].unk08;
+            }
+            if (d < 0)
+            {
+                MenuSlot t = slots[j];
+                slots[j] = slots[j + 1];
+                slots[j + 1] = t;
+            }
+        }
+    }
 }
 
 // Decodes an uncompressed 24-bit TGA into top-down RGB.

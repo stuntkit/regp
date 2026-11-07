@@ -100,6 +100,44 @@ unsigned int FUN_43d5d0(BYTE *data, int len)
     return hash;
 }
 
+// GLOBAL: STUNTGP_D3D 0x5ff328
+char g_5ff328[0x40];
+
+// GLOBAL: STUNTGP_D3D 0x5ff368
+char g_5ff368[0x40];
+
+// Formats value with at least `digits` digits and a comma every three.
+// FUNCTION: STUNTGP_D3D 0x43d5f0
+char *FUN_43d5f0(int value, int digits)
+{
+    int len = 0;
+    int group = 0;
+    if (value < 0)
+    {
+        // STRING: STUNTGP_D3D 0x479664
+        return "0";
+    }
+    do
+    {
+        if (group++ == 3)
+        {
+            g_5ff328[len++] = ',';
+            group = 1;
+        }
+        int digit = value % 10;
+        value /= 10;
+        g_5ff328[len++] = digit + '0';
+        digits--;
+    } while (value || digits > 0);
+    int j = 0;
+    while (len)
+    {
+        g_5ff368[j++] = g_5ff328[--len];
+    }
+    g_5ff368[j] = 0;
+    return g_5ff368;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43eef0
 int FUN_43eef0()
 {
