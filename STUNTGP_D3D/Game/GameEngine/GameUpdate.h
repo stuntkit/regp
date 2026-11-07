@@ -279,6 +279,15 @@ struct Replay
     ReplayFrame frames[1];  // 0x80
 };
 
+// Running count, last value, sum and mean.
+struct Stat
+{
+    DWORD count; // 0x00
+    float last;  // 0x04
+    float sum;   // 0x08
+    float mean;  // 0x0c
+};
+
 struct PosSample
 {
     Vec4 pos;  // 0x00
@@ -330,7 +339,8 @@ struct Car
     float unkf74;             // 0x0f74
     float unkf78;             // 0x0f78
     float unkf7c;             // 0x0f7c
-    BYTE unk0f80[0x208];      // 0x0f80
+    BYTE unk0f80[0x204];      // 0x0f80
+    float unk1184;            // 0x1184
     float unk1188[5][128];    // 0x1188
     BYTE unk1b88[0x4];        // 0x1b88
     float unk1b8c;            // 0x1b8c
@@ -375,10 +385,13 @@ struct Car
     int unk2250;              // 0x2250
     float unk2254;            // 0x2254
     float unk2258;            // 0x2258
-    BYTE unk225c[0x10];       // 0x225c
+    BYTE unk225c[0x4];        // 0x225c
+    int unk2260;              // 0x2260
+    float unk2264;            // 0x2264
+    int unk2268;              // 0x2268
     int unk226c;              // 0x226c
     float unk2270;            // 0x2270
-    BYTE unk2274[0x4];        // 0x2274
+    float unk2274;            // 0x2274
     int unk2278;              // 0x2278
     int inputMode;            // 0x227c
     int unk2280;              // 0x2280
@@ -470,7 +483,8 @@ struct Car
     unsigned int unk2578;     // 0x2578
     float unk257c;            // 0x257c
     int unk2580;              // 0x2580
-    BYTE unk2584[0x40];       // 0x2584
+    Stat unk2584;             // 0x2584
+    BYTE unk2594[0x30];       // 0x2594
     DWORD unk25c4[6];         // 0x25c4
     DWORD unk25dc[6];         // 0x25dc
     int unk25f4[6];           // 0x25f4
@@ -554,7 +568,8 @@ struct Car
     int unk71e8;              // 0x71e8
     unsigned int unk71ec;     // 0x71ec
     int unk71f0;              // 0x71f0
-    BYTE unk71f4[0x8];        // 0x71f4
+    int unk71f4;              // 0x71f4
+    BYTE unk71f8[0x4];        // 0x71f8
     unsigned int unk71fc;     // 0x71fc
     BYTE unk7200[0x14];       // 0x7200
     float unk7214;            // 0x7214

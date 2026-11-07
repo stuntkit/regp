@@ -424,10 +424,18 @@ int FUN_422ac0(LPDIRECTDRAW4 dd, LPDIRECTDRAWSURFACE4 *surface, int width, int h
     return res;
 }
 
-// // STUB: STUNTGP_D3D 0x422b50
-// void FUN_422b50()
-// {
-// }
+// FUNCTION: STUNTGP_D3D 0x422b50
+void *FUN_422b50(LPDIRECTDRAWSURFACE4 surface)
+{
+    DDSURFACEDESC2 ddsd;
+    ddsd.dwSize = sizeof(ddsd);
+    if (surface->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL) != DD_OK &&
+        surface->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL) != DD_OK)
+    {
+        return NULL;
+    }
+    return ddsd.lpSurface;
+}
 
 // FUNCTION: STUNTGP_D3D 0x422ba0
 void FUN_422ba0(LPDIRECTDRAWSURFACE4 surface)
@@ -667,6 +675,19 @@ int FUN_4230b0(LPDIRECTDRAWPALETTE *palette, BYTE *src)
         }
     }
     ReleaseDC(NULL, hDC);
+    return res;
+}
+
+// FUNCTION: STUNTGP_D3D 0x423140
+int FUN_423140(LPDIRECTDRAWSURFACE4 surface, LPDIRECTDRAWPALETTE *palette, BYTE *src)
+{
+    FUN_423070(src);
+    int res = g_dd->CreatePalette(DDPCAPS_8BIT | DDPCAPS_INITIALIZE | DDPCAPS_ALLOW256, g_paletteEntries, palette, NULL);
+    if (res == DD_OK)
+    {
+        surface->SetPalette(*palette);
+        return DD_OK;
+    }
     return res;
 }
 

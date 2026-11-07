@@ -1712,12 +1712,11 @@ void FUN_443780()
             }
             if (g_60eff4 == 1)
             {
-                // The score field is reached by offset: typing it in Car perturbs codegen elsewhere.
-                g_49a1f8[0].unk23d0 = (int)*(float *)&g_49a1f8[0].unk2584[0x88];
+                g_49a1f8[0].unk23d0 = (int)g_49a1f8[0].unk260c;
                 g_49a1f8[0].unk23d4 = 0;
                 g_49a1f8[0].unk23d8 = 0;
                 FUN_401220(5, 0, g_4d5bb8->unk23d0);
-                *(float *)&g_4d5bb8->unk2584[0x88] = (float)g_49a1f8[0].unk23d0;
+                g_4d5bb8->unk260c = (float)g_49a1f8[0].unk23d0;
                 FUN_442cf0(300, g_6127a0[45], g_4d5bb8, 0, 100);
                 g_60eff4 = 0;
                 g_60d680 = 180;

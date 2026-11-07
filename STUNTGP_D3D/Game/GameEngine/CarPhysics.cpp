@@ -431,6 +431,17 @@ void FUN_40a0d0(Car *car)
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x40a120
+void FUN_40a120()
+{
+    for (int i = 0; i < 6; i++)
+    {
+        FUN_40a0d0(&g_49a1f8[i]);
+        g_49a1f8[i].unk2270 = g_49a1f8[i].unkf78;
+        g_49a1f8[i].unk2274 = g_49a1f8[i].unk1184;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x40a2c0
 void FUN_40a2c0(float (*m)[16])
 {
@@ -1630,6 +1641,29 @@ void FUN_411420()
     FUN_411410(g_4d5bb8);
 }
 
+void FUN_410dd0(Car *car);
+void FUN_410f50(Car *car);
+void FUN_411140(Car *car);
+void FUN_411280(Car *car);
+void FUN_411410(Car *car);
+void FUN_411330(Car *car);
+void FUN_4118b0();
+void FUN_412430(Car *car);
+
+// FUNCTION: STUNTGP_D3D 0x411490
+void FUN_411490(Car *car)
+{
+    FUN_410dd0(car);
+    FUN_410f50(car);
+    FUN_411140(car);
+    FUN_411280(car);
+    FUN_411410(car);
+    FUN_411330(car);
+    FUN_4118b0();
+    FUN_412430(car);
+    car->unk71f4 = 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x4115c0
 void FUN_4115c0()
 {
@@ -1658,6 +1692,26 @@ void FUN_4118b0()
     g_4d5bb8->unk6da4 = 0;
     g_4d5bb8->unk6eb4 = 0;
     g_4d5bb8->unk6da8 = 0;
+}
+
+// GLOBAL: STUNTGP_D3D 0x474290
+int g_474290[24] = {250,   500,   750,   1000,  1250,  1500,  1750,  2000,  2500,  3500,  5000,  7500,
+                    10000, 12500, 15000, 17500, 20000, 25000, 30000, 40000, 50000, 60000, 75000, 100000};
+
+// FUNCTION: STUNTGP_D3D 0x411da0
+int FUN_411da0(int value, int offset)
+{
+    unsigned int i = 0;
+    while (g_474290[i] != value)
+    {
+        i++;
+    }
+    i += offset;
+    if (i > 23)
+    {
+        i = 23;
+    }
+    return g_474290[i];
 }
 
 // FUNCTION: STUNTGP_D3D 0x412260
@@ -3057,6 +3111,18 @@ void FUN_4162c0()
     g_4d5bb8 = g_49a1f8;
 }
 
+// FUNCTION: STUNTGP_D3D 0x4163e0
+void FUN_4163e0(Car *car, float value)
+{
+    int level = value * 255.0f;
+    if (level >= car->unk2260)
+    {
+        car->unk2260 = level;
+    }
+    car->unk2268 = 30;
+    car->unk2264 = value + value;
+}
+
 // Finds the top of mesh 11's points and caches its frame.
 // FUNCTION: STUNTGP_D3D 0x417e10
 void FUN_417e10()
@@ -3124,6 +3190,15 @@ void FUN_41d180()
     {
         FUN_41d170(&g_4d5bb8->skids[i]);
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x41d1f0
+void FUN_41d1f0(Stat *stat, float value)
+{
+    stat->count++;
+    stat->last = value;
+    stat->sum = value + stat->sum;
+    stat->mean = stat->sum / stat->count;
 }
 
 // FUNCTION: STUNTGP_D3D 0x41d270

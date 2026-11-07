@@ -230,6 +230,39 @@ void FUN_403e80()
     }
 }
 
+extern int g_60f020;
+extern int g_576be0;
+
+void FUN_40d200(Car *car);
+void FUN_40d280(Car *car);
+void FUN_40d300(Car *car);
+void FUN_40d380(Car *car);
+
+// FUNCTION: STUNTGP_D3D 0x404310
+void FUN_404310(Car *car)
+{
+    int mode = g_60f020;
+    if (g_576be0)
+    {
+        mode = 1;
+    }
+    switch (mode)
+    {
+    case 1:
+        FUN_40d280(car);
+        break;
+    case 2:
+        FUN_40d200(car);
+        break;
+    case 3:
+        FUN_40d300(car);
+        break;
+    case 4:
+        FUN_40d380(car);
+        break;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x404360
 void FUN_404360()
 {
