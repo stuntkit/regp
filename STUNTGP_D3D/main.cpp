@@ -23,6 +23,17 @@ void FUN_44e490()
 
 void FUN_44ea10();
 
+// STUB: STUNTGP_D3D 0x4411c0
+void FUN_4411c0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x4320c0
+void FUN_4320c0(float value)
+{
+}
+
+#pragma optimize("y", off)
 // FUNCTION: STUNTGP_D3D 0x44e4b0
 void FUN_44e4b0(BOOL windowMessage)
 {
@@ -48,11 +59,13 @@ void FUN_44e4b0(BOOL windowMessage)
     {
         g_WindowMessage = 0;
         FUN_44ea10();
-        // FUN_4411c0();
-        // g_6244f4 = 0;
-        // FUN_4320c0(1.0);
+        FUN_4411c0();
+        g_6244f4 = 0;
+        FUN_4320c0(1.0f);
     }
 }
+
+#pragma optimize("", on)
 
 // FUNCTION: STUNTGP_D3D 0x44e5d0
 void FUN_44e5d0()
