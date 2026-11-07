@@ -706,6 +706,26 @@ void FUN_423230(LPDIRECTDRAWSURFACE4 surface, char color)
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x423290
+void FUN_423290(LPDIRECTDRAWSURFACE4 surface, char color, int width, int height)
+{
+    DDBLTFX fx;
+    RECT rect;
+    rect.left = 0;
+    rect.top = 0;
+    rect.right = width;
+    rect.bottom = height;
+    fx.dwSize = sizeof(fx);
+    fx.dwFillColor = color;
+    if (surface->Blt(&rect, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &fx) != DD_OK &&
+        surface->Blt(&rect, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &fx) != DD_OK)
+    {
+        surface->GetBltStatus(DDGBS_CANBLT);
+        // STRING: STUNTGP_D3D 0x4775bc
+        exitError("Requested Blitter Fill operation failed...\n");
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x423310
 void FUN_423310(LPDIRECTDRAWSURFACE4 src, LPDIRECTDRAWSURFACE4 dst, DWORD x, DWORD y, int width, int height)
 {
