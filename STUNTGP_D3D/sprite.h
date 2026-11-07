@@ -140,23 +140,20 @@ void FUN_438370(SpriteData *src, int layer, int sub);
 void FUN_438500(int layer, int sub, SpriteData *sprite);
 void *FUN_438550(int size);
 void FUN_438590(int layer, int sub, SpriteNode *node);
-void FUN_438830(int layer, int def, float x0, float y0, float x1, float y1, float u, float v);
-void FUN_438960(int layer, int sub, float x, float y, int style, const char *text, float size, D3DCOLOR color,
-                DWORD flags);
-void FUN_438990(int layer, int sub, float x, float y, int style, const char *text, float size, D3DCOLOR color,
-                DWORD flags, float unk18);
-void FUN_438be0(int layer, int style, float x, float y, int textId, float size, D3DCOLOR color, DWORD flags);
-void FUN_439380(int layer, int scroll, float x0, float y0, float x1, float y1, int flags, float fade);
-void FUN_439450(int layer, int def, float x0, float y0, float x1, float y1, int flags);
-void FUN_439520(int layer, int sub, float x0, float y0, float x1, float y1, int def, int a, int blend);
-void FUN_4398a0(int layer, int def, float x0, float y0, float x1, float y1, int flags, float a0, float a1,
-                float a2, float b0, float b1, float b2);
+void FUN_438830(float x0, float y0, float x1, float y1, int layer, int def, float u, float v);
+void FUN_438960(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color, DWORD flags);
+void FUN_438990(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color, DWORD flags, float unk18);
+void FUN_438be0(float x, float y, int layer, int style, int textId, float size, D3DCOLOR color, DWORD flags);
+void FUN_439380(float x0, float y0, float x1, float y1, int layer, int scroll, int flags, float fade);
+void FUN_439450(float x0, float y0, float x1, float y1, int layer, int def, int flags);
+void FUN_439520(float x0, float y0, float x1, float y1, int layer, int sub, int def, int a, int blend);
+void FUN_4398a0(float x0, float y0, float x1, float y1, int layer, int def, int flags, float a0, float a1, float a2, float b0, float b1, float b2);
 void FUN_4399b0(int def, int layer, float x0, float x1, float y, float a0, float a1, float a2);
 void FUN_439b80(int def, int layer, float x, float y0, float y1, float b0, float b1, float b2);
 float FUN_43d7b0(float value, float lo, float hi);
 void FUN_43d960(ScreenRect *dst, ScreenRect *from, ScreenRect *to, float t);
 int FUN_43dd60();
-void FUN_43feb0(int def, float x0, float y0, float x1, float y1, float u, float v);
+void FUN_43feb0(float x0, float y0, float x1, float y1, int def, float u, float v);
 void FUN_43ff40(ScreenRect *rect);
 void FUN_43ff90(int arg);
 

@@ -261,60 +261,52 @@ float FUN_438950(float size)
 // FUNCTION: STUNTGP_D3D 0x438370
 void FUN_438370(SpriteData *src, int layer, int sub)
 {
-    SpriteData s;
     float t;
-    float bottom;
-    float top;
-    float right;
-    float left;
+    SpriteData s;
 
-    left = (float)g_5da360[0];
-    if (src->width + src->x < left)
+    if (src->width + src->x < g_5da360[0])
     {
         return;
     }
-    top = (float)g_5da360[1];
-    if (src->height + src->y < top)
+    if (src->height + src->y < g_5da360[1])
     {
         return;
     }
-    right = (float)g_5da360[2];
-    if (src->x > right)
+    if (src->x > g_5da360[2])
     {
         return;
     }
-    bottom = (float)g_5da360[3];
-    if (src->y > bottom)
+    if (src->y > g_5da360[3])
     {
         return;
     }
     s = *src;
-    if (s.x < left)
+    if (s.x < g_5da360[0])
     {
-        float d = left - s.x;
-        s.x = left;
+        float d = g_5da360[0] - s.x;
+        s.x = g_5da360[0];
         t = d / s.width;
         s.width -= d;
         s.u0 += (s.u1 - s.u0) * t;
     }
-    if (s.width + s.x > right)
+    if (s.width + s.x > g_5da360[2])
     {
-        t = (s.width + s.x - right) / s.width;
-        s.width = right - s.x;
+        t = (s.width + s.x - g_5da360[2]) / s.width;
+        s.width = g_5da360[2] - s.x;
         s.u1 += (s.u0 - s.u1) * t;
     }
-    if (s.y < top)
+    if (s.y < g_5da360[1])
     {
-        float d = top - s.y;
-        s.y = top;
+        float d = g_5da360[1] - s.y;
+        s.y = g_5da360[1];
         t = d / s.height;
         s.height -= d;
         s.v0 += (s.v1 - s.v0) * t;
     }
-    if (s.height + s.y > bottom)
+    if (s.height + s.y > g_5da360[3])
     {
-        t = (s.height + s.y - bottom) / s.height;
-        s.height = bottom - s.y;
+        t = (s.height + s.y - g_5da360[3]) / s.height;
+        s.height = g_5da360[3] - s.y;
         s.v1 += (s.v0 - s.v1) * t;
     }
     if (s.width > 1.0f && s.height > 1.0f)
@@ -338,16 +330,16 @@ void FUN_438500(int layer, int sub, SpriteData *sprite)
 // FUNCTION: STUNTGP_D3D 0x438550
 void *FUN_438550(int size)
 {
-    int end = g_5da370 + ((size + 3) & ~3);
-    void *p = &g_spriteArena[g_5da370];
-    if (end > 20000)
+    BYTE *p = &g_spriteArena[g_5da370];
+    size = ((size + 3) & ~3) + g_5da370;
+    if (size > 20000)
     {
         return NULL;
     }
-    g_5da370 = end;
-    if (end > g_5df514)
+    g_5da370 = size;
+    if (size > g_5df514)
     {
-        g_5df514 = end;
+        g_5df514 = size;
     }
     return p;
 }
@@ -371,7 +363,7 @@ void FUN_438590(int layer, int sub, SpriteNode *node)
 
 // Tiles a 64-pixel texture over a rectangle, scrolled by the fractional part of u/v.
 // FUNCTION: STUNTGP_D3D 0x438830
-void FUN_438830(int layer, int def, float x0, float y0, float x1, float y1, float u, float v)
+void FUN_438830(float x0, float y0, float x1, float y1, int layer, int def, float u, float v)
 {
     if (def != 0)
     {
@@ -395,15 +387,13 @@ void FUN_438830(int layer, int def, float x0, float y0, float x1, float y1, floa
 }
 
 // FUNCTION: STUNTGP_D3D 0x438960
-void FUN_438960(int layer, int sub, float x, float y, int style, const char *text, float size, D3DCOLOR color,
-                DWORD flags)
+void FUN_438960(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color, DWORD flags)
 {
-    FUN_438990(layer, sub, x, y, style, text, size, color, flags, 0.0f);
+    FUN_438990(x, y, layer, sub, style, text, size, color, flags, 0.0f);
 }
 
 // FUNCTION: STUNTGP_D3D 0x438990
-void FUN_438990(int layer, int sub, float x, float y, int style, const char *text, float size, D3DCOLOR color,
-                DWORD flags, float unk18)
+void FUN_438990(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color, DWORD flags, float unk18)
 {
     int len = strlen(text) + 1;
     SpriteNode *node = (SpriteNode *)FUN_438550(len + 0x38);
@@ -423,13 +413,13 @@ void FUN_438990(int layer, int sub, float x, float y, int style, const char *tex
 }
 
 // FUNCTION: STUNTGP_D3D 0x438be0
-void FUN_438be0(int layer, int style, float x, float y, int textId, float size, D3DCOLOR color, DWORD flags)
+void FUN_438be0(float x, float y, int layer, int style, int textId, float size, D3DCOLOR color, DWORD flags)
 {
-    FUN_438990(layer, 1, x, y, style, FUN_441170(textId), size, color, flags, 0.0f);
+    FUN_438990(x, y, layer, 1, style, FUN_441170(textId), size, color, flags, 0.0f);
 }
 
 // FUNCTION: STUNTGP_D3D 0x439380
-void FUN_439380(int layer, int scroll, float x0, float y0, float x1, float y1, int flags, float fade)
+void FUN_439380(float x0, float y0, float x1, float y1, int layer, int scroll, int flags, float fade)
 {
     SpriteData s;
     FUN_441320(&s, 0x76);
@@ -464,30 +454,29 @@ void FUN_439380(int layer, int scroll, float x0, float y0, float x1, float y1, i
 
 // Framed panel, with a drop shadow when flags & 0x40.
 // FUNCTION: STUNTGP_D3D 0x439450
-void FUN_439450(int layer, int def, float x0, float y0, float x1, float y1, int flags)
+void FUN_439450(float x0, float y0, float x1, float y1, int layer, int def, int flags)
 {
     if (x0 < x1 && y0 < y1)
     {
         if (flags & 0x40)
         {
-            FUN_439520(15, 0, x0 + 8.0f, y0 + 8.0f, x1 + 8.0f, y1 + 8.0f, def, 2, 0x70);
+            FUN_439520(x0 + 8.0f, y0 + 8.0f, x1 + 8.0f, y1 + 8.0f, 15, 0, def, 2, 0x70);
         }
-        FUN_439520(layer, 3, x0, y0, x1, y1, def, 1, 0x70);
-        FUN_439520(layer, 2, x0, y0, x1, y1, def, 0, 0x58);
+        FUN_439520(x0, y0, x1, y1, layer, 3, def, 1, 0x70);
+        FUN_439520(x0, y0, x1, y1, layer, 2, def, 0, 0x58);
     }
 }
 
 // STUB: STUNTGP_D3D 0x439520
-void FUN_439520(int layer, int sub, float x0, float y0, float x1, float y1, int def, int a, int blend)
+void FUN_439520(float x0, float y0, float x1, float y1, int layer, int sub, int def, int a, int blend)
 {
 }
 
 // Panel with optional horizontal and vertical scroll bars.
 // FUNCTION: STUNTGP_D3D 0x4398a0
-void FUN_4398a0(int layer, int def, float x0, float y0, float x1, float y1, int flags, float a0, float a1,
-                float a2, float b0, float b1, float b2)
+void FUN_4398a0(float x0, float y0, float x1, float y1, int layer, int def, int flags, float a0, float a1, float a2, float b0, float b1, float b2)
 {
-    FUN_439450(layer, def, x0, y0, x1, y1, flags);
+    FUN_439450(x0, y0, x1, y1, layer, def, flags);
     if (a0 > 0.0f && a1 > 0.0f && a2 <= a0)
     {
         FUN_4399b0(0x75, layer, x0 + 10.0f, x1 - 10.0f, y1 + 10.0f - g_4793e8, a0, a1, a2);
@@ -539,12 +528,12 @@ int FUN_43dd60()
 
 // Darkens the screen around a rectangle.
 // FUNCTION: STUNTGP_D3D 0x43feb0
-void FUN_43feb0(int def, float x0, float y0, float x1, float y1, float u, float v)
+void FUN_43feb0(float x0, float y0, float x1, float y1, int def, float u, float v)
 {
-    FUN_438830(0x10, def, 0.0f, 0.0f, x0, 480.0f, u, v);
-    FUN_438830(0x10, def, x1, 0.0f, 640.0f, 480.0f, u, v);
-    FUN_438830(0x10, def, 0.0f, 0.0f, 640.0f, y0, u, v);
-    FUN_438830(0x10, def, 0.0f, y1, 640.0f, 480.0f, u, v);
+    FUN_438830(0.0f, 0.0f, x0, 480.0f, 0x10, def, u, v);
+    FUN_438830(x1, 0.0f, 640.0f, 480.0f, 0x10, def, u, v);
+    FUN_438830(0.0f, 0.0f, 640.0f, y0, 0x10, def, u, v);
+    FUN_438830(0.0f, y1, 640.0f, 480.0f, 0x10, def, u, v);
 }
 
 // Collapses a rectangle to a 48x48 square around its centre.
@@ -563,7 +552,7 @@ void FUN_43ff40(ScreenRect *rect)
 void FUN_43ff90(int arg)
 {
     char buf[256];
-    FUN_438830(0x13, 0x5f, 0.0f, 0.0f, 640.0f, 480.0f, g_frontEnd.unk6c, g_frontEnd.unk70);
+    FUN_438830(0.0f, 0.0f, 640.0f, 480.0f, 0x13, 0x5f, g_frontEnd.unk6c, g_frontEnd.unk70);
     if (arg != 0)
     {
         sprintf(buf, FUN_441170(0x25e), arg);
@@ -572,9 +561,9 @@ void FUN_43ff90(int arg)
     {
         strcpy(buf, FUN_441170(0x25d));
     }
-    FUN_439450(3, (FUN_43dd60() & 0x20) ? 0x6f : 0x70, 40.0f, 220.0f, 600.0f, 260.0f, 0x40);
-    FUN_439380(6, 2, 40.0f, 220.0f, 600.0f, 260.0f, 0, 0.0f);
-    FUN_438960(5, 0, 320.0f, 240.0f, 4, buf, 1.5f, 0xffffffff, 0x803);
+    FUN_439450(40.0f, 220.0f, 600.0f, 260.0f, 3, (FUN_43dd60() & 0x20) ? 0x6f : 0x70, 0x40);
+    FUN_439380(40.0f, 220.0f, 600.0f, 260.0f, 6, 2, 0, 0.0f);
+    FUN_438960(320.0f, 240.0f, 5, 0, 4, buf, 1.5f, 0xffffffff, 0x803);
 }
 
 // FUNCTION: STUNTGP_D3D 0x441170
@@ -626,7 +615,7 @@ void FUN_43f6b0()
     switch (g_frontEnd.unk84)
     {
     case 1:
-        FUN_438830(0x10, g_frontEnd.unk60, 0.0f, 0.0f, 640.0f, 480.0f, u, v);
+        FUN_438830(0.0f, 0.0f, 640.0f, 480.0f, 0x10, g_frontEnd.unk60, u, v);
         break;
     case 4:
         from.left = 40.0f;
@@ -636,13 +625,11 @@ void FUN_43f6b0()
         to = from;
         FUN_43ff40(&from);
         FUN_43d960(&rect, &from, &to, g_frontEnd.unk80);
-        FUN_438830(0x13, 0x5f, rect.left, rect.top, rect.right, rect.bottom, u * 0.5f, v * 0.5f);
-        FUN_43feb0(g_frontEnd.unk60, rect.left, rect.top, rect.right, rect.bottom, u, v);
-        FUN_4398a0(0xe, 0x6e, rect.left, rect.top, rect.right, rect.bottom, 0x40, g_frontEnd.unk88[0],
-                   g_frontEnd.unk88[1], g_frontEnd.unk88[2], g_frontEnd.unk88[3], g_frontEnd.unk88[4],
-                   g_frontEnd.unk88[5]);
-        FUN_439450(10, 0x6f, 40.0f, 288.0f, 408.0f, 384.0f, 0x40);
-        FUN_439380(0xd, 2, 40.0f, 288.0f, 408.0f, 384.0f, 0, 0.0f);
+        FUN_438830(rect.left, rect.top, rect.right, rect.bottom, 0x13, 0x5f, u * 0.5f, v * 0.5f);
+        FUN_43feb0(rect.left, rect.top, rect.right, rect.bottom, g_frontEnd.unk60, u, v);
+        FUN_4398a0(rect.left, rect.top, rect.right, rect.bottom, 0xe, 0x6e, 0x40, g_frontEnd.unk88[0], g_frontEnd.unk88[1], g_frontEnd.unk88[2], g_frontEnd.unk88[3], g_frontEnd.unk88[4], g_frontEnd.unk88[5]);
+        FUN_439450(40.0f, 288.0f, 408.0f, 384.0f, 10, 0x6f, 0x40);
+        FUN_439380(40.0f, 288.0f, 408.0f, 384.0f, 0xd, 2, 0, 0.0f);
         break;
     case 3:
         from.left = 180.0f;
@@ -652,13 +639,11 @@ void FUN_43f6b0()
         to = from;
         FUN_43ff40(&from);
         FUN_43d960(&rect, &from, &to, g_frontEnd.unk80);
-        FUN_438830(0x13, 0x5f, rect.left, rect.top, rect.right, rect.bottom, u * 0.5f, v * 0.5f);
-        FUN_43feb0(g_frontEnd.unk60, rect.left, rect.top, rect.right, rect.bottom, u, v);
-        FUN_4398a0(0xe, 0x6e, rect.left, rect.top, rect.right, rect.bottom, 0x40, g_frontEnd.unk88[0],
-                   g_frontEnd.unk88[1], g_frontEnd.unk88[2], g_frontEnd.unk88[3], g_frontEnd.unk88[4],
-                   g_frontEnd.unk88[5]);
-        FUN_439450(10, 0x6e, 180.0f, 342.0f, 588.0f, 422.0f, 0x40);
-        FUN_439380(0xd, 2, 180.0f, 342.0f, 588.0f, 422.0f, 0, 0.0f);
+        FUN_438830(rect.left, rect.top, rect.right, rect.bottom, 0x13, 0x5f, u * 0.5f, v * 0.5f);
+        FUN_43feb0(rect.left, rect.top, rect.right, rect.bottom, g_frontEnd.unk60, u, v);
+        FUN_4398a0(rect.left, rect.top, rect.right, rect.bottom, 0xe, 0x6e, 0x40, g_frontEnd.unk88[0], g_frontEnd.unk88[1], g_frontEnd.unk88[2], g_frontEnd.unk88[3], g_frontEnd.unk88[4], g_frontEnd.unk88[5]);
+        FUN_439450(180.0f, 342.0f, 588.0f, 422.0f, 10, 0x6e, 0x40);
+        FUN_439380(180.0f, 342.0f, 588.0f, 422.0f, 0xd, 2, 0, 0.0f);
         break;
     case 2:
         from.left = 48.0f;
@@ -668,11 +653,9 @@ void FUN_43f6b0()
         to = from;
         FUN_43ff40(&from);
         FUN_43d960(&rect, &from, &to, g_frontEnd.unk80);
-        FUN_438830(0x13, 0x5f, rect.left, rect.top, rect.right, rect.bottom, u * 0.5f, v * 0.5f);
-        FUN_43feb0(g_frontEnd.unk60, rect.left, rect.top, rect.right, rect.bottom, u, v);
-        FUN_4398a0(0xe, 0x6e, rect.left, rect.top, rect.right, rect.bottom, 0x40, g_frontEnd.unk88[0],
-                   g_frontEnd.unk88[1], g_frontEnd.unk88[2], g_frontEnd.unk88[3], g_frontEnd.unk88[4],
-                   g_frontEnd.unk88[5]);
+        FUN_438830(rect.left, rect.top, rect.right, rect.bottom, 0x13, 0x5f, u * 0.5f, v * 0.5f);
+        FUN_43feb0(rect.left, rect.top, rect.right, rect.bottom, g_frontEnd.unk60, u, v);
+        FUN_4398a0(rect.left, rect.top, rect.right, rect.bottom, 0xe, 0x6e, 0x40, g_frontEnd.unk88[0], g_frontEnd.unk88[1], g_frontEnd.unk88[2], g_frontEnd.unk88[3], g_frontEnd.unk88[4], g_frontEnd.unk88[5]);
         break;
     case 5:
         from.left = 49.0f;
@@ -682,13 +665,11 @@ void FUN_43f6b0()
         to = from;
         FUN_43ff40(&from);
         FUN_43d960(&rect, &from, &to, g_frontEnd.unk80);
-        FUN_438830(0x13, 0x5f, rect.left, rect.top, rect.right, rect.bottom, u * 0.5f, v * 0.5f);
-        FUN_43feb0(g_frontEnd.unk60, rect.left, rect.top, rect.right, rect.bottom, u, v);
-        FUN_4398a0(0xe, 0x6e, rect.left, rect.top, rect.right, rect.bottom, 0x40, g_frontEnd.unk88[0],
-                   g_frontEnd.unk88[1], g_frontEnd.unk88[2], g_frontEnd.unk88[3], g_frontEnd.unk88[4],
-                   g_frontEnd.unk88[5]);
-        FUN_439450(10, 0x6e, 423.0f, 82.0f, 591.0f, 334.0f, 0x40);
-        FUN_439380(0xd, 2, 423.0f, 82.0f, 591.0f, 334.0f, 0, 0.0f);
+        FUN_438830(rect.left, rect.top, rect.right, rect.bottom, 0x13, 0x5f, u * 0.5f, v * 0.5f);
+        FUN_43feb0(rect.left, rect.top, rect.right, rect.bottom, g_frontEnd.unk60, u, v);
+        FUN_4398a0(rect.left, rect.top, rect.right, rect.bottom, 0xe, 0x6e, 0x40, g_frontEnd.unk88[0], g_frontEnd.unk88[1], g_frontEnd.unk88[2], g_frontEnd.unk88[3], g_frontEnd.unk88[4], g_frontEnd.unk88[5]);
+        FUN_439450(423.0f, 82.0f, 591.0f, 334.0f, 10, 0x6e, 0x40);
+        FUN_439380(423.0f, 82.0f, 591.0f, 334.0f, 0xd, 2, 0, 0.0f);
         break;
     case 7:
         from.left = 49.0f;
@@ -698,15 +679,13 @@ void FUN_43f6b0()
         to = from;
         FUN_43ff40(&from);
         FUN_43d960(&rect, &from, &to, g_frontEnd.unk80);
-        FUN_438830(0x13, 0x5f, rect.left, rect.top, rect.right, rect.bottom, u * 0.5f, v * 0.5f);
-        FUN_43feb0(g_frontEnd.unk60, rect.left, rect.top, rect.right, rect.bottom, u, v);
-        FUN_4398a0(0xe, 0x6e, rect.left, rect.top, rect.right, rect.bottom, 0x40, g_frontEnd.unk88[0],
-                   g_frontEnd.unk88[1], g_frontEnd.unk88[2], g_frontEnd.unk88[3], g_frontEnd.unk88[4],
-                   g_frontEnd.unk88[5]);
-        FUN_439450(10, 0x6e, 423.0f, 82.0f, 591.0f, 240.0f, 0x40);
-        FUN_439380(0xd, 2, 423.0f, 82.0f, 591.0f, 240.0f, 0, 0.0f);
-        FUN_439450(10, 0x6f, 423.0f, 272.0f, 591.0f, 334.0f, 0x40);
-        FUN_439380(0xd, 2, 423.0f, 272.0f, 591.0f, 334.0f, 0, 0.0f);
+        FUN_438830(rect.left, rect.top, rect.right, rect.bottom, 0x13, 0x5f, u * 0.5f, v * 0.5f);
+        FUN_43feb0(rect.left, rect.top, rect.right, rect.bottom, g_frontEnd.unk60, u, v);
+        FUN_4398a0(rect.left, rect.top, rect.right, rect.bottom, 0xe, 0x6e, 0x40, g_frontEnd.unk88[0], g_frontEnd.unk88[1], g_frontEnd.unk88[2], g_frontEnd.unk88[3], g_frontEnd.unk88[4], g_frontEnd.unk88[5]);
+        FUN_439450(423.0f, 82.0f, 591.0f, 240.0f, 10, 0x6e, 0x40);
+        FUN_439380(423.0f, 82.0f, 591.0f, 240.0f, 0xd, 2, 0, 0.0f);
+        FUN_439450(423.0f, 272.0f, 591.0f, 334.0f, 10, 0x6f, 0x40);
+        FUN_439380(423.0f, 272.0f, 591.0f, 334.0f, 0xd, 2, 0, 0.0f);
         break;
     case 6:
         from.left = 120.0f;
@@ -716,20 +695,18 @@ void FUN_43f6b0()
         to = from;
         FUN_43ff40(&from);
         FUN_43d960(&rect, &from, &to, g_frontEnd.unk80);
-        FUN_438830(0x13, 0x5f, rect.left, rect.top, rect.right, rect.bottom, u * 0.5f, v * 0.5f);
-        FUN_43feb0(g_frontEnd.unk60, rect.left, rect.top, rect.right, rect.bottom, u, v);
-        FUN_4398a0(0xe, 0x6e, rect.left, rect.top, rect.right, rect.bottom, 0x40, g_frontEnd.unk88[0],
-                   g_frontEnd.unk88[1], g_frontEnd.unk88[2], g_frontEnd.unk88[3], g_frontEnd.unk88[4],
-                   g_frontEnd.unk88[5]);
+        FUN_438830(rect.left, rect.top, rect.right, rect.bottom, 0x13, 0x5f, u * 0.5f, v * 0.5f);
+        FUN_43feb0(rect.left, rect.top, rect.right, rect.bottom, g_frontEnd.unk60, u, v);
+        FUN_4398a0(rect.left, rect.top, rect.right, rect.bottom, 0xe, 0x6e, 0x40, g_frontEnd.unk88[0], g_frontEnd.unk88[1], g_frontEnd.unk88[2], g_frontEnd.unk88[3], g_frontEnd.unk88[4], g_frontEnd.unk88[5]);
         break;
     }
-    FUN_439450(1, 0x71, 0.0f, 0.0f, 640.0f, 480.0f, 0);
+    FUN_439450(0.0f, 0.0f, 640.0f, 480.0f, 1, 0x71, 0);
     FUN_438190(rect.left, rect.top, rect.right, rect.bottom);
     if (g_frontEnd.screen != NULL)
     {
         if (g_frontEnd.screen->unk00[1] != 1)
         {
-            FUN_438be0(2, 4, 320.0f, 16.0f, 1, 1.25f, 0xffffffff, 0x803);
+            FUN_438be0(320.0f, 16.0f, 2, 4, 1, 1.25f, 0xffffffff, 0x803);
         }
         if (g_frontEnd.screen != NULL)
         {
