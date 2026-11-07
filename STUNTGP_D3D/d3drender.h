@@ -59,6 +59,17 @@ extern int g_576bd8;
 extern int g_576be0;
 
 extern int *g_5d91b4;
+
+// Queued primitives per render pass.
+struct RenderBucket
+{
+    void *data;   // 0x00
+    int count;    // 0x04
+    void *unk08;  // 0x08
+    int unk0c;    // 0x0c
+};
+
+extern RenderBucket g_6243e0[8];
 extern int g_592054;
 extern int g_592058;
 extern int g_59205c;

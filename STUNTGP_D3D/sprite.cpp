@@ -439,6 +439,13 @@ void FUN_438990(float x, float y, int layer, int sub, int style, const char *tex
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x438a20
+void FUN_438a20(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color, DWORD flags, float unk18)
+{
+    FUN_4291a0(unk18);
+    FUN_438990(x, y, layer, sub, style, text, size, color, flags, unk18);
+}
+
 // FUNCTION: STUNTGP_D3D 0x438be0
 void FUN_438be0(float x, float y, int layer, int style, int textId, float size, D3DCOLOR color, DWORD flags)
 {

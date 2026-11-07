@@ -394,6 +394,34 @@ void FUN_4378a0(int index)
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x4378c0
+void FUN_4378c0(int id)
+{
+    int index = 0;
+    switch (id)
+    {
+    case 1:
+        index = 2;
+        break;
+    case 2:
+        index = 6;
+        break;
+    case 3:
+        index = 3;
+        break;
+    case 4:
+        index = 14;
+        break;
+    case 5:
+        index = 16;
+        break;
+    case 6:
+        index = 5;
+        break;
+    }
+    FUN_437880(index);
+}
+
 // FUNCTION: STUNTGP_D3D 0x437920
 int FUN_437920(int index)
 {
@@ -579,6 +607,16 @@ int FUN_43b3b0(BitReader *reader)
         reader->bits = (b << 1) | 1;
     }
     return bit;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43bb90
+int FUN_43bb90(BitReader *reader)
+{
+    if (!FUN_43b3b0(reader))
+    {
+        return 0;
+    }
+    return FUN_43b3b0(reader) ? 1 : -1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43bfd0

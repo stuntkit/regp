@@ -58,11 +58,20 @@ OverlayPoly *g_61c5f0 = NULL;
 // GLOBAL: STUNTGP_D3D 0x61c604
 DWORD g_61c604 = 0;
 
+// GLOBAL: STUNTGP_D3D 0x592068
+int g_592068;
+
+// GLOBAL: STUNTGP_D3D 0x59206c
+int g_59206c;
+
 // GLOBAL: STUNTGP_D3D 0x592070
 int g_592070;
 
 // GLOBAL: STUNTGP_D3D 0x592074
 int g_592074;
+
+// GLOBAL: STUNTGP_D3D 0x592078
+int g_592078;
 
 // GLOBAL: STUNTGP_D3D 0x6244f0
 int g_6244f0;
@@ -834,6 +843,17 @@ void FUN_42f6a0()
     DirectDrawEnumerateEx(FUN_42f530, &g_5ba788, DDENUM_ATTACHEDSECONDARYDEVICES | DDENUM_NONDISPLAYDEVICES);
 }
 
+// FUNCTION: STUNTGP_D3D 0x42f9c0
+void FUN_42f9c0()
+{
+    if (g_5d91b4[60] & ~5)
+    {
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAG, D3DFILTER_LINEAR);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMIN, D3DFILTER_LINEAR);
+        g_592078 = 1;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x42fa00
 void FUN_42fa00()
 {
@@ -1081,15 +1101,6 @@ void FUN_432a60()
     }
 }
 
-// Queued primitives per render pass.
-struct RenderBucket
-{
-    void *data;   // 0x00
-    int count;    // 0x04
-    void *unk08;  // 0x08
-    int unk0c;    // 0x0c
-};
-
 // Queued primitive; type 0x3f marks one that needs no depth key.
 struct RenderItem
 {
@@ -1098,19 +1109,19 @@ struct RenderItem
 };
 
 // GLOBAL: STUNTGP_D3D 0x6243c0
-int g_6243c0;
+void *g_6243c0;
 
 // GLOBAL: STUNTGP_D3D 0x6243c8
-int g_6243c8;
+void *g_6243c8;
 
 // GLOBAL: STUNTGP_D3D 0x6243cc
 int g_6243cc;
 
 // GLOBAL: STUNTGP_D3D 0x6243d0
-int g_6243d0;
+void *g_6243d0;
 
 // GLOBAL: STUNTGP_D3D 0x6243d8
-int g_6243d8;
+void *g_6243d8;
 
 // GLOBAL: STUNTGP_D3D 0x6243dc
 int g_6243dc;
@@ -1677,4 +1688,11 @@ void FUN_42f2e0(char *dst, const char *src)
         *dst++ = c;
     }
     *dst = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x42f300
+void FUN_42f300()
+{
+    g_592050 = g_592054 = g_592058 = g_59205c = g_592060 = g_592064 = g_592068 = g_59206c = g_592070 = g_592074 =
+        g_592078 = 0;
 }

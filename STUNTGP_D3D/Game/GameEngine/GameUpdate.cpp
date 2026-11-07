@@ -1070,6 +1070,32 @@ void FUN_426260()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x426c70
+void FUN_426c70(AnimObject *obj, ObjectDef *def)
+{
+    Vec4 *m = def->matrix;
+    m[2].x = g_sinTable[obj->angleA];
+    m[2].y = 0.0f;
+    m[2].z = 16.0f;
+    Vec3_Normalize(&m[2].x);
+}
+
+// FUNCTION: STUNTGP_D3D 0x426db0
+void FUN_426db0(AnimObject *obj, ObjectDef *def)
+{
+    Vec4 *m = def->matrix;
+    m[1].z = m[1].x = g_sinTable[obj->angleA] * 0.01f + 1.0f;
+    m[1].y = g_sinTable[(obj->angleA * 2) & 0x1fff] * 0.015f + 1.0f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x426df0
+void FUN_426df0(AnimObject *obj, ObjectDef *def)
+{
+    Vec4 *m = def->matrix;
+    m[1].z = m[1].x = g_sinTable[obj->angleA] * 0.005f + 1.0f;
+    m[1].y = g_sinTable[(obj->angleA * 2) & 0x1fff] * 0.01f + 1.0f;
+}
+
 // FUNCTION: STUNTGP_D3D 0x427010
 void FUN_427010(AnimObject *obj)
 {

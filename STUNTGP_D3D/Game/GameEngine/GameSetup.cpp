@@ -104,12 +104,18 @@ struct TrackHeader
     int unk058;               // 0x058
     int unk05c;               // 0x05c
     int unk060;               // 0x060
-    BYTE unk064[0xd4 - 0x64];
+    int unk064;               // 0x064
+    BYTE unk068[0x70 - 0x68];
+    int unk070;               // 0x070
+    BYTE unk074[0xd4 - 0x74];
     DWORD unk0d4;             // 0x0d4
     BYTE unk0d8[0xe4 - 0xd8];
     int unk0e4;               // 0x0e4
     int unk0e8;               // 0x0e8
-    BYTE unk0ec[0x148 - 0xec];
+    BYTE unk0ec[0xfc - 0xec];
+    DWORD unk0fc;             // 0x0fc
+    int unk100;               // 0x100
+    BYTE unk104[0x148 - 0x104];
     BYTE data[1];             // 0x148
 };
 
@@ -134,10 +140,17 @@ int g_6244a4;
 // GLOBAL: STUNTGP_D3D 0x62497c
 int g_62497c;
 
-extern int g_6243c0;
-extern int g_6243c8;
-extern int g_6243d0;
-extern int g_6243d8;
+// GLOBAL: STUNTGP_D3D 0x6244a0
+int g_6244a0;
+
+extern void *g_6243c0;
+extern void *g_6243c8;
+extern void *g_6243d0;
+extern void *g_6243d8;
+extern void *g_61c5f4;
+extern void *g_61c5f8;
+extern void *g_61c5fc;
+extern void *g_61c600;
 
 struct AnimDef;
 extern AnimDef *g_624484;
@@ -896,6 +909,15 @@ void FUN_42ebb0()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x42eee0
+void FUN_42eee0()
+{
+    g_62449c = g_58d810->unk0fc;
+    g_6244a0 = g_58d810->unk100;
+    g_62447c = (RenderMaterial *)&g_58d810->data[g_58d810->unk070];
+    g_624494 = (Ambience *)&g_58d810->data[g_58d810->unk064];
+}
+
 // FUNCTION: STUNTGP_D3D 0x42ef20
 void FUN_42ef20()
 {
@@ -932,8 +954,18 @@ void FUN_42b040()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x42b100
+void FUN_42b100()
+{
+    memset(g_6243e0, 0, sizeof(g_6243e0));
+    g_6243c0 = g_61c5fc;
+    g_6243c8 = g_61c600;
+    g_6243d0 = g_61c5f4;
+    g_6243d8 = g_61c5f8;
+}
+
 // FUNCTION: STUNTGP_D3D 0x42b140
-void FUN_42b140(int *out)
+void FUN_42b140(void **out)
 {
     out[6] = g_6243d8;
     out[4] = g_6243d0;

@@ -173,6 +173,18 @@ BOOL CALLBACK FUN_423b00(LPCDIDEVICEINSTANCE instance, LPVOID ref)
     return DIENUM_CONTINUE;
 }
 
+// FUNCTION: STUNTGP_D3D 0x424680
+HRESULT FUN_424680(LPDIRECTINPUTDEVICE device, REFGUID property, DWORD obj, DWORD how, DWORD data)
+{
+    DIPROPDWORD prop;
+    prop.diph.dwSize = sizeof(DIPROPDWORD);
+    prop.diph.dwHeaderSize = sizeof(DIPROPHEADER);
+    prop.diph.dwObj = obj;
+    prop.diph.dwHow = how;
+    prop.dwData = data;
+    return device->SetProperty(property, &prop.diph);
+}
+
 // FUNCTION: STUNTGP_D3D 0x4246c0
 int FUN_4246c0(LPDIRECTINPUTDEVICE device)
 {

@@ -1500,6 +1500,13 @@ TextKey g_606860[1000];
 // GLOBAL: STUNTGP_D3D 0x6087a4
 char g_6087a4[4];
 
+// Scratch fields for FeCsv_ReadFloat and FeCsv_ReadInt.
+// GLOBAL: STUNTGP_D3D 0x5fd048
+char g_5fd048[0x100];
+
+// GLOBAL: STUNTGP_D3D 0x5fd148
+char g_5fd148[0x100];
+
 // FUNCTION: STUNTGP_D3D 0x43c4e0
 int FUN_43c4e0(const char *name, BYTE *a, BYTE *b, int size)
 {
@@ -1610,6 +1617,22 @@ int FeCsv_ReadField(char *out, char *text, int *pos)
         (*pos)++;
     }
     return len;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43c770
+int FeCsv_ReadInt(int *value, char *text, int *pos)
+{
+    int len = FeCsv_ReadField(g_5fd148, text, pos);
+    // STRING: STUNTGP_D3D 0x4794d8
+    return sscanf(g_5fd148, "%d", value) == 1 ? len : 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43c7b0
+int FeCsv_ReadFloat(float *value, char *text, int *pos)
+{
+    int len = FeCsv_ReadField(g_5fd048, text, pos);
+    // STRING: STUNTGP_D3D 0x4794dc
+    return sscanf(g_5fd048, "%f", value) == 1 ? len : 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43c7f0
