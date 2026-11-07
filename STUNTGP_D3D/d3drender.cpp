@@ -5,6 +5,7 @@
 #include "globals.h"
 #include "windowInit.h"
 #include "vecmath.h"
+#include "surface.h"
 #include "Game/GameEngine/io_wad.h"
 #include "Game/GameEngine/GameSetup.h"
 
@@ -340,9 +341,72 @@ void FUN_430330(char *path, BYTE *dst)
 {
 }
 
-// STUB: STUNTGP_D3D 0x431560
+// GLOBAL: STUNTGP_D3D 0x46f080
+// IID_IDirect3DTexture2
+
+// GLOBAL: STUNTGP_D3D 0x5d91c0
+DDPIXELFORMAT *g_5d91c0;
+
+// STUB: STUNTGP_D3D 0x430100
+void FUN_430100(LPDIRECTDRAWSURFACE4 surface, BYTE *image, DWORD width, DWORD height, int bits)
+{
+}
+
+// Uploads an image into texture slot through a system-memory staging surface.
+// FUNCTION: STUNTGP_D3D 0x431560
 void FUN_431560(int slot, BYTE *image)
 {
+    DDSURFACEDESC2 desc;
+    LPDIRECT3DTEXTURE2 texture;
+    LPDIRECTDRAWSURFACE4 surface;
+    int res;
+    memset(&desc, 0, sizeof(desc));
+    desc.dwWidth = g_489714;
+    surface = NULL;
+    texture = NULL;
+    desc.dwHeight = g_489718;
+    desc.dwSize = sizeof(desc);
+    desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
+    desc.ddpfPixelFormat = *g_5d91c0;
+    desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
+    res = g_dd4->CreateSurface(&desc, &surface, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    FUN_430100(surface, image, g_489714, g_489718, 16);
+    res = surface->QueryInterface(IID_IDirect3DTexture2, (void **)&texture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = surface->GetSurfaceDesc(&desc);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_ALLOCONLOAD;
+    desc.dwFlags = (g_59207c[slot] ? 0x10000 : 0) + 0x101007;
+    desc.ddsCaps.dwCaps2 = 0x80;
+    desc.dwTextureStage = 0;
+    if (g_6227d4[slot].texture)
+    {
+        res = g_6227d4[slot].texture->Load(texture);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+    }
+    if (g_6227d4[slot].unk04[0])
+    {
+        res = ((LPDIRECT3DTEXTURE2)g_6227d4[slot].unk04[0])->Load(texture);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+    }
+    FUN_4300f0(texture);
+    ddReleaseSurface(&surface);
 }
 
 // FUNCTION: STUNTGP_D3D 0x4316f0
