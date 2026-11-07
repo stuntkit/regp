@@ -37,12 +37,6 @@ struct Unk62d580
 // GLOBAL: STUNTGP_D3D 0x62d580
 Unk62d580 g_62d580[4];
 
-// GLOBAL: STUNTGP_D3D 0x4835e0
-int g_4835e0 = 1;
-
-// GLOBAL: STUNTGP_D3D 0x612944
-int g_612944;
-
 // GLOBAL: STUNTGP_D3D 0x482718
 int g_482718 = 1;
 
@@ -402,20 +396,6 @@ void FUN_4457e0()
     {
         FUN_445620();
         FUN_445610();
-    }
-}
-
-// STUB: STUNTGP_D3D 0x445d70
-void FUN_445d70(int param)
-{
-}
-
-// FUNCTION: STUNTGP_D3D 0x445f80
-void FUN_445f80()
-{
-    if (g_4835e0 != g_612944)
-    {
-        FUN_445d70(g_4835e0);
     }
 }
 

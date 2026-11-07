@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <windows.h>
 
+#include "../../gametext.h"
 #include "../../globals.h"
 #include "../../input.h"
 #include "../../mem.h"

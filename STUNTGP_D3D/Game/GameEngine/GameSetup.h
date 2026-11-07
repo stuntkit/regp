@@ -22,8 +22,6 @@ void FUN_443d70();
 void FUN_445610();
 void FUN_445620();
 void FUN_4457e0();
-void FUN_445d70(int param);
-void FUN_445f80();
 void FUN_445fa0();
 void FUN_4469f0();
 void FUN_45ec30();
