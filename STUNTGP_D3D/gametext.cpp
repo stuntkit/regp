@@ -7,6 +7,7 @@
 #include "globals.h"
 #include "Game/GameEngine/io_wad.h"
 #include "Game/GameEngine/GameUpdate.h"
+#include "sprite.h"
 
 extern int g_612964;
 extern DWORD g_612d00;
@@ -592,6 +593,50 @@ void Gameplay_LoadIfNeeded()
     {
         Gameplay_Load();
         FUN_445610();
+    }
+}
+
+struct ScreenTile
+{
+    float x;
+    float y;
+    float width;
+    float height;
+};
+
+// GLOBAL: STUNTGP_D3D 0x4834e0
+ScreenTile g_4834e0[4] = {
+    {0.0f, 0.0f, 256.0f, 256.0f},
+    {256.0f, 0.0f, 256.0f, 256.0f},
+    {0.0f, 256.0f, 256.0f, 224.0f},
+    {256.0f, 256.0f, 256.0f, 224.0f},
+};
+
+extern int g_61b628;
+
+// Draws a full-screen picture from four consecutive 256x256 textures.
+// FUNCTION: STUNTGP_D3D 0x445800
+void FUN_445800()
+{
+    int texture = g_61b628;
+    memset(&g_spriteDesc, 0, sizeof(g_spriteDesc));
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.z = 0.94f;
+    g_spriteDesc.u0 = 1.0f;
+    g_spriteDesc.v0 = 1.0f;
+    g_spriteDesc.u1 = 1020.0f;
+    g_spriteDesc.v1 = 1020.0f;
+    g_spriteDesc.blendMode = 0x20;
+    ScreenTile *tile = g_4834e0;
+    for (int i = 0; i < 4; i++, tile++)
+    {
+        g_spriteDesc.x = tile->x + 64.0f;
+        g_spriteDesc.y = tile->y;
+        g_spriteDesc.width = tile->width;
+        g_spriteDesc.height = tile->height;
+        g_spriteDesc.texture = texture;
+        FUN_432e00(&g_spriteDesc);
+        texture++;
     }
 }
 

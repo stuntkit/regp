@@ -267,6 +267,28 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 // unused: STUNTGP_D3D 0x44e7a0
 
+// Parses "-m<width>x<height>x<depth>" from the command line.
+// FUNCTION: STUNTGP_D3D 0x44e7a0
+void FUN_44e7a0(char *cmdLine)
+{
+    char *p = cmdLine;
+    g_DISPLAYRESWIDTH = 640;
+    g_DISPLAYRESHEIGHT = 480;
+    g_DISPLAYRESDEPTH = 8;
+    for (DWORD i = 0; i < strlen(cmdLine); i++)
+    {
+        if (*p++ == '-' && (*p == 'm' || *p == 'M'))
+        {
+            p++;
+            g_DISPLAYRESWIDTH = strtol(p, &p, 10);
+            p++;
+            g_DISPLAYRESHEIGHT = strtol(p, &p, 10);
+            p++;
+            g_DISPLAYRESDEPTH = strtol(p, &p, 10);
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x44e870
 void m_keyboard()
 {

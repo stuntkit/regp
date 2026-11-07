@@ -423,6 +423,24 @@ int FUN_448150(DWORD value, int *digits, DWORD count, int leadingZeros)
     return blanks;
 }
 
+// Splits a frame count into tenths, seconds, minutes and hours digits.
+// FUNCTION: STUNTGP_D3D 0x4481f0
+void FUN_4481f0(DWORD frames, DWORD *digits)
+{
+    DWORD secs = frames / 60;
+    digits[0] = frames / 6 % 10;
+    DWORD hours = secs / 3600;
+    digits[5] = hours % 10;
+    digits[6] = hours / 10;
+    DWORD rest = secs % 3600;
+    DWORD mins = rest / 60;
+    digits[3] = mins % 10;
+    digits[4] = mins / 10;
+    rest %= 60;
+    digits[1] = rest % 10;
+    digits[2] = rest / 10;
+}
+
 // FUNCTION: STUNTGP_D3D 0x4473f0
 void FUN_4473f0()
 {

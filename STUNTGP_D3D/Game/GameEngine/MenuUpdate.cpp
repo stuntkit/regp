@@ -1243,6 +1243,63 @@ int FUN_437400(int track)
     return 0;
 }
 
+// FUNCTION: STUNTGP_D3D 0x437490
+int FUN_437490(int track)
+{
+    switch (track)
+    {
+    case 2:
+        return 1;
+    case 20:
+        return 2;
+    case 23:
+        return 3;
+    case 24:
+        return 4;
+    case 12:
+        return 5;
+    case 13:
+        return 6;
+    case 4:
+        return 7;
+    case 8:
+        return 8;
+    case 18:
+        return 9;
+    case 19:
+        return 10;
+    case 22:
+        return 11;
+    case 9:
+        return 12;
+    case 10:
+        return 13;
+    case 11:
+        return 14;
+    case 16:
+        return 15;
+    case 3:
+        return 16;
+    case 6:
+        return 17;
+    case 5:
+        return 18;
+    case 1:
+        return 19;
+    case 15:
+        return 20;
+    case 7:
+        return 21;
+    case 21:
+        return 22;
+    case 17:
+        return 23;
+    case 14:
+        return 24;
+    }
+    return 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x437620
 int FUN_437620(int track)
 {
@@ -2242,6 +2299,33 @@ void FUN_43d280()
         {
             g_menuState.unk0090 = 0;
         }
+        fclose(file);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d370
+void FUN_43d370()
+{
+    char path[256];
+    FILE *file;
+    // STRING: STUNTGP_D3D 0x479624
+    sprintf(path, "%s\\detail.cfg", g_GameDirectory);
+    // STRING: STUNTGP_D3D 0x479634
+    file = fopen(path, "w");
+    if (file)
+    {
+        // STRING: STUNTGP_D3D 0x479638
+        fprintf(file, "%d\n", g_menuState.unk0084);
+        fclose(file);
+    }
+    // STRING: STUNTGP_D3D 0x47963c
+    sprintf(path, "%s\\language.cfg", g_GameDirectory);
+    // STRING: STUNTGP_D3D 0x47964c
+    file = fopen(path, "w");
+    if (file)
+    {
+        // STRING: STUNTGP_D3D 0x479650
+        fprintf(file, "%d\n", g_menuState.unk0090);
         fclose(file);
     }
 }
@@ -3849,6 +3933,25 @@ int FUN_456670(Unk456070 *object)
     }
     g_menuState.unk423c = count;
     return count >= 2;
+}
+
+// GLOBAL: STUNTGP_D3D 0x6250b8
+char g_6250b8[0x20];
+
+// FUNCTION: STUNTGP_D3D 0x4566b0
+void FUN_4566b0(Unk456070 *object)
+{
+    int time = object->unk1c;
+    D3DCOLOR color = 0xffffffff;
+    // STRING: STUNTGP_D3D 0x488768
+    sprintf(g_6250b8, "%d", time / 60);
+    if (time < 240)
+    {
+        color = 0xffff8080;
+    }
+    FUN_439450(288.0f, 320.0f, 352.0f, 360.0f, 10, 0x6f, 0x40);
+    FUN_439380(288.0f, 320.0f, 352.0f, 360.0f, 13, 2, 0, 0.0f);
+    FUN_438960(320.0f, 340.0f, 12, 0, 2, g_6250b8, 2.0f, color, 3);
 }
 
 // FUNCTION: STUNTGP_D3D 0x456760
