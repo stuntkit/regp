@@ -94,7 +94,10 @@ struct CarRace
     BYTE unk34[0x10]; // 0x34
     int unk44;        // 0x44
     DWORD unk48;      // 0x48
-    DWORD unk4c[12];   // 0x4c ([7] 0x68, [8] 0x6c)
+    DWORD unk4c[9];    // 0x4c ([7] 0x68, [8] 0x6c)
+    float unk70;       // 0x70
+    DWORD unk74;       // 0x74
+    DWORD unk78;       // 0x78
     int unk7c;         // 0x7c
     DWORD unk80[7];    // 0x80 ([5] 0x94, [6] 0x98)
 };
@@ -484,13 +487,14 @@ struct Car
     float unk257c;            // 0x257c
     int unk2580;              // 0x2580
     Stat unk2584;             // 0x2584
-    BYTE unk2594[0x20];       // 0x2594
+    Stat unk2594[2];          // 0x2594
     Stat unk25b4;             // 0x25b4
     DWORD unk25c4[6];         // 0x25c4
     DWORD unk25dc[6];         // 0x25dc
     int unk25f4[6];           // 0x25f4
     float unk260c;            // 0x260c
-    BYTE unk2610[0x8];        // 0x2610
+    BYTE unk2610[0x4];        // 0x2610
+    float unk2614;            // 0x2614
     float unk2618;            // 0x2618
     float unk261c;            // 0x261c
     BYTE unk2620[0x4];        // 0x2620
@@ -515,7 +519,7 @@ struct Car
     BYTE unk267c[0x28];       // 0x267c
     int unk26a4;              // 0x26a4
     int unk26a8;              // 0x26a8
-    BYTE unk26ac[0x4];        // 0x26ac
+    int unk26ac;              // 0x26ac
     Scene *unk26b0;        // 0x26b0
     Scene *unk26b4;        // 0x26b4
     BYTE unk26b8[0x54];       // 0x26b8
@@ -590,9 +594,12 @@ struct Car
     int unk7244;              // 0x7244
     int unk7248;              // 0x7248
     int unk724c;              // 0x724c
-    BYTE unk7250[0x4];        // 0x7250
+    int unk7250;              // 0x7250
     int unk7254;              // 0x7254
-    BYTE unk7258[0x10];       // 0x7258
+    DWORD unk7258;            // 0x7258
+    int unk725c;              // 0x725c
+    int unk7260;              // 0x7260
+    int unk7264;              // 0x7264
     Replay *unk7268;          // 0x7268
     BYTE unk726c[0x4];        // 0x726c
     Body body;                // 0x7270
