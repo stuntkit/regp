@@ -8,6 +8,9 @@ void FUN_402ab0(float fov);
 void FUN_403310(float fov);
 void FUN_403770(Car *car);
 void FUN_428520(CameraPath *path, Vec4 *out, float t);
+void FUN_4028f0(CameraPreset *preset, int mode);
+
+extern CameraPreset g_4722d8[32];
 
 extern float g_482688;
 extern float g_48268c;
@@ -594,6 +597,15 @@ void FUN_404450()
     }
     FUN_403460();
     FUN_403340();
+}
+
+// FUNCTION: STUNTGP_D3D 0x4051e0
+void FUN_4051e0()
+{
+    g_4722d0->unk1d0 = 10;
+    g_4722d0->unk1d4 = 1;
+    g_4722d0->camMode = g_4722d0->unk1d0;
+    FUN_4028f0(g_4722d8, 10);
 }
 
 // STUB: STUNTGP_D3D 0x428520

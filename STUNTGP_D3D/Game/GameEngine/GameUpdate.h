@@ -87,7 +87,7 @@ struct CarRace
     BYTE unk30[0x14]; // 0x30
     int unk44;        // 0x44
     int unk48;        // 0x48
-    BYTE unk4c[0x50]; // 0x4c
+    DWORD unk4c[0x14]; // 0x4c ([7] 0x68, [8] 0x6c, [18] 0x94, [19] 0x98)
 };
 
 struct Vector4
@@ -273,7 +273,8 @@ struct Car
     int unk763c;             // 0x763c
     BYTE unk7640[0x8];       // 0x7640
     int unk7648;             // 0x7648
-    BYTE unk764c[0x34];      // 0x764c
+    BYTE unk764c[0x30];      // 0x764c
+    int unk767c;             // 0x767c
     DWORD unk7680;           // 0x7680
     BYTE unk7684[0x4];       // 0x7684
     CarRace race;            // 0x7688
@@ -332,7 +333,7 @@ struct GameSlot
     float unk1c4;          // 0x1c4
     BYTE unk1c8[0x4];      // 0x1c8
     CameraPreset *unk1cc;  // 0x1cc
-    BYTE unk1d0[0x4];      // 0x1d0
+    int unk1d0;            // 0x1d0
     int unk1d4;            // 0x1d4
     CameraPreset *preset;  // 0x1d8
     int presetMode;        // 0x1dc

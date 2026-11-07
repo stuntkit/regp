@@ -150,6 +150,7 @@ if(STUNTGP_BUILD_D3D)
     STUNTGP_D3D/font.cpp
     STUNTGP_D3D/Game/GameEngine/CarPhysics.cpp
     STUNTGP_D3D/Game/GameEngine/Camera.cpp
+    STUNTGP_D3D/Game/GameEngine/Hud.cpp
   )
   reccmp_add_target(StuntGP_D3D ID STUNTGP_D3D)
 
