@@ -153,12 +153,6 @@ int g_498234;
 // GLOBAL: STUNTGP_D3D 0x498238
 int g_498238;
 
-struct Unk4d5cc0
-{
-    short unk00;
-    BYTE unk02[0x19d00 - 2];
-};
-
 // GLOBAL: STUNTGP_D3D 0x4d5cc0
 Unk4d5cc0 g_4d5cc0[6];
 

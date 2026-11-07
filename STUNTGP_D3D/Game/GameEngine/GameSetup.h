@@ -3,6 +3,14 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+struct Unk4d5cc0
+{
+    short unk00;
+    BYTE unk02[0x3a];
+    int unk3c;
+    BYTE unk40[0x19d00 - 0x40];
+};
+
 extern int g_589e08;
 extern int g_624984;
 

@@ -352,11 +352,6 @@ void FUN_401b00()
 
 void FUN_431830(D3DCOLOR color);
 
-// STUB: STUNTGP_D3D 0x448110
-void FUN_448110()
-{
-}
-
 // STUB: STUNTGP_D3D 0x447100
 void FUN_447100()
 {
@@ -388,6 +383,32 @@ int g_61b754;
 
 // GLOBAL: STUNTGP_D3D 0x485198
 int g_485198;
+
+// STUB: STUNTGP_D3D 0x442c30
+void FUN_442c30()
+{
+}
+
+// STUB: STUNTGP_D3D 0x447a60
+void FUN_447a60()
+{
+}
+
+// STUB: STUNTGP_D3D 0x449e80
+void FUN_449e80()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x448110
+void FUN_448110()
+{
+    g_61b740 = &g_498248[0].fx;
+    g_6244fc = 0;
+    g_624500 = 0;
+    FUN_442c30();
+    FUN_447a60();
+    FUN_449e80();
+}
 
 // FUNCTION: STUNTGP_D3D 0x4473f0
 void FUN_4473f0()
@@ -1060,10 +1081,47 @@ void FUN_445530()
     }
 }
 
-// STUB: STUNTGP_D3D 0x442fd0
+struct GhostRecord
+{
+    int unk00;
+    int unk04;
+    Unk4d5cc0 *ghost;
+    unsigned int time;
+};
+
+// GLOBAL: STUNTGP_D3D 0x60d628
+GhostRecord g_60d628[4];
+
+// FUNCTION: STUNTGP_D3D 0x443330
+GhostRecord *FUN_443330()
+{
+    GhostRecord *best = NULL;
+    unsigned int bestTime = 0xffffffff;
+    GhostRecord *rec = &g_60d628[2];
+    for (int i = 0; i < 2; i++, rec++)
+    {
+        if (rec->time < bestTime && rec->time < 7200)
+        {
+            bestTime = rec->time;
+            best = rec;
+        }
+    }
+    return best;
+}
+
+// FUNCTION: STUNTGP_D3D 0x442fd0
 int FUN_442fd0()
 {
-    return 0;
+    GhostRecord *rec = FUN_443330();
+    if (rec == NULL || rec->time >= g_60d628[1].time)
+    {
+        return 0;
+    }
+    Unk4d5cc0 *ghost = rec->ghost;
+    g_60f298 = rec->unk04;
+    g_60f29c = (int)ghost;
+    g_60f294 = ghost->unk3c;
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4420e0
