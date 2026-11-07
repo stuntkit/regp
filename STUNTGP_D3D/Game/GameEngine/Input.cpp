@@ -55,27 +55,6 @@ InputSlot g_576618[10];
 // GLOBAL: STUNTGP_D3D 0x61b744
 Controller *g_61b744;
 
-// GLOBAL: STUNTGP_D3D 0x612950
-int g_612950;
-
-// GLOBAL: STUNTGP_D3D 0x612958
-int g_612958;
-
-// GLOBAL: STUNTGP_D3D 0x61295c
-int g_61295c;
-
-// GLOBAL: STUNTGP_D3D 0x612964
-int g_612964;
-
-// GLOBAL: STUNTGP_D3D 0x612968
-int g_612968;
-
-// GLOBAL: STUNTGP_D3D 0x61296c
-int g_61296c;
-
-// GLOBAL: STUNTGP_D3D 0x612970
-int g_612970;
-
 // GLOBAL: STUNTGP_D3D 0x62d580
 Controller g_62d580[4];
 
@@ -90,9 +69,9 @@ BYTE g_62dcf0[256];
 // FUNCTION: STUNTGP_D3D 0x40c750
 void FUN_40c750(Controller *c)
 {
-    if (g_612be8 == 1)
+    if (g_612948.unk02a0 == 1)
     {
-        if (g_61294c == 1)
+        if (g_612948.unk0004 == 1)
         {
             FUN_442350();
         }
@@ -308,7 +287,7 @@ void FUN_40d860()
             switch (g_62d580[i].type)
             {
             case 1:
-                if (g_612be8 == 1)
+                if (g_612948.unk02a0 == 1)
                 {
                     if (g_62d480[VK_ESCAPE] & 0x80)
                     {
@@ -427,7 +406,7 @@ void FUN_40d860()
 // FUNCTION: STUNTGP_D3D 0x40dad0
 void FUN_40dad0()
 {
-    if (g_61294c == 1)
+    if (g_612948.unk0004 == 1)
     {
         FUN_40d860();
         return;
@@ -788,9 +767,9 @@ int FUN_45ed60(int index)
 // FUNCTION: STUNTGP_D3D 0x45ee60
 void FUN_45ee60()
 {
-    if (g_612be8 == 1)
+    if (g_612948.unk02a0 == 1)
     {
-        g_61295c = 0;
+        g_612948.unk0014 = 0;
         Controller *c = g_62d580;
         for (unsigned int i = 0; i < 4; i++, c++)
         {
@@ -798,12 +777,12 @@ void FUN_45ee60()
             {
                 if (c->active == 0)
                 {
-                    g_61295c = 1;
+                    g_612948.unk0014 = 1;
                 }
                 if (c->active == 0 && c->prevActive == 1)
                 {
-                    g_612950 = g_61294c;
-                    if (!g_612950)
+                    g_612948.unk0008 = g_612948.unk0004;
+                    if (!g_612948.unk0008)
                     {
                         FUN_4422c0();
                         g_61b744 = &g_62d580[i];
@@ -812,7 +791,7 @@ void FUN_45ee60()
                 }
                 if (c->active == 1 && c->prevActive == 0)
                 {
-                    if (g_612950 != 1)
+                    if (g_612948.unk0008 != 1)
                     {
                         FUN_442350();
                     }
@@ -843,18 +822,18 @@ void FUN_45ef30(Controller *c, BYTE *map)
     int deadZone = c->state.range / 2;
     if (fabs(c->state.y) > deadZone)
     {
-        g_612970 = 1;
+        g_612948.unk0028 = 1;
     }
     else if (fabs(c->state.x) > deadZone || c->state.buttons[map[4]] ||
         c->state.buttons[map[5]] || c->state.buttons[map[6]] || c->state.buttons[map[7]] ||
         c->state.buttons[map[8]] || c->state.buttons[map[9]] || c->state.buttons[map[10]] ||
         c->state.buttons[map[11]] || c->state.buttons[map[12]])
     {
-        g_612970 = 1;
+        g_612948.unk0028 = 1;
     }
     if (c->state.buttons[map[12]] || c->state.buttons[map[10]])
     {
-        g_612968 = 1;
+        g_612948.unk0020 = 1;
     }
 }
 
@@ -867,24 +846,24 @@ void FUN_45f020(Controller *c, BYTE *map)
         (g_62d480[map[9]] & 0x80) || (g_62d480[map[10]] & 0x80) || (g_62d480[map[11]] & 0x80) ||
         (g_62d480[map[12]] & 0x80))
     {
-        g_612970 = 1;
+        g_612948.unk0028 = 1;
     }
     if ((g_62d480[map[12]] & 0x80) || (g_62d480[map[10]] & 0x80))
     {
-        g_612968 = 1;
+        g_612948.unk0020 = 1;
     }
 }
 
 // FUNCTION: STUNTGP_D3D 0x45f110
 void FUN_45f110()
 {
-    g_612964 = g_612968;
-    g_612968 = 0;
-    g_61296c = g_612970;
-    g_612970 = 0;
+    g_612948.unk001c = g_612948.unk0020;
+    g_612948.unk0020 = 0;
+    g_612948.unk0024 = g_612948.unk0028;
+    g_612948.unk0028 = 0;
     unsigned int i = 0;
     Controller *c = g_62d580;
-    while (i < 4 && g_612968 != 1)
+    while (i < 4 && g_612948.unk0020 != 1)
     {
         if (c->active == 1)
         {
@@ -922,7 +901,7 @@ void FUN_45f110()
 // FUNCTION: STUNTGP_D3D 0x45f210
 void FUN_45f210()
 {
-    g_612958 = 0;
+    g_612948.unk0010 = 0;
     memcpy(g_62dcf0, g_62d480, sizeof(g_62dcf0));
     FUN_4243f0();
     FUN_4244c0();

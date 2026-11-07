@@ -9,9 +9,6 @@
 #include "Game/GameEngine/GameUpdate.h"
 #include "sprite.h"
 
-extern int g_612964;
-extern DWORD g_612d00;
-extern DWORD g_612d04;
 extern BYTE g_62dcf0[256];
 void FUN_441ec0();
 void FUN_442490();
@@ -19,7 +16,6 @@ void FUN_442be0();
 
 // GLOBAL: STUNTGP_D3D 0x6126a0
 char g_6126a0[0x100];
-extern int g_612968;
 
 // GLOBAL: STUNTGP_D3D 0x46e780
 const TextKey c_46e780[105] = {
@@ -495,8 +491,8 @@ void Scores_LoadIfNeeded()
 // FUNCTION: STUNTGP_D3D 0x443d80
 void FUN_443d80()
 {
-    g_612964 = 1;
-    g_612968 = 1;
+    g_612948.unk001c = 1;
+    g_612948.unk0020 = 1;
 }
 
 // GLOBAL: STUNTGP_D3D 0x60d71c
@@ -612,13 +608,11 @@ ScreenTile g_4834e0[4] = {
     {256.0f, 256.0f, 256.0f, 224.0f},
 };
 
-extern int g_61b628;
-
 // Draws a full-screen picture from four consecutive 256x256 textures.
 // FUNCTION: STUNTGP_D3D 0x445800
 void FUN_445800()
 {
-    int texture = g_61b628;
+    int texture = g_612948.unk8ce0;
     memset(&g_spriteDesc, 0, sizeof(g_spriteDesc));
     g_spriteDesc.flags = 2;
     g_spriteDesc.z = 0.94f;
@@ -640,7 +634,6 @@ void FUN_445800()
     }
 }
 
-extern int g_frameCount;
 void FUN_432a60();
 void FUN_433ee0();
 void FUN_4328c0(int color);
@@ -653,7 +646,7 @@ void FUN_433f20();
 // FUNCTION: STUNTGP_D3D 0x4458b0
 void FUN_4458b0()
 {
-    g_frameCount++;
+    g_612948.frameCount++;
     FUN_432a60();
     FUN_433ee0();
     FUN_4328c0(0);
@@ -669,7 +662,7 @@ void FUN_4458b0()
 void FUN_4458f0()
 {
     FUN_442490();
-    while (g_612d00 < g_612d04)
+    while (g_612948.unk03b8 < g_612948.unk03bc)
     {
         FUN_442be0();
         FUN_441ec0();

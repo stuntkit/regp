@@ -14,8 +14,6 @@
 #include "surface.h"
 #include "windowInit.h"
 
-extern int g_61b634;
-
 void FUN_436400(const char *name, int *value);
 void FUN_439da0(int type, int layer, float x0, float y0, float x1, float y1);
 
@@ -1384,7 +1382,7 @@ void FUN_430d40(int slot, int id)
     {
         if (slot == 15)
         {
-            g_61b634 = id;
+            g_612948.unk8cec = id;
         }
         surfaceSlot = &g_5ba788.surfaceSlots[slot];
         memset(&desc, 0, sizeof(desc));

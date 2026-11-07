@@ -60,12 +60,6 @@ int g_60f2c0;
 // GLOBAL: STUNTGP_D3D 0x60f2c4
 DWORD g_60f2c4;
 
-// GLOBAL: STUNTGP_D3D 0x61294c
-int g_61294c;
-
-// GLOBAL: STUNTGP_D3D 0x612954
-DWORD g_612954;
-
 // Entry 0 is the fallback zone; the list ends at id -1.
 // GLOBAL: STUNTGP_D3D 0x483f98
 SoundZone g_483f98[32] = {
@@ -92,12 +86,6 @@ float g_4d5b18;
 
 // GLOBAL: STUNTGP_D3D 0x4d5b1c
 int g_4d5b1c;
-
-// GLOBAL: STUNTGP_D3D 0x612990
-DWORD g_612990;
-
-// GLOBAL: STUNTGP_D3D 0x61299c
-int g_61299c;
 
 void FUN_441e20();
 
@@ -141,12 +129,6 @@ Car *g_4d5bb8;
 
 // GLOBAL: STUNTGP_D3D 0x60f2b0
 DWORD g_60f2b0;
-
-// GLOBAL: STUNTGP_D3D 0x612d10
-unsigned int g_612d10;
-
-// GLOBAL: STUNTGP_D3D 0x612d14
-Car *g_612d14[6];
 
 // GLOBAL: STUNTGP_D3D 0x474630
 Car *g_474630 = g_49a1f8;
@@ -711,9 +693,9 @@ void FUN_40dd30()
 // FUNCTION: STUNTGP_D3D 0x40dd80
 void FUN_40dd80()
 {
-    if (g_612994 != 1)
+    if (g_612948.unk004c != 1)
     {
-        g_612994 = 1;
+        g_612948.unk004c = 1;
         g_473a24 = 720;
         g_4d5b18 = 0.0f;
         g_473a28 = -5.0f;
@@ -744,15 +726,15 @@ void FUN_40ddd0()
 // FUNCTION: STUNTGP_D3D 0x40de30
 void FUN_40de30()
 {
-    if (g_61299c == 1)
+    if (g_612948.unk0054 == 1)
     {
         g_60f2c0 = 1;
         FUN_40ddd0();
-        if (--g_612990 == 0 || g_612968 == 1)
+        if (--g_612948.unk0048 == 0 || g_612948.unk0020 == 1)
         {
-            g_612994 = 0;
-            g_61299c = 0;
-            g_612990 = 0;
+            g_612948.unk004c = 0;
+            g_612948.unk0054 = 0;
+            g_612948.unk0048 = 0;
             FUN_441e20();
         }
     }
@@ -1292,7 +1274,7 @@ void FUN_442c80(SlotEvent *events, int frames, char *text, Car *car, int mode, i
         {
             events->count = frames;
             events->duration = frames;
-            events->order = g_612cfc;
+            events->order = g_612948.unk03b4;
             events->car = car;
             events->mode = mode;
             strcpy(events->text, text);
@@ -1356,39 +1338,39 @@ void FUN_41e2d0()
     char text[32];
     unsigned int i;
     unsigned int j;
-    memset(g_612d14, 0, sizeof(g_612d14));
+    memset(g_612948.unk03cc, 0, sizeof(g_612948.unk03cc));
     unsigned int count = 0;
     for (i = 0; i < 6; i++)
     {
         if (g_49a1f8[i].active == 1)
         {
-            g_612d14[count] = &g_49a1f8[i];
+            g_612948.unk03cc[count] = &g_49a1f8[i];
             count++;
         }
     }
-    g_612d10 = count;
+    g_612948.unk03c8 = count;
     for (i = 0; i < count; i++)
     {
         for (j = 0; j < count; j++)
         {
-            if (g_612d14[i]->unk23b0 > g_612d14[j]->unk23b0)
+            if (g_612948.unk03cc[i]->unk23b0 > g_612948.unk03cc[j]->unk23b0)
             {
-                Car *t = g_612d14[j];
-                g_612d14[j] = g_612d14[i];
-                g_612d14[i] = t;
+                Car *t = g_612948.unk03cc[j];
+                g_612948.unk03cc[j] = g_612948.unk03cc[i];
+                g_612948.unk03cc[i] = t;
             }
         }
     }
     for (i = 0; i < count; i++)
     {
-        if (i == 0 && g_612d14[0]->unk24ac)
+        if (i == 0 && g_612948.unk03cc[0]->unk24ac)
         {
-            int index = g_612d14[0] - g_49a1f8;
+            int index = g_612948.unk03cc[0] - g_49a1f8;
             // STRING: STUNTGP_D3D 0x474924
             sprintf(text, "%s %s", g_60f02c[index].name, g_6127a0[24]);
             FUN_442cf0(180, text, &g_49a1f8[index], 1, 100);
         }
-        g_612d14[i]->unk24ac = i;
+        g_612948.unk03cc[i]->unk24ac = i;
     }
 }
 
@@ -1494,7 +1476,7 @@ void FUN_425df0(Scene *scene, ObjectDef *def, int type)
 // FUNCTION: STUNTGP_D3D 0x426260
 void FUN_426260()
 {
-    if (g_612be8 == 2)
+    if (g_612948.unk02a0 == 2)
     {
         return;
     }
@@ -1936,7 +1918,7 @@ void FUN_41d9f0(int *a, int *b)
         }
     }
     *a = count;
-    if (g_61299c == 1)
+    if (g_612948.unk0054 == 1)
     {
         *b = 1;
     }
@@ -2333,7 +2315,7 @@ void FUN_443e20()
         {
             FUN_461150(47, 0, 0, 127, 0, 0, 0);
         }
-        if (g_61b634 != 20)
+        if (g_612948.unk8cec != 20)
         {
             FUN_430d40(15, 20);
         }
@@ -2403,7 +2385,7 @@ void FUN_4446d0()
 // FUNCTION: STUNTGP_D3D 0x444a90
 int FUN_444a90()
 {
-    if (g_61299c == 1)
+    if (g_612948.unk0054 == 1)
     {
         return 0;
     }
@@ -2469,7 +2451,7 @@ void FUN_444c50()
             {
                 FUN_461150(44, 0, 0, 255, 0, 0, 0);
             }
-            if (g_61b634 != 19)
+            if (g_612948.unk8cec != 19)
             {
                 FUN_430d40(15, 19);
             }
@@ -2480,7 +2462,7 @@ void FUN_444c50()
             {
                 FUN_461150(44, 0, 0, 255, 0, 0, 0);
             }
-            if (g_61b634 != 18)
+            if (g_612948.unk8cec != 18)
             {
                 FUN_430d40(15, 18);
             }
@@ -2491,14 +2473,14 @@ void FUN_444c50()
             {
                 FUN_461150(44, 0, 0, 255, 0, 0, 0);
             }
-            if (g_61b634 != 17)
+            if (g_612948.unk8cec != 17)
             {
                 FUN_430d40(15, 17);
             }
         }
         else if (g_4d5bb8->race.unk00 > 0)
         {
-            if (g_61b634 != 16)
+            if (g_612948.unk8cec != 16)
             {
                 FUN_430d40(15, 16);
             }
@@ -3300,7 +3282,6 @@ void FUN_45f8f0(int track, int loop)
 }
 
 // --- sound ---
-
 
 // FUNCTION: STUNTGP_D3D 0x41bdd0
 void FUN_41bdd0()

@@ -131,7 +131,7 @@ int FUN_44e430()
 // FUNCTION: STUNTGP_D3D 0x44e490
 void FUN_44e490()
 {
-    g_612994 = 0;
+    g_612948.unk004c = 0;
 }
 
 void FUN_44ea10();
@@ -539,8 +539,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
         return FALSE;
     }
 
-    g_612be8 = 2;
-    g_612bec = 2;
+    g_612948.unk02a0 = 2;
+    g_612948.unk02a4 = 2;
     FUN_442120();
     FUN_44e5d0();
     do
@@ -559,12 +559,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
             FUN_44e9d0();
             if (g_61c374 && !g_WindowMessage)
             {
-                if (g_612be8 == 1)
+                if (g_612948.unk02a0 == 1)
                 {
                     FUN_442810();
                     FUN_4427b0();
                 }
-                else if (g_612be8 == 2)
+                else if (g_612948.unk02a0 == 2)
                 {
                     FUN_441f00();
                     FUN_441d70();
@@ -572,7 +572,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
                 thunk_FUN_44e6b0();
             }
         }
-    } while (g_612948 != 1);
+    } while (g_612948.unk0000 != 1);
 
     FUN_44e6c0();
     FUN_442180();

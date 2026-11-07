@@ -320,9 +320,6 @@ int g_5ff8c0;
 // GLOBAL: STUNTGP_D3D 0x5ff3e8
 FrontEnd g_frontEnd;
 
-// GLOBAL: STUNTGP_D3D 0x61297c
-DWORD g_61297c;
-
 // GLOBAL: STUNTGP_D3D 0x47966c
 Initials g_47966c = {'!', '!', '!'};
 
@@ -2196,7 +2193,7 @@ void FUN_43c000()
     {
         g_musicSetting = 1;
     }
-    g_61297c = g_menuState.unk0084;
+    g_612948.unk0034 = g_menuState.unk0084;
     FUN_462270(g_menuState.unk4240);
     Sound_ApplyVolumes();
 }

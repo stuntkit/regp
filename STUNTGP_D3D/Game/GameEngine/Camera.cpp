@@ -17,8 +17,6 @@ extern float g_482688;
 extern float g_48268c;
 extern float g_482690;
 extern float g_60f010;
-extern unsigned int g_612d10;
-extern Car *g_612d14[6];
 
 // GLOBAL: STUNTGP_D3D 0x499f8c
 float g_499f8c;
@@ -300,7 +298,7 @@ void FUN_404360()
     if (car->unk2304)
     {
         int index = car->unk24ac + 1;
-        Car *next = index < (int)g_612d10 ? g_612d14[index] : car;
+        Car *next = index < (int)g_612948.unk03c8 ? g_612948.unk03cc[index] : car;
         float gap = (car->unk23b0 - next->unk23b0) * g_60f010 * 0.01f;
         if (gap > 0.0f && gap < 5000.0f && next->unk1cf0 + 8.333333f > car->unk1cf0 && car->unk1cf0 > 0.41666666f)
         {

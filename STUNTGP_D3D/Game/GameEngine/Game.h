@@ -30,9 +30,6 @@ void FUN_4428a0();
 void FUN_442a00();
 void FUN_442a20();
 
-extern int g_frameCount;
-
-
 struct GhostRecord
 {
     int unk00;

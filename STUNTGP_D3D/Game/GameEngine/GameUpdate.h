@@ -3,6 +3,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+#include "../../globals.h"
+
 struct Vec4
 {
     float x; // 0x00
@@ -293,7 +295,7 @@ struct Suspension
     float maxStiffnessOut; // 0x14
 };
 
-// One of the 32 effect slots in g_612da4.
+// One of the 32 effect slots at g_612948.unk045c.
 struct Unk612da4
 {
     int life;           // 0x000
@@ -917,12 +919,6 @@ extern GameSlot *g_4722d0;
 extern SlotFx *g_61b740;
 extern GameSlot g_498248[4];
 
-// --- frame timing ---
-extern DWORD g_612cfc;
-extern DWORD g_612d00;
-extern DWORD g_612d04;
-extern DWORD g_612d08;
-
 extern BYTE g_62dcf0[256];
 
 extern int g_60d618;
@@ -931,22 +927,9 @@ extern int g_60df9c;
 extern int g_DisableFramerateCorrection;
 extern int g_60f2c0;
 extern DWORD g_60f2c4;
-extern int g_61294c;
-extern DWORD g_612990;
 extern int g_473a24;
 extern float g_4d5b18;
 extern int g_4d5b1c;
-extern int g_61299c;
-extern int g_61b634;
-extern DWORD g_612954;
-extern int g_612958;
-extern int g_612970;
-extern int g_612bf4;
-extern int g_612950;
-extern int g_61295c;
-extern int g_612964;
-extern int g_612968;
-extern int g_61296c;
 
 // fpu
 void FUN_4294f0();
