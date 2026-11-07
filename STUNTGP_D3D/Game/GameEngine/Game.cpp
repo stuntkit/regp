@@ -522,15 +522,8 @@ void FUN_40df90()
 
 void FUN_447fa0();
 
-// STUB: STUNTGP_D3D 0x4487d0
-void FUN_4487d0(int index, float x, float y, float z)
-{
-}
-
-// STUB: STUNTGP_D3D 0x4476c0
-void FUN_4476c0(int type, float x, float y, float z, float width, float height)
-{
-}
+void FUN_4487d0(unsigned int index, float x, float y, float z);
+void FUN_4476c0(DWORD flags, float x, float y, float z, float width, float height);
 
 extern int g_60f2b4;
 

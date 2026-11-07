@@ -548,3 +548,152 @@ void FUN_449e80()
     fx->faders[11].dx = 0;
     fx->faders[11].dy = 128;
 }
+
+// u0, v0, u1, v1 of the left cap, the middle and the right cap of a HUD bar.
+// GLOBAL: STUNTGP_D3D 0x4851f0
+float g_4851f0[4][6] = {
+    {440.0f, 572.0f, 0.0f, 72.0f, 364.0f, 436.0f},
+    {440.0f, 572.0f, 436.0f, 508.0f, 800.0f, 872.0f},
+    {0.0f, 252.0f, 0.0f, 72.0f, 948.0f, 1020.0f},
+    {0.0f, 252.0f, 1020.0f, 948.0f, 72.0f, 0.0f},
+};
+
+// Bar with 18 pixel caps; flags 2 centres it, 4 right-aligns it, 0x10/0x20/0x40 pick the style.
+// FUNCTION: STUNTGP_D3D 0x4476c0
+void FUN_4476c0(DWORD flags, float x, float y, float z, float width, float height)
+{
+    float *uv;
+    float left;
+
+    if (flags & 0x40)
+    {
+        uv = g_4851f0[3];
+    }
+    else if (flags & 0x20)
+    {
+        uv = g_4851f0[2];
+    }
+    else if (flags & 0x10)
+    {
+        uv = g_4851f0[1];
+    }
+    else
+    {
+        uv = g_4851f0[0];
+    }
+    width += 36.0f;
+    if (flags & 2)
+    {
+        left = width * -0.5f;
+    }
+    else if (flags & 4)
+    {
+        left = -(width - 18.0f);
+    }
+    else
+    {
+        left = -18.0f;
+    }
+    g_spriteDesc.z = z;
+    g_spriteDesc.height = height;
+    g_spriteDesc.v0 = uv[0];
+    g_spriteDesc.v1 = uv[1];
+    g_spriteDesc.y = y;
+    g_spriteDesc.x = left + x;
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.texture = 15;
+    g_spriteDesc.blendMode = 0x20;
+    g_spriteDesc.u0 = uv[2];
+    g_spriteDesc.u1 = uv[3];
+    g_spriteDesc.width = 18.0f;
+    FUN_432e00(&g_spriteDesc);
+    left += 18.0f;
+    g_spriteDesc.y = y;
+    g_spriteDesc.u0 = uv[3];
+    g_spriteDesc.u1 = uv[4];
+    width -= 36.0f;
+    g_spriteDesc.x = left + x;
+    g_spriteDesc.width = width;
+    FUN_432e00(&g_spriteDesc);
+    g_spriteDesc.x = x + (width + left);
+    g_spriteDesc.y = y;
+    g_spriteDesc.u0 = uv[4];
+    g_spriteDesc.u1 = uv[5];
+    g_spriteDesc.width = 18.0f;
+    FUN_432e00(&g_spriteDesc);
+}
+
+// Piece of texture 14 in 1/256 units, drawn at 0.8 scale.
+struct HudSprite
+{
+    int u;
+    int v;
+    int x;
+    int y;
+    int width;
+    int height;
+};
+
+// GLOBAL: STUNTGP_D3D 0x4853a0
+HudSprite g_4853a0[12] = {
+    {0, 0, 0, 0, 71, 88},
+    {73, 0, 0, 0, 71, 88},
+    {146, 0, 0, 0, 71, 88},
+    {0, 185, 8, 11, 44, 70},
+    {44, 185, 12, 11, 39, 70},
+    {83, 185, 7, 11, 45, 70},
+    {128, 185, 12, 11, 38, 70},
+    {167, 185, 6, 11, 46, 70},
+    {224, 0, 0, 0, 29, 26},
+    {155, 88, 56, 8, 44, 41},
+    {201, 88, 56, 8, 44, 41},
+    {155, 130, 56, 8, 44, 41},
+};
+
+// Draws place badge index; the first three get a medal, the rest a plain tag.
+// FUNCTION: STUNTGP_D3D 0x4487d0
+void FUN_4487d0(unsigned int index, float x, float y, float z)
+{
+    HudSprite *sprite = &g_4853a0[index];
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.z = z;
+    g_spriteDesc.texture = 14;
+    g_spriteDesc.blendMode = 0x20;
+    g_spriteDesc.x = sprite->x + x;
+    g_spriteDesc.y = sprite->y + y;
+    g_spriteDesc.u0 = sprite->u * 1024.0f * 0.00390625f;
+    g_spriteDesc.v0 = sprite->v * 1024.0f * 0.00390625f;
+    g_spriteDesc.u1 = sprite->width * 1024.0f * 0.00390625f + g_spriteDesc.u0;
+    g_spriteDesc.v1 = sprite->height * 1024.0f * 0.00390625f + g_spriteDesc.v0;
+    g_spriteDesc.width = sprite->width * 0.8f;
+    g_spriteDesc.height = sprite->height * 0.8f;
+    FUN_432e00(&g_spriteDesc);
+    if (index < 3)
+    {
+        HudSprite *medal = &g_4853a0[index + 9];
+        g_spriteDesc.z = z;
+        g_spriteDesc.x = (float)medal->x + sprite->x + x;
+        g_spriteDesc.y = (float)medal->y + sprite->y + y;
+        g_spriteDesc.u0 = medal->u * 1024.0f * 0.00390625f;
+        g_spriteDesc.v0 = medal->v * 1024.0f * 0.00390625f;
+        g_spriteDesc.u1 = medal->width * 1024.0f * 0.00390625f + g_spriteDesc.u0;
+        g_spriteDesc.v1 = medal->height * 1024.0f * 0.00390625f + g_spriteDesc.v0;
+        g_spriteDesc.width = medal->width * 0.8f;
+        g_spriteDesc.height = medal->height * 0.8f;
+    }
+    else
+    {
+        g_spriteDesc.texture = 14;
+        g_spriteDesc.z = z;
+        g_spriteDesc.x = x + 44.0f;
+        g_spriteDesc.y = y + 10.0f;
+        g_spriteDesc.u0 = g_4853a0[8].u * 1024.0f * 0.00390625f;
+        g_spriteDesc.v0 = g_4853a0[8].v * 1024.0f * 0.00390625f;
+        g_spriteDesc.u1 = g_4853a0[8].width * 1024.0f * 0.00390625f + g_spriteDesc.u0;
+        g_spriteDesc.v1 = g_4853a0[8].height * 1024.0f * 0.00390625f + g_spriteDesc.v0;
+        g_spriteDesc.width = g_4853a0[8].width * 0.8f;
+        g_spriteDesc.height = g_4853a0[8].height * 0.8f;
+    }
+    g_spriteDesc.blendMode = 0x20;
+    FUN_432e00(&g_spriteDesc);
+}
