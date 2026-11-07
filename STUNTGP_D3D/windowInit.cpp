@@ -177,31 +177,24 @@ HWND windowCreateInternal(HINSTANCE hInstance, LPCTSTR className, LPCTSTR window
     return wHandle;
 }
 
+// GLOBAL: STUNTGP_D3D 0x572ae4
+char g_ddErrorText[256];
+
 // FUNCTION: STUNTGP_D3D 0x422690
 const char *ddGetErrMessage(int res)
 {
-    int elements = {0};
-    // GLOBAL: STUNTGP_D3D 0x572ae4
-    static char message[256];
-
-    if (errorMessages[0].message)
+    for (int i = 0; errorMessages[i].message != NULL; i++)
     {
-        errorMessage *errorMessagePtr = errorMessages;
-        for (; errorMessagePtr != NULL; errorMessagePtr++)
+        if (errorMessages[i].code == res)
         {
-            if (errorMessagePtr->code == res)
-            {
-                // STRING: STUNTGP_D3D 0x477570
-                sprintf(message, "%s\n", errorMessagePtr->message);
-                return message;
-            }
+            // STRING: STUNTGP_D3D 0x477570
+            sprintf(g_ddErrorText, "%s\n", errorMessages[i].message);
+            return g_ddErrorText;
         }
-        elements++;
     }
     // STRING: STUNTGP_D3D 0x477574
-    sprintf(message, "No Text For Error : %.8x\n", res);
-    return message;
-    // TODO
+    sprintf(g_ddErrorText, "No Text For Error : %.8x\n", res);
+    return g_ddErrorText;
 }
 
 // FUNCTION: STUNTGP_D3D 0x422780
