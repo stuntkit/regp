@@ -4,6 +4,14 @@
 
 #include <string.h>
 
+#include "common.h"
+#include "globals.h"
+#include "mem.h"
+#include "surface.h"
+#include "windowInit.h"
+
+extern int g_61b634;
+
 // GLOBAL: STUNTGP_D3D 0x576c38
 SpriteDesc g_spriteDesc;
 
@@ -339,7 +347,90 @@ void FUN_441310(int slot, int id)
     g_5df51c++;
 }
 
-// STUB: STUNTGP_D3D 0x430d40
+// Image table entry; data is RLE packed when compressed is 1.
+struct ImageEntry
+{
+    BYTE *data;     // 0x00
+    DWORD width;    // 0x04
+    DWORD height;   // 0x08
+    int compressed; // 0x0c
+    DWORD unk10;    // 0x10
+    DWORD unk14;    // 0x14
+};
+
+// GLOBAL: STUNTGP_D3D 0x583594
+int g_583594[256];
+
+// GLOBAL: STUNTGP_D3D 0x587998
+ImageEntry g_587998[256];
+
+// Replaces the contents of a texture slot with another image of the same width.
+// FUNCTION: STUNTGP_D3D 0x430d40
 void FUN_430d40(int slot, int id)
 {
+    DDSURFACEDESC2 desc;
+    SurfaceSlot *surfaceSlot;
+    WORD *size;
+    LPDIRECT3DTEXTURE2 texture;
+    LPDIRECTDRAWSURFACE4 surface;
+    int res;
+    int image = g_583594[id];
+    surface = NULL;
+    texture = NULL;
+    size = (WORD *)&g_6227d4[slot].unk04[1];
+    if (*size == g_587998[image].width)
+    {
+        if (slot == 15)
+        {
+            g_61b634 = id;
+        }
+        surfaceSlot = &g_surfaceSlots[slot];
+        memset(&desc, 0, sizeof(desc));
+        desc.dwHeight = g_587998[image].height;
+        desc.dwWidth = g_587998[image].width;
+        desc.dwSize = sizeof(desc);
+        desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
+        desc.ddpfPixelFormat = *g_5d91c0;
+        desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
+        res = g_dd4->CreateSurface(&desc, &surface, NULL);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+        if (g_587998[image].compressed == 1)
+        {
+            BYTE *buffer = (BYTE *)Mem_Alloc(*size * *size * 2 + 0x20, 0);
+            FUN_4234e0(buffer, g_587998[image].data + 10);
+            FUN_430100(surface, buffer, g_587998[image].width, g_587998[image].height, 16);
+            Mem_Free(buffer);
+        }
+        else
+        {
+            FUN_430100(surface, g_587998[image].data, g_587998[image].width, g_587998[image].height, 16);
+        }
+        res = surface->QueryInterface(IID_IDirect3DTexture2, (void **)&texture);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+        res = surface->GetSurfaceDesc(&desc);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+        LPDIRECT3DTEXTURE2 target = (LPDIRECT3DTEXTURE2)surfaceSlot->unk04;
+        desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_ALLOCONLOAD;
+        desc.ddsCaps.dwCaps2 = 0x80;
+        desc.dwFlags = (*g_592028 ? DDSD_CKSRCBLT : 0) + 0x101007;
+        desc.dwTextureStage = 0;
+        res = target->Load(texture);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+        g_6243b8->texture = target;
+        g_6243b8->unk04[0] = (DWORD)target;
+        FUN_4300f0(texture);
+        ddReleaseSurface(&surface);
+    }
 }

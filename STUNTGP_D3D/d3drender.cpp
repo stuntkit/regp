@@ -347,6 +347,11 @@ void FUN_430330(char *path, BYTE *dst)
 // GLOBAL: STUNTGP_D3D 0x5d91c0
 DDPIXELFORMAT *g_5d91c0;
 
+// STUB: STUNTGP_D3D 0x4234e0
+void FUN_4234e0(BYTE *dst, BYTE *src)
+{
+}
+
 // STUB: STUNTGP_D3D 0x430100
 void FUN_430100(LPDIRECTDRAWSURFACE4 surface, BYTE *image, DWORD width, DWORD height, int bits)
 {
