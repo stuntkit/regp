@@ -1715,7 +1715,7 @@ void FUN_440ae0()
 // FUNCTION: STUNTGP_D3D 0x440c40
 int FUN_440c40(int id)
 {
-    char value[320];
+    char value[256];
     char key[64];
     int language;
     int count;

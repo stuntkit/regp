@@ -254,7 +254,7 @@ void FUN_438190(float left, float top, float right, float bottom)
 // FUNCTION: STUNTGP_D3D 0x438910
 float FUN_438910(const char *text, float size)
 {
-    Font_Select(size > 1.0f ? 1 : 0);
+    Font_Select(size <= 1.0f ? 0 : 1);
     return FUN_4290d0(text, size);
 }
 
