@@ -70,12 +70,6 @@ struct Unk496990
 // GLOBAL: STUNTGP_D3D 0x496990
 Unk496990 g_496990[16];
 
-struct Unk62a078
-{
-    int unk00;
-    BYTE unk04[0xd0 - 4];
-};
-
 // GLOBAL: STUNTGP_D3D 0x62a078
 Unk62a078 g_62a078[0x40];
 

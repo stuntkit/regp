@@ -115,6 +115,43 @@ struct GameSlot
     SlotEvent events[8];  // 0x4ac
 };
 
+// 64 entries at 0x62a078
+struct Unk62a078
+{
+    int unk00;          // 0x00 1 = live, 2 = dead
+    DWORD flags;        // 0x04
+    float pos[3];       // 0x08
+    BYTE unk14[0x44];   // 0x14
+    float vel[3];       // 0x58
+    BYTE unk64[0x8];    // 0x64
+    float gravity;      // 0x6c
+    DWORD time;         // 0x70
+    DWORD lifetime;     // 0x74
+    int mode;           // 0x78
+    BYTE unk7c[0x4];    // 0x7c
+    DWORD *anim;        // 0x80
+    int frame;          // 0x84
+    BYTE unk88[0x4];    // 0x88
+    DWORD colors[3];    // 0x8c
+    BYTE unk98[0x4];    // 0x98
+    float size;         // 0x9c
+    float sizeIn;       // 0xa0
+    float sizeOut;      // 0xa4
+    float sizeNow;      // 0xa8
+    float alpha;        // 0xac
+    float alphaIn;      // 0xb0
+    float alphaOut;     // 0xb4
+    float alphaNow;     // 0xb8
+    float angle;        // 0xbc
+    float spin;         // 0xc0
+    float colorIn;      // 0xc4
+    float colorOut;     // 0xc8
+    DWORD color;        // 0xcc
+};
+
+extern Unk62a078 g_62a078[0x40];
+extern int g_62d478;
+
 // Level box: an axis frame (position, scale, V, N) with a sound/EAX zone id.
 struct SoundZone
 {

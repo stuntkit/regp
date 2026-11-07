@@ -813,9 +813,164 @@ void FUN_447c90()
     FUN_442de0();
 }
 
-// STUB: STUNTGP_D3D 0x45e1d0
+extern float g_482678;
+extern float g_48267c;
+extern float g_482680;
+
+// FUNCTION: STUNTGP_D3D 0x401d70
+void FUN_401d70(float *v, float scale)
+{
+    if (v[0] * v[0] + v[1] * v[1] + v[2] * v[2] <= 27777.777f)
+    {
+        float g[4];
+        g[0] = g_482678 * scale;
+        g[1] = g_48267c * scale;
+        g[2] = g_482680 * scale;
+        v[0] += g[0];
+        v[1] += g[1];
+        v[2] += g[2];
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x422620
+DWORD Color_Lerp(DWORD from, DWORD to, int t)
+{
+    int fromG = (BYTE)(from >> 8);
+    int fromR = (BYTE)(from >> 16);
+    int toR = (BYTE)(to >> 16);
+    int fromB = (BYTE)from;
+    return ((fromR + ((toR - fromR) * t >> 8)) << 16) |
+           ((fromG + (((BYTE)(to >> 8) - fromG) * t >> 8)) << 8) | (fromB + (((BYTE)to - fromB) * t >> 8));
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e170
+void FUN_45e170(Unk62a078 *p)
+{
+    p->unk00 = 2;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e180
+void FUN_45e180(Unk62a078 *p)
+{
+    DWORD *anim = p->anim;
+    if (anim)
+    {
+        int frame = p->frame;
+        p->frame += 0x6aa;
+        if ((DWORD)(frame / 4096) >= anim[2] - 1)
+        {
+            p->frame = 0;
+            if (p->mode == 1)
+            {
+                FUN_45e170(p);
+            }
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e1d0
 void FUN_45e1d0()
 {
+    if (g_62d478)
+    {
+        g_62d478 = 0;
+        Unk62a078 *p = g_62a078;
+        for (int i = 0; i < 0x40; i++, p++)
+        {
+            if (p->unk00 == 1)
+            {
+                g_62d478 = 1;
+                p->pos[0] = p->vel[0] + p->pos[0];
+                p->pos[1] = p->vel[1] + p->pos[1];
+                p->pos[2] = p->vel[2] + p->pos[2];
+                if (p->vel[1] < 166.66667f)
+                {
+                    FUN_401d70(p->vel, p->gravity);
+                }
+                if (p->flags & 2)
+                {
+                    if ((float)p->time < p->alphaIn)
+                    {
+                        p->alphaNow = (float)p->time * p->alpha / p->alphaIn;
+                    }
+                    else if ((float)p->time > (float)p->lifetime - p->alphaOut)
+                    {
+                        p->alphaNow = (float)(p->lifetime - p->time) * p->alpha / p->alphaOut;
+                    }
+                    else
+                    {
+                        p->alphaNow = p->alpha;
+                    }
+                }
+                else
+                {
+                    p->alphaNow = p->alpha;
+                }
+                if (p->flags & 1)
+                {
+                    if ((float)p->time < p->sizeIn)
+                    {
+                        p->sizeNow = (float)p->time * p->size / p->sizeIn;
+                    }
+                    else if ((float)p->time > (float)p->lifetime - p->sizeOut)
+                    {
+                        p->sizeNow = (float)(p->lifetime - p->time) * p->size / p->sizeOut;
+                    }
+                    else
+                    {
+                        p->sizeNow = p->size;
+                    }
+                }
+                else
+                {
+                    p->sizeNow = p->size;
+                }
+                if (p->flags & 4)
+                {
+                    float angle = p->spin + p->angle;
+                    p->angle = angle;
+                    if (angle >= 360.0f)
+                    {
+                        p->angle = angle - 360.0f;
+                    }
+                    else if (angle < 0.0f)
+                    {
+                        p->angle = angle + 360.0f;
+                    }
+                }
+                if (p->flags & 8)
+                {
+                    if ((float)p->time < p->colorIn)
+                    {
+                        p->color = Color_Lerp(p->colors[0], p->colors[1], (int)((float)p->time * 255.0f / p->colorIn));
+                    }
+                    else if ((float)p->time > (float)p->lifetime - p->colorOut)
+                    {
+                        p->color = Color_Lerp(
+                            p->colors[1], p->colors[2],
+                            (int)(255.0f - (float)(p->lifetime - p->time) * 255.0f / p->colorOut)
+                        );
+                    }
+                    else
+                    {
+                        p->color = p->colors[1];
+                    }
+                }
+                else
+                {
+                    p->color = p->colors[0];
+                }
+                if (p->mode == 2)
+                {
+                    if (++p->time >= p->lifetime)
+                    {
+                        FUN_45e170(p);
+                    }
+                }
+                FUN_45e180(p);
+            }
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x45f8f0
