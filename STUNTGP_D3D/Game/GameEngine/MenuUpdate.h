@@ -93,7 +93,8 @@ struct MenuState
     int unk4478; // 0x4478
     BYTE unk447c[0x44d0 - 0x447c];
     int unk44d0; // 0x44d0
-    BYTE unk44d4[0x46ac - 0x44d4];
+    BYTE unk44d4[0x46a8 - 0x44d4];
+    int unk46a8; // 0x46a8
     int unk46ac[4]; // 0x46ac
     BYTE unk46bc[0x46c4 - 0x46bc];
     int unk46c4; // 0x46c4

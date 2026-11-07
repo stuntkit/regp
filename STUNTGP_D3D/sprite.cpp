@@ -3,6 +3,7 @@
 #include "font.h"
 
 #include <direct.h>
+#include <io.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -872,6 +873,24 @@ BOOL FUN_440380(char *path)
         return TRUE;
     }
     return FALSE;
+}
+
+// Size of a file, or -1 if it is missing or a directory.
+// FUNCTION: STUNTGP_D3D 0x440480
+int FUN_440480(char *path)
+{
+    struct _finddatai64_t data;
+    long handle = _findfirsti64(path, &data);
+    if (handle < 0)
+    {
+        return -1;
+    }
+    _findclose(handle);
+    if (data.attrib & _A_SUBDIR)
+    {
+        return -1;
+    }
+    return (int)data.size;
 }
 
 // FUNCTION: STUNTGP_D3D 0x441170

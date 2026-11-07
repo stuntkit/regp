@@ -27,6 +27,14 @@ int g_60d61c;
 #include "GameUpdate.h"
 #include "GameSetup.h"
 
+extern Unk4d5cc0 g_4d5cc0[6];
+extern int g_60d668;
+extern int g_60d66c;
+extern int g_60d670;
+extern int g_61298c;
+extern char *g_6127a0[105];
+void FUN_442cf0(int frames, char *text, Car *car, int mode, int clear);
+
 // TODO: update this based on currrent date and a compile-time define?
 
 #if !defined(REGP_FIXES)
@@ -526,6 +534,16 @@ void FUN_4487d0(unsigned int index, float x, float y, float z);
 void FUN_4476c0(DWORD flags, float x, float y, float z, float width, float height);
 
 extern int g_60f2b4;
+
+// FUNCTION: STUNTGP_D3D 0x443430
+void FUN_443430(Car *car)
+{
+    if (g_60d668 == 1 && g_60d670 != 1 && car->unk23c8 < g_60d628[1].ghost->unk1c)
+    {
+        g_60d670 = 1;
+        FUN_442cf0(300, g_6127a0[19], car, 0, 0x5a);
+    }
+}
 
 // FUNCTION: STUNTGP_D3D 0x443770
 int FUN_443770()
@@ -1054,7 +1072,8 @@ GhostRecord g_60d628[4];
 // GLOBAL: STUNTGP_D3D 0x60d668
 int g_60d668;
 
-extern Unk4d5cc0 g_4d5cc0[6];
+// GLOBAL: STUNTGP_D3D 0x60d670
+int g_60d670;
 
 // FUNCTION: STUNTGP_D3D 0x443010
 void FUN_443010(int enable)
@@ -1101,6 +1120,20 @@ GhostRecord *FUN_443330()
         }
     }
     return best;
+}
+
+// FUNCTION: STUNTGP_D3D 0x442f60
+void FUN_442f60(Unk4d5cc0 *ghost)
+{
+    g_60d66c = 0;
+    if (ghost)
+    {
+        g_60d66c = 1;
+        g_4d5cc0[1] = *ghost;
+        g_60d628[0].ghost = &g_4d5cc0[1];
+        g_60d628[0].unk04 = (int)&g_49a1f8[4];
+        g_60d628[0].time = g_4d5cc0[1].unk1c;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x442fd0
@@ -1195,6 +1228,15 @@ int FUN_4423d0()
         return 1;
     }
     return g_61294c == 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x442440
+void FUN_442440()
+{
+    char text[16];
+    // STRING: STUNTGP_D3D 0x4826c4
+    sprintf(text, "FPS: %d", g_61298c);
+    FUN_4291f0(text, 1, 320.0f, 448.0f, 1.0f, 0xffffffff, 1.0f, 0);
 }
 
 // FUNCTION: STUNTGP_D3D 0x442490

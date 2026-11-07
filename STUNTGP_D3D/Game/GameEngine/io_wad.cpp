@@ -162,6 +162,20 @@ void FUN_44b140(char *out, char *in)
     return;
 }
 
+// FUNCTION: STUNTGP_D3D 0x44aff0
+int FUN_44aff0(char *name, void *data, int size)
+{
+    // STRING: STUNTGP_D3D 0x4858b4
+    FILE *file = fopen(name, "wb");
+    if (file && size > 0 && size < 0xa00000)
+    {
+        int written = fwrite(data, 1, size, file);
+        fclose(file);
+        return written;
+    }
+    return 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x44b050
 void WAD_SplitFileName(char *path, char *dir, char *filename)
 {

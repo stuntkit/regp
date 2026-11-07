@@ -1642,6 +1642,30 @@ void FUN_4446d0()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x444a90
+int FUN_444a90()
+{
+    if (g_61299c == 1)
+    {
+        return 0;
+    }
+    int total = 0;
+    int finished = 0;
+    Car *car = g_49a1f8;
+    for (int i = 0; i < 6; i++, car++)
+    {
+        if (car->active == 1)
+        {
+            total++;
+            if (car->unk2640 == 1 || car->race.unk18 == 1)
+            {
+                finished++;
+            }
+        }
+    }
+    return finished == total;
+}
+
 // STUB: STUNTGP_D3D 0x444ae0
 void FUN_444ae0()
 {
