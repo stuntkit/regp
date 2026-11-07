@@ -840,6 +840,34 @@ char *FUN_4401e0(int card)
     return g_5ff4bc;
 }
 
+// Total size of the files in a directory, or -1 if it does not exist.
+// FUNCTION: STUNTGP_D3D 0x440250
+int FUN_440250(char *dir)
+{
+    char pattern[0x400];
+    struct _finddatai64_t data;
+    int total = 0;
+    if (!FUN_4401c0(dir))
+    {
+        return -1;
+    }
+    // STRING: STUNTGP_D3D 0x479a2c
+    sprintf(pattern, "%s\\*.*", dir);
+    long handle = _findfirsti64(pattern, &data);
+    if (handle >= 0)
+    {
+        do
+        {
+            if (!(data.attrib & _A_SUBDIR))
+            {
+                total += (int)data.size;
+            }
+        } while (_findnexti64(handle, &data) >= 0);
+        _findclose(handle);
+    }
+    return total;
+}
+
 // FUNCTION: STUNTGP_D3D 0x4402e0
 int FUN_4402e0()
 {
@@ -919,6 +947,24 @@ int FUN_4405c0(int ghost)
     // STRING: STUNTGP_D3D 0x479a74
     sprintf(path, "%s\\ghost%02d.bin", dir, ghost);
     return FUN_440380(path) ? 4 : 6;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4406e0
+int FUN_4406e0(int ghost)
+{
+    char path[0x400];
+    char *dir = FUN_4401e0(g_4798bc);
+    if (!FUN_4401c0(dir))
+    {
+        return 1;
+    }
+    // STRING: STUNTGP_D3D 0x479aa8
+    sprintf(path, "%s\\ghost%02d.bin", dir, ghost);
+    if (!FUN_440380(path))
+    {
+        return 6;
+    }
+    return remove(path) < 0 ? 6 : 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x441170

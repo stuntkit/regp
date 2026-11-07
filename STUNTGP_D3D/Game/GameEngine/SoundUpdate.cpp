@@ -8,6 +8,8 @@
 #include <mmsystem.h>
 #include <dsound.h>
 
+extern int g_576be0;
+
 // GLOBAL: STUNTGP_D3D 0x470500
 const GUID DSPROPSETID_EAX20_ListenerProperties = {
     0x0306a6a8, 0xb224, 0x11d2, {0x99, 0xe5, 0x00, 0x00, 0xe8, 0xd8, 0xc7, 0x22}
@@ -507,6 +509,35 @@ void FUN_460df0()
             }
         }
     }
+}
+
+// Nearest active player camera to a point, or the first one in single view.
+// FUNCTION: STUNTGP_D3D 0x461270
+GameSlot *FUN_461270(Vec4 *pos)
+{
+    if (!g_576be0)
+    {
+        return g_498248;
+    }
+    GameSlot *best = g_498248;
+    float bestDist = 2.5e11f;
+    GameSlot *slot = g_498248;
+    for (int i = 0; i < 4; i++, slot++)
+    {
+        if (slot->active == 1)
+        {
+            float dx = slot->cam.pos.x - pos->x;
+            float dy = slot->cam.pos.y - pos->y;
+            float dz = slot->cam.pos.z - pos->z;
+            float dist = dz * dz + dy * dy + dx * dx;
+            if (dist <= bestDist)
+            {
+                bestDist = dist;
+                best = slot;
+            }
+        }
+    }
+    return best;
 }
 
 // FUNCTION: STUNTGP_D3D 0x461ae0
