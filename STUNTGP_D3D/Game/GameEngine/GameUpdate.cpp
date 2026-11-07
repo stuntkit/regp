@@ -832,6 +832,18 @@ ReplayFrame *g_570ac4;
 // GLOBAL: STUNTGP_D3D 0x4d5cb8
 ReplayFrame *g_4d5cb8;
 
+// FUNCTION: STUNTGP_D3D 0x41a330
+void FUN_41a330()
+{
+    g_4d5bb8->unk1cf4 = (g_570ac4->unk22 - g_4d5cb8->unk22) * g_570ac0->unk08 + g_4d5cb8->unk22;
+}
+
+// FUNCTION: STUNTGP_D3D 0x41a370
+void FUN_41a370()
+{
+    g_4d5bb8->unk1cfc = (g_570ac4->unk20 - g_4d5cb8->unk20) * g_570ac0->unk08 + g_4d5cb8->unk20;
+}
+
 void FUN_40c160();
 
 // FUNCTION: STUNTGP_D3D 0x41a780
@@ -919,11 +931,10 @@ void FUN_41aa60()
         surface = 1;
         break;
     }
-    Car *car = g_4d5bb8;
     for (int i = 0; i < 4; i++)
     {
-        car->wheels[i].unk74 = car->wheels[i].unk78;
-        car->wheels[i].unk78 = surface;
+        g_4d5bb8->wheels[i].unk74 = g_4d5bb8->wheels[i].unk78;
+        g_4d5bb8->wheels[i].unk78 = surface;
     }
 }
 
@@ -2495,4 +2506,17 @@ void FUN_41bdd0()
 void FUN_41c710()
 {
     g_636418[1].scene = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x41d9c0
+void FUN_41d9c0(int value)
+{
+    if (value - g_4d5bb8->unk23ac <= 15)
+    {
+        if (g_4d5bb8->unk23a8 < g_4d5bb8->unk23ac)
+        {
+            g_4d5bb8->unk23a8 = g_4d5bb8->unk23ac;
+        }
+        g_4d5bb8->unk23ac = value;
+    }
 }

@@ -440,6 +440,19 @@ BYTE FUN_4199d0(BYTE *data, unsigned int size)
     return sum;
 }
 
+// FUNCTION: STUNTGP_D3D 0x4199f0
+int FUN_4199f0(char *name, char *buffer)
+{
+    char path[128];
+    // STRING: STUNTGP_D3D 0x474698
+    sprintf(path, "%s\\Replays\\%s.RPL", g_GameDirectory, name);
+    if (!size_of_file(path))
+    {
+        return 0;
+    }
+    return bload(path, buffer, 0x20000);
+}
+
 // FUNCTION: STUNTGP_D3D 0x419a40
 int FUN_419a40(Replay *replay)
 {

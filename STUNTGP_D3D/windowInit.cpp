@@ -679,3 +679,18 @@ void FUN_423430()
         g_6244ec = 1;
     }
 }
+
+// GLOBAL: STUNTGP_D3D 0x5729e0
+DWORD g_perfFrequency;
+
+// GLOBAL: STUNTGP_D3D 0x572be4
+DWORD g_572be4;
+
+// FUNCTION: STUNTGP_D3D 0x423450
+void FUN_423450()
+{
+    LARGE_INTEGER freq;
+    QueryPerformanceFrequency(&freq);
+    g_perfFrequency = freq.LowPart;
+    g_572be4 = freq.LowPart / 60;
+}

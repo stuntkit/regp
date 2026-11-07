@@ -309,6 +309,16 @@ void FUN_4064b0()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x4064c0
+int FUN_4064c0()
+{
+    if (g_4d5bb8->unk2574 * g_4d5bb8->unkf74 < g_4d5bb8->unk2570)
+    {
+        return 1;
+    }
+    return 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x406e80
 void FUN_406e80()
 {
@@ -401,6 +411,26 @@ void FUN_408d80()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x408f90
+void FUN_408f90()
+{
+    if (g_4d5bb8->unk762c)
+    {
+        g_4722d0->camMode = g_4d5bb8->unk7630;
+        g_4d5bb8->unk762c = 0;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x40a0d0
+void FUN_40a0d0(Car *car)
+{
+    memset(&car->unk1f2c, 0, sizeof(PosHistory));
+    for (int i = 0; i < 8; i++)
+    {
+        car->unk1f2c.samples[i].pos = *(Vec4 *)&car->posX;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x40a2c0
 void FUN_40a2c0(float (*m)[16])
 {
@@ -409,6 +439,19 @@ void FUN_40a2c0(float (*m)[16])
     {
         Matrix_Identity(m[i]);
     }
+}
+
+void Script_GetFloat(char *section, char *key, float *out);
+
+// FUNCTION: STUNTGP_D3D 0x40b750
+void FUN_40b750(char *text)
+{
+    // STRING: STUNTGP_D3D 0x4735d4
+    char *section = strstr(text, "-BRAKE[] =");
+    // STRING: STUNTGP_D3D 0x4735e0
+    Script_GetFloat(section, "Bias", &g_4d5bb8->unkd5c);
+    // STRING: STUNTGP_D3D 0x4735e8
+    Script_GetFloat(section, "Acceleration", &g_4d5bb8->unkd58);
 }
 
 // FUNCTION: STUNTGP_D3D 0x40bf20
@@ -1262,6 +1305,50 @@ void FUN_40ee70()
     g_4d5bb8->unk288c += g_4d5bb8->unk248;
 }
 
+extern float g_482670;
+
+// FUNCTION: STUNTGP_D3D 0x40f3c0
+void FUN_40f3c0()
+{
+    g_4d5bb8->wheels[3].unk10 = g_4d5bb8->wheels[2].unk10 = g_4d5bb8->wheels[1].unk10 = g_4d5bb8->wheels[0].unk10 =
+        g_482670 * g_4d5bb8->unk2618 * 0.25f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x40f570
+void FUN_40f570()
+{
+    Car *car = g_4d5bb8;
+    unsigned int i = (float)fabs(car->unk1cf0);
+    if (i > 127)
+    {
+        i = 127;
+    }
+    car->unk1cf4 *= car->unk258[i];
+}
+
+// FUNCTION: STUNTGP_D3D 0x40f730
+void FUN_40f730()
+{
+    float sum = 0.0f;
+    for (int i = 0; i < 4; i++)
+    {
+        sum += g_4d5bb8->wheels[i].unk30;
+    }
+    g_4d5bb8->unk289c = sum * 0.25f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x40fb00
+void FUN_40fb00()
+{
+    if (g_4d5bb8->unk1fd8 == 1)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            g_4d5bb8->wheels[i].unk04 *= 0.995f;
+        }
+    }
+}
+
 // STUB: STUNTGP_D3D 0x40fc90
 void FUN_40fc90()
 {
@@ -1577,6 +1664,19 @@ void FUN_4118b0()
 void FUN_412260()
 {
     g_4d5bb8->unk7244 = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x412430
+void FUN_412430(Car *car)
+{
+    car->unk71f0 = 0;
+    car->unk71fc = 0;
+    car->unk7224 = 0;
+    car->unk7228 = 0;
+    car->unk722c = 0;
+    car->unk7214 = 0;
+    car->unk7218 = 0;
+    car->unk721c = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x412670
@@ -2122,6 +2222,26 @@ void FUN_4186c0()
         if (g_60f2b0 == 2)
         {
             FUN_418660(g_4d5bb8);
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x418710
+void FUN_418710(Car *car)
+{
+    if (g_60f2b4 != 3)
+    {
+        if (car->unk2640 == 1)
+        {
+            car->unk2570 -= g_60f2d0[3];
+        }
+        else
+        {
+            car->unk2570 -= g_60f2d0[1];
+        }
+        if (car->unk2568 < 0)
+        {
+            car->unk2568 = 0;
         }
     }
 }
@@ -3003,6 +3123,30 @@ void FUN_41d180()
     for (int i = 0; i < 4; i++)
     {
         FUN_41d170(&g_4d5bb8->skids[i]);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x41d270
+void FUN_41d270(Car *a, Car *b)
+{
+    a->unk25c4[b - g_49a1f8] = 8;
+    b->unk25c4[a - g_49a1f8] = 8;
+}
+
+// FUNCTION: STUNTGP_D3D 0x41d2c0
+void FUN_41d2c0()
+{
+    for (int i = 0; i < 6; i++)
+    {
+        if (!g_4d5bb8->unk25dc[i] && g_4d5bb8->unk25c4[i])
+        {
+            g_4d5bb8->unk25f4[i]++;
+        }
+        g_4d5bb8->unk25dc[i] = g_4d5bb8->unk25c4[i];
+        if (g_4d5bb8->unk25c4[i] > 0)
+        {
+            g_4d5bb8->unk25c4[i]--;
+        }
     }
 }
 
