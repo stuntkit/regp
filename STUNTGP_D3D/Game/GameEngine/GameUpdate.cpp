@@ -811,6 +811,31 @@ void FUN_418a90()
     g_4d5bb8 = g_49a1f8;
 }
 
+extern int g_474670;
+
+// FUNCTION: STUNTGP_D3D 0x418b10
+void FUN_418b10()
+{
+    char **textures = g_636418[3].scene->textures;
+    int i = 0;
+    g_474670 = -1;
+    while (*textures)
+    {
+        char *name = *textures;
+        while (*name != '\\')
+        {
+            name++;
+        }
+        // STRING: STUNTGP_D3D 0x474674
+        if (!_strcmpi(name + 1, "Trk_TubeGlass"))
+        {
+            g_474670 = i;
+        }
+        textures++;
+        i++;
+    }
+}
+
 // GLOBAL: STUNTGP_D3D 0x4d5ca8
 int g_4d5ca8;
 

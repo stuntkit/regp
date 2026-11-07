@@ -51,6 +51,21 @@ float g_498158;
 // GLOBAL: STUNTGP_D3D 0x498198
 Vec4 g_498198;
 
+// FUNCTION: STUNTGP_D3D 0x403180
+void FUN_403180(float delta)
+{
+    Car *car = g_4722d0->data;
+    car->unk22fc += delta;
+    if (car->unk22fc > 10000.0f)
+    {
+        car->unk22fc = 10000.0f;
+    }
+    else if (car->unk22fc < 500.0f)
+    {
+        car->unk22fc = 500.0f;
+    }
+}
+
 // STUB: STUNTGP_D3D 0x4215b0
 int FUN_4215b0()
 {

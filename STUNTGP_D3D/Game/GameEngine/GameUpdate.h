@@ -320,10 +320,12 @@ struct Car
     float unk258[128];        // 0x0258
     BYTE unk0458[0x4];        // 0x0458
     float unk045c;            // 0x045c
-    BYTE unk0460[0x814];      // 0x0460
+    BYTE unk0460[0x4];        // 0x0460
+    float unk464;             // 0x0464
+    BYTE unk0468[0x80c];      // 0x0468
     unsigned int unkc74;      // 0x0c74
     int unkc78;               // 0x0c78
-    BYTE unk0c7c[0x24];       // 0x0c7c
+    float unkc7c[9];          // 0x0c7c
     float unkca0;             // 0x0ca0
     BYTE unk0ca4[0x14];       // 0x0ca4
     Vector4 unkcb8[4];        // 0x0cb8
@@ -776,6 +778,8 @@ struct Scene
     BYTE unk28[0x1c];   // 0x28
     SceneView *view;    // 0x44
     ObjectDef *objects; // 0x48
+    BYTE unk4c[0x14];   // 0x4c
+    char **textures;    // 0x60 NULL-terminated
 };
 
 // Scene render list entry; a list runs until a NULL scene.

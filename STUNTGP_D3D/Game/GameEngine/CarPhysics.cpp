@@ -1161,6 +1161,21 @@ void FUN_40d160()
     FUN_40d090();
 }
 
+// FUNCTION: STUNTGP_D3D 0x40d650
+void FUN_40d650(float *v)
+{
+    Car *car = g_4d5bb8;
+    if (car->unk7648 != 1 && car->unk2570 <= 10.0f)
+    {
+        float f = car->unk1cf0 * 0.013333334f;
+        if (f > 1.0f)
+        {
+            f = 1.0f;
+        }
+        *v *= 1.0f - f * f;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x40d6b0
 void FUN_40d6b0()
 {
@@ -1245,6 +1260,21 @@ void FUN_40e470()
         if (car->unk1f14 < 0.5f && car->unk1cf8 > 0.0f)
         {
             car->unk1cf8 = 0.0f;
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x40e4f0
+void FUN_40e4f0()
+{
+    Car *car = g_4d5bb8;
+    unsigned int gear = car->unk1f10;
+    if (gear > 2)
+    {
+        if (car->wheels[2].unk04 * car->unkc7c[gear] * car->unkc7c[0] * 3600.0f / (car->unkcb8[0].x * 6.2831855f) <
+            car->unk464 * 0.9f - 2500.0f)
+        {
+            FUN_40c1a0();
         }
     }
 }
