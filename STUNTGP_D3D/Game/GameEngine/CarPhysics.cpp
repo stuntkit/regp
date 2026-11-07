@@ -67,7 +67,6 @@ void FUN_41bf20();
 void FUN_41d140();
 void FUN_41e210();
 void FUN_443700(Car *car);
-void FUN_401220(int type, int mode, unsigned int points);
 void FUN_414d80(Car *car);
 void FUN_414c50(Car *car);
 void FUN_414ef0(Car *car);

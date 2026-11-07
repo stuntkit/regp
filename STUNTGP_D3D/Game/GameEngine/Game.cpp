@@ -318,7 +318,7 @@ void FUN_416050()
 {
 }
 
-// STUB: STUNTGP_D3D 0x449d60
+// FUNCTION: STUNTGP_D3D 0x449d60
 void FUN_449d60()
 {
 }
@@ -358,10 +358,7 @@ void FUN_447100()
 {
 }
 
-// STUB: STUNTGP_D3D 0x447280
-void FUN_447280(float x, float y, float width, float height)
-{
-}
+void FUN_447280(float x, float y, float width, float height);
 
 // STUB: STUNTGP_D3D 0x446c20
 void FUN_446c20(float x, float y)
@@ -542,10 +539,12 @@ float FUN_4290d0(const char *text, float scale)
     return 0.0f;
 }
 
-// STUB: STUNTGP_D3D 0x443770
+extern int g_60f2b4;
+
+// FUNCTION: STUNTGP_D3D 0x443770
 int FUN_443770()
 {
-    return 0;
+    return g_60f2b4;
 }
 
 // GLOBAL: STUNTGP_D3D 0x4856c0

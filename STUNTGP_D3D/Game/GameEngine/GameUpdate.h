@@ -23,6 +23,18 @@ struct Camera
     int unk4c;    // 0x4c
 };
 
+// Spline of camera positions, looked up by id.
+struct CameraPath
+{
+    int id;             // 0x00
+    Vec4 *points;       // 0x04
+    unsigned int count; // 0x08
+    int unk0c;          // 0x0c
+    int mode;           // 0x10
+    BYTE unk14[0x4];    // 0x14
+    float unk18;        // 0x18
+};
+
 // Preset a GameSlot camera is reset to (GameSlot::preset).
 struct CameraPreset
 {
@@ -75,7 +87,7 @@ struct CarRace
     BYTE unk30[0x14]; // 0x30
     int unk44;        // 0x44
     int unk48;        // 0x48
-    BYTE unk4c[0x50]; // 0x4c
+    DWORD unk4c[0x14]; // 0x4c ([7] 0x68, [8] 0x6c, [18] 0x94, [19] 0x98)
 };
 
 struct Vector4
@@ -205,7 +217,10 @@ struct Car
     float posX;              // 0x1bac
     float posY;              // 0x1bb0
     float posZ;              // 0x1bb4
-    BYTE unk1bb8[0xd4];      // 0x1bb8
+    float posW;              // 0x1bb8
+    BYTE unk1bbc[0x10];      // 0x1bbc
+    float matrix[16];        // 0x1bcc
+    BYTE unk1c0c[0x80];      // 0x1c0c
     float unk1c8c[3];        // 0x1c8c
     BYTE unk1c98[0x24];      // 0x1c98
     Vec4 axisX;              // 0x1cbc
@@ -237,7 +252,7 @@ struct Car
     BYTE controls[0xa];      // 0x22aa
     BYTE unk22b4[0x14];      // 0x22b4
     int unk22c8;             // 0x22c8
-    BYTE unk22cc[0x10];      // 0x22cc
+    Vec4 camOffset;          // 0x22cc
     float unk22dc;           // 0x22dc
     float unk22e0;           // 0x22e0
     float unk22e4;           // 0x22e4
@@ -248,9 +263,9 @@ struct Car
     BYTE unk22f8[0x4];       // 0x22f8
     float unk22fc;           // 0x22fc
     float unk2300;           // 0x2300
-    float unk2304;           // 0x2304
+    int unk2304;             // 0x2304
     float unk2308[4];        // 0x2308
-    BYTE unk2318[0x10];      // 0x2318
+    float unk2318[4];        // 0x2318
     float unk2328;           // 0x2328
     float unk232c;           // 0x232c
     float unk2330;           // 0x2330
@@ -359,7 +374,10 @@ struct Car
     DWORD unk71e0;           // 0x71e0
     DWORD unk71e4;           // 0x71e4
     int unk71e8;             // 0x71e8
-    BYTE unk71ec[0x7c];      // 0x71ec
+    unsigned int unk71ec;    // 0x71ec
+    BYTE unk71f0[0x48];      // 0x71f0
+    float unk7238;           // 0x7238
+    BYTE unk723c[0x2c];      // 0x723c
     unsigned short *unk7268; // 0x7268
     BYTE unk726c[0x3c0];     // 0x726c
     int unk762c;             // 0x762c
@@ -370,7 +388,7 @@ struct Car
     int unk7648;             // 0x7648
     BYTE unk764c[0x2c];      // 0x764c
     int unk7678;             // 0x7678
-    BYTE unk767c[0x4];       // 0x767c
+    int unk767c;             // 0x767c
     DWORD unk7680;           // 0x7680
     float unk7684;           // 0x7684
     CarRace race;            // 0x7688
@@ -380,9 +398,10 @@ struct Car
 struct GameSlot
 {
     int active;            // 0x000
-    int camMode;           // 0x004
+    unsigned int camMode;  // 0x004
     Camera cam;            // 0x008
-    BYTE unk058[0x20];     // 0x058
+    BYTE unk058[0x10];     // 0x058
+    Vec4 prevTarget;       // 0x068
     float roll;            // 0x078
     Vec4 axisX;            // 0x07c
     Vec4 axisY;            // 0x08c
@@ -396,7 +415,7 @@ struct GameSlot
     float velX;            // 0x0c4
     float velY;            // 0x0c8
     float velZ;            // 0x0cc
-    BYTE unk0d0[0x4];      // 0x0d0
+    float velW;            // 0x0d0
     float speed;           // 0x0d4
     float accelX;          // 0x0d8
     float accelY;          // 0x0dc
@@ -421,10 +440,14 @@ struct GameSlot
     float unk19c;          // 0x19c
     float fov2;            // 0x1a0
     int unk1a4;            // 0x1a4
-    void *unk1a8;          // 0x1a8
-    BYTE unk1ac[0x20];     // 0x1ac
+    CameraPath *path;      // 0x1a8
+    Vec4 unk1ac;           // 0x1ac
+    unsigned int unk1bc;   // 0x1bc
+    float unk1c0;          // 0x1c0
+    float unk1c4;          // 0x1c4
+    BYTE unk1c8[0x4];      // 0x1c8
     CameraPreset *unk1cc;  // 0x1cc
-    BYTE unk1d0[0x4];      // 0x1d0
+    int unk1d0;            // 0x1d0
     int unk1d4;            // 0x1d4
     CameraPreset *preset;  // 0x1d8
     int presetMode;        // 0x1dc
@@ -513,7 +536,9 @@ struct InputState
 
 struct ObjectDef
 {
-    BYTE unk00[0x40]; // 0x00
+    BYTE unk00[0x8];  // 0x00
+    Vec4 *matrix;     // 0x08
+    BYTE unk0c[0x34]; // 0x0c
 };
 
 struct SceneView
@@ -680,4 +705,5 @@ void FUN_410a10(int index);
 extern Car *g_474630;
 extern Driver g_60f050[6];
 extern DWORD g_60f2b0;
+void FUN_401220(int type, int mode, unsigned int points);
 #endif /* GAMEUPDATE_H */
