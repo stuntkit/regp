@@ -52,6 +52,14 @@ float g_61c3e8[16];
 // GLOBAL: STUNTGP_D3D 0x61c468
 float g_61c468[16];
 
+// FUNCTION: STUNTGP_D3D 0x44f150
+void FUN_44f150(float *m, float x, float y, float z)
+{
+    m[12] += x;
+    m[13] += y;
+    m[14] += z;
+}
+
 // Multiplies m in place by the matrix given row by row.
 // FUNCTION: STUNTGP_D3D 0x44f1a0
 void Matrix_Multiply(float *m, float b00, float b01, float b02, float b03, float b10, float b11, float b12, float b13,

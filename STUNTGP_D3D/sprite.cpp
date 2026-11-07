@@ -37,6 +37,9 @@ SpriteFile g_480134[1];
 // GLOBAL: STUNTGP_D3D 0x4798bc
 int g_4798bc = -1;
 
+// GLOBAL: STUNTGP_D3D 0x5ff4bc
+char g_5ff4bc[0x400];
+
 // GLOBAL: STUNTGP_D3D 0x5ff8bc
 int g_5ff8bc;
 
@@ -730,6 +733,14 @@ void FUN_43d960(ScreenRect *dst, ScreenRect *from, ScreenRect *to, float t)
     dst->bottom = (to->bottom - from->bottom) * t + from->bottom;
 }
 
+// FUNCTION: STUNTGP_D3D 0x43dd40
+void FUN_43dd40(int a, float b, float c)
+{
+    g_frontEnd.unk60 = a;
+    g_frontEnd.unk64 = b;
+    g_frontEnd.unk68 = c;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43dd60
 int FUN_43dd60()
 {
@@ -805,6 +816,14 @@ BOOL FUN_4401c0(char *path)
         return TRUE;
     }
     return FALSE;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4401e0
+char *FUN_4401e0(int card)
+{
+    // STRING: STUNTGP_D3D 0x479a18
+    sprintf(g_5ff4bc, "%s\\save\\card%02d", g_GameDirectory, card);
+    return g_5ff4bc;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4402e0

@@ -1,5 +1,6 @@
 #include "GameUpdate.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "../../d3drender.h"
@@ -52,10 +53,184 @@ void FUN_40d380(Car *car);
 void FUN_441e20();
 
 extern DWORD g_61297c;
+extern int g_612bec;
+extern DWORD g_60eff4;
+extern DWORD g_60eff8;
+extern char g_LevelScript[32];
+void FUN_445f70(int value);
 extern int g_60f020;
 extern int g_60f2c8;
 extern int g_60df98;
 extern int g_61b74c;
+
+// Level script names: tracks, track sets, then cars.
+// GLOBAL: STUNTGP_D3D 0x482b88
+char *g_482b88[76] = {
+    // STRING: STUNTGP_D3D 0x482cb8
+    "TRACK1",
+    // STRING: STUNTGP_D3D 0x482cc0
+    "TRACK2",
+    // STRING: STUNTGP_D3D 0x482cc8
+    "TRACK3",
+    // STRING: STUNTGP_D3D 0x482cd0
+    "TRACK4",
+    // STRING: STUNTGP_D3D 0x482cd8
+    "TRACK5",
+    // STRING: STUNTGP_D3D 0x482ce0
+    "TRACK6",
+    // STRING: STUNTGP_D3D 0x482ce8
+    "TRACK7",
+    // STRING: STUNTGP_D3D 0x482cf0
+    "TRACK8",
+    // STRING: STUNTGP_D3D 0x482cf8
+    "TRACK9",
+    // STRING: STUNTGP_D3D 0x482d00
+    "TRACK10",
+    // STRING: STUNTGP_D3D 0x482d08
+    "TRACK11",
+    // STRING: STUNTGP_D3D 0x482d10
+    "TRACK12",
+    // STRING: STUNTGP_D3D 0x482d18
+    "TRACK13",
+    // STRING: STUNTGP_D3D 0x482d20
+    "TRACK14",
+    // STRING: STUNTGP_D3D 0x482d28
+    "TRACK15",
+    // STRING: STUNTGP_D3D 0x482d30
+    "TRACK16",
+    // STRING: STUNTGP_D3D 0x482d38
+    "TRACK17",
+    // STRING: STUNTGP_D3D 0x482d40
+    "TRACK18",
+    // STRING: STUNTGP_D3D 0x482d48
+    "TRACK19",
+    // STRING: STUNTGP_D3D 0x482d50
+    "TRACK20",
+    // STRING: STUNTGP_D3D 0x482d58
+    "TRACK21",
+    // STRING: STUNTGP_D3D 0x482d60
+    "TRACK22",
+    // STRING: STUNTGP_D3D 0x482d68
+    "TRACK23",
+    // STRING: STUNTGP_D3D 0x482d70
+    "TRACK24",
+    // STRING: STUNTGP_D3D 0x482d78
+    "CHALL1",
+    // STRING: STUNTGP_D3D 0x482d80
+    "TRACKSET00",
+    // STRING: STUNTGP_D3D 0x482d8c
+    "TRACKSET01",
+    // STRING: STUNTGP_D3D 0x482d98
+    "TRACKSET02",
+    // STRING: STUNTGP_D3D 0x482da4
+    "TRACKSET03",
+    // STRING: STUNTGP_D3D 0x482db0
+    "TRACKSET04",
+    // STRING: STUNTGP_D3D 0x482dbc
+    "TRACKSET05",
+    // STRING: STUNTGP_D3D 0x482dc8
+    "TRACKSET06",
+    // STRING: STUNTGP_D3D 0x482dd4
+    "DUMMY",
+    // STRING: STUNTGP_D3D 0x482ddc
+    "DUMMY",
+    // STRING: STUNTGP_D3D 0x482de4
+    "Car1",
+    // STRING: STUNTGP_D3D 0x482dec
+    "Car1sh",
+    // STRING: STUNTGP_D3D 0x482df4
+    "Car2",
+    // STRING: STUNTGP_D3D 0x482dfc
+    "Car2sh",
+    // STRING: STUNTGP_D3D 0x482e04
+    "Car3",
+    // STRING: STUNTGP_D3D 0x482e0c
+    "Car3sh",
+    // STRING: STUNTGP_D3D 0x482e14
+    "Car4",
+    // STRING: STUNTGP_D3D 0x482e1c
+    "Car4sh",
+    // STRING: STUNTGP_D3D 0x482e24
+    "Car5",
+    // STRING: STUNTGP_D3D 0x482e2c
+    "Car5sh",
+    // STRING: STUNTGP_D3D 0x482e34
+    "Car6",
+    // STRING: STUNTGP_D3D 0x482e3c
+    "Car6sh",
+    // STRING: STUNTGP_D3D 0x482e44
+    "Car7",
+    // STRING: STUNTGP_D3D 0x482e4c
+    "Car7sh",
+    // STRING: STUNTGP_D3D 0x482e54
+    "Car8",
+    // STRING: STUNTGP_D3D 0x482e5c
+    "Car8sh",
+    // STRING: STUNTGP_D3D 0x482e64
+    "Car9",
+    // STRING: STUNTGP_D3D 0x482e6c
+    "Car9sh",
+    // STRING: STUNTGP_D3D 0x482e74
+    "Car10",
+    // STRING: STUNTGP_D3D 0x482e7c
+    "Car10sh",
+    // STRING: STUNTGP_D3D 0x482e84
+    "Car11",
+    // STRING: STUNTGP_D3D 0x482e8c
+    "Car11sh",
+    // STRING: STUNTGP_D3D 0x482e94
+    "Car12",
+    // STRING: STUNTGP_D3D 0x482e9c
+    "Car12sh",
+    // STRING: STUNTGP_D3D 0x482ea4
+    "Car13",
+    // STRING: STUNTGP_D3D 0x482eac
+    "Car13sh",
+    // STRING: STUNTGP_D3D 0x482eb4
+    "Car14",
+    // STRING: STUNTGP_D3D 0x482ebc
+    "Car14sh",
+    // STRING: STUNTGP_D3D 0x482ec4
+    "Car15",
+    // STRING: STUNTGP_D3D 0x482ecc
+    "Car15sh",
+    // STRING: STUNTGP_D3D 0x482ed4
+    "Car16",
+    // STRING: STUNTGP_D3D 0x482edc
+    "Car16sh",
+    // STRING: STUNTGP_D3D 0x482ee4
+    "Car17",
+    // STRING: STUNTGP_D3D 0x482eec
+    "Car17sh",
+    // STRING: STUNTGP_D3D 0x482ef4
+    "Car18",
+    // STRING: STUNTGP_D3D 0x482efc
+    "Car18sh",
+    // STRING: STUNTGP_D3D 0x482f04
+    "Car19",
+    // STRING: STUNTGP_D3D 0x482f0c
+    "Car19sh",
+    // STRING: STUNTGP_D3D 0x482f14
+    "Car20",
+    // STRING: STUNTGP_D3D 0x482f1c
+    "Car20sh",
+    // STRING: STUNTGP_D3D 0x482f24
+    "Car4",
+    // STRING: STUNTGP_D3D 0x482f2c
+    "Car4sh",
+};
+
+// GLOBAL: STUNTGP_D3D 0x60d744
+int g_60d744;
+
+// GLOBAL: STUNTGP_D3D 0x60d748
+int g_60d748;
+
+// GLOBAL: STUNTGP_D3D 0x60d768
+DWORD g_60d768;
+
+// GLOBAL: STUNTGP_D3D 0x60dfec
+int g_60dfec;
 
 // GLOBAL: STUNTGP_D3D 0x60d73c
 DWORD g_60d73c;
@@ -71,6 +246,28 @@ unsigned int g_61b748;
 
 // GLOBAL: STUNTGP_D3D 0x61b750
 int g_61b750;
+
+// FUNCTION: STUNTGP_D3D 0x445120
+void FUN_445120()
+{
+    g_60eff8 = 100;
+    g_60dfec = 2;
+    g_60eff4 = g_60d768;
+    if (g_60d768 < 1200)
+    {
+        g_60eff4 = 5400;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x4452e0
+void FUN_4452e0()
+{
+    if (g_612bec == 1)
+    {
+        FUN_445f70(g_60d744);
+        sprintf(g_LevelScript, g_482b88[g_60d748]);
+    }
+}
 
 // FUNCTION: STUNTGP_D3D 0x445350
 void FUN_445350()

@@ -8,6 +8,7 @@
 
 #include "Game/GameEngine/Engine_LevelScript.h"
 #include "Game/GameEngine/Game.h"
+#include "Game/GameEngine/MenuUpdate.h"
 #include "windowInit.h"
 
 #include "globals.h"
@@ -17,6 +18,18 @@
 
 #include "common.h"
 // #include "pure.h"
+
+// FUNCTION: STUNTGP_D3D 0x44d4a0
+void FUN_44d4a0()
+{
+    g_menuState.unk4474 = g_menuState.unk440c[(rand() & 0xff) % g_menuState.unk4408];
+}
+
+// FUNCTION: STUNTGP_D3D 0x44e330
+void FUN_44e330()
+{
+    g_menuState.unk4474 = g_menuState.unk440c[(rand() & 0xff) % g_menuState.unk4408];
+}
 
 // FUNCTION: STUNTGP_D3D 0x44e490
 void FUN_44e490()

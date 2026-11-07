@@ -4,6 +4,11 @@
 #include <string.h>
 
 DWORD WINAPI FUN_45fda0(LPVOID param);
+int FUN_462090();
+
+extern int g_576be0;
+extern int g_4897ac;
+extern int g_4897b4;
 
 // GLOBAL: STUNTGP_D3D 0x489790
 DWORD g_masterVolume = 255;
@@ -16,6 +21,9 @@ int g_sfxVolume = 255;
 
 // GLOBAL: STUNTGP_D3D 0x48979c
 int g_sfxVolumeTarget = 255;
+
+// GLOBAL: STUNTGP_D3D 0x4899d8
+int g_4899d8 = -1;
 
 // GLOBAL: STUNTGP_D3D 0x62df08
 LPDIRECTSOUNDBUFFER g_musicBuffer;
@@ -46,6 +54,9 @@ UINT g_musicTimer;
 
 // GLOBAL: STUNTGP_D3D 0x62e06c
 HMMIO g_musicFile;
+
+// GLOBAL: STUNTGP_D3D 0x62e074
+DWORD g_62e074;
 
 // GLOBAL: STUNTGP_D3D 0x62e07c
 LONG g_musicDataOffset;
@@ -215,6 +226,29 @@ HRESULT Music_StopStream()
     g_62f5ac = 0;
     g_musicResult = DS_OK;
     return DS_OK;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4604e0
+void FUN_4604e0(HPSTR buffer, DWORD size)
+{
+    DWORD left = g_62e074 - g_62df30 - 0x100;
+    if (size > left)
+    {
+        size = left;
+    }
+    g_62df30 += mmioRead(g_musicFile, buffer, size);
+}
+
+// FUNCTION: STUNTGP_D3D 0x460b80
+void FUN_460b80()
+{
+    g_4899d8 = g_4897b4;
+    g_4897b4 = g_576be0 ? 0 : g_4897ac;
+    if (g_4899d8 != g_4897b4)
+    {
+        Sound_Shutdown();
+        FUN_462090();
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x460bc0

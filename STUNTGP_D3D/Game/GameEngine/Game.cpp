@@ -1051,6 +1051,23 @@ void FUN_445530()
 // GLOBAL: STUNTGP_D3D 0x60d628
 GhostRecord g_60d628[4];
 
+// FUNCTION: STUNTGP_D3D 0x443300
+GhostRecord *FUN_443300()
+{
+    GhostRecord *best = NULL;
+    unsigned int bestTime = 0;
+    GhostRecord *rec = &g_60d628[2];
+    for (int i = 0; i < 2; i++, rec++)
+    {
+        if (rec->time > bestTime)
+        {
+            bestTime = rec->time;
+            best = rec;
+        }
+    }
+    return best;
+}
+
 // FUNCTION: STUNTGP_D3D 0x443330
 GhostRecord *FUN_443330()
 {

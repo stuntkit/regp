@@ -59,6 +59,15 @@ char *g_4898fc[24] = {
     "Track23",
 };
 
+// GLOBAL: STUNTGP_D3D 0x4897a0
+unsigned int g_4897a0 = 7500;
+
+// GLOBAL: STUNTGP_D3D 0x4897a4
+unsigned int g_4897a4 = 7500 * 7500;
+
+// GLOBAL: STUNTGP_D3D 0x4897a8
+float g_4897a8 = 0.000133333335f;
+
 // GLOBAL: STUNTGP_D3D 0x4897b0
 int g_4897b0 = 1;
 
@@ -403,6 +412,14 @@ void FUN_460ce0()
             }
         }
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x460d20
+void FUN_460d20(unsigned int n)
+{
+    g_4897a0 = n;
+    g_4897a4 = n * n;
+    g_4897a8 = 1.0f / n;
 }
 
 // FUNCTION: STUNTGP_D3D 0x460d60

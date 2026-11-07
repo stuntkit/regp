@@ -1244,6 +1244,19 @@ void FUN_443100()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x443560
+void FUN_443560()
+{
+    GhostRecord *rec = g_60d628;
+    for (int i = 0; i < 4; i++, rec++)
+    {
+        if (rec->unk00 == 1)
+        {
+            ((Car *)rec->unk04)->unk7640 = 60;
+        }
+    }
+}
+
 // STUB: STUNTGP_D3D 0x443630
 void FUN_443630()
 {
@@ -1608,6 +1621,20 @@ void FUN_444390()
 // STUB: STUNTGP_D3D 0x444410
 void FUN_444410()
 {
+}
+
+// FUNCTION: STUNTGP_D3D 0x444550
+int FUN_444550()
+{
+    Car *car = g_49a1f8;
+    for (unsigned int i = 0; i < 6; i++, car++)
+    {
+        if (car->active == 1 && car->unk2640 == 0 && car->unk24e0 != 1)
+        {
+            return 0;
+        }
+    }
+    return 1;
 }
 
 // STUB: STUNTGP_D3D 0x4446d0
@@ -2217,6 +2244,27 @@ void FUN_45e1d0()
                 FUN_45e180(p);
             }
         }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e820
+void FUN_45e820(DWORD *src, DWORD *dst, int size)
+{
+    for (int i = 0; i < size * size; i += 4)
+    {
+        *dst++ = *src++;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e850
+void FUN_45e850(BYTE *dst, BYTE *src)
+{
+    for (int i = 0; i < 0x300; i++)
+    {
+        *dst++ = *++src;
+        *dst++ = *++src;
+        *dst++ = *++src;
+        src++;
     }
 }
 

@@ -21,6 +21,19 @@
 
 struct CameraPath;
 
+struct Unk45ab70
+{
+    BYTE unk00[0x34];  // 0x00
+    PoolObject *unk34; // 0x34
+    PoolObject *unk38; // 0x38
+};
+
+struct Unk45c670
+{
+    BYTE unk00[0x30]; // 0x00
+    int unk30;        // 0x30
+};
+
 struct StuntKnot
 {
     float pathPosition; // 0x00
@@ -1358,6 +1371,19 @@ void FUN_45a7f0(MenuHolder *object)
     object->child = NULL;
 }
 
+// FUNCTION: STUNTGP_D3D 0x45ab70
+void FUN_45ab70(Unk45ab70 *object)
+{
+    PoolObject *child = object->unk34;
+    child->destroy(child);
+    Pool_Free(child);
+    object->unk34 = NULL;
+    child = object->unk38;
+    child->destroy(child);
+    Pool_Free(child);
+    object->unk38 = NULL;
+}
+
 // FUNCTION: STUNTGP_D3D 0x45b5b0
 void FUN_45b5b0(MenuHolder *object)
 {
@@ -1390,6 +1416,45 @@ void FUN_45be00(MenuHolder *object)
     child->destroy(child);
     Pool_Free(child);
     object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45c050
+void FUN_45c050(MenuObject *object)
+{
+    object->unk18 = 0;
+    object->unk1c = 1.0f;
+    object->unk20 = 1.0f;
+    object->unk14 = 0;
+    g_menuState.unk4244 = 0;
+    FUN_43dd90(0);
+}
+
+// FUNCTION: STUNTGP_D3D 0x45c670
+void FUN_45c670(Unk45c670 *object)
+{
+    switch (object->unk30)
+    {
+    case 1:
+        g_menuState.unk4478 = 5;
+        break;
+    case 2:
+        g_menuState.unk4478 = 9;
+        break;
+    case 0:
+        g_menuState.unk4478 = 3;
+        break;
+    default:
+        g_menuState.unk4478 = 5;
+        break;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45db50
+void FUN_45db50(Unk4516c0 *object)
+{
+    object->unk14->message(object->unk14, 0x13, 0);
+    object->unk18->message(object->unk18, 0x14, 0);
+    object->unk1c = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x45dde0
