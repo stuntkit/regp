@@ -1,6 +1,10 @@
 #include "GameSetup.h"
 
+#include <mmsystem.h>
+#include <dsound.h>
 #include <string.h>
+
+void FUN_4411c0();
 
 struct Unk62d580
 {
@@ -27,6 +31,63 @@ int g_4835e0 = 1;
 // GLOBAL: STUNTGP_D3D 0x612944
 int g_612944;
 
+// GLOBAL: STUNTGP_D3D 0x482718
+int g_482718 = 1;
+
+// GLOBAL: STUNTGP_D3D 0x482f38
+int g_482f38 = 1;
+
+// GLOBAL: STUNTGP_D3D 0x5fd248
+int g_5fd248;
+
+// GLOBAL: STUNTGP_D3D 0x5fd24c
+int g_5fd24c;
+
+struct Unk4d5cc0
+{
+    short unk00;
+    BYTE unk02[0x19d00 - 2];
+};
+
+// GLOBAL: STUNTGP_D3D 0x4d5cc0
+Unk4d5cc0 g_4d5cc0[6];
+
+struct Unk4a1460
+{
+    int unk00;
+    BYTE unk04[0x7724 - 4];
+};
+
+// GLOBAL: STUNTGP_D3D 0x4a1460
+Unk4a1460 g_4a1460[6];
+
+// GLOBAL: STUNTGP_D3D 0x489798
+int g_489798 = 0xff;
+
+// GLOBAL: STUNTGP_D3D 0x48979c
+int g_48979c = 0xff;
+
+// GLOBAL: STUNTGP_D3D 0x62e0ac
+int g_62e0ac;
+
+// GLOBAL: STUNTGP_D3D 0x62e0f8
+int g_62e0f8;
+
+// GLOBAL: STUNTGP_D3D 0x62f5ac
+int g_62f5ac;
+
+// GLOBAL: STUNTGP_D3D 0x62f5b4
+int g_62f5b4;
+
+struct SoundChannel
+{
+    LPDIRECTSOUNDBUFFER buffer;
+    BYTE unk04[0x20 - 4];
+};
+
+// GLOBAL: STUNTGP_D3D 0x62e118
+SoundChannel g_62e118[0x80];
+
 // STUB: STUNTGP_D3D 0x401de0
 void FUN_401de0()
 {
@@ -52,9 +113,18 @@ void FUN_413670()
 {
 }
 
-// STUB: STUNTGP_D3D 0x4199a0
+// FUNCTION: STUNTGP_D3D 0x4199a0
 void FUN_4199a0()
 {
+    int i;
+    for (i = 0; i < 6; i++)
+    {
+        g_4d5cc0[i].unk00 = 0;
+    }
+    for (i = 0; i < 6; i++)
+    {
+        g_4a1460[i].unk00 = 0;
+    }
 }
 
 // STUB: STUNTGP_D3D 0x422420
@@ -87,24 +157,64 @@ void FUN_43d0b0()
 {
 }
 
-// STUB: STUNTGP_D3D 0x43d1b0
+// FUNCTION: STUNTGP_D3D 0x43d1b0
 void FUN_43d1b0()
 {
+    g_5fd248 = 1;
+    g_5fd24c = FUN_43d420();
 }
 
-// STUB: STUNTGP_D3D 0x43d1d0
+// FUNCTION: STUNTGP_D3D 0x43d1d0
 void FUN_43d1d0()
 {
+    FUN_43d1f0();
+    g_5fd248 = 0;
+    FUN_4411c0();
 }
 
-// STUB: STUNTGP_D3D 0x443d70
+// STUB: STUNTGP_D3D 0x43d1f0
+void FUN_43d1f0()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d420
+int FUN_43d420()
+{
+    return 0;
+}
+
+// STUB: STUNTGP_D3D 0x443bd0
+void FUN_443bd0()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x443d70
 void FUN_443d70()
 {
+    if (g_482718)
+    {
+        FUN_443bd0();
+    }
 }
 
-// STUB: STUNTGP_D3D 0x4457e0
+// FUNCTION: STUNTGP_D3D 0x445610
+void FUN_445610()
+{
+}
+
+// STUB: STUNTGP_D3D 0x445620
+void FUN_445620()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x4457e0
 void FUN_4457e0()
 {
+    if (g_482f38)
+    {
+        FUN_445620();
+        FUN_445610();
+    }
 }
 
 // STUB: STUNTGP_D3D 0x445d70
@@ -149,19 +259,49 @@ void FUN_45ec30()
     }
 }
 
-// STUB: STUNTGP_D3D 0x45f9d0
+// FUNCTION: STUNTGP_D3D 0x45f9d0
 void FUN_45f9d0()
 {
+    if (g_62f5ac && g_62e0f8)
+    {
+        FUN_460330();
+        g_62f5ac = 0;
+    }
 }
 
-// STUB: STUNTGP_D3D 0x460c90
+// STUB: STUNTGP_D3D 0x460330
+void FUN_460330()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x460c90
 void FUN_460c90()
 {
+    g_489798 = 0xff;
+    g_48979c = 0xff;
 }
 
-// STUB: STUNTGP_D3D 0x460dd0
+// FUNCTION: STUNTGP_D3D 0x460d60
+void FUN_460d60(unsigned int channel)
+{
+    if (g_62e0ac)
+    {
+        LPDIRECTSOUNDBUFFER buffer = g_62e118[channel].buffer;
+        if (buffer)
+        {
+            buffer->Stop();
+        }
+        g_62f5b4--;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x460dd0
 void FUN_460dd0()
 {
+    for (unsigned int i = 0; i < 0x80; i++)
+    {
+        FUN_460d60(i);
+    }
 }
 
 // STUB: STUNTGP_D3D 0x462090
