@@ -233,6 +233,174 @@ int g_4835dc = 0x3000;
 // GLOBAL: STUNTGP_D3D 0x4835e0
 int g_4835e0 = 1;
 
+struct GameplayKey
+{
+    const char *name;
+    float scale;
+    int id;
+};
+
+// Entries are removed as they are matched, so the file is only parsed once.
+// GLOBAL: STUNTGP_D3D 0x482718
+int g_482718 = 1;
+
+// GLOBAL: STUNTGP_D3D 0x48271c
+int g_48271c = 0x94;
+
+// GLOBAL: STUNTGP_D3D 0x482720
+TextKey g_482720[37] = {
+    // STRING: STUNTGP_D3D 0x482848
+    {"score_backflip_360", 0x1},
+    // STRING: STUNTGP_D3D 0x48285c
+    {"score_backflip_720", 0x2},
+    // STRING: STUNTGP_D3D 0x482870
+    {"score_backflip_1080", 0x3},
+    // STRING: STUNTGP_D3D 0x482884
+    {"score_frontflip_360", 0x4},
+    // STRING: STUNTGP_D3D 0x482898
+    {"score_frontflip_720", 0x5},
+    // STRING: STUNTGP_D3D 0x4828ac
+    {"score_frontflip_1080", 0x6},
+    // STRING: STUNTGP_D3D 0x4828c4
+    {"score_twistright_360", 0x7},
+    // STRING: STUNTGP_D3D 0x4828dc
+    {"score_twistright_720", 0x8},
+    // STRING: STUNTGP_D3D 0x4828f4
+    {"score_twistright_1080", 0x9},
+    // STRING: STUNTGP_D3D 0x48290c
+    {"score_twistleft_360", 0xa},
+    // STRING: STUNTGP_D3D 0x482920
+    {"score_twistleft_720", 0xb},
+    // STRING: STUNTGP_D3D 0x482934
+    {"score_twistleft_1080", 0xc},
+    // STRING: STUNTGP_D3D 0x48294c
+    {"score_noseup", 0xd},
+    // STRING: STUNTGP_D3D 0x48295c
+    {"score_nosedown", 0xe},
+    // STRING: STUNTGP_D3D 0x48296c
+    {"score_halftwist_left", 0xf},
+    // STRING: STUNTGP_D3D 0x482984
+    {"score_halftwist_right", 0x10},
+    // STRING: STUNTGP_D3D 0x48299c
+    {"score_twist_combo", 0x11},
+    // STRING: STUNTGP_D3D 0x4829b0
+    {"score_flip_combo", 0x12},
+    // STRING: STUNTGP_D3D 0x4829c4
+    {"score_freestyle", 0x13},
+    // STRING: STUNTGP_D3D 0x4829d4
+    {"score_freestyle_combo", 0x14},
+    // STRING: STUNTGP_D3D 0x4829ec
+    {"score_slide", 0x15},
+    // STRING: STUNTGP_D3D 0x4829f8
+    {"score_powerslide", 0x16},
+    // STRING: STUNTGP_D3D 0x482a0c
+    {"score_stream", 0x17},
+    // STRING: STUNTGP_D3D 0x482a1c
+    {"score_superstream", 0x18},
+    // STRING: STUNTGP_D3D 0x482a30
+    {"score_trickstart", 0x19},
+    // STRING: STUNTGP_D3D 0x482a44
+    {"score_barrelroll", 0x1a},
+    // STRING: STUNTGP_D3D 0x482a58
+    {"score_grind", 0x1b},
+    // STRING: STUNTGP_D3D 0x482a64
+    {"score_flightheight_1", 0x1c},
+    // STRING: STUNTGP_D3D 0x482a7c
+    {"score_flightheight_2", 0x1d},
+    // STRING: STUNTGP_D3D 0x482a94
+    {"score_flightheight_3", 0x1e},
+    // STRING: STUNTGP_D3D 0x482aac
+    {"score_flightheight_4", 0x1f},
+    // STRING: STUNTGP_D3D 0x482ac4
+    {"score_loopdeloop", 0x20},
+    // STRING: STUNTGP_D3D 0x482ad8
+    {"score_twowheel_left", 0x21},
+    // STRING: STUNTGP_D3D 0x482aec
+    {"score_twowheel_right", 0x22},
+    // STRING: STUNTGP_D3D 0x482b04
+    {"score_twowheel_front", 0x23},
+    // STRING: STUNTGP_D3D 0x482b1c
+    {"score_twowheel_rear", 0x24},
+    {NULL, 0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x482f38
+int g_482f38 = 1;
+
+// GLOBAL: STUNTGP_D3D 0x482f3c
+int g_482f3c = 0x7c;
+
+// GLOBAL: STUNTGP_D3D 0x482f40
+GameplayKey g_482f40[31] = {
+    // STRING: STUNTGP_D3D 0x4830b4
+    {"human_replace_energy", 10.0f, 0x1},
+    // STRING: STUNTGP_D3D 0x4830cc
+    {"human_stunt_energy_award", 1.0f, 0x2},
+    // STRING: STUNTGP_D3D 0x4830e8
+    {"cpu_replace_energy", 10.0f, 0x3},
+    // STRING: STUNTGP_D3D 0x4830fc
+    {"cpu_stunt_energy_award", 1.0f, 0x4},
+    // STRING: STUNTGP_D3D 0x483114
+    {"car_pitlane_speed", 0.4629629850387573f, 0x5},
+    // STRING: STUNTGP_D3D 0x483128
+    {"car_pitlane_recharge_total", 10.0f, 0x6},
+    // STRING: STUNTGP_D3D 0x483144
+    {"car_victorylap_speed", 0.4629629850387573f, 0x7},
+    // STRING: STUNTGP_D3D 0x48315c
+    {"car_rollingstart_speed", 0.4629629850387573f, 0x8},
+    // STRING: STUNTGP_D3D 0x483174
+    {"cpu_skill_collision_nrg_scale", 0.009999999776482582f, 0x9},
+    // STRING: STUNTGP_D3D 0x483194
+    {"cpu_skill_engine_nrg_scale", 0.009999999776482582f, 0xa},
+    // STRING: STUNTGP_D3D 0x4831b0
+    {"cpu_skill_boost_nrg_scale", 0.009999999776482582f, 0xb},
+    // STRING: STUNTGP_D3D 0x4831cc
+    {"cpu_skill_boostusage_scale", 0.009999999776482582f, 0xc},
+    // STRING: STUNTGP_D3D 0x4831e8
+    {"cpu_skill_engine_torque_scale", 0.009999999776482582f, 0xd},
+    // STRING: STUNTGP_D3D 0x483208
+    {"cpu_skill_aerodrag_scale", 0.009999999776482582f, 0xe},
+    // STRING: STUNTGP_D3D 0x483224
+    {"cpu_skill_torquemap3_select", 1.0f, 0xf},
+    // STRING: STUNTGP_D3D 0x483240
+    {"cpu_skill_torquemap2_select", 1.0f, 0x10},
+    // STRING: STUNTGP_D3D 0x48325c
+    {"cpu_skill_torquemap1_select", 1.0f, 0x11},
+    // STRING: STUNTGP_D3D 0x483278
+    {"cpu_catchup_distance_behind_max", 100.0f, 0x12},
+    // STRING: STUNTGP_D3D 0x483298
+    {"cpu_catchup_distance_behind_skill_maxsub", 0.009999999776482582f, 0x13},
+    // STRING: STUNTGP_D3D 0x4832c4
+    {"cpu_catchup_distance_ahead_max", 100.0f, 0x14},
+    // STRING: STUNTGP_D3D 0x4832e4
+    {"cpu_catchup_distance_ahead_skill_maxsub", 0.009999999776482582f, 0x15},
+    // STRING: STUNTGP_D3D 0x48330c
+    {"cpu_catchup_setup_scale", 0.009999999776482582f, 0x16},
+    // STRING: STUNTGP_D3D 0x483324
+    {"human_catchup_distance_behind_max", 100.0f, 0x17},
+    // STRING: STUNTGP_D3D 0x483348
+    {"human_catchup_setup_scale", 0.009999999776482582f, 0x18},
+    // STRING: STUNTGP_D3D 0x483364
+    {"collision_energy_min", 10.0f, 0x19},
+    // STRING: STUNTGP_D3D 0x48337c
+    {"collision_energy_max", 10.0f, 0x1a},
+    // STRING: STUNTGP_D3D 0x483394
+    {"collision_energy_scale", 1.0f, 0x1b},
+    // STRING: STUNTGP_D3D 0x4833ac
+    {"collision_energy_impact_limit", 10.0f, 0x1c},
+    // STRING: STUNTGP_D3D 0x4833cc
+    {"collision_energy_impact_timedelay", 60.0f, 0x1d},
+    // STRING: STUNTGP_D3D 0x4833f0
+    {"cpu_autobraking_disable", 1.0f, 0x1e},
+    {NULL, 0, 0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x60d688
+int g_60d688[37];
+
+// GLOBAL: STUNTGP_D3D 0x60f2d0
+float g_60f2d0[31];
+
 // GLOBAL: STUNTGP_D3D 0x60f350
 TextKey g_60f350[105];
 
@@ -244,6 +412,155 @@ char *g_6127a0[105];
 
 // GLOBAL: STUNTGP_D3D 0x612944
 int g_612944;
+
+// FUNCTION: STUNTGP_D3D 0x443bd0
+void Scores_Load()
+{
+    char key[64];
+    char value[256];
+    int pos = 0;
+    int count = 0;
+    char *text;
+
+    memset(g_60d688, 0, sizeof(g_60d688));
+    while (g_482720[count].name)
+    {
+        count++;
+    }
+    // STRING: STUNTGP_D3D 0x482b30
+    text = Csv_Load("Config\\Scores.csv");
+    while (Csv_ReadField(key, text, &pos))
+    {
+        if (!Csv_ReadField(value, text, &pos))
+        {
+            break;
+        }
+        while (text[pos] != 0 && text[pos] != '\n')
+        {
+            pos++;
+        }
+        Csv_SkipBlankLines(text, &pos);
+        count = Scores_Assign(key, value, count);
+    }
+    free(text);
+    g_482718 = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x443ca0
+int Scores_Assign(char *key, char *value, int count)
+{
+    for (int i = 0; i < count; i++)
+    {
+        if (strcmp(g_482720[i].name, key) == 0)
+        {
+            g_60d688[g_482720[i].id] = Scores_Parse(value);
+            for (; i < count - 1; i++)
+            {
+                g_482720[i] = g_482720[i + 1];
+            }
+            return count - 1;
+        }
+    }
+    return count;
+}
+
+// FUNCTION: STUNTGP_D3D 0x443d50
+int Scores_Parse(char *str)
+{
+    g_48271c -= 4;
+    if (g_48271c < 0)
+    {
+        return 0;
+    }
+    return atoi(str);
+}
+
+// FUNCTION: STUNTGP_D3D 0x443d70
+void Scores_LoadIfNeeded()
+{
+    if (g_482718)
+    {
+        Scores_Load();
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x445610
+void FUN_445610()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x445620
+void Gameplay_Load()
+{
+    char key[64];
+    char value[256];
+    int pos = 0;
+    int count = 0;
+    char *text;
+
+    memset(g_60f2d0, 0, sizeof(g_60f2d0));
+    while (g_482f40[count].name)
+    {
+        count++;
+    }
+    // STRING: STUNTGP_D3D 0x483408
+    text = Csv_Load("Config\\Gameplay.csv");
+    while (Csv_ReadField(key, text, &pos))
+    {
+        if (!Csv_ReadField(value, text, &pos))
+        {
+            break;
+        }
+        while (text[pos] != 0 && text[pos] != '\n')
+        {
+            pos++;
+        }
+        Csv_SkipBlankLines(text, &pos);
+        count = Gameplay_Assign(key, value, count);
+    }
+    free(text);
+    g_482f38 = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4456f0
+int Gameplay_Assign(char *key, char *value, int count)
+{
+    for (int i = 0; i < count; i++)
+    {
+        if (strcmp(g_482f40[i].name, key) == 0)
+        {
+            g_60f2d0[g_482f40[i].id] = Gameplay_Parse(value, &g_482f3c) * g_482f40[i].scale;
+            for (; i < count - 1; i++)
+            {
+                g_482f40[i] = g_482f40[i + 1];
+            }
+            return count - 1;
+        }
+    }
+    return count;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4457c0
+float Gameplay_Parse(char *str, int *pool)
+{
+    *pool -= 4;
+    if (*pool < 0)
+    {
+        return 0.0f;
+    }
+    float result = atof(str);
+    return result;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4457e0
+void Gameplay_LoadIfNeeded()
+{
+    if (g_482f38)
+    {
+        Gameplay_Load();
+        FUN_445610();
+    }
+}
 
 // FUNCTION: STUNTGP_D3D 0x445ae0
 int Csv_SkipBlankLines(char *text, int *pos)

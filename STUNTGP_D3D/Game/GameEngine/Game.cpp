@@ -109,8 +109,8 @@ void FUN_442030()
     FUN_445fa0();
     Mem_Reset();
     FUN_42e6e0();
-    FUN_443d70();
-    FUN_4457e0();
+    Scores_LoadIfNeeded();
+    Gameplay_LoadIfNeeded();
     if (g_612be8 == 1)
     {
         FUN_445f80();
