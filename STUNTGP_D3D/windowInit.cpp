@@ -484,10 +484,10 @@ int FUN_422df0(LPDIRECTDRAW4 dd, LPDIRECTDRAWSURFACE4 *surface, LPDIRECTDRAWSURF
 {
     DDSURFACEDESC2 ddsd;
     ZeroMemory(&ddsd, sizeof(ddsd));
-    ddsd.ddsCaps.dwCaps = DAT_CAPS | DDSCAPS_VIDEOMEMORY | DDSCAPS_PRIMARYSURFACE | DDSCAPS_FLIP | DDSCAPS_COMPLEX;
     ddsd.dwSize = sizeof(ddsd);
     ddsd.dwBackBufferCount = 1;
     ddsd.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
+    ddsd.ddsCaps.dwCaps = DAT_CAPS | DDSCAPS_VIDEOMEMORY | DDSCAPS_PRIMARYSURFACE | DDSCAPS_FLIP | DDSCAPS_COMPLEX;
     FUN_422a80(dd, surface, &ddsd, 2);
 
     DDSCAPS2 caps;
@@ -508,10 +508,10 @@ int FUN_422ea0(LPDIRECTDRAW4 dd, LPDIRECTDRAWSURFACE4 *surface, LPDIRECTDRAWSURF
 {
     DDSURFACEDESC2 ddsd;
     ZeroMemory(&ddsd, sizeof(ddsd));
-    ddsd.ddsCaps.dwCaps = DAT_CAPS | DDSCAPS_SYSTEMMEMORY | DDSCAPS_PRIMARYSURFACE | DDSCAPS_FLIP | DDSCAPS_COMPLEX;
     ddsd.dwSize = sizeof(ddsd);
     ddsd.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
     ddsd.dwBackBufferCount = 1;
+    ddsd.ddsCaps.dwCaps = DAT_CAPS | DDSCAPS_SYSTEMMEMORY | DDSCAPS_PRIMARYSURFACE | DDSCAPS_FLIP | DDSCAPS_COMPLEX;
     FUN_422a80(dd, surface, &ddsd, 2);
 
     DDSCAPS2 caps;
