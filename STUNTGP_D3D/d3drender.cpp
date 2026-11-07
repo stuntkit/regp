@@ -388,6 +388,32 @@ int FUN_4251a0(SpriteDesc *desc)
 
 // Converts 24-bit RGB to ARGB1555. Near-black is lifted so it stays opaque; magenta becomes
 // transparent and flags the texture as needing alpha.
+// Converts 24-bit pixels to RGB565; near-black is lifted and magenta becomes the colour key.
+// FUNCTION: STUNTGP_D3D 0x4301f0
+void FUN_4301f0(BYTE *src, WORD *dst, DWORD width, DWORD height)
+{
+    DWORD count = width * height;
+    for (DWORD i = 0; i < count; i++)
+    {
+        BYTE r = src[0];
+        BYTE g = src[1];
+        BYTE b = src[2];
+        if (r < 8 && g < 8 && b < 8)
+        {
+            r = g = b = 8;
+        }
+        else if (r == 0xff && g == 0 && b == r)
+        {
+            r = 1;
+            b = r;
+            *g_592028 = r;
+        }
+        src += 3;
+        *dst = (((WORD)r & ~7) << 5 | ((WORD)g & ~3)) << 3 | (WORD)(b >> 3);
+        dst++;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x430280
 void FUN_430280(BYTE *src, WORD *dst, DWORD width, DWORD height)
 {
@@ -773,6 +799,47 @@ void FUN_427520(int *p)
 void FUN_431a80()
 {
     FUN_423430();
+}
+
+// GLOBAL: STUNTGP_D3D 0x592018
+Vec4 g_592018;
+
+// GLOBAL: STUNTGP_D3D 0x592030
+Vec4 g_592030;
+
+// GLOBAL: STUNTGP_D3D 0x592040
+Vec4 g_592040;
+
+// Moves g_592040 the fraction t of the way towards g_592030.
+// FUNCTION: STUNTGP_D3D 0x431aa0
+void FUN_431aa0(float t)
+{
+    Vec4 step;
+    g_592018.x = g_592030.x - g_592040.x;
+    g_592018.y = g_592030.y - g_592040.y;
+    g_592018.z = g_592030.z - g_592040.z;
+    step.x = g_592018.x * t;
+    step.y = g_592018.y * t;
+    step.z = g_592018.z * t;
+    g_592040.x += step.x;
+    g_592040.y += step.y;
+    g_592040.z += step.z;
+}
+
+// Moves g_592030 the fraction t of the way towards g_592040.
+// FUNCTION: STUNTGP_D3D 0x431b40
+void FUN_431b40(float t)
+{
+    Vec4 step;
+    g_592018.x = g_592030.x - g_592040.x;
+    g_592018.y = g_592030.y - g_592040.y;
+    g_592018.z = g_592030.z - g_592040.z;
+    step.x = g_592018.x * t;
+    step.y = g_592018.y * t;
+    step.z = g_592018.z * t;
+    g_592030.x -= step.x;
+    g_592030.y -= step.y;
+    g_592030.z -= step.z;
 }
 
 // Outlines the display area with four lines; ends are nudged half a pixel so the corners close.
@@ -1349,6 +1416,42 @@ void FUN_4277d0()
     {
         FUN_4277b0((RenderItem *)g_6243e0[6].unk08, g_6243e0[6].unk0c);
     }
+}
+
+// Directory searched first for track textures.
+// GLOBAL: STUNTGP_D3D 0x60dfac
+char g_60dfac[0x40];
+
+// Redirects a track texture path into g_60dfac when that directory is set.
+// FUNCTION: STUNTGP_D3D 0x42bb70
+int FUN_42bb70(char *path, char *out)
+{
+    char name[64];
+    if (g_60dfac[0])
+    {
+        int i;
+        for (i = strlen(path); i > 0; i--)
+        {
+            if (path[i] == '\\')
+            {
+                break;
+            }
+        }
+        if (i)
+        {
+            i++;
+        }
+        // STRING: STUNTGP_D3D 0x4777c0
+        sprintf(name, "%s", path + i);
+        // STRING: STUNTGP_D3D 0x4777c4
+        if (strstr(path, "Trk_"))
+        {
+            // STRING: STUNTGP_D3D 0x4777cc
+            sprintf(out, "%s\\%s", g_60dfac, name);
+            return 1;
+        }
+    }
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42bc00
