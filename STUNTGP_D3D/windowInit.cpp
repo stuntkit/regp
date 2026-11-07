@@ -240,10 +240,15 @@ int ddGetDD4(LPDIRECTDRAW *lplpDD, LPDIRECTDRAW4 *lplpDD4, HWND hWnd)
     return res;
 }
 
-// // STUB: STUNTGP_D3D 0x422860
-// void FUN_422860()
-// {
-// }
+// FUNCTION: STUNTGP_D3D 0x422860
+void FUN_422860(IUnknown **object)
+{
+    if (*object)
+    {
+        (*object)->Release();
+        *object = NULL;
+    }
+}
 
 // FUNCTION: STUNTGP_D3D 0x422880
 void ddReleaseSurface(LPDIRECTDRAWSURFACE4 *surface)
@@ -285,10 +290,15 @@ void ddRelease()
     g_surface2 = NULL;
 }
 
-// // STUB: STUNTGP_D3D 0x422910 - unused
-// void FUN_422910()
-// {
-// }
+// FUNCTION: STUNTGP_D3D 0x422910
+void FUN_422910(IUnknown **object)
+{
+    if (*object)
+    {
+        (*object)->Release();
+        *object = NULL;
+    }
+}
 
 // FUNCTION: STUNTGP_D3D 0x422930
 void windowDestroy(HWND *hWnd)

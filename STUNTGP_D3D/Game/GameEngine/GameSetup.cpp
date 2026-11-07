@@ -428,6 +428,40 @@ void FUN_4199a0()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x4199d0
+BYTE FUN_4199d0(BYTE *data, unsigned int size)
+{
+    BYTE sum = 0;
+    while (size > 0)
+    {
+        sum += *data++;
+        size--;
+    }
+    return sum;
+}
+
+// FUNCTION: STUNTGP_D3D 0x419a40
+int FUN_419a40(Replay *replay)
+{
+    return replay->size = replay->count * sizeof(ReplayFrame) + sizeof(Replay);
+}
+
+void FUN_415630();
+void FUN_414ac0(unsigned int wheel);
+
+// FUNCTION: STUNTGP_D3D 0x419e90
+void FUN_419e90()
+{
+    if (g_4d5bb8->unk22c0 == 1)
+    {
+        FUN_415630();
+        for (unsigned int i = 0; i < 4; i++)
+        {
+            FUN_414ac0(i);
+        }
+    }
+}
+
 void FUN_429510();
 
 // FUNCTION: STUNTGP_D3D 0x401d40
