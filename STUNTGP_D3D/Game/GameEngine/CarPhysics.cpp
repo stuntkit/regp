@@ -102,7 +102,7 @@ GameSlot *FUN_402590(Car *car)
 {
     for (int i = 0; i < 4; i++)
     {
-        if (g_498248[i].active == 1 && g_498248[i].data == car)
+        if (g_498248[i].active == 1 && car == g_498248[i].data)
         {
             return &g_498248[i];
         }
@@ -260,14 +260,101 @@ void FUN_410df0()
     }
 }
 
-// STUB: STUNTGP_D3D 0x410f80
-void FUN_410f80()
+// FUNCTION: STUNTGP_D3D 0x410f50
+void FUN_410f50(Car *car)
 {
+    car->unk71c4 = 0;
+    car->unk71c8 = 0;
+    g_4d5bb8->unk71cc.x = 0.0f;
+    g_4d5bb8->unk71cc.y = 0.0f;
+    g_4d5bb8->unk71cc.z = 0.0f;
 }
 
-// STUB: STUNTGP_D3D 0x411150
+// Tracks a roll: up-vector flips past 135 degrees while grounded, then lands.
+// FUNCTION: STUNTGP_D3D 0x410f80
+void FUN_410f80()
+{
+    if (g_4d5bb8->unk71c8 != 0 && --g_4d5bb8->unk71c8 == 0)
+    {
+        FUN_410f50(g_4d5bb8);
+    }
+    if (g_4d5bb8->unk1fd8 == 0 && g_4d5bb8->unk71c4 == 3 && g_4d5bb8->unk71c8 != 0)
+    {
+        FUN_401220(5, 0, g_60d688[26]);
+        FUN_442cf0(180, g_6127a0[56], g_4d5bb8, 2, 100);
+        FUN_410f50(g_4d5bb8);
+    }
+    if (g_4d5bb8->unk1fd4 == 0 && g_4d5bb8->unk1fd8 == 0)
+    {
+        if (g_4d5bb8->unk71c4 != 3)
+        {
+            FUN_410f50(g_4d5bb8);
+        }
+    }
+    else if (g_4d5bb8->unk1fd4 == 0 && g_4d5bb8->unk1fd8 != 0)
+    {
+        g_4d5bb8->unk71cc = g_4d5bb8->axisY;
+        g_4d5bb8->unk71c4 = 1;
+    }
+    else if (g_4d5bb8->unk1fd4 == 1 && g_4d5bb8->unk1fd8 == 1)
+    {
+        if (g_4d5bb8->unk71c4 == 1 &&
+            g_4d5bb8->unk71cc.z * g_4d5bb8->axisY.z + g_4d5bb8->unk71cc.y * g_4d5bb8->axisY.y +
+                    g_4d5bb8->unk71cc.x * g_4d5bb8->axisY.x <
+                -0.707f)
+        {
+            g_4d5bb8->unk71c4 = 2;
+        }
+    }
+    else if (g_4d5bb8->unk1fd4 == 1 && g_4d5bb8->unk1fd8 != 1 && g_4d5bb8->unk71c4 == 2)
+    {
+        g_4d5bb8->unk71c4 = 3;
+        g_4d5bb8->unk71c8 = 300;
+    }
+    if (g_4d5bb8->unk71c4 == 2 &&
+        g_4d5bb8->axisZ.z * g_4d5bb8->unk1c8c[2] + g_4d5bb8->axisZ.y * g_4d5bb8->unk1c8c[1] +
+                g_4d5bb8->axisZ.x * g_4d5bb8->unk1c8c[0] <
+            0.707f)
+    {
+        FUN_410f50(g_4d5bb8);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x411140
+void FUN_411140(Car *car)
+{
+    car->unk71dc = 0;
+}
+
+// Counts ticks spent driving fast against the car's heading; rewards long reverses.
+// FUNCTION: STUNTGP_D3D 0x411150
 void FUN_411150()
 {
+    if (g_4d5bb8->unk1fd8 != 1)
+    {
+        Vec4 dir = *(Vec4 *)g_4d5bb8->unk1c8c;
+        float speed;
+        FUN_44eda0(&dir.x, &speed);
+        if (speed >= 1000.0f / 60.0f)
+        {
+            if (dir.z * g_4d5bb8->axisZ.z + dir.y * g_4d5bb8->axisZ.y + dir.x * g_4d5bb8->axisZ.x < 0.9063077)
+            {
+                g_4d5bb8->unk71dc++;
+                return;
+            }
+            if (g_4d5bb8->unk71dc > 150.0)
+            {
+                FUN_401220(5, 1, g_60d688[22]);
+                FUN_442cf0(180, g_6127a0[74], g_4d5bb8, 2, 0);
+            }
+            else if (g_4d5bb8->unk71dc > 90.0)
+            {
+                FUN_401220(4, 0, g_60d688[21]);
+                FUN_442cf0(180, g_6127a0[75], g_4d5bb8, 2, 0);
+            }
+        }
+    }
+    FUN_411140(g_4d5bb8);
 }
 
 // FUNCTION: STUNTGP_D3D 0x411280

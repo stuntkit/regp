@@ -207,7 +207,11 @@ struct Car
     float posZ;              // 0x1bb4
     BYTE unk1bb8[0xd4];      // 0x1bb8
     float unk1c8c[3];        // 0x1c8c
-    BYTE unk1c98[0x58];      // 0x1c98
+    BYTE unk1c98[0x24];      // 0x1c98
+    Vec4 axisX;              // 0x1cbc
+    Vec4 axisY;              // 0x1ccc
+    Vec4 axisZ;              // 0x1cdc
+    BYTE unk1cec[0x4];       // 0x1cec
     float unk1cf0;           // 0x1cf0
     BYTE unk1cf4[0x4];       // 0x1cf4
     int unk1cf8;             // 0x1cf8
@@ -217,7 +221,7 @@ struct Car
     int unk1f10;             // 0x1f10
     BYTE unk1f14[0xbc];      // 0x1f14
     float unk1fd0;           // 0x1fd0
-    BYTE unk1fd4[0x4];       // 0x1fd4
+    int unk1fd4;             // 0x1fd4
     int unk1fd8;             // 0x1fd8
     BYTE unk1fdc[0x4];       // 0x1fdc
     Wheel wheels[4];         // 0x1fe0
@@ -348,7 +352,10 @@ struct Car
     DWORD unk71b8;           // 0x71b8
     DWORD unk71bc;           // 0x71bc
     DWORD unk71c0;           // 0x71c0
-    BYTE unk71c4[0x1c];      // 0x71c4
+    int unk71c4;             // 0x71c4
+    DWORD unk71c8;           // 0x71c8
+    Vec4 unk71cc;            // 0x71cc
+    DWORD unk71dc;           // 0x71dc
     DWORD unk71e0;           // 0x71e0
     DWORD unk71e4;           // 0x71e4
     int unk71e8;             // 0x71e8

@@ -95,6 +95,12 @@ void Matrix_Set(float *m, float m00, float m01, float m02, float m03, float m10,
     m[15] = m33;
 }
 
+// Normalizes v in place and writes its original length.
+// STUB: STUNTGP_D3D 0x44eda0
+void FUN_44eda0(float *v, float *len)
+{
+}
+
 // FUNCTION: STUNTGP_D3D 0x44f790
 void Matrix_RotationX(float *m, float degrees)
 {
