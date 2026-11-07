@@ -3,14 +3,239 @@
 // The original keeps EBP frames everywhere (/Oy-). Drop this once the global flags do.
 #pragma optimize("y", off)
 
+// GLOBAL: STUNTGP_D3D 0x48491c
+char g_GraphicsDirectory[128] = "D:\\Game\\Graphics24\\";
+
+// GLOBAL: STUNTGP_D3D 0x484a1c
+char g_SoundDirectory[128] = "D:\\Game\\Sound";
+
+// GLOBAL: STUNTGP_D3D 0x589604
+char g_LevelScript[32];
+
+// end of the current script section; FindKey ignores matches past it
+// GLOBAL: STUNTGP_D3D 0x589624
+char *g_ScriptSectionEnd;
+
+// GLOBAL: STUNTGP_D3D 0x60dfa0
+int g_DisplayBootGfx;
+
+// GLOBAL: STUNTGP_D3D 0x60f018
+int g_ControlMethod;
+
+// GLOBAL: STUNTGP_D3D 0x60f2a0
+int g_D3DDeviceIndex;
+
+// GLOBAL: STUNTGP_D3D 0x60f2a4
+int g_D3DDriverIndex;
+
+// GLOBAL: STUNTGP_D3D 0x60f2a8
+int g_D3DUVFix;
+
+// GLOBAL: STUNTGP_D3D 0x60f2ac
+int g_DisableFramerateCorrection;
+
+// GLOBAL: STUNTGP_D3D 0x61b640
+char g_GameLocation[256];
+
+// FUNCTION: STUNTGP_D3D 0x42c580
+int Script_FindKey(char *script, char **value, char *key)
+{
+    char *found = strstr(script, key);
+    if ((g_ScriptSectionEnd != NULL) && ((found > g_ScriptSectionEnd) || (found == NULL)))
+    {
+        return 0;
+    }
+    // STRING: STUNTGP_D3D 0x4777f0
+    found = strstr(found, "=");
+    if (value != NULL)
+    {
+        while (*found != ' ')
+        {
+            found++;
+        }
+        *value = found;
+    }
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x42c5e0
+void Script_ReadString(char *pos, char **next, char *out)
+{
+    while ((*pos == ' ') || (*pos == '\r') || (*pos == '\n'))
+    {
+        pos++;
+    }
+    int len = 0;
+    while ((pos[len] != ' ') && (pos[len] != '\r') && (pos[len] != '\n'))
+    {
+        out[len] = pos[len];
+        len++;
+    }
+    out[len] = '\0';
+    if (next != NULL)
+    {
+        *next = pos + len + 1;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42c6a0
+void Script_ReadInt(char *pos, char **next, int *out)
+{
+    while ((*pos == ' ') || (*pos == '\r') || (*pos == '\n'))
+    {
+        pos++;
+    }
+    *out = atoi(pos);
+    if (next != NULL)
+    {
+        int len = 0;
+        while (pos[len] != ' ')
+        {
+            len++;
+        }
+        *next = pos + len + 1;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x42d060
 void FUN_42d060(char *script, char *key)
 {
 }
 
-// STUB: STUNTGP_D3D 0x42d2e0
-void Script_ParseGameConfigBuffer(char *script)
+// FUNCTION: STUNTGP_D3D 0x42d2e0
+void Script_ParseGameSettings(char *script)
 {
+    char *value;
+    int width;
+    int height;
+    int depth;
+    int soundQuality;
+    int sfxVolume;
+    int musicVolume;
+    int masterVolume;
+    char controlMethod[64];
+
+    // STRING: STUNTGP_D3D 0x4779c8
+    Script_FindKey(script, NULL, "-GAMESETTINGS");
+    // STRING: STUNTGP_D3D 0x4779d8
+    g_ScriptSectionEnd = strstr(script, "-END");
+
+    // STRING: STUNTGP_D3D 0x4779e0
+    if (Script_FindKey(script, &value, "GAMELOCATION") == 1)
+    {
+        Script_ReadString(value, NULL, g_GameLocation);
+    }
+    // STRING: STUNTGP_D3D 0x4779f0
+    sprintf(g_GameDirectory, "%s\\", g_GameLocation);
+    // STRING: STUNTGP_D3D 0x4779f4
+    sprintf(g_GraphicsDirectory, "%s\\Graphics\\", g_GameLocation);
+    // STRING: STUNTGP_D3D 0x477a04
+    sprintf(g_SoundDirectory, "%s\\Sound", g_GameLocation);
+
+    // STRING: STUNTGP_D3D 0x477a10
+    if (Script_FindKey(script, &value, "CONTROLMETHOD") == 1)
+    {
+        Script_ReadString(value, NULL, controlMethod);
+        g_ControlMethod = 2;
+        // STRING: STUNTGP_D3D 0x477a20
+        if (_stricmp(controlMethod, "Steering_Analog") == 0)
+        {
+            g_ControlMethod = 0;
+        }
+        // STRING: STUNTGP_D3D 0x477a30
+        else if (_stricmp(controlMethod, "Joystick_Analog") == 0)
+        {
+            g_ControlMethod = 1;
+        }
+        // STRING: STUNTGP_D3D 0x477a40
+        else if (_stricmp(controlMethod, "Keyboard") == 0)
+        {
+            g_ControlMethod = 2;
+        }
+        // STRING: STUNTGP_D3D 0x477a4c
+        else if (_stricmp(controlMethod, "Pad_Digital") == 0)
+        {
+            g_ControlMethod = 4;
+        }
+        // STRING: STUNTGP_D3D 0x477a58
+        else if (_stricmp(controlMethod, "Pad_Analog") == 0)
+        {
+            g_ControlMethod = 3;
+        }
+    }
+
+    // STRING: STUNTGP_D3D 0x477a64
+    if (Script_FindKey(script, &value, "DISPLAYRESWIDTH") == 1)
+    {
+        Script_ReadInt(value, NULL, &width);
+    }
+    // STRING: STUNTGP_D3D 0x477a74
+    if (Script_FindKey(script, &value, "DISPLAYRESHEIGHT") == 1)
+    {
+        Script_ReadInt(value, NULL, &height);
+    }
+    // STRING: STUNTGP_D3D 0x477a88
+    if (Script_FindKey(script, &value, "DISPLAYRESDEPTH") == 1)
+    {
+        Script_ReadInt(value, NULL, &depth);
+    }
+    if ((width >= 320) && (width <= 2048) && (height >= 200) && (height <= 2048))
+    {
+        g_DISPLAYRESWIDTH = width;
+        g_DISPLAYRESHEIGHT = height;
+        g_DISPLAYRESDEPTH = depth;
+    }
+
+    // STRING: STUNTGP_D3D 0x477a98
+    Script_FindKey(script, &value, "SOUNDQUALITY");
+    Script_ReadInt(value, NULL, &soundQuality);
+    // STRING: STUNTGP_D3D 0x477aa8
+    Script_FindKey(script, &value, "MASTERVOLUME");
+    Script_ReadInt(value, NULL, &masterVolume);
+    // STRING: STUNTGP_D3D 0x477ab8
+    Script_FindKey(script, &value, "SFXVOLUME");
+    Script_ReadInt(value, NULL, &sfxVolume);
+    // STRING: STUNTGP_D3D 0x477ac4
+    Script_FindKey(script, &value, "MUSVOLUME");
+    Script_ReadInt(value, NULL, &musicVolume);
+    Sound_SetVolumes(masterVolume, sfxVolume, musicVolume, soundQuality);
+
+    // STRING: STUNTGP_D3D 0x477ad0
+    Script_FindKey(script, &value, "LEVELSCRIPT");
+    Script_ReadString(value, NULL, g_LevelScript);
+
+    g_D3DDeviceIndex = 0;
+    g_D3DDriverIndex = 1;
+    g_D3DUVFix = 0;
+    // STRING: STUNTGP_D3D 0x477adc
+    if (Script_FindKey(script, &value, "D3D_DEVICEINDEX") == 1)
+    {
+        Script_ReadInt(value, NULL, &g_D3DDeviceIndex);
+    }
+    // STRING: STUNTGP_D3D 0x477aec
+    if (Script_FindKey(script, &value, "D3D_DRIVERINDEX") == 1)
+    {
+        Script_ReadInt(value, NULL, &g_D3DDriverIndex);
+    }
+    // STRING: STUNTGP_D3D 0x477afc
+    if (Script_FindKey(script, &value, "D3D_UVFIX") == 1)
+    {
+        Script_ReadInt(value, NULL, &g_D3DUVFix);
+    }
+
+    g_DisableFramerateCorrection = 0;
+    // STRING: STUNTGP_D3D 0x477b08
+    if (Script_FindKey(script, &value, "DISABLE_FRAMERATE_CORRECTION") == 1)
+    {
+        Script_ReadInt(value, NULL, &g_DisableFramerateCorrection);
+    }
+
+    g_DisplayBootGfx = 0;
+    // STRING: STUNTGP_D3D 0x477b28
+    if (Script_FindKey(script, &value, "DISPLAY_BOOT_GFX") == 1)
+    {
+        Script_ReadInt(value, NULL, &g_DisplayBootGfx);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x42d660
@@ -37,6 +262,6 @@ void Script_ParseGameConfig()
     bload(path, script, size);
     // STRING: STUNTGP_D3D 0x477b70
     FUN_42d060(script, "ClogMeister");
-    Script_ParseGameConfigBuffer(script);
+    Script_ParseGameSettings(script);
     Mem_Free(script);
 }

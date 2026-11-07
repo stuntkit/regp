@@ -64,5 +64,6 @@ extern SurfaceSlot g_surfaceSlots[255];
 // --- agent D (io_wad / Engine_LevelScript) ---
 void *Mem_Alloc(int size, int type);
 int Mem_Free(void *ptr);
+void Sound_SetVolumes(DWORD master, DWORD sfx, DWORD music, DWORD quality);
 // --- end agent D ---
 #endif /* GLOBALS_H */

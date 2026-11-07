@@ -204,4 +204,10 @@ int Mem_Free(void *ptr)
     }
     return 0;
 }
+
+// clamps volumes to 0..100 and quality to 5512..44100 Hz, then applies them
+// STUB: STUNTGP_D3D 0x460c20
+void Sound_SetVolumes(DWORD master, DWORD sfx, DWORD music, DWORD quality)
+{
+}
 // --- end agent D ---
