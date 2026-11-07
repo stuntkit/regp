@@ -551,6 +551,25 @@ int FUN_443770()
     return g_60f2b4;
 }
 
+struct QuadVertex
+{
+    float x;     // 0x00
+    float y;     // 0x04
+    float z;     // 0x08
+    float unk0c; // 0x0c
+    float u;     // 0x10
+    float v;     // 0x14
+    DWORD color; // 0x18
+};
+
+// GLOBAL: STUNTGP_D3D 0x485650
+QuadVertex g_485650[4] = {
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0xffffffff},
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.998f, 0.0f, 0xffffffff},
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.998f, 0.998f, 0xffffffff},
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.998f, 0xffffffff},
+};
+
 // GLOBAL: STUNTGP_D3D 0x4856c0
 char *g_4856c0[6] = {"PLAYER 10", "PLAYER 20", "PLAYER 30", "PLAYER 40", "PLAYER 50", "PLAYER 60"};
 
@@ -791,6 +810,44 @@ void FUN_449b50()
     g_spriteDesc.blendMode = 0x48;
     g_spriteDesc.alpha = alpha;
     FUN_432e00(&g_spriteDesc);
+}
+
+// FUNCTION: STUNTGP_D3D 0x449c60
+void FUN_449c60()
+{
+    g_485650[0].x = 0.0f;
+    g_485650[0].y = 0.0f;
+    g_485650[0].z = 0.0f;
+    g_485650[1].x = 0.0f;
+    g_485650[1].y = 0.0f;
+    g_485650[1].z = 0.0f;
+    g_485650[2].x = 0.0f;
+    g_485650[2].y = 0.0f;
+    g_485650[2].z = 0.0f;
+    g_485650[3].x = 0.0f;
+    g_485650[3].y = 0.0f;
+    g_485650[3].z = 0.0f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x449ce0
+void FUN_449ce0()
+{
+    CarRace *race = &g_4722d0->data->race;
+    if (race->unk4c[6] == 1 && g_498248[0].data->race.unk1c == 0)
+    {
+        DWORD color;
+        if (race->unk24 > 30)
+        {
+            color = 0xff404000;
+        }
+        else
+        {
+            color = 0xffffff00;
+        }
+        Font_Select(1);
+        FUN_4291f0(g_6127a0[16], 1, 320.0f, 240.0f, 0.95f, color, 2.0f, 0);
+        Font_Select(0);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x40e030
