@@ -229,10 +229,71 @@ BOOL WAD_CacheNewWadFile(char *wad)
     return TRUE;
 }
 
+// FUNCTION: STUNTGP_D3D 0x44b260
+int bload(char *path, char *buffer, int maxSize)
+{
+    unsigned int size;
+    char dir[64];
+    char filename[64];
+
+    WAD_SplitFileName(path, dir, filename);
+    unsigned int dirLen = strlen(dir);
+    WadEntry *best = NULL;
+    for (WadEntry *entry = g_WadTable; entry->dir != NULL; entry++)
+    {
+        if (WAD_DirDiffers(dir, entry->dir) == 0)
+        {
+            if (strlen(entry->dir) == dirLen)
+            {
+                best = entry;
+                break;
+            }
+            if ((best == NULL) || (strlen(entry->dir) > strlen(best->dir)))
+            {
+                best = entry;
+            }
+        }
+    }
+
+    if (best != NULL)
+    {
+        if (_stricmp(g_WadName, best->wad) != 0)
+        {
+            WAD_CacheNewWadFile(best->wad);
+        }
+        if (g_WadData != NULL)
+        {
+            int offset = WAD_FindFile(g_WadData, filename, &size);
+            if (offset != 0)
+            {
+                memcpy(buffer, g_WadData + offset, (size < (unsigned int)maxSize) ? size : maxSize);
+                return size;
+            }
+        }
+    }
+
+    return disk_bload(path, buffer, maxSize);
+}
+
+// FUNCTION: STUNTGP_D3D 0x44b380
+int WAD_DirDiffers(char *a, char *b)
+{
+    while ((*a != '\0') && (*b != '\0'))
+    {
+        if (*a != *b)
+        {
+            return 1;
+        }
+        a++;
+        b++;
+    }
+    return 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x44b3b0
 int size_of_file(char *path)
 {
-    int size;
+    unsigned int size;
     char dir[64];
     char filename[64];
     char buffer[128];
@@ -282,7 +343,7 @@ void tolower(char *out, char *in)
 }
 
 // FUNCTION: STUNTGP_D3D 0x44b4e0
-int WAD_FindFile(char *wad, char *name, int *size)
+int WAD_FindFile(char *wad, char *name, unsigned int *size)
 {
     *size = 0;
     if ((wad != NULL) && (wad[0] == 'D') && (wad[1] == 'I') && (wad[2] == 'R') && (wad[3] == 0x1a))
@@ -297,7 +358,7 @@ int WAD_FindFile(char *wad, char *name, int *size)
             {
                 if (WAD_NameEquals(dir + entry + 12, g_WadLookupName))
                 {
-                    *size = *(int *)(dir + entry + 8);
+                    *size = *(unsigned int *)(dir + entry + 8);
                     return *(int *)(dir + entry + 4);
                 }
                 entry = *(int *)(dir + entry);
