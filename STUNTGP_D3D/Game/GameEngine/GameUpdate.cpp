@@ -2938,17 +2938,18 @@ void FUN_45e620(BYTE *pcx, BYTE *out, int size)
 void FUN_45e670(BYTE *pcx, BYTE *out)
 {
     BYTE *src = pcx + 0x80;
-    for (int y = 0; y < g_489720; y++)
+    int y = g_489720;
+    while (y-- > 0)
     {
-        for (int x = 0; x < g_48971c;)
+        int x = 0;
+        while (x < g_48971c)
         {
-            BYTE c = *src;
-            if (c > 0xc0)
+            if (*src > 0xc0)
             {
+                int n = *src - 0xc0;
                 BYTE v = src[1];
-                int n = c - 0xc0;
                 x += n;
-                for (int i = 0; i < n; i++)
+                while (n-- > 0)
                 {
                     *out++ = v;
                 }
@@ -2956,8 +2957,7 @@ void FUN_45e670(BYTE *pcx, BYTE *out)
             }
             else
             {
-                *out++ = c;
-                src++;
+                *out++ = *src++;
                 x++;
             }
         }

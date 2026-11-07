@@ -1122,16 +1122,6 @@ int FUN_4371c0(int track, int mode)
     int n = FUN_437360(track);
     switch (mode)
     {
-    case 1:
-        return g_menuState.unlocked[track + 0x18];
-    case 2:
-    case 6:
-    case 7:
-        if (n >= 1 && n <= 4)
-        {
-            return g_menuState.unlocked[track + 0x18];
-        }
-        break;
     case 3:
         switch (n)
         {
@@ -1144,6 +1134,16 @@ int FUN_4371c0(int track, int mode)
             return g_menuState.unlocked[track + 0x18];
         }
         break;
+    case 2:
+    case 6:
+    case 7:
+        if (n > 0 && n <= 4)
+        {
+            return g_menuState.unlocked[track + 0x18];
+        }
+        break;
+    case 1:
+        return g_menuState.unlocked[track + 0x18];
     }
     return 0;
 }
@@ -1623,6 +1623,84 @@ int FUN_43b3f0(BitReader *reader, int count)
     return value;
 }
 
+// Scales a signed byte vector to length 127.
+// FUNCTION: STUNTGP_D3D 0x43b470
+void FUN_43b470(char *x, char *y, char *z)
+{
+    float fx = *x;
+    float fy = *y;
+    float fz = *z;
+    float scale = 127.0 / sqrt(fx * fx + fy * fy + fz * fz);
+    *x = (char)(fx * scale);
+    *y = (char)(fy * scale);
+    *z = (char)(fz * scale);
+}
+
+int FUN_43d9b0(int value);
+
+// FUNCTION: STUNTGP_D3D 0x43b4f0
+int FUN_43b4f0(int bits, int delta, BitWriter *writer, int flag)
+{
+    int range = 1 << bits;
+    int value = 0;
+    int code;
+    int a = FUN_43d9b0(delta);
+    if (a)
+    {
+        code = 0;
+        do
+        {
+            code++;
+            a >>= 1;
+        } while (a);
+        if (delta < 0)
+        {
+            code = -code;
+        }
+        code += range / 2;
+        if (code < 0)
+        {
+            code = 0;
+        }
+        if (code > range - 1)
+        {
+            code = range - 1;
+        }
+        int e = code - range / 2;
+        if (e < 0)
+        {
+            value = (-1 << FUN_43d9b0(e)) / 2;
+        }
+        else
+        {
+            value = (1 << FUN_43d9b0(e)) / 2;
+        }
+    }
+    else
+    {
+        code = range / 2;
+    }
+    FUN_43d9b0(value);
+    FUN_43d9b0(delta);
+    if (flag)
+    {
+        if (value)
+        {
+            FUN_43b300(writer, 1, 1);
+            FUN_43b300(writer, code, bits);
+        }
+        else
+        {
+            FUN_43b300(writer, 0, 1);
+        }
+    }
+    else
+    {
+        FUN_43b300(writer, code, bits);
+    }
+    return value;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43b5f0
 int FUN_43b5f0(int value, BitWriter *writer)
 {
@@ -1640,6 +1718,26 @@ int FUN_43b5f0(int value, BitWriter *writer)
     FUN_43b300(writer, 1, 1);
     FUN_43b300(writer, 1, 1);
     return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43bb00
+int FUN_43bb00(int bits, BitReader *reader, int flag)
+{
+    int range = 1 << bits;
+    if (flag && !FUN_43b3b0(reader))
+    {
+        return 0;
+    }
+    int e = FUN_43b3f0(reader, bits) - range / 2;
+    if (e == 0)
+    {
+        return 0;
+    }
+    if (e < 0)
+    {
+        return (-1 << FUN_43d9b0(e)) / 2;
+    }
+    return (1 << FUN_43d9b0(e)) / 2;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43bb90
@@ -2723,9 +2821,92 @@ int FUN_437de0(int sponsor, int car, ShopCar *setup)
     return entry.item.price;
 }
 
-// STUB: STUNTGP_D3D 0x437230
-int FUN_437230(int car, int arg)
+// FUNCTION: STUNTGP_D3D 0x437230
+int FUN_437230(int car, int mode)
 {
+    int n = FUN_437400(car);
+    switch (mode)
+    {
+    case 1:
+        switch (n)
+        {
+        case 1:
+        case 2:
+            return g_menuState.unlocked[car];
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+            return 0;
+        }
+        break;
+    case 2:
+        switch (n)
+        {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 6:
+            return g_menuState.unlocked[car];
+        case 5:
+            return 0;
+        }
+        break;
+    case 3:
+        switch (n)
+        {
+        case 2:
+        case 3:
+            return g_menuState.unlocked[car];
+        case 1:
+        case 4:
+        case 5:
+        case 6:
+            return 0;
+        }
+        break;
+    case 4:
+        switch (n)
+        {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 6:
+            return 1;
+        case 5:
+            return g_menuState.unlocked[car];
+        }
+        break;
+    case 5:
+        switch (n)
+        {
+        case 1:
+        case 2:
+        case 3:
+        case 6:
+            return g_menuState.unlocked[car];
+        case 4:
+        case 5:
+            return 0;
+        }
+        break;
+    case 6:
+    case 7:
+        switch (n)
+        {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 6:
+            return g_menuState.unlocked[car];
+        case 5:
+            return 0;
+        }
+        break;
+    }
     return 0;
 }
 

@@ -116,21 +116,17 @@ void FUN_44f4c0()
     Matrix_Identity(g_61c468);
 }
 
-struct Mat4
-{
-    float m[16];
-};
-
 // Matrix_Multiply3 with b passed by value.
 // FUNCTION: STUNTGP_D3D 0x44eeb0
-void FUN_44eeb0(float *a, Mat4 b)
+void FUN_44eeb0(float *a, float b00, float b01, float b02, float b03, float b10, float b11, float b12, float b13,
+                float b20, float b21, float b22, float b23, float b30, float b31, float b32, float b33)
 {
     float t[16];
     for (int i = 0; i < 3; i++)
     {
-        t[i * 4 + 0] = a[i * 4 + 0] * b.m[0] + a[i * 4 + 1] * b.m[4] + a[i * 4 + 2] * b.m[8];
-        t[i * 4 + 1] = a[i * 4 + 0] * b.m[1] + a[i * 4 + 1] * b.m[5] + a[i * 4 + 2] * b.m[9];
-        t[i * 4 + 2] = a[i * 4 + 0] * b.m[2] + a[i * 4 + 1] * b.m[6] + a[i * 4 + 2] * b.m[10];
+        t[i * 4 + 0] = a[i * 4 + 0] * b00 + a[i * 4 + 1] * b10 + a[i * 4 + 2] * b20;
+        t[i * 4 + 1] = a[i * 4 + 0] * b01 + a[i * 4 + 1] * b11 + a[i * 4 + 2] * b21;
+        t[i * 4 + 2] = a[i * 4 + 0] * b02 + a[i * 4 + 1] * b12 + a[i * 4 + 2] * b22;
         a[i * 4 + 0] = t[i * 4 + 0];
         a[i * 4 + 1] = t[i * 4 + 1];
         a[i * 4 + 2] = t[i * 4 + 2];
@@ -343,6 +339,33 @@ void FUN_44eda0(float *v, float *len)
     v[2] *= l;
 }
 
+// FUNCTION: STUNTGP_D3D 0x44f640
+void Matrix_RotateX(float *m, float degrees)
+{
+    int i = (int)(degrees * (8192.0f / 360.0f)) & 0x1fff;
+    float c = g_cosTable[i];
+    float s = g_sinTable[i];
+    FUN_44eeb0(m, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, c, s, 0.0f, 0.0f, -s, c, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+// FUNCTION: STUNTGP_D3D 0x44f6b0
+void Matrix_RotateY(float *m, float degrees)
+{
+    int i = (int)(degrees * (8192.0f / 360.0f)) & 0x1fff;
+    float c = g_cosTable[i];
+    float s = g_sinTable[i];
+    FUN_44eeb0(m, c, 0.0f, -s, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, s, 0.0f, c, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+// FUNCTION: STUNTGP_D3D 0x44f720
+void Matrix_RotateZ(float *m, float degrees)
+{
+    int i = (int)(degrees * (8192.0f / 360.0f)) & 0x1fff;
+    float c = g_cosTable[i];
+    float s = g_sinTable[i];
+    FUN_44eeb0(m, c, s, 0.0f, 0.0f, -s, c, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+}
+
 // FUNCTION: STUNTGP_D3D 0x44f790
 void Matrix_RotationX(float *m, float degrees)
 {
@@ -350,6 +373,15 @@ void Matrix_RotationX(float *m, float degrees)
     float c = g_cosTable[i];
     float s = g_sinTable[i];
     Matrix_Set(m, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, c, s, 0.0f, 0.0f, -s, c, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+// FUNCTION: STUNTGP_D3D 0x44f800
+void Matrix_RotationY(float *m, float degrees)
+{
+    int i = (int)(degrees * (8192.0f / 360.0f)) & 0x1fff;
+    float c = g_cosTable[i];
+    float s = g_sinTable[i];
+    Matrix_Set(m, c, 0.0f, -s, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, s, 0.0f, c, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 // FUNCTION: STUNTGP_D3D 0x44f870
