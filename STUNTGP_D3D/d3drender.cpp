@@ -165,7 +165,7 @@ int g_592050 = 0;
 int g_61c5e4 = 0;
 
 // GLOBAL: STUNTGP_D3D 0x6227d4
-TextureSlot g_6227d4[1];
+TextureSlot g_6227d4[255];
 
 // GLOBAL: STUNTGP_D3D 0x58d818
 D3DTLVERTEX2 g_58d818[8];
@@ -252,6 +252,40 @@ char *g_580aec;
 
 // GLOBAL: STUNTGP_D3D 0x58271c
 int g_58271c;
+
+// GLOBAL: STUNTGP_D3D 0x582720
+int g_582720;
+
+// GLOBAL: STUNTGP_D3D 0x582b24
+int g_582b24;
+
+// Write position in g_582b28.
+// GLOBAL: STUNTGP_D3D 0x582f24
+char **g_582f24;
+
+// GLOBAL: STUNTGP_D3D 0x582f28
+char *g_582f28[255];
+
+// Write position in g_582f28.
+// GLOBAL: STUNTGP_D3D 0x583324
+char **g_583324;
+
+// GLOBAL: STUNTGP_D3D 0x583328
+int g_583328;
+
+// GLOBAL: STUNTGP_D3D 0x583334
+SpriteFile g_583334[50];
+
+// Write position in g_583334.
+// GLOBAL: STUNTGP_D3D 0x58358c
+SpriteFile *g_58358c;
+
+// GLOBAL: STUNTGP_D3D 0x61c608
+BYTE g_61c608[0x1c0];
+
+// Write position in g_61c608.
+// GLOBAL: STUNTGP_D3D 0x61c7c8
+BYTE *g_61c7c8;
 
 // Records a font file so it can be reloaded when surfaces are lost.
 // FUNCTION: STUNTGP_D3D 0x42be90

@@ -406,6 +406,45 @@ int FUN_42c2e0(const char *name)
     return 0;
 }
 
+void FUN_431810();
+void FUN_42bc00();
+extern int g_583594[255];
+extern char *g_582b28[255];
+extern char **g_582f24;
+extern char *g_582f28[255];
+extern char **g_583324;
+extern SpriteFile g_583334[50];
+extern SpriteFile *g_58358c;
+extern BYTE g_61c608[0x1c0];
+extern BYTE *g_61c7c8;
+extern int g_583328;
+extern int g_582b24;
+extern int g_58271c;
+extern int g_582720;
+
+// Clears the texture, sprite and file registries.
+// FUNCTION: STUNTGP_D3D 0x42c480
+void FUN_42c480()
+{
+    FUN_431810();
+    FUN_42c1d0();
+    memset(g_583594, 0xff, sizeof(g_583594));
+    memset(g_582b28, 0, sizeof(g_582b28));
+    memset(g_6227d4, 0, 255 * sizeof(TextureSlot));
+    g_6243b8 = g_6227d4;
+    g_61c7c8 = g_61c608;
+    g_582f24 = g_582b28;
+    g_583324 = g_582f28;
+    g_58358c = g_583334;
+    FUN_42bc00();
+    g_583328 = 0;
+    g_582b24 = 0;
+    g_58271c = 0;
+    g_582720 = 0;
+    g_57b420 = 0;
+    g_57e308 = 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x44ea10
 void FUN_44ea10()
 {

@@ -180,9 +180,9 @@ int g_6244a4;
 // GLOBAL: STUNTGP_D3D 0x62497c
 int g_62497c;
 
-// NULL-terminated name list; the count is unknown.
+// NULL-terminated name list, cleared by FUN_42c480.
 // GLOBAL: STUNTGP_D3D 0x582b28
-char *g_582b28[64];
+char *g_582b28[255];
 
 // GLOBAL: STUNTGP_D3D 0x6244a0
 int g_6244a0;
