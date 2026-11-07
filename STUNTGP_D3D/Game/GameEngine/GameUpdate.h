@@ -91,7 +91,7 @@ struct Vector4
 // 4 per car, from Car+0x1fe0
 struct Wheel
 {
-    int unk00;          // 0x0000
+    float unk00;        // 0x0000
     float unk04;        // 0x0004
     BYTE unk0008[0x4];  // 0x0008
     float unk0c;        // 0x000c
@@ -158,7 +158,8 @@ struct Car
     float unk238;            // 0x0238
     BYTE unk023c[0xc];       // 0x023c
     float unk248;            // 0x0248
-    BYTE unk024c[0x8];       // 0x024c
+    float unk24c;            // 0x024c
+    float unk250;            // 0x0250
     float unk254;            // 0x0254
     BYTE unk0258[0xa1c];     // 0x0258
     unsigned int unkc74;     // 0x0c74
@@ -167,7 +168,9 @@ struct Car
     float unkca0;            // 0x0ca0
     BYTE unk0ca4[0x14];      // 0x0ca4
     Vector4 unkcb8[4];       // 0x0cb8
-    BYTE unk0cf8[0x68];      // 0x0cf8
+    BYTE unk0cf8[0x60];      // 0x0cf8
+    float unkd58;            // 0x0d58
+    float unkd5c;            // 0x0d5c
     float unkd60;            // 0x0d60
     float unkd64;            // 0x0d64
     float unkd68;            // 0x0d68
@@ -177,7 +180,9 @@ struct Car
     float unkf74;            // 0x0f74
     float unkf78;            // 0x0f78
     float unkf7c;            // 0x0f7c
-    BYTE unk0f80[0xc20];     // 0x0f80
+    BYTE unk0f80[0x208];     // 0x0f80
+    float unk1188[5][128];   // 0x1188
+    BYTE unk1b88[0x18];      // 0x1b88
     float unk1ba0;           // 0x1ba0
     float unk1ba4;           // 0x1ba4
     int active;              // 0x1ba8
@@ -192,7 +197,7 @@ struct Car
     float unk1c8c[3];        // 0x1c8c
     BYTE unk1c98[0x58];      // 0x1c98
     float unk1cf0;           // 0x1cf0
-    BYTE unk1cf4[0x4];       // 0x1cf4
+    float unk1cf4;           // 0x1cf4
     float unk1cf8;           // 0x1cf8
     int unk1cfc;             // 0x1cfc
     BYTE unk1d00[0x208];     // 0x1d00
@@ -219,13 +224,15 @@ struct Car
     int inputMode;           // 0x227c
     int unk2280;             // 0x2280
     BYTE keyMap[0xd];        // 0x2284
-    BYTE unk2291[0xf];       // 0x2291
+    BYTE unk2291[0x7];       // 0x2291
+    int unk2298;             // 0x2298
+    int unk229c;             // 0x229c
     BYTE prevControls[0xa];  // 0x22a0
     BYTE controls[0xa];      // 0x22aa
     int unk22b4;             // 0x22b4
-    BYTE unk22b8[0x4];       // 0x22b8
+    int unk22b8;             // 0x22b8
     int unk22bc;             // 0x22bc
-    BYTE unk22c0[0x4];       // 0x22c0
+    int unk22c0;             // 0x22c0
     float unk22c4;           // 0x22c4
     int unk22c8;             // 0x22c8
     BYTE unk22cc[0x10];      // 0x22cc

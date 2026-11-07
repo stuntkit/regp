@@ -267,14 +267,129 @@ void FUN_40c220()
     }
 }
 
-// STUB: STUNTGP_D3D 0x40c320
-void FUN_40c320()
+// STUB: STUNTGP_D3D 0x413430
+void FUN_413430(int wheel)
 {
 }
 
-// STUB: STUNTGP_D3D 0x40c500
+// STUB: STUNTGP_D3D 0x414ac0
+void FUN_414ac0(unsigned int wheel)
+{
+}
+
+// STUB: STUNTGP_D3D 0x415630
+void FUN_415630()
+{
+}
+
+// Analog brake; the handbrake locks the front wheels instead.
+// FUNCTION: STUNTGP_D3D 0x40c320
+void FUN_40c320()
+{
+    Car *car = g_4d5bb8;
+    car->unk22b8 = car->unk22c0;
+    car->unk22c0 = 0;
+    if ((car->unk1f10 && car->controls[1]) || (!car->unk1f10 && car->controls[0]))
+    {
+        car->unk22c0 = 1;
+        float input;
+        if (car->unk1f10)
+        {
+            input = car->controls[1];
+        }
+        else
+        {
+            input = car->controls[0];
+        }
+        if (car->controls[6])
+        {
+            car->wheels[0].unk04 = 0.0f;
+            car->wheels[1].unk04 = 0.0f;
+            FUN_415630();
+            return;
+        }
+        float torque = -(car->unk1188[3][-(int)(input * (1.0f / 255.0f) * -127.0f)] * car->unkd58);
+        if (car->wheels[0].unk04 < 0.0f)
+        {
+            torque = -torque;
+        }
+        float front = torque * car->unkd5c;
+        car->wheels[0].unk00 = front;
+        car->wheels[1].unk00 = front;
+        float rear = (1.0f - car->unkd5c) * torque;
+        car->wheels[2].unk00 = rear;
+        car->wheels[3].unk00 = rear;
+        front = (float)fabs(front) + (float)fabs(front);
+        rear = (float)fabs(rear) + (float)fabs(rear);
+        if ((float)fabs(car->wheels[0].unk04) < front)
+        {
+            FUN_413430(0);
+            car = g_4d5bb8;
+        }
+        if ((float)fabs(car->wheels[1].unk04) < front)
+        {
+            FUN_413430(1);
+            car = g_4d5bb8;
+        }
+        if ((float)fabs(car->wheels[2].unk04) < rear)
+        {
+            FUN_413430(2);
+            car = g_4d5bb8;
+        }
+        if ((float)fabs(car->wheels[3].unk04) < rear)
+        {
+            FUN_413430(3);
+        }
+        for (unsigned int i = 0; i < 4; i++)
+        {
+            FUN_414ac0(i);
+        }
+        FUN_415630();
+    }
+}
+
+void FUN_40ce60();
+
+// Analog steering through the steering curve, scaled down with speed on some input modes.
+// FUNCTION: STUNTGP_D3D 0x40c500
 void FUN_40c500()
 {
+    FUN_40ce60();
+    float boost = g_4d5bb8->unk22c4 + 1.0f;
+    float input;
+    if (g_4d5bb8->controls[2])
+    {
+        input = g_4d5bb8->controls[2];
+    }
+    else
+    {
+        input = g_4d5bb8->controls[3];
+    }
+    float steer = g_4d5bb8->unk1188[2][-(int)(input * 127.0f * (-1.0f / 255.0f))] * g_4d5bb8->unk254;
+    if (steer > 1.0f)
+    {
+        steer = 1.0f;
+    }
+    if (g_4d5bb8->inputMode == 3 || g_4d5bb8->inputMode == 1)
+    {
+        float speed = (float)fabs(g_4d5bb8->unk1cf0) * 128.0f;
+        unsigned int i = (int)(speed * 0.005f);
+        if (i >= 128)
+        {
+            i = 127;
+        }
+        steer = steer * g_4d5bb8->unk1188[4][i] * boost;
+        if (steer > 1.0f)
+        {
+            steer = 1.0f;
+        }
+    }
+    steer *= g_4d5bb8->unk24c;
+    if (g_4d5bb8->controls[3])
+    {
+        steer = -steer;
+    }
+    g_4d5bb8->unk1cf4 = steer;
 }
 
 // STUB: STUNTGP_D3D 0x414940
@@ -349,9 +464,75 @@ void FUN_40c6c0()
     }
 }
 
-// STUB: STUNTGP_D3D 0x40cf90
+void FUN_40ce60();
+
+// STUB: STUNTGP_D3D 0x4143e0
+void FUN_4143e0(float amount)
+{
+}
+
+// STUB: STUNTGP_D3D 0x414420
+void FUN_414420(float amount)
+{
+}
+
+// Digital steering: holding a direction ramps up an index into the steering curve.
+// FUNCTION: STUNTGP_D3D 0x40cf90
 void FUN_40cf90()
 {
+    FUN_40ce60();
+    float boost = g_4d5bb8->unk22c4 + 1.0f;
+    if (g_4d5bb8->controls[2])
+    {
+        FUN_4143e0(g_4d5bb8->unk1188[0][g_4d5bb8->unk2298] * g_4d5bb8->unk250 * boost);
+        g_4d5bb8->unk2298++;
+    }
+    else if (g_4d5bb8->controls[3])
+    {
+        FUN_414420(g_4d5bb8->unk1188[0][g_4d5bb8->unk2298] * g_4d5bb8->unk250 * boost);
+        g_4d5bb8->unk2298++;
+    }
+    else
+    {
+        g_4d5bb8->unk2298 -= 6;
+    }
+    if (g_4d5bb8->unk2298 < 0)
+    {
+        g_4d5bb8->unk2298 = 0;
+    }
+    else if (g_4d5bb8->unk2298 > 127)
+    {
+        g_4d5bb8->unk2298 = 127;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x40ced0
+void FUN_40ced0()
+{
+    FUN_40ce60();
+    float boost = g_4d5bb8->unk22c4 + 1.0f;
+    if (g_4d5bb8->controls[3])
+    {
+        FUN_4143e0(g_4d5bb8->unk1188[0][g_4d5bb8->unk2298] * g_4d5bb8->unk250 * boost);
+        g_4d5bb8->unk2298++;
+    }
+    else if (g_4d5bb8->controls[2])
+    {
+        FUN_414420(g_4d5bb8->unk1188[0][g_4d5bb8->unk2298] * g_4d5bb8->unk250 * boost);
+        g_4d5bb8->unk2298++;
+    }
+    else
+    {
+        g_4d5bb8->unk2298 -= 6;
+    }
+    if (g_4d5bb8->unk2298 < 0)
+    {
+        g_4d5bb8->unk2298 = 0;
+    }
+    else if (g_4d5bb8->unk2298 > 127)
+    {
+        g_4d5bb8->unk2298 = 127;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x40ce60
@@ -429,14 +610,81 @@ void FUN_40cb90()
     }
 }
 
-// STUB: STUNTGP_D3D 0x40cc90
+// Digital brake: holding the pedal ramps up an index into the brake curve.
+// FUNCTION: STUNTGP_D3D 0x40cc90
 void FUN_40cc90()
 {
-}
-
-// STUB: STUNTGP_D3D 0x40ced0
-void FUN_40ced0()
-{
+    Car *car = g_4d5bb8;
+    if (car->unk71ec)
+    {
+        car->unk22b8 = car->unk22c0;
+        car->unk22c0 = 0;
+        if ((car->unk1f10 && car->controls[1]) || (!car->unk1f10 && car->controls[0]))
+        {
+            car->unk22c0 = 1;
+            float torque = -(car->unk1188[1][car->unk229c] * car->unkd58);
+            car->unk229c += 6;
+            if (car->controls[6])
+            {
+                car->wheels[0].unk04 = 0.0f;
+                car->wheels[1].unk04 = 0.0f;
+                FUN_415630();
+                car = g_4d5bb8;
+            }
+            else
+            {
+                if (car->wheels[0].unk04 < 0.0f)
+                {
+                    torque = -torque;
+                }
+                float front = torque * car->unkd5c;
+                car->wheels[0].unk00 = front;
+                car->wheels[1].unk00 = front;
+                float rear = (1.0f - car->unkd5c) * torque;
+                car->wheels[2].unk00 = rear;
+                car->wheels[3].unk00 = rear;
+                front = (float)fabs(front) + (float)fabs(front);
+                rear = (float)fabs(rear) + (float)fabs(rear);
+                if ((float)fabs(car->wheels[0].unk04) < front)
+                {
+                    FUN_413430(0);
+                    car = g_4d5bb8;
+                }
+                if ((float)fabs(car->wheels[1].unk04) < front)
+                {
+                    FUN_413430(1);
+                    car = g_4d5bb8;
+                }
+                if ((float)fabs(car->wheels[2].unk04) < rear)
+                {
+                    FUN_413430(2);
+                    car = g_4d5bb8;
+                }
+                if ((float)fabs(car->wheels[3].unk04) < rear)
+                {
+                    FUN_413430(3);
+                }
+                for (unsigned int i = 0; i < 4; i++)
+                {
+                    FUN_414ac0(i);
+                }
+                FUN_415630();
+                car = g_4d5bb8;
+            }
+        }
+        else
+        {
+            car->unk229c -= 40;
+            if (car->unk229c < 0)
+            {
+                car->unk229c = 0;
+            }
+        }
+        if (car->unk229c > 127)
+        {
+            car->unk229c = 127;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x40d050
