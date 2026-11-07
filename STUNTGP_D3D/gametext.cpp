@@ -472,7 +472,7 @@ int Scores_Parse(char *str)
     {
         return 0;
     }
-    return atoi(str);
+    return atol(str);
 }
 
 // FUNCTION: STUNTGP_D3D 0x443d70
