@@ -15,11 +15,17 @@
 #include "globals.h"
 #include "surface.h"
 
+// GLOBAL: STUNTGP_D3D 0x57b420
+int g_57b420;
+
 // GLOBAL: STUNTGP_D3D 0x57b424
 char g_57b424[0x2ee0];
 
 // GLOBAL: STUNTGP_D3D 0x57e304
 char *g_57e304;
+
+// GLOBAL: STUNTGP_D3D 0x57e308
+int g_57e308;
 
 // GLOBAL: STUNTGP_D3D 0x57eb08
 char *g_57eb08;
@@ -31,6 +37,7 @@ char g_580af0[0x1c20];
 int g_589600;
 #include "d3drender.h"
 #include "font.h"
+#include "sprite.h"
 
 #include "common.h"
 // #include "pure.h"
@@ -375,6 +382,28 @@ void FUN_42c1d0()
         g_57e304 = g_57b424;
         g_589600 = 1;
     }
+}
+
+SpriteFile *FUN_441180();
+extern int g_5895b0;
+
+// FUNCTION: STUNTGP_D3D 0x42c2e0
+int FUN_42c2e0(const char *name)
+{
+    SpriteFile *f;
+    for (f = FUN_441180(); f->name; f++)
+    {
+        if (!_strcmpi(f->name, name))
+        {
+            if (!g_57b420)
+            {
+                g_57e308 = g_5895b0;
+                g_57b420 = 1;
+            }
+            return 1;
+        }
+    }
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x44ea10

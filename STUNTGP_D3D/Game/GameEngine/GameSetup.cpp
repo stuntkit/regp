@@ -851,9 +851,80 @@ void FUN_42b6e0()
     }
 }
 
-// STUB: STUNTGP_D3D 0x434030
+// 8-byte face record of the dynamic mesh built by FUN_4342e0.
+struct MeshFace
+{
+    BYTE count; // 0x00
+    BYTE unk01; // 0x01
+    BYTE unk02; // 0x02
+    BYTE flags; // 0x03
+    WORD unk04; // 0x04
+    WORD index; // 0x06, first entry in the index buffer
+};
+
+struct MeshUv
+{
+    float u;     // 0x00
+    float v;     // 0x04
+    WORD point;  // 0x08
+    WORD unk0a;  // 0x0a
+    DWORD color; // 0x0c
+};
+
+// Buffer starts of the dynamic mesh, allocated by FUN_434090.
+// GLOBAL: STUNTGP_D3D 0x5da234
+MeshFace *g_5da234;
+
+// GLOBAL: STUNTGP_D3D 0x5da238
+WORD *g_5da238;
+
+// GLOBAL: STUNTGP_D3D 0x5da23c
+Vec4 *g_5da23c;
+
+// GLOBAL: STUNTGP_D3D 0x5da240
+MeshUv *g_5da240;
+
+// GLOBAL: STUNTGP_D3D 0x5da244
+ObjectDef *g_5da244;
+
+// GLOBAL: STUNTGP_D3D 0x5da248
+Scene *g_5da248;
+
+// Write positions in the buffers above.
+// GLOBAL: STUNTGP_D3D 0x5da24c
+MeshFace *g_5da24c;
+
+// GLOBAL: STUNTGP_D3D 0x5da250
+WORD *g_5da250;
+
+// GLOBAL: STUNTGP_D3D 0x5da254
+Vec4 *g_5da254;
+
+// GLOBAL: STUNTGP_D3D 0x5da258
+MeshUv *g_5da258;
+
+// GLOBAL: STUNTGP_D3D 0x5da25c
+ObjectDef *g_5da25c;
+
+// GLOBAL: STUNTGP_D3D 0x5da260
+Scene *g_5da260;
+
+// GLOBAL: STUNTGP_D3D 0x6249b0
+int g_6249b0;
+
+// FUNCTION: STUNTGP_D3D 0x434030
 void FUN_434030()
 {
+    g_5da24c = g_5da234;
+    g_5da250 = g_5da238;
+    g_5da254 = g_5da23c;
+    g_5da258 = g_5da240;
+    g_5da25c = g_5da244;
+    g_5da260 = g_5da248;
+    g_6249b0 = g_5da25c->vertCount;
+    g_5da25c->vertCount = 0;
+    g_5da25c->unk26 = 0;
+    g_5da25c->pointCount = 0;
 }
 
 // STUB: STUNTGP_D3D 0x42c510
@@ -1467,6 +1538,55 @@ void FUN_4342c0()
 {
 }
 
+struct MeshPolyVertex
+{
+    Vec4 pos;    // 0x00
+    float u;     // 0x10
+    float v;     // 0x14
+    DWORD color; // 0x18
+};
+
+struct MeshPoly
+{
+    BYTE unk00[0x20];      // 0x00
+    int unk20;             // 0x20
+    int unk24;             // 0x24
+    int unk28;             // 0x28
+    DWORD count;           // 0x2c
+    MeshPolyVertex v[4];   // 0x30
+};
+
+// Appends a polygon to the dynamic mesh.
+// FUNCTION: STUNTGP_D3D 0x4342e0
+void FUN_4342e0(MeshPoly *poly)
+{
+    if (g_5da24c < g_5da234 + 0x200)
+    {
+        ObjectDef *object = g_5da25c;
+        short n = poly->count;
+        DWORD i;
+        object->vertCount++;
+        object->unk26 += n;
+        object->pointCount += n;
+        g_5da24c->count = poly->count;
+        g_5da24c->flags = poly->unk24 | 0x80;
+        g_5da24c->unk01 = poly->unk20;
+        g_5da24c->unk02 = poly->unk28;
+        g_5da24c->index = g_5da250 - g_5da238;
+        g_5da24c++;
+        for (i = 0; i < poly->count; i++)
+        {
+            g_5da258->point = g_5da254 - g_5da23c;
+            g_5da258->u = poly->v[i].u;
+            g_5da258->v = poly->v[i].v;
+            g_5da258->color = poly->v[i].color;
+            *g_5da254++ = poly->v[i].pos;
+            *g_5da250++ = g_5da258 - g_5da240;
+            g_5da258++;
+        }
+    }
+}
+
 struct ObjectHolder
 {
     BYTE unk00[0x14];
@@ -1792,9 +1912,9 @@ int FUN_459a00(int which)
 {
     if (which == 2)
     {
-        return g_menuState.unk1a6a4;
+        return g_menuState.gold;
     }
-    return which == 1 ? g_menuState.unk1a6a8 : 0;
+    return which == 1 ? g_menuState.silver : 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x459a20

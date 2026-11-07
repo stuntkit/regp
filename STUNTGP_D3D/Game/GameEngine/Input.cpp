@@ -79,6 +79,10 @@ int g_612970;
 // GLOBAL: STUNTGP_D3D 0x62d580
 Controller g_62d580[4];
 
+// Force-feedback strengths, written by the car update.
+// GLOBAL: STUNTGP_D3D 0x4d5b24
+float *g_4d5b24;
+
 // Previous frame's keyboard state, copied from g_62d480.
 // GLOBAL: STUNTGP_D3D 0x62dcf0
 BYTE g_62dcf0[256];
@@ -480,6 +484,82 @@ void FUN_40dad0()
                     FUN_410a10(i);
                 }
             }
+        }
+    }
+}
+
+int FUN_42f1f0(int range);
+
+// FUNCTION: STUNTGP_D3D 0x424120
+void FUN_424120(int slot)
+{
+    DIPERIODIC periodic;
+    InputDevice *dev = &g_inputDevices[slot - 1];
+    if (dev->effects[6].effect)
+    {
+        periodic.dwMagnitude = (int)g_4d5b24[3];
+        periodic.lOffset = 0;
+        periodic.dwPhase = 0;
+        periodic.dwPeriod = (int)g_4d5b24[4];
+        dev->effects[6].desc.lpvTypeSpecificParams = &periodic;
+        dev->effects[6].effect->SetParameters(&dev->effects[6].desc, DIEP_TYPESPECIFICPARAMS);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x424210
+void FUN_424210(int slot)
+{
+    DIPERIODIC periodic;
+    InputDevice *dev = &g_inputDevices[slot - 1];
+    if (dev->effects[4].effect)
+    {
+        periodic.dwMagnitude = (int)g_4d5b24[6];
+        periodic.lOffset = 0;
+        periodic.dwPhase = 0;
+        periodic.dwPeriod = (int)g_4d5b24[7];
+        dev->effects[4].desc.lpvTypeSpecificParams = &periodic;
+        dev->effects[4].effect->SetParameters(&dev->effects[4].desc, DIEP_TYPESPECIFICPARAMS);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x424290
+void FUN_424290(int slot)
+{
+    DIPERIODIC periodic;
+    InputDevice *dev = &g_inputDevices[slot - 1];
+    if (dev->effects[5].effect)
+    {
+        periodic.dwMagnitude = (int)g_4d5b24[1];
+        periodic.lOffset = 0;
+        periodic.dwPhase = -FUN_42f1f0(1000);
+        periodic.dwPeriod = (int)g_4d5b24[2];
+        dev->effects[5].desc.lpvTypeSpecificParams = &periodic;
+        dev->effects[5].effect->SetParameters(&dev->effects[5].desc, DIEP_TYPESPECIFICPARAMS | DIEP_START);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x424340
+void FUN_424340(int player, int mode)
+{
+    if (g_62d580[player].active)
+    {
+        switch (mode)
+        {
+        case 1:
+            g_576618[player].type = 3;
+            break;
+        case 2:
+            g_576618[player].type = 2;
+            break;
+        case 3:
+            g_576618[player].type = 6;
+            break;
+        case 4:
+            g_576618[player].type = 5;
+            break;
+        case 5:
+            g_576618[player].type = 1;
+            break;
         }
     }
 }

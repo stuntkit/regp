@@ -1384,6 +1384,17 @@ int FUN_42bc30(char *suffix, char *base, char *path)
     return width <= g_6249a4;
 }
 
+void FUN_462440(char *path);
+
+// FUNCTION: STUNTGP_D3D 0x42bcb0
+int FUN_42bcb0(char *suffix, char *base, char *path)
+{
+    // STRING: STUNTGP_D3D 0x4777dc
+    sprintf(path, "%s%s.TGA", base, suffix);
+    FUN_462440(path);
+    return g_489714 <= g_6249a4;
+}
+
 // FUNCTION: STUNTGP_D3D 0x42bdd0
 void FUN_42bdd0()
 {
