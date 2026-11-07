@@ -36,7 +36,7 @@ GUID g_576558[4];
 LPDIRECTINPUT g_directInput;
 
 // GLOBAL: STUNTGP_D3D 0x576b6c
-BYTE *g_576b6c;
+InputState *g_576b6c;
 
 // GLOBAL: STUNTGP_D3D 0x576b74
 BOOL g_576b74;
@@ -307,7 +307,7 @@ int FUN_4249b0()
     g_576550 = g_inputDevices;
     g_576618[0].present = 1;
     g_576618[0].type = 1;
-    g_576b6c = (BYTE *)&g_576618[1].state;
+    g_576b6c = &g_576618[1].state;
     FUN_4239b0();
     for (int i = 0; i < 10; i++)
     {

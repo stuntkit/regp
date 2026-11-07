@@ -78,60 +78,180 @@ struct CarRace
     BYTE unk4c[0x50]; // 0x4c
 };
 
+struct Vector4
+{
+    float x;
+    float y;
+    float z;
+    float w;
+};
+
+// 4 per car, from Car+0x1fe0
+struct Wheel
+{
+    int unk00;          // 0x0000
+    float unk04;        // 0x0004
+    BYTE unk0008[0x4];  // 0x0008
+    float unk0c;        // 0x000c
+    float unk10;        // 0x0010
+    BYTE unk0014[0x1c]; // 0x0014
+    int unk30;          // 0x0030
+    float unk34;        // 0x0034
+    float unk38;        // 0x0038
+    BYTE unk003c[0x3c]; // 0x003c
+    int unk78;          // 0x0078
+    BYTE unk007c[0x1c]; // 0x007c
+};
+
+// 6 entries at 0x60f050, one per car
+struct Driver
+{
+    char name[0x40];  // 0x00
+    int unk40;        // 0x40
+    int unk44;        // 0x44
+    BYTE unk48[0x1c]; // 0x48
+};
+
 // 6 entries at 0x49a1f8
 struct Car
 {
-    BYTE unk0000[0xf78];  // 0x0000
-    int unkf78;           // 0x0f78
-    BYTE unkf7c[0xc2c];   // 0x0f7c
-    int active;           // 0x1ba8
-    float posX;           // 0x1bac
-    float posY;           // 0x1bb0
-    float posZ;           // 0x1bb4
-    BYTE unk1bb8[0x6b8];  // 0x1bb8
-    int unk2270;          // 0x2270
-    BYTE unk2274[0x54];   // 0x2274
-    int unk22c8;          // 0x22c8
-    BYTE unk22cc[0x10];   // 0x22cc
-    float unk22dc;        // 0x22dc
-    float unk22e0;        // 0x22e0
-    float unk22e4;        // 0x22e4
-    BYTE unk22e8[0x4];    // 0x22e8
-    float unk22ec;        // 0x22ec
-    float unk22f0;        // 0x22f0
-    float unk22f4;        // 0x22f4
-    BYTE unk22f8[0x4];    // 0x22f8
-    float unk22fc;        // 0x22fc
-    float unk2300;        // 0x2300
-    float unk2304;        // 0x2304
-    BYTE unk2308[0xa8];   // 0x2308
-    float unk23b0;        // 0x23b0
-    BYTE unk23b4[0x8];    // 0x23b4
-    int unk23bc;          // 0x23bc
-    BYTE unk23c0[0x4];    // 0x23c0
-    int unk23c4;          // 0x23c4
-    BYTE unk23c8[0x4];    // 0x23c8
-    int unk23cc;          // 0x23cc
-    int unk23d0;          // 0x23d0
-    int unk23d4;          // 0x23d4
-    int unk23d8;          // 0x23d8
-    BYTE unk23dc[0x104];  // 0x23dc
-    int unk24e0;          // 0x24e0
-    int unk24e4;          // 0x24e4
-    BYTE unk24e8[0x80];   // 0x24e8
-    int unk2568;          // 0x2568
-    int unk256c;          // 0x256c
-    int unk2570;          // 0x2570
-    int unk2574;          // 0x2574
-    BYTE unk2578[0x138];  // 0x2578
-    int unk26b0;          // 0x26b0
-    int unk26b4;          // 0x26b4
-    BYTE unk26b8[0x4bb0]; // 0x26b8
-    short *unk7268;       // 0x7268
-    BYTE unk726c[0x3dc];  // 0x726c
-    int unk7648;          // 0x7648
-    BYTE unk764c[0x3c];   // 0x764c
-    CarRace race;         // 0x7688
+    BYTE unk0000[0x220];     // 0x0000
+    float unk220;            // 0x0220
+    float unk224;            // 0x0224
+    float unk228;            // 0x0228
+    float unk22c;            // 0x022c
+    float unk230;            // 0x0230
+    float unk234;            // 0x0234
+    float unk238;            // 0x0238
+    BYTE unk023c[0x18];      // 0x023c
+    float unk254;            // 0x0254
+    BYTE unk0258[0xa60];     // 0x0258
+    Vector4 unkcb8[4];       // 0x0cb8
+    BYTE unk0cf8[0x280];     // 0x0cf8
+    float unkf78;            // 0x0f78
+    float unkf7c;            // 0x0f7c
+    BYTE unk0f80[0xc28];     // 0x0f80
+    int active;              // 0x1ba8
+    float posX;              // 0x1bac
+    float posY;              // 0x1bb0
+    float posZ;              // 0x1bb4
+    BYTE unk1bb8[0xd4];      // 0x1bb8
+    float unk1c8c[3];        // 0x1c8c
+    BYTE unk1c98[0x58];      // 0x1c98
+    float unk1cf0;           // 0x1cf0
+    BYTE unk1cf4[0x4];       // 0x1cf4
+    int unk1cf8;             // 0x1cf8
+    BYTE unk1cfc[0x20c];     // 0x1cfc
+    float unk1f08;           // 0x1f08
+    BYTE unk1f0c[0x4];       // 0x1f0c
+    int unk1f10;             // 0x1f10
+    BYTE unk1f14[0xbc];      // 0x1f14
+    float unk1fd0;           // 0x1fd0
+    BYTE unk1fd4[0x4];       // 0x1fd4
+    int unk1fd8;             // 0x1fd8
+    BYTE unk1fdc[0x4];       // 0x1fdc
+    Wheel wheels[4];         // 0x1fe0
+    BYTE unk2240[0x30];      // 0x2240
+    float unk2270;           // 0x2270
+    BYTE unk2274[0x4];       // 0x2274
+    int unk2278;             // 0x2278
+    int inputMode;           // 0x227c
+    int unk2280;             // 0x2280
+    BYTE keyMap[0xd];        // 0x2284
+    BYTE unk2291[0xf];       // 0x2291
+    BYTE prevControls[0xa];  // 0x22a0
+    BYTE controls[0xa];      // 0x22aa
+    BYTE unk22b4[0x14];      // 0x22b4
+    int unk22c8;             // 0x22c8
+    BYTE unk22cc[0x10];      // 0x22cc
+    float unk22dc;           // 0x22dc
+    float unk22e0;           // 0x22e0
+    float unk22e4;           // 0x22e4
+    BYTE unk22e8[0x4];       // 0x22e8
+    float unk22ec;           // 0x22ec
+    float unk22f0;           // 0x22f0
+    float unk22f4;           // 0x22f4
+    BYTE unk22f8[0x4];       // 0x22f8
+    float unk22fc;           // 0x22fc
+    float unk2300;           // 0x2300
+    float unk2304;           // 0x2304
+    float unk2308[4];        // 0x2308
+    BYTE unk2318[0x10];      // 0x2318
+    float unk2328;           // 0x2328
+    float unk232c;           // 0x232c
+    float unk2330;           // 0x2330
+    BYTE unk2334[0x8];       // 0x2334
+    int unk233c[4];          // 0x233c
+    int unk234c;             // 0x234c
+    int unk2350;             // 0x2350
+    int unk2354;             // 0x2354
+    int unk2358;             // 0x2358
+    int unk235c;             // 0x235c
+    int unk2360;             // 0x2360
+    int unk2364;             // 0x2364
+    int unk2368;             // 0x2368
+    int unk236c;             // 0x236c
+    int unk2370;             // 0x2370
+    int unk2374;             // 0x2374
+    int unk2378;             // 0x2378
+    int unk237c;             // 0x237c
+    int unk2380;             // 0x2380
+    int unk2384;             // 0x2384
+    int unk2388;             // 0x2388
+    int unk238c;             // 0x238c
+    int unk2390;             // 0x2390
+    int unk2394;             // 0x2394
+    int unk2398;             // 0x2398
+    int unk239c;             // 0x239c
+    int unk23a0;             // 0x23a0
+    BYTE unk23a4[0xc];       // 0x23a4
+    float unk23b0;           // 0x23b0
+    BYTE unk23b4[0x8];       // 0x23b4
+    int unk23bc;             // 0x23bc
+    BYTE unk23c0[0x4];       // 0x23c0
+    int unk23c4;             // 0x23c4
+    BYTE unk23c8[0x4];       // 0x23c8
+    int unk23cc;             // 0x23cc
+    int unk23d0;             // 0x23d0
+    int unk23d4;             // 0x23d4
+    int unk23d8;             // 0x23d8
+    BYTE unk23dc[0xd0];      // 0x23dc
+    int unk24ac;             // 0x24ac
+    BYTE unk24b0[0x30];      // 0x24b0
+    int unk24e0;             // 0x24e0
+    int unk24e4;             // 0x24e4
+    int unk24e8;             // 0x24e8
+    BYTE unk24ec[0x7c];      // 0x24ec
+    int unk2568;             // 0x2568
+    int unk256c;             // 0x256c
+    float unk2570;           // 0x2570
+    float unk2574;           // 0x2574
+    BYTE unk2578[0x4];       // 0x2578
+    float unk257c;           // 0x257c
+    int unk2580;             // 0x2580
+    BYTE unk2584[0x94];      // 0x2584
+    float unk2618;           // 0x2618
+    float unk261c;           // 0x261c
+    BYTE unk2620[0x14];      // 0x2620
+    float unk2634;           // 0x2634
+    BYTE unk2638[0x8];       // 0x2638
+    int unk2640;             // 0x2640
+    BYTE unk2644[0x6c];      // 0x2644
+    int unk26b0;             // 0x26b0
+    int unk26b4;             // 0x26b4
+    BYTE unk26b8[0x4bb0];    // 0x26b8
+    unsigned short *unk7268; // 0x7268
+    BYTE unk726c[0x3c0];     // 0x726c
+    int unk762c;             // 0x762c
+    BYTE unk7630[0x8];       // 0x7630
+    int unk7638;             // 0x7638
+    int unk763c;             // 0x763c
+    BYTE unk7640[0x8];       // 0x7640
+    int unk7648;             // 0x7648
+    BYTE unk764c[0x34];      // 0x764c
+    DWORD unk7680;           // 0x7680
+    BYTE unk7684[0x4];       // 0x7684
+    CarRace race;            // 0x7688
 };
 
 // One of the four per-player blocks at 0x498248 (0x74c bytes each).
@@ -434,4 +554,8 @@ void FUN_442030();
 extern Car g_49a1f8[6];
 extern Car *g_4d5bb8;
 extern Camera g_4864e8;
+void FUN_410a10(int index);
+extern Car *g_474630;
+extern Driver g_60f050[6];
+extern DWORD g_60f2b0;
 #endif /* GAMEUPDATE_H */

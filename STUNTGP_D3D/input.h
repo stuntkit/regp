@@ -24,6 +24,8 @@ struct InputDevice
 
 extern InputDevice g_inputDevices[10];
 extern DWORD g_inputDeviceCount;
+struct InputState;
+extern InputState *g_576b6c;
 
 void FUN_4239b0();
 int FUN_4249b0();
