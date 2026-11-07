@@ -791,9 +791,108 @@ void FUN_41af50()
     }
 }
 
-// STUB: STUNTGP_D3D 0x442cf0
-void FUN_442cf0(int a, char *text, Car *car, int b, int c)
+// FUNCTION: STUNTGP_D3D 0x442c10
+void FUN_442c10(SlotEvent *events)
 {
+    for (int i = 0; i < 8; i++)
+    {
+        events[i].count = 0;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x442c30
+void FUN_442c30()
+{
+    GameSlot *slot = g_498248;
+    for (int i = 0; i < 4; i++, slot++)
+    {
+        FUN_442c10(slot->events);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x442c50
+SlotEvent *FUN_442c50(Car *car)
+{
+    GameSlot *slot = g_498248;
+    for (unsigned int i = 0; i < 4; slot++, i++)
+    {
+        if (slot->active == 1 && slot->data == car)
+        {
+            return slot->events;
+        }
+    }
+    return NULL;
+}
+
+// A clear value of 100 drops every queued message first.
+// FUNCTION: STUNTGP_D3D 0x442c80
+void FUN_442c80(SlotEvent *events, int frames, char *text, Car *car, int mode, int clear)
+{
+    if (clear == 100)
+    {
+        FUN_442c10(events);
+    }
+    for (unsigned int i = 0; i < 8; i++, events++)
+    {
+        if (events->count == 0)
+        {
+            events->count = frames;
+            events->duration = frames;
+            events->order = g_612cfc;
+            events->car = car;
+            events->mode = mode;
+            strcpy(events->text, text);
+            return;
+        }
+    }
+}
+
+extern int g_60f2b4;
+
+// Queues a message for every view (mode 0), every view but the car's own (1) or only the car's (2).
+// FUNCTION: STUNTGP_D3D 0x442cf0
+void FUN_442cf0(int frames, char *text, Car *car, int mode, int clear)
+{
+    if (g_60f2b4 == 3)
+    {
+        return;
+    }
+    switch (mode)
+    {
+    case 2:
+    {
+        SlotEvent *events = FUN_442c50(car);
+        if (events)
+        {
+            FUN_442c80(events, frames, text, car, 2, clear);
+        }
+        break;
+    }
+    case 1:
+    {
+        GameSlot *slot = g_498248;
+        for (int i = 0; i < 4; i++, slot++)
+        {
+            if (slot->active == 1 && slot->data != car)
+            {
+                FUN_442c80(slot->events, frames, text, car, 1, clear);
+            }
+        }
+        break;
+    }
+    case 0:
+    {
+        GameSlot *slot = g_498248;
+        for (int i = 0; i < 4; i++, slot++)
+        {
+            if (slot->active == 1)
+            {
+                FUN_442c80(slot->events, frames, text, car, 0, clear);
+            }
+        }
+        break;
+    }
+    }
 }
 
 // Sorts the active cars into race order and announces a new leader.

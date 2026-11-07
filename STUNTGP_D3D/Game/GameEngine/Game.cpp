@@ -371,10 +371,7 @@ int g_61b74c;
 // GLOBAL: STUNTGP_D3D 0x61b754
 int g_61b754;
 
-// STUB: STUNTGP_D3D 0x442c30
-void FUN_442c30()
-{
-}
+void FUN_442c30();
 
 // STUB: STUNTGP_D3D 0x447a60
 void FUN_447a60()

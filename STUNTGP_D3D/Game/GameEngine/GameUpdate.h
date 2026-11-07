@@ -66,12 +66,17 @@ struct SlotFx
     Fader faders[18]; // 0x008
 };
 
+struct Car;
+
+// On-screen message; count is the frames it has left.
 struct SlotEvent
 {
     int count;        // 0x00
-    int unk04;        // 0x04
+    int duration;     // 0x04
     DWORD order;      // 0x08
-    BYTE unk0c[0x48]; // 0x0c
+    char text[0x40];  // 0x0c
+    Car *car;         // 0x4c
+    int mode;         // 0x50
 };
 
 struct CarRace
