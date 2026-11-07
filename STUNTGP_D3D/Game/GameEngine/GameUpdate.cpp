@@ -183,11 +183,6 @@ void FUN_405210()
     g_4722d0 = g_498248;
 }
 
-// STUB: STUNTGP_D3D 0x40dad0
-void FUN_40dad0()
-{
-}
-
 // STUB: STUNTGP_D3D 0x40dd30
 void FUN_40dd30()
 {
@@ -241,6 +236,11 @@ void FUN_40de30()
             FUN_441e20();
         }
     }
+}
+
+// STUB: STUNTGP_D3D 0x410a10
+void FUN_410a10(int index)
+{
 }
 
 // STUB: STUNTGP_D3D 0x415df0

@@ -37,16 +37,24 @@ struct SlotEvent
     BYTE unk0c[0x48]; // 0x0c
 };
 
-// One of the four per-player blocks at 0x498248 (0x74c bytes each).
 struct Car
 {
-    BYTE unk0000[0xf78];  // 0x0000
+    BYTE unk0000[0x254];  // 0x0000
+    float unk254;         // 0x0254
+    BYTE unk258[0xd20];   // 0x0258
     int unkf78;           // 0x0f78
     BYTE unkf7c[0xc2c];   // 0x0f7c
     int active;           // 0x1ba8
     BYTE unk1bac[0x6c4];  // 0x1bac
     int unk2270;          // 0x2270
-    BYTE unk2274[0x2f4];  // 0x2274
+    BYTE unk2274[0x8];    // 0x2274
+    int inputMode;        // 0x227c
+    int unk2280;          // 0x2280
+    BYTE keyMap[13];      // 0x2284
+    BYTE unk2291[0xf];    // 0x2291
+    BYTE prevControls[10]; // 0x22a0
+    BYTE controls[10];    // 0x22aa
+    BYTE unk22b4[0x2b4];  // 0x22b4
     int unk2568;          // 0x2568
     int unk256c;          // 0x256c
     int unk2570;          // 0x2570
@@ -113,7 +121,8 @@ struct InputState
     int x;              // 0x0c
     int y;              // 0x10
     BYTE unk14[0x28];   // 0x14
-    BYTE buttons[0x40]; // 0x3c
+    BYTE buttons[0x20];     // 0x3c
+    BYTE prevButtons[0x20]; // 0x5c
 };
 
 // 10 entries at 0x576618
@@ -134,7 +143,7 @@ struct Controller
     int type;           // 0x00c
     int mode;           // 0x010
     int keyMap;         // 0x014
-    int unk018;         // 0x018
+    int unk018;         // 0x018 index into g_49a1f8, 0xffff if none
     int unk01c;         // 0x01c
     int unk020;         // 0x020
     int unk024;         // 0x024
@@ -200,6 +209,7 @@ void FUN_45f210();
 void FUN_40d860();
 void FUN_40dad0();
 void FUN_45f8f0(int a, int b);
+void FUN_410a10(int index);
 
 // per-tick game logic
 void FUN_4023f0();
@@ -245,4 +255,5 @@ void FUN_42eaa0();
 void FUN_442030();
 
 extern Car g_49a1f8[6];
+extern Car *g_4d5bb8;
 #endif /* GAMEUPDATE_H */

@@ -83,6 +83,214 @@ Controller g_62d580[4];
 // GLOBAL: STUNTGP_D3D 0x62dcf0
 BYTE g_62dcf0[256];
 
+// FUNCTION: STUNTGP_D3D 0x40c750
+void FUN_40c750(Controller *c)
+{
+    if (g_612be8 == 1)
+    {
+        if (g_61294c == 1)
+        {
+            FUN_442350();
+        }
+        else
+        {
+            g_61b744 = c;
+            FUN_4422c0();
+        }
+    }
+}
+
+// Analogue pad: scale the stick to +-255 and split it into the four direction controls.
+// FUNCTION: STUNTGP_D3D 0x40c780
+void FUN_40c780(Controller *c)
+{
+    Car *car = &g_49a1f8[c->unk018];
+    float scale = 263.0f / c->state.range;
+    int x = c->state.x * scale;
+    int y = c->state.y * scale;
+    if (x < -255)
+    {
+        x = -255;
+    }
+    else if (x > 255)
+    {
+        x = 255;
+    }
+    if (y < -255)
+    {
+        y = -255;
+    }
+    else if (y > 255)
+    {
+        y = 255;
+    }
+    if (y >= 0)
+    {
+        car->controls[0] = 0;
+    }
+    else
+    {
+        car->controls[0] = -y;
+    }
+    if (y <= 0)
+    {
+        car->controls[1] = 0;
+    }
+    else
+    {
+        car->controls[1] = y;
+    }
+    if (x >= 0)
+    {
+        car->controls[3] = 0;
+    }
+    else
+    {
+        car->controls[3] = -x;
+    }
+    if (x <= 0)
+    {
+        car->controls[2] = 0;
+    }
+    else
+    {
+        car->controls[2] = x;
+    }
+    if (c->state.buttons[car->keyMap[4]])
+    {
+        car->controls[4] = 0xff;
+    }
+    if (c->state.buttons[car->keyMap[5]])
+    {
+        car->controls[5] = 0xff;
+    }
+    if (c->state.buttons[car->keyMap[6]])
+    {
+        car->controls[6] = 0xff;
+    }
+    if (c->state.buttons[car->keyMap[7]])
+    {
+        car->controls[7] = 0xff;
+    }
+    if (c->state.buttons[car->keyMap[8]])
+    {
+        car->controls[8] = 0xff;
+    }
+    if (c->state.buttons[car->keyMap[9]])
+    {
+        car->controls[9] = 0xff;
+    }
+    InputState *s = &c->state;
+    if (s->buttons[car->keyMap[12]] && !s->prevButtons[car->keyMap[12]])
+    {
+        FUN_40c750(c);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x40c8f0
+void FUN_40c8f0(Controller *c)
+{
+    Car *car = &g_49a1f8[c->unk018];
+    if (car->keyMap[0] && (g_62d480[car->keyMap[0]] & 0x80))
+    {
+        car->controls[0] = 0xff;
+    }
+    if (car->keyMap[1] && !car->controls[0] && (g_62d480[car->keyMap[1]] & 0x80))
+    {
+        car->controls[1] = 0xff;
+    }
+    if (car->keyMap[3] && (g_62d480[car->keyMap[3]] & 0x80))
+    {
+        car->controls[3] = 0xff;
+    }
+    if (car->keyMap[2] && !car->controls[3] && (g_62d480[car->keyMap[2]] & 0x80))
+    {
+        car->controls[2] = 0xff;
+    }
+    if (car->keyMap[4] && (g_62d480[car->keyMap[4]] & 0x80))
+    {
+        car->controls[4] = 0xff;
+    }
+    if (car->keyMap[5] && (g_62d480[car->keyMap[5]] & 0x80))
+    {
+        car->controls[5] = 0xff;
+    }
+    if (car->keyMap[6] && (g_62d480[car->keyMap[6]] & 0x80))
+    {
+        car->controls[6] = 0xff;
+    }
+    if (car->keyMap[7] && (g_62d480[car->keyMap[7]] & 0x80))
+    {
+        car->controls[7] = 0xff;
+    }
+    if (car->keyMap[8] && (g_62d480[car->keyMap[8]] & 0x80))
+    {
+        car->controls[8] = 0xff;
+    }
+    if (car->keyMap[9] && (g_62d480[car->keyMap[9]] & 0x80))
+    {
+        car->controls[9] = 0xff;
+    }
+    if (((g_62d480[VK_ESCAPE] & 0x80) && !(g_62dcf0[VK_ESCAPE] & 0x80)) ||
+        ((g_62d480[car->keyMap[12]] & 0x80) && !(g_62dcf0[car->keyMap[12]] & 0x80)))
+    {
+        FUN_40c750(c);
+    }
+}
+
+// Digital pad: the stick only counts once it leaves the dead zone.
+// FUNCTION: STUNTGP_D3D 0x40ca60
+void FUN_40ca60(Controller *c)
+{
+    Car *car = &g_49a1f8[c->unk018];
+    int deadZone = c->state.range >> 1;
+    if (c->state.buttons[car->keyMap[0]])
+    {
+        car->controls[0] = 0xff;
+    }
+    if (c->state.buttons[car->keyMap[1]])
+    {
+        car->controls[1] = 0xff;
+    }
+    if (car->keyMap[2] && c->state.x < -deadZone)
+    {
+        car->controls[2] = 0xff;
+    }
+    if (car->keyMap[3] && c->state.x > deadZone)
+    {
+        car->controls[3] = 0xff;
+    }
+    if (c->state.buttons[car->keyMap[4]])
+    {
+        car->controls[4] = 0xff;
+    }
+    if (c->state.buttons[car->keyMap[5]])
+    {
+        car->controls[5] = 0xff;
+    }
+    if (c->state.buttons[car->keyMap[6]])
+    {
+        car->controls[6] = 0xff;
+    }
+    if (c->state.buttons[car->keyMap[7]])
+    {
+        car->controls[7] = 0xff;
+    }
+    if (c->state.buttons[car->keyMap[8]])
+    {
+        car->controls[8] = 0xff;
+    }
+    if (c->state.buttons[car->keyMap[9]])
+    {
+        car->controls[9] = 0xff;
+    }
+    InputState *s = &c->state;
+    if (s->buttons[car->keyMap[12]] && !s->prevButtons[car->keyMap[12]])
+    {
+        FUN_40c750(c);
+    }
+}
+
 // Latches the per-controller direction/button bits used by the menus.
 // FUNCTION: STUNTGP_D3D 0x40d860
 void FUN_40d860()
@@ -211,6 +419,71 @@ void FUN_40d860()
     }
 }
 
+// Copies each controller's input into the car it drives.
+// FUNCTION: STUNTGP_D3D 0x40dad0
+void FUN_40dad0()
+{
+    if (g_61294c == 1)
+    {
+        FUN_40d860();
+        return;
+    }
+    Controller *c = g_62d580;
+    for (int i = 0; i < 4; c++, i++)
+    {
+        if (c->active == 1 && c->unk008 == 0 && c->unk018 != 0xffff)
+        {
+            memcpy(g_62d580[i].prevKeys, g_62d580[i].keys, 7);
+            memset(g_62d580[i].keys, 0, 7);
+            g_4d5bb8 = &g_49a1f8[c->unk018];
+            if (g_4d5bb8->unk2280)
+            {
+                memcpy(g_4d5bb8->prevControls, g_4d5bb8->controls, 10);
+                memset(g_4d5bb8->controls, 0, 10);
+                g_576b6c = &c->state;
+                switch (g_62d580[i].type)
+                {
+                case 1:
+                    g_4d5bb8->inputMode = 2;
+                    g_4d5bb8->unk254 = 1.0f;
+                    memcpy(g_4d5bb8->keyMap, g_473908[c->keyMap], 13);
+                    FUN_40c8f0(c);
+                    break;
+                case 2:
+                    g_4d5bb8->inputMode = 0;
+                    g_4d5bb8->unk254 = 1.0f;
+                    memcpy(g_4d5bb8->keyMap, g_473940[c->keyMap], 13);
+                    FUN_40c780(c);
+                    break;
+                case 3:
+                    g_4d5bb8->inputMode = 3;
+                    g_4d5bb8->unk254 = 0.8f;
+                    memcpy(g_4d5bb8->keyMap, g_4739b0[c->keyMap], 13);
+                    FUN_40c780(c);
+                    break;
+                case 5:
+                    g_4d5bb8->inputMode = 1;
+                    g_4d5bb8->unk254 = 1.0f;
+                    memcpy(g_4d5bb8->keyMap, g_473978[c->keyMap], 13);
+                    FUN_40c780(c);
+                    break;
+                case 4:
+                case 6:
+                    g_4d5bb8->inputMode = 4;
+                    g_4d5bb8->unk254 = 1.0f;
+                    memcpy(g_4d5bb8->keyMap, g_4739e8[c->keyMap], 13);
+                    FUN_40ca60(c);
+                    break;
+                }
+                if (g_62d580[i].unk020 == 2)
+                {
+                    FUN_410a10(i);
+                }
+            }
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x4243f0
 void FUN_4243f0()
 {
@@ -322,7 +595,7 @@ void FUN_45ee60()
 void FUN_45ef00()
 {
     Controller *c = g_62d580;
-    for (int i = 0; i < 4; i++, c++)
+    for (int i = 0; i < 4; c++, i++)
     {
         if (c->active == 1 && c->unk024 != c->unk028)
         {
