@@ -304,9 +304,11 @@ struct Car
     BYTE unk2584[0x94];      // 0x2584
     float unk2618;           // 0x2618
     float unk261c;           // 0x261c
-    BYTE unk2620[0x14];      // 0x2620
+    BYTE unk2620[0x10];      // 0x2620
+    int catchUp;             // 0x2630
     float unk2634;           // 0x2634
-    BYTE unk2638[0x8];       // 0x2638
+    float leaderGap;         // 0x2638
+    BYTE unk263c[0x4];       // 0x263c
     int unk2640;             // 0x2640
     BYTE unk2644[0x6c];      // 0x2644
     int unk26b0;             // 0x26b0

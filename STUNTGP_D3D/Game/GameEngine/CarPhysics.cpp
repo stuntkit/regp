@@ -6,6 +6,7 @@
 
 #include "../../gametext.h"
 #include "../../vecmath.h"
+#include "camera_path.h"
 
 extern float g_482678;
 extern float g_48267c;
@@ -97,9 +98,65 @@ void FUN_408000()
 {
 }
 
-// STUB: STUNTGP_D3D 0x4081d0
+extern float g_60f2d0[31];
+
+// Finds the race leader; car 2 if nobody qualifies.
+// FUNCTION: STUNTGP_D3D 0x408180
+void FUN_408180(Car **leader)
+{
+    *leader = &g_49a1f8[2];
+    for (int i = 0; i < 6; i++)
+    {
+        if (g_49a1f8[i].active == 1 && g_49a1f8[i].unk24ac == 0)
+        {
+            *leader = &g_49a1f8[i];
+            return;
+        }
+    }
+}
+
+// Catch-up: cars trailing the leader by more than 1000 units get a power boost.
+// FUNCTION: STUNTGP_D3D 0x4081d0
 void FUN_4081d0()
 {
+    if (g_4d5bb8->catchUp)
+    {
+        Car *leader;
+        FUN_408180(&leader);
+        g_4d5bb8->unk2634 = 1.0f;
+        float gap = (g_4d5bb8->unk23b0 - leader->unk23b0) * g_624474->unk18 * 0.01f;
+        g_4d5bb8->leaderGap = gap;
+        g_4d5bb8->unk2634 = 1.0f;
+        if (g_4d5bb8 != leader)
+        {
+            gap -= 1000.0f;
+            if (gap < 0.0f)
+            {
+                float boost;
+                float range;
+                if (g_4d5bb8->unk2640 == 1)
+                {
+                    boost = g_60f2d0[22];
+                    range = g_60f2d0[18];
+                }
+                else
+                {
+                    boost = g_60f2d0[24];
+                    range = g_60f2d0[23];
+                }
+                if (gap < -range)
+                {
+                    gap = -range;
+                }
+                float t = (float)fabs(gap) / range + (float)fabs(gap) / range;
+                if (t > 1.0f)
+                {
+                    t = 1.0f;
+                }
+                g_4d5bb8->unk2634 = boost * t + 1.0f;
+            }
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x408d80
