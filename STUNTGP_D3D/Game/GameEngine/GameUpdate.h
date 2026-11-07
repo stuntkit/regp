@@ -116,15 +116,17 @@ struct Wheel
     float unk0c;        // 0x000c
     float unk10;        // 0x0010
     BYTE unk0014[0x1c]; // 0x0014
-    int unk30;          // 0x0030
+    float unk30;        // 0x0030
     float unk34;        // 0x0034
     float unk38;        // 0x0038
     Vec4 pos;           // 0x003c world position
     BYTE unk004c[0x24]; // 0x004c
     int unk70;          // 0x0070
-    BYTE unk0074[0x4];  // 0x0074
+    int unk74;          // 0x0074
     int unk78;          // 0x0078
-    BYTE unk007c[0x14]; // 0x007c
+    BYTE unk007c[0x4];  // 0x007c
+    float unk80;        // 0x0080
+    BYTE unk0084[0xc];  // 0x0084
     float unk90;        // 0x0090
     float unk94;        // 0x0094
 };
@@ -152,7 +154,9 @@ struct ModelPart
 
 struct CarModel
 {
-    BYTE unk00[0x24];     // 0x00
+    BYTE unk00[0x4];      // 0x00
+    short unk04;          // 0x04
+    BYTE unk06[0x1e];     // 0x06
     DWORD meshCount;      // 0x24
     BYTE unk28[0x20];     // 0x28
     ModelPart *parts[5];  // 0x48
@@ -240,6 +244,64 @@ struct Body
     BodyPoint points[8];   // 0x144
 };
 
+// One recorded frame of car state.
+struct ReplayFrame
+{
+    BYTE unk00[0x14];     // 0x00
+    short unk14[4];       // 0x14
+    char unk1c[4];        // 0x1c
+    unsigned short unk20; // 0x20
+    char unk22;           // 0x22
+    char unk23;           // 0x23
+    BYTE flags;           // 0x24
+    BYTE unk25;           // 0x25
+    BYTE unk26[0x6];      // 0x26
+};
+
+// Ghost/replay buffer: 0x80 byte header followed by frames.
+struct Replay
+{
+    unsigned short mode;    // 0x00 1 = record, 2 = play
+    unsigned short count;   // 0x02
+    unsigned short unk04;   // 0x04
+    unsigned short unk06;   // 0x06
+    float unk08;            // 0x08
+    float unk0c;            // 0x0c
+    ReplayFrame *cur;       // 0x10
+    int unk14;              // 0x14
+    BYTE unk18[0x8];        // 0x18
+    short unk20;            // 0x20
+    short unk22;            // 0x22
+    short unk24;            // 0x24
+    short unk26;            // 0x26
+    int checksum;           // 0x28
+    char name[0x10];        // 0x2c
+    int size;               // 0x3c
+    BYTE unk40[0x40];       // 0x40
+    ReplayFrame frames[1];  // 0x80
+};
+
+// Running count, last value, sum and mean.
+struct Stat
+{
+    DWORD count; // 0x00
+    float last;  // 0x04
+    float sum;   // 0x08
+    float mean;  // 0x0c
+};
+
+struct PosSample
+{
+    Vec4 pos;  // 0x00
+    int unk10; // 0x10
+};
+
+struct PosHistory
+{
+    PosSample samples[8]; // 0x00
+    int unka0;            // 0xa0
+};
+
 // 6 entries at 0x49a1f8
 struct Car
 {
@@ -257,14 +319,22 @@ struct Car
     float unk24c;             // 0x024c
     float unk250;             // 0x0250
     float unk254;             // 0x0254
-    BYTE unk0258[0x204];      // 0x0258
+    float unk258[128];        // 0x0258
+    BYTE unk0458[0x4];        // 0x0458
     float unk045c;            // 0x045c
-    BYTE unk0460[0x814];      // 0x0460
+    BYTE unk0460[0x4];        // 0x0460
+    float unk464;             // 0x0464
+    BYTE unk0468[0x8];        // 0x0468
+    float unk470[128];        // 0x0470
+    BYTE unk0670[0x604];      // 0x0670
     unsigned int unkc74;      // 0x0c74
     int unkc78;               // 0x0c78
-    BYTE unk0c7c[0x24];       // 0x0c7c
+    float unkc7c[9];          // 0x0c7c
     float unkca0;             // 0x0ca0
-    BYTE unk0ca4[0x14];       // 0x0ca4
+    BYTE unk0ca4[0x8];        // 0x0ca4
+    float unkcac;             // 0x0cac
+    float unkcb0;             // 0x0cb0
+    float unkcb4;             // 0x0cb4
     Vector4 unkcb8[4];        // 0x0cb8
     BYTE unk0cf8[0x60];       // 0x0cf8
     float unkd58;             // 0x0d58
@@ -274,16 +344,20 @@ struct Car
     float unkd68;             // 0x0d68
     float unkd6c;             // 0x0d6c
     float unkd70[128];        // 0x0d70
-    BYTE unk0f70[0x4];        // 0x0f70
+    float unkf70;             // 0x0f70
     float unkf74;             // 0x0f74
     float unkf78;             // 0x0f78
     float unkf7c;             // 0x0f7c
-    BYTE unk0f80[0x208];      // 0x0f80
+    float unkf80;             // 0x0f80
+    float unkf84[128];        // 0x0f84
+    float unk1184;            // 0x1184
     float unk1188[5][128];    // 0x1188
     BYTE unk1b88[0x4];        // 0x1b88
     float unk1b8c;            // 0x1b8c
     float unk1b90;            // 0x1b90
-    BYTE unk1b94[0xc];        // 0x1b94
+    float unk1b94;            // 0x1b94
+    float unk1b98;            // 0x1b98
+    float unk1b9c;            // 0x1b9c
     float unk1ba0;            // 0x1ba0
     float unk1ba4;            // 0x1ba4
     int active;               // 0x1ba8
@@ -296,11 +370,12 @@ struct Car
     float unk1c0c[16];        // 0x1c0c
     float unk1c4c[16];        // 0x1c4c
     Vec4 unk1c8c;             // 0x1c8c
-    BYTE unk1c9c[0x20];       // 0x1c9c
+    Vec4 unk1c9c;             // 0x1c9c
+    Vec4 unk1cac;             // 0x1cac
     Vec4 axisX;               // 0x1cbc
     Vec4 axisY;               // 0x1ccc
     Vec4 axisZ;               // 0x1cdc
-    BYTE unk1cec[0x4];        // 0x1cec
+    float unk1cec;            // 0x1cec
     float unk1cf0;            // 0x1cf0
     float unk1cf4;            // 0x1cf4
     float unk1cf8;            // 0x1cf8
@@ -312,20 +387,24 @@ struct Car
     float unk1f14;            // 0x1f14
     BYTE unk1f18[0x4];        // 0x1f18
     int unk1f1c;              // 0x1f1c
-    BYTE unk1f20[0xb0];       // 0x1f20
+    BYTE unk1f20[0xc];        // 0x1f20
+    PosHistory unk1f2c;       // 0x1f2c
     float unk1fd0;            // 0x1fd0
     int unk1fd4;              // 0x1fd4
     int unk1fd8;              // 0x1fd8
-    BYTE unk1fdc[0x4];        // 0x1fdc
+    unsigned int unk1fdc;     // 0x1fdc
     Wheel wheels[4];          // 0x1fe0
     float unk2240[4];         // 0x2240
     int unk2250;              // 0x2250
     float unk2254;            // 0x2254
     float unk2258;            // 0x2258
-    BYTE unk225c[0x10];       // 0x225c
+    BYTE unk225c[0x4];        // 0x225c
+    int unk2260;              // 0x2260
+    float unk2264;            // 0x2264
+    int unk2268;              // 0x2268
     int unk226c;              // 0x226c
     float unk2270;            // 0x2270
-    BYTE unk2274[0x4];        // 0x2274
+    float unk2274;            // 0x2274
     int unk2278;              // 0x2278
     int inputMode;            // 0x227c
     int unk2280;              // 0x2280
@@ -365,8 +444,8 @@ struct Car
     int unk2354;              // 0x2354
     int unk2358;              // 0x2358
     int unk235c;              // 0x235c
-    int unk2360;              // 0x2360
-    int unk2364;              // 0x2364
+    float unk2360;            // 0x2360
+    float unk2364;            // 0x2364
     int unk2368;              // 0x2368
     int unk236c;              // 0x236c
     int unk2370;              // 0x2370
@@ -402,7 +481,9 @@ struct Car
     int unk24a4;              // 0x24a4
     int unk24a8;              // 0x24a8
     int unk24ac;              // 0x24ac
-    BYTE unk24b0[0x30];       // 0x24b0
+    BYTE unk24b0[0x10];       // 0x24b0
+    Vec4 unk24c0;             // 0x24c0
+    BYTE unk24d0[0x10];       // 0x24d0
     int unk24e0;              // 0x24e0
     int unk24e4;              // 0x24e4
     int unk24e8;              // 0x24e8
@@ -417,12 +498,20 @@ struct Car
     unsigned int unk2578;     // 0x2578
     float unk257c;            // 0x257c
     int unk2580;              // 0x2580
-    BYTE unk2584[0x88];       // 0x2584
+    Stat unk2584;             // 0x2584
+    BYTE unk2594[0x20];       // 0x2594
+    Stat unk25b4;             // 0x25b4
+    DWORD unk25c4[6];         // 0x25c4
+    DWORD unk25dc[6];         // 0x25dc
+    int unk25f4[6];           // 0x25f4
     float unk260c;            // 0x260c
     BYTE unk2610[0x8];        // 0x2610
     float unk2618;            // 0x2618
     float unk261c;            // 0x261c
-    BYTE unk2620[0x10];       // 0x2620
+    BYTE unk2620[0x4];        // 0x2620
+    int unk2624;              // 0x2624
+    int unk2628;              // 0x2628
+    int unk262c;              // 0x262c
     int catchUp;              // 0x2630
     float unk2634;            // 0x2634
     float leaderGap;          // 0x2638
@@ -432,15 +521,20 @@ struct Car
     float unk2648;            // 0x2648
     int unk264c;              // 0x264c path knot
     float unk2650;            // 0x2650
-    BYTE unk2654[0x20];       // 0x2654
+    BYTE unk2654[0xc];        // 0x2654
+    float unk2660;            // 0x2660
+    unsigned int unk2664;     // 0x2664
+    BYTE unk2668[0xc];        // 0x2668
     int unk2674;              // 0x2674
-    BYTE unk2678[0x2c];       // 0x2678
+    int unk2678;              // 0x2678
+    BYTE unk267c[0x28];       // 0x267c
     int unk26a4;              // 0x26a4
     int unk26a8;              // 0x26a8
     BYTE unk26ac[0x4];        // 0x26ac
     CarModel *unk26b0;        // 0x26b0
     CarModel *unk26b4;        // 0x26b4
-    BYTE unk26b8[0x94];       // 0x26b8
+    BYTE unk26b8[0x54];       // 0x26b8
+    float unk270c[16];        // 0x270c
     float wheelMatrix[4][16]; // 0x274c
     BYTE unk284c[0x40];       // 0x284c
     float unk288c;            // 0x288c
@@ -471,7 +565,14 @@ struct Car
     int unk3928;              // 0x3928
     BYTE unk392c[0x38];       // 0x392c
     SkidMark skids[4];        // 0x3964
-    BYTE unk6da4[0x410];      // 0x6da4
+    int unk6da4;              // 0x6da4
+    int unk6da8;              // 0x6da8
+    int unk6dac;              // 0x6dac
+    int unk6db0;              // 0x6db0
+    int unk6db4[64];          // 0x6db4
+    int unk6eb4[64];          // 0x6eb4
+    int unk6fb4[64];          // 0x6fb4
+    int unk70b4[64];          // 0x70b4
     DWORD unk71b4;            // 0x71b4
     DWORD unk71b8;            // 0x71b8
     DWORD unk71bc;            // 0x71bc
@@ -485,33 +586,46 @@ struct Car
     int unk71e8;              // 0x71e8
     unsigned int unk71ec;     // 0x71ec
     int unk71f0;              // 0x71f0
-    BYTE unk71f4[0x8];        // 0x71f4
+    int unk71f4;              // 0x71f4
+    BYTE unk71f8[0x4];        // 0x71f8
     unsigned int unk71fc;     // 0x71fc
     BYTE unk7200[0x14];       // 0x7200
     float unk7214;            // 0x7214
     float unk7218;            // 0x7218
-    BYTE unk721c[0x8];        // 0x721c
+    float unk721c;            // 0x721c
+    BYTE unk7220[0x4];        // 0x7220
     float unk7224;            // 0x7224
     float unk7228;            // 0x7228
     float unk722c;            // 0x722c
     BYTE unk7230[0x4];        // 0x7230
     DWORD unk7234;            // 0x7234
     float unk7238;            // 0x7238
-    BYTE unk723c[0x2c];       // 0x723c
-    unsigned short *unk7268;  // 0x7268
+    float unk723c;            // 0x723c
+    float unk7240;            // 0x7240
+    int unk7244;              // 0x7244
+    int unk7248;              // 0x7248
+    int unk724c;              // 0x724c
+    BYTE unk7250[0x4];        // 0x7250
+    int unk7254;              // 0x7254
+    BYTE unk7258[0x10];       // 0x7258
+    Replay *unk7268;          // 0x7268
     BYTE unk726c[0x4];        // 0x726c
     Body body;                // 0x7270
     int unk7614;              // 0x7614
     int unk7618;              // 0x7618
     BYTE unk761c[0x10];       // 0x761c
     int unk762c;              // 0x762c
-    BYTE unk7630[0x8];        // 0x7630
+    int unk7630;              // 0x7630
+    unsigned int unk7634;     // 0x7634
     int unk7638;              // 0x7638
     int unk763c;              // 0x763c
     int unk7640;              // 0x7640
     int unk7644;              // 0x7644
     int unk7648;              // 0x7648
-    BYTE unk764c[0x2c];       // 0x764c
+    BYTE unk764c[0x8];        // 0x764c
+    int unk7654;              // 0x7654
+    BYTE unk7658[0x1c];       // 0x7658
+    int unk7674;              // 0x7674
     int unk7678;              // 0x7678
     int unk767c;              // 0x767c
     DWORD unk7680;            // 0x7680
@@ -601,7 +715,8 @@ struct Unk62a078
     Vec4 pos;           // 0x08
     BYTE unk18[0x40];   // 0x18
     float vel[3];       // 0x58
-    BYTE unk64[0x8];    // 0x64
+    BYTE unk64[0x4];    // 0x64
+    float unk68;        // 0x68
     float gravity;      // 0x6c
     DWORD time;         // 0x70
     DWORD lifetime;     // 0x74
@@ -704,7 +819,7 @@ struct Scene
     ObjectDef *objects;  // 0x48, level of detail 0
     ObjectDef *unk4c[4]; // 0x4c, further levels of detail
     int lod;             // 0x5c
-    int unk60;           // 0x60
+    char **textures;     // 0x60, NULL-terminated
     int unk64;           // 0x64
 };
 

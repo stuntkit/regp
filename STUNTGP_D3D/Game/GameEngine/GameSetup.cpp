@@ -466,6 +466,16 @@ void FUN_4192d0()
     g_4d5ca0 = 0;
 }
 
+CameraPath *FUN_428800(int id);
+void FUN_418b10();
+
+// FUNCTION: STUNTGP_D3D 0x4192f0
+void FUN_4192f0()
+{
+    g_4d5c9c = (int)FUN_428800(2);
+    FUN_418b10();
+}
+
 void FUN_40bde0();
 void FUN_41d300();
 void FUN_413450();
@@ -524,6 +534,39 @@ void FUN_413670()
     FUN_4130d0(1);
 }
 
+// FUNCTION: STUNTGP_D3D 0x4190b0
+void FUN_4190b0(Car *car, unsigned int percent)
+{
+    car->unk2570 += (unsigned int)(percent * car->unk2574 * 0.01f);
+    if (car->unk2570 > car->unk2574)
+    {
+        car->unk2570 = car->unk2574;
+    }
+}
+
+extern int g_4d5ca8;
+
+void FUN_442cf0(int frames, char *text, Car *car, int mode, int clear);
+
+// FUNCTION: STUNTGP_D3D 0x419110
+void FUN_419110()
+{
+    char text[64];
+    // STRING: STUNTGP_D3D 0x474684
+    sprintf(text, "%s %s\n", g_60f02c[g_4d5bb8 - g_49a1f8].name, g_6127a0[21]);
+    FUN_442cf0(180, text, g_4d5bb8, 1, 0);
+    g_4d5ca8 = 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x419180
+void FUN_419180()
+{
+    char text[64];
+    // STRING: STUNTGP_D3D 0x47468c
+    sprintf(text, "%s %s\n", g_60f02c[g_4d5bb8 - g_49a1f8].name, g_6127a0[23]);
+    FUN_442cf0(180, text, g_4d5bb8, 1, 0);
+}
+
 // FUNCTION: STUNTGP_D3D 0x4199a0
 void FUN_4199a0()
 {
@@ -535,6 +578,76 @@ void FUN_4199a0()
     for (i = 0; i < 6; i++)
     {
         g_49a1f8[i].unk7268 = 0;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x4199d0
+BYTE FUN_4199d0(BYTE *data, unsigned int size)
+{
+    BYTE sum = 0;
+    while (size > 0)
+    {
+        sum += *data++;
+        size--;
+    }
+    return sum;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4199f0
+int FUN_4199f0(char *name, char *buffer)
+{
+    char path[128];
+    // STRING: STUNTGP_D3D 0x474698
+    sprintf(path, "%s\\Replays\\%s.RPL", g_GameDirectory, name);
+    if (!size_of_file(path))
+    {
+        return 0;
+    }
+    return bload(path, buffer, 0x20000);
+}
+
+// FUNCTION: STUNTGP_D3D 0x419a40
+int FUN_419a40(Replay *replay)
+{
+    return replay->size = replay->count * sizeof(ReplayFrame) + sizeof(Replay);
+}
+
+void FUN_40fb30();
+
+// FUNCTION: STUNTGP_D3D 0x419e30
+void FUN_419e30()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        if (g_4d5bb8->wheels[i].unk0c > 8.515625f)
+        {
+            g_4d5bb8->wheels[i].unk70 = 8;
+            if (g_4d5bb8->unk71ec < 8)
+            {
+                g_4d5bb8->unk71ec++;
+            }
+        }
+        else if (g_4d5bb8->wheels[i].unk70)
+        {
+            g_4d5bb8->wheels[i].unk70--;
+        }
+    }
+    FUN_40fb30();
+}
+
+void FUN_415630();
+void FUN_414ac0(unsigned int wheel);
+
+// FUNCTION: STUNTGP_D3D 0x419e90
+void FUN_419e90()
+{
+    if (g_4d5bb8->unk22c0 == 1)
+    {
+        FUN_415630();
+        for (unsigned int i = 0; i < 4; i++)
+        {
+            FUN_414ac0(i);
+        }
     }
 }
 

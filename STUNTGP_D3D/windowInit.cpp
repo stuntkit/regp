@@ -246,10 +246,15 @@ int ddGetDD4(LPDIRECTDRAW *lplpDD, LPDIRECTDRAW4 *lplpDD4, HWND hWnd)
     return res;
 }
 
-// // STUB: STUNTGP_D3D 0x422860
-// void FUN_422860()
-// {
-// }
+// FUNCTION: STUNTGP_D3D 0x422860
+void FUN_422860(IUnknown **object)
+{
+    if (*object)
+    {
+        (*object)->Release();
+        *object = NULL;
+    }
+}
 
 // FUNCTION: STUNTGP_D3D 0x422880
 void ddReleaseSurface(LPDIRECTDRAWSURFACE4 *surface)
@@ -291,10 +296,15 @@ void ddRelease()
     g_surface2 = NULL;
 }
 
-// // STUB: STUNTGP_D3D 0x422910 - unused
-// void FUN_422910()
-// {
-// }
+// FUNCTION: STUNTGP_D3D 0x422910
+void FUN_422910(IUnknown **object)
+{
+    if (*object)
+    {
+        (*object)->Release();
+        *object = NULL;
+    }
+}
 
 // FUNCTION: STUNTGP_D3D 0x422930
 void windowDestroy(HWND *hWnd)
@@ -420,10 +430,18 @@ int FUN_422ac0(LPDIRECTDRAW4 dd, LPDIRECTDRAWSURFACE4 *surface, int width, int h
     return res;
 }
 
-// // STUB: STUNTGP_D3D 0x422b50
-// void FUN_422b50()
-// {
-// }
+// FUNCTION: STUNTGP_D3D 0x422b50
+void *FUN_422b50(LPDIRECTDRAWSURFACE4 surface)
+{
+    DDSURFACEDESC2 ddsd;
+    ddsd.dwSize = sizeof(ddsd);
+    if (surface->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL) != DD_OK &&
+        surface->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL) != DD_OK)
+    {
+        return NULL;
+    }
+    return ddsd.lpSurface;
+}
 
 // FUNCTION: STUNTGP_D3D 0x422ba0
 void FUN_422ba0(LPDIRECTDRAWSURFACE4 surface)
@@ -666,6 +684,92 @@ int FUN_4230b0(LPDIRECTDRAWPALETTE *palette, BYTE *src)
     return res;
 }
 
+// FUNCTION: STUNTGP_D3D 0x423140
+int FUN_423140(LPDIRECTDRAWSURFACE4 surface, LPDIRECTDRAWPALETTE *palette, BYTE *src)
+{
+    FUN_423070(src);
+    int res = g_dd->CreatePalette(DDPCAPS_8BIT | DDPCAPS_INITIALIZE | DDPCAPS_ALLOW256, g_paletteEntries, palette, NULL);
+    if (res == DD_OK)
+    {
+        surface->SetPalette(*palette);
+        return DD_OK;
+    }
+    return res;
+}
+
+// FUNCTION: STUNTGP_D3D 0x423230
+void FUN_423230(LPDIRECTDRAWSURFACE4 surface, char color)
+{
+    DDBLTFX fx;
+    fx.dwSize = sizeof(fx);
+    fx.dwFillColor = color;
+    if (surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &fx) != DD_OK &&
+        surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &fx) != DD_OK)
+    {
+        surface->GetBltStatus(DDGBS_CANBLT);
+        // STRING: STUNTGP_D3D 0x477590
+        exitError("Requested Blitter Fill operation failed...\n");
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x423290
+void FUN_423290(LPDIRECTDRAWSURFACE4 surface, char color, int width, int height)
+{
+    DDBLTFX fx;
+    RECT rect;
+    rect.left = 0;
+    rect.top = 0;
+    rect.right = width;
+    rect.bottom = height;
+    fx.dwSize = sizeof(fx);
+    fx.dwFillColor = color;
+    if (surface->Blt(&rect, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &fx) != DD_OK &&
+        surface->Blt(&rect, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &fx) != DD_OK)
+    {
+        surface->GetBltStatus(DDGBS_CANBLT);
+        // STRING: STUNTGP_D3D 0x4775bc
+        exitError("Requested Blitter Fill operation failed...\n");
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x423310
+void FUN_423310(LPDIRECTDRAWSURFACE4 src, LPDIRECTDRAWSURFACE4 dst, DWORD x, DWORD y, int width, int height)
+{
+    RECT rect;
+    rect.left = 0;
+    rect.top = 0;
+    rect.right = width;
+    rect.bottom = height;
+    if (dst->BltFast(x, y, src, &rect, DDBLTFAST_WAIT) != DD_OK &&
+        dst->BltFast(x, y, src, &rect, DDBLTFAST_WAIT) != DD_OK)
+    {
+        // STRING: STUNTGP_D3D 0x4775e8
+        exitError("Requested Blitter Blit operation failed...\n");
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x423380
+void FUN_423380(LPDIRECTDRAWSURFACE4 src, LPDIRECTDRAWSURFACE4 dst, int x, int y, int width, int height)
+{
+    DDBLTFX fx;
+    RECT srcRect;
+    RECT dstRect;
+    fx.dwSize = sizeof(fx);
+    srcRect.left = 0;
+    srcRect.top = 0;
+    srcRect.right = width;
+    srcRect.bottom = height;
+    dstRect.left = 0;
+    dstRect.top = 0;
+    dstRect.right = width;
+    dstRect.bottom = height;
+    if (dst->Blt(&dstRect, src, &srcRect, DDBLTFAST_WAIT, &fx) != DD_OK)
+    {
+        // STRING: STUNTGP_D3D 0x477614
+        exitError("Requested Blitter Blit operation failed...\n");
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x423430
 void FUN_423430()
 {
@@ -674,4 +778,19 @@ void FUN_423430()
         FUN_422ba0(*g_61c358);
         g_6244ec = 1;
     }
+}
+
+// GLOBAL: STUNTGP_D3D 0x5729e0
+DWORD g_perfFrequency;
+
+// GLOBAL: STUNTGP_D3D 0x572be4
+DWORD g_572be4;
+
+// FUNCTION: STUNTGP_D3D 0x423450
+void FUN_423450()
+{
+    LARGE_INTEGER freq;
+    QueryPerformanceFrequency(&freq);
+    g_perfFrequency = freq.LowPart;
+    g_572be4 = freq.LowPart / 60;
 }

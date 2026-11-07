@@ -87,6 +87,13 @@ BOOL FUN_423aa0(InputDevice *dev)
     return dev->device->EnumEffects(FUN_423a70, &guid, DIEFT_ALL) == DI_OK;
 }
 
+// FUNCTION: STUNTGP_D3D 0x423ad0
+BOOL CALLBACK FUN_423ad0(LPCDIDEVICEINSTANCE instance, LPVOID ref)
+{
+    *(GUID *)ref = instance->guidInstance;
+    return DIENUM_STOP;
+}
+
 // FUNCTION: STUNTGP_D3D 0x423b00
 BOOL CALLBACK FUN_423b00(LPCDIDEVICEINSTANCE instance, LPVOID ref)
 {
