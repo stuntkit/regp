@@ -94,7 +94,11 @@ struct RenderMaterial
     DWORD unk00;      // 0x00
     DWORD unk04;      // 0x04
     float alpha;      // 0x08
-    BYTE unk0c[0x5c]; // 0x0c
+    BYTE unk0c[0x48]; // 0x0c
+    DWORD unk54;      // 0x54
+    DWORD unk58;      // 0x58
+    DWORD unk5c;      // 0x5c
+    BYTE unk60[0x8];  // 0x60
     float unk68;      // 0x68
     float unk6c;      // 0x6c
     float unk70;      // 0x70
@@ -1523,6 +1527,21 @@ void FUN_45e110(Unk62a078 *particle)
     slot->time = 0;
     g_62d478 = 1;
     slot->angle = 0.0f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45eb90
+void FUN_45eb90(int x, int y, int z)
+{
+    RenderMaterial *material = g_62447c;
+    x <<= 2;
+    y <<= 2;
+    z <<= 2;
+    for (int i = 0; i < g_62449c; i++, material++)
+    {
+        material->unk54 = (material->unk54 + x) & 0x1ffffff;
+        material->unk58 = (material->unk58 + y) & 0x1ffffff;
+        material->unk5c = (material->unk5c + z) & 0x1ffffff;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x45ec30
