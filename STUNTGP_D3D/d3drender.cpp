@@ -337,6 +337,12 @@ void FUN_430690()
     g_592028 = g_59207c;
 }
 
+// FUNCTION: STUNTGP_D3D 0x4306b0
+int FUN_4306b0(int a, int b, int c, int d, int e)
+{
+    return 1;
+}
+
 // GLOBAL: STUNTGP_D3D 0x583330
 int g_583330;
 
@@ -667,6 +673,12 @@ void FUN_427270()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x427520
+void FUN_427520(int *p)
+{
+    *p = 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x431a80
 void FUN_431a80()
 {
@@ -766,6 +778,11 @@ void FUN_42f380()
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, FALSE);
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 0xa0);
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42fa00
+void FUN_42fa00()
+{
 }
 
 // FUNCTION: STUNTGP_D3D 0x432190

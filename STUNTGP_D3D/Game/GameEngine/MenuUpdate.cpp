@@ -86,6 +86,29 @@ void FUN_434b50()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x436410
+void FUN_436410()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x436e90
+void FUN_436e90(int *p)
+{
+    if (*p == 0)
+    {
+        *p = 5;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x436ea0
+void FUN_436ea0(int *p)
+{
+    if (*p == 0)
+    {
+        *p = 3;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x436eb0
 void FUN_436eb0()
 {
@@ -135,6 +158,19 @@ int FUN_436fd0(int player, int button)
     {
         return 1;
     }
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437040
+int FUN_437040()
+{
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437050
+int FUN_437050(int player)
+{
+    FUN_437090(player);
     return 0;
 }
 
@@ -242,6 +278,11 @@ int FUN_437360(int track)
     return 0;
 }
 
+// FUNCTION: STUNTGP_D3D 0x437870
+void FUN_437870()
+{
+}
+
 // FUNCTION: STUNTGP_D3D 0x437da0
 int FUN_437da0(int track)
 {
@@ -270,6 +311,28 @@ void FUN_437eb0()
 void FUN_439e30()
 {
     memset(g_5df528, 0, sizeof(g_5df528));
+}
+
+// FUNCTION: STUNTGP_D3D 0x43b210
+short FUN_43b210(short a, short b)
+{
+    return a - b;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43b370
+BYTE FUN_43b370(BYTE **reader)
+{
+    return *reader[2]++;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43bfd0
+void FUN_43bfd0()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x43bfe0
+void FUN_43bfe0()
+{
 }
 
 // FUNCTION: STUNTGP_D3D 0x43c000
@@ -505,6 +568,26 @@ float FUN_43d810(float current, float target, float rate)
         return target;
     }
     return current;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d9b0
+int FUN_43d9b0(int value)
+{
+    if (value < 0)
+    {
+        value = -value;
+    }
+    return value;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d9c0
+int FUN_43d9c0(int a, int b)
+{
+    if (a < b)
+    {
+        return a;
+    }
+    return b;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43d9e0

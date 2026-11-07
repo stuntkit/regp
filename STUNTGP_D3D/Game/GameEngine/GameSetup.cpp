@@ -555,6 +555,12 @@ void FUN_42b740()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x42b7e0
+void FUN_42b7e0(WORD *flags)
+{
+    flags[1] &= 0xfff7;
+}
+
 // STUB: STUNTGP_D3D 0x42b7f0
 void FUN_42b7f0(Scene *scene, Camera *camera, int arg)
 {
@@ -959,6 +965,11 @@ void FUN_431300()
     FUN_430690();
 }
 
+// FUNCTION: STUNTGP_D3D 0x431350
+void FUN_431350()
+{
+}
+
 // STUB: STUNTGP_D3D 0x431360
 void FUN_431360()
 {
@@ -1007,6 +1018,12 @@ void FUN_4311c0(Scene *scene)
 // STUB: STUNTGP_D3D 0x4342c0
 void FUN_4342c0()
 {
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d0a0
+int FUN_43d0a0()
+{
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43d0b0
