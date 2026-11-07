@@ -4,6 +4,12 @@
 // TODO: move to /Oy- in CMakeLists.txt once verified for the other translation units.
 #pragma optimize("y", off)
 
+// LIBRARY: STUNTGP_D3D 0x4627a4
+// _DirectDrawCreate@12
+
+// GLOBAL: STUNTGP_D3D 0x46ecb0
+// IID_IDirectDraw4
+
 // TODO: should we set this as a struct???
 // GLOBAL: STUNTGP_D3D 0x4754d0
 errorMessage errorMessages[] = {
