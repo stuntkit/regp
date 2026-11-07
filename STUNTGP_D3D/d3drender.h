@@ -108,7 +108,10 @@ extern int g_592050;
 extern int g_58332c;
 
 int FUN_4251a0(SpriteDesc *desc);
-void FUN_430280(BYTE *src, BYTE *dst, int width, int height);
+void FUN_430280(BYTE *src, WORD *dst, DWORD width, DWORD height);
+void FUN_430690();
+extern BYTE *g_592028;
+extern BYTE g_59207c[255];
 void FUN_430330(char *path, BYTE *dst);
 void FUN_431560(int slot, BYTE *image);
 int FUN_4316f0(int slot, char *path);

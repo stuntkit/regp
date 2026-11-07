@@ -59,6 +59,13 @@ DWORD g_61c604 = 0;
 // GLOBAL: STUNTGP_D3D 0x58332c
 int g_58332c = 0;
 
+// Per texture slot: set when the texture has transparent texels.
+// GLOBAL: STUNTGP_D3D 0x59207c
+BYTE g_59207c[255];
+
+// GLOBAL: STUNTGP_D3D 0x592028
+BYTE *g_592028;
+
 // GLOBAL: STUNTGP_D3D 0x592050
 int g_592050 = 0;
 
@@ -265,9 +272,45 @@ int FUN_4251a0(SpriteDesc *desc)
     return 1;
 }
 
-// STUB: STUNTGP_D3D 0x430280
-void FUN_430280(BYTE *src, BYTE *dst, int width, int height)
+// Converts 24-bit RGB to ARGB1555. Near-black is lifted so it stays opaque; magenta becomes
+// transparent and flags the texture as needing alpha.
+// FUNCTION: STUNTGP_D3D 0x430280
+void FUN_430280(BYTE *src, WORD *dst, DWORD width, DWORD height)
 {
+    DWORD count = width * height;
+    for (DWORD i = 0; i < count; i++)
+    {
+        BYTE r = src[0];
+        BYTE g = src[1];
+        BYTE b = src[2];
+        BYTE a;
+        if (r < 8 && g < 8 && b < 8)
+        {
+            r = g = b = 8;
+            a = 0xff;
+        }
+        else if (r == 0xff && g == 0 && b == r)
+        {
+            r = 1;
+            a = 0;
+            b = r;
+            *g_592028 = r;
+        }
+        else
+        {
+            a = 0xff;
+        }
+        src += 3;
+        *dst = ((((a & 0x80) << 1 | (r >> 3 << 3)) << 5 | (g >> 3 << 3)) << 2) | (b >> 3);
+        dst++;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x430690
+void FUN_430690()
+{
+    memset(g_59207c, 0, sizeof(g_59207c));
+    g_592028 = g_59207c;
 }
 
 // STUB: STUNTGP_D3D 0x430330
@@ -290,7 +333,7 @@ int FUN_4316f0(int slot, char *path)
     {
         BYTE *data = (BYTE *)malloc(size + 16);
         FUN_4623c0(path, data, &g_571fd4);
-        FUN_430280(data, image, g_489714, g_489718);
+        FUN_430280(data, (WORD *)image, g_489714, g_489718);
         free(data);
     }
     else
@@ -607,7 +650,7 @@ void FUN_432840(BYTE *texture, Font *font, int arg)
     g_489718 = 256;
     if (g_58332c == 1)
     {
-        FUN_430280(texture, texture, 256, 256);
+        FUN_430280(texture, (WORD *)texture, 256, 256);
         FUN_431560(font->glyphs[0].texture, texture);
         FUN_4327c0((WORD *)texture, 256, 256);
         FUN_431560(font->glyphs[0].textureAlt, texture);

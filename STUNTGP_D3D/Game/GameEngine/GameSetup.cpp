@@ -112,18 +112,11 @@ DWORD g_62f5d8;
 // GLOBAL: STUNTGP_D3D 0x632cf8
 DWORD g_632cf8;
 
-// GLOBAL: STUNTGP_D3D 0x59207c
-BYTE g_59207c[255];
-
-// GLOBAL: STUNTGP_D3D 0x592028
-BYTE *g_592028;
-
 void FUN_42e240(Scene *scene);
 void FUN_4311c0(Scene *scene);
 void FUN_42b7f0(Scene *scene, Camera *camera, int arg);
 void FUN_42b6e0();
 void FUN_434030();
-void FUN_430690();
 void Timer_Reset();
 
 // GLOBAL: STUNTGP_D3D 0x5fd248
@@ -723,13 +716,6 @@ void FUN_431300()
     FUN_432a60();
     FUN_431790();
     FUN_430690();
-}
-
-// FUNCTION: STUNTGP_D3D 0x430690
-void FUN_430690()
-{
-    memset(g_59207c, 0, sizeof(g_59207c));
-    g_592028 = g_59207c;
 }
 
 // STUB: STUNTGP_D3D 0x431360
