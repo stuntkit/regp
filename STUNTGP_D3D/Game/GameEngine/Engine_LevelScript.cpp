@@ -310,7 +310,7 @@ void Script_ParseGameConfig()
 Ambience g_624504;
 
 // GLOBAL: STUNTGP_D3D 0x5da264
-char g_5da264[0x100];
+char g_5da264[0x80];
 
 // FUNCTION: STUNTGP_D3D 0x42d7e0
 void FUN_42d7e0()

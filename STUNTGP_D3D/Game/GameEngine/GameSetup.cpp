@@ -1161,6 +1161,32 @@ BYTE *g_58c80c;
 // GLOBAL: STUNTGP_D3D 0x58c810
 BYTE g_58c810[0x1000];
 
+// GLOBAL: STUNTGP_D3D 0x58c234
+int g_58c234;
+
+// GLOBAL: STUNTGP_D3D 0x58c238
+BYTE g_58c238[0x300];
+
+// GLOBAL: STUNTGP_D3D 0x58d814
+int g_58d814;
+
+// FUNCTION: STUNTGP_D3D 0x42eb00
+void FUN_42eb00()
+{
+    memset(g_58c238, 0, sizeof(g_58c238));
+    memset(g_58c540, 0, sizeof(g_58c540));
+    memset(g_58c810, 0, sizeof(g_58c810));
+    memset(g_58c600, 0, sizeof(g_58c600));
+    g_58c234 = 0;
+    g_58c808 = 0;
+    g_58c800 = NULL;
+    g_58d810 = NULL;
+    g_58c230 = 0;
+    g_58c538 = NULL;
+    g_58c80c = NULL;
+    g_58d814 = 0;
+}
+
 // Scene slots of each car's two models.
 // GLOBAL: STUNTGP_D3D 0x477c4c
 int g_477c4c[6] = {4, 6, 8, 10, 12, 14};

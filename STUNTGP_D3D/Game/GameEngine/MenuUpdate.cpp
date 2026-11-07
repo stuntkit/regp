@@ -1003,6 +1003,26 @@ float FUN_43d810(float current, float target, float rate)
     return current;
 }
 
+// FUNCTION: STUNTGP_D3D 0x43d880
+float FUN_43d880(float current, float target, float rate)
+{
+    float dist = FUN_43d9e0(target - current);
+    if (dist != 0.0f)
+    {
+        float step = dist * 0.05f + rate;
+        if (dist > step)
+        {
+            if (target < current)
+            {
+                step = -step;
+            }
+            return step + current;
+        }
+        return target;
+    }
+    return current;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43d8f0
 float FUN_43d8f0(float current, float target, float step)
 {
