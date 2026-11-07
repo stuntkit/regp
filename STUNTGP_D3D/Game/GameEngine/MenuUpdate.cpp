@@ -465,6 +465,41 @@ int FUN_437a90(int id)
     return 0;
 }
 
+// FUNCTION: STUNTGP_D3D 0x437af0
+int FUN_437af0(int track)
+{
+    switch (track)
+    {
+    case 1:
+        return 0xad;
+    case 2:
+        return 0xc2;
+    case 3:
+        return 0x96;
+    case 4:
+        return 0x78;
+    case 5:
+        return 0x87;
+    case 6:
+        return 0x82;
+    case 7:
+        return 0x9b;
+    case 8:
+        return 0x7d;
+    case 9:
+        return 0x91;
+    case 10:
+        return 0x8c;
+    case 11:
+        return 0xa5;
+    case 12:
+        return 0xa0;
+    case 13:
+        return 0xaa;
+    }
+    return 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x437cc0
 int FUN_437cc0(int track)
 {

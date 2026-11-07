@@ -80,6 +80,10 @@ int g_592078;
 // GLOBAL: STUNTGP_D3D 0x6244f0
 int g_6244f0;
 
+// Four corner records reset by FUN_425ae0.
+// GLOBAL: STUNTGP_D3D 0x5775d0
+float g_5775d0[4][8];
+
 // GLOBAL: STUNTGP_D3D 0x577660
 int g_577660[10];
 
@@ -1310,6 +1314,18 @@ void FUN_42bdd0()
     g_5895bc = g_fontFiles;
 }
 
+// Records a texture file so it can be reloaded when surfaces are lost.
+// FUNCTION: STUNTGP_D3D 0x42be20
+void FUN_42be20(char *path)
+{
+    g_582710->name = g_580aec;
+    g_582710->slot = g_58271c;
+    g_582710++;
+    g_582710->name = NULL;
+    strcpy(g_580aec, path);
+    g_580aec += strlen(path) + 1;
+}
+
 // STUB: STUNTGP_D3D 0x433290
 void FUN_433290(void *data, int count)
 {
@@ -1779,6 +1795,20 @@ void FUN_425870()
 void FUN_425880()
 {
     memset(g_577660, 0, sizeof(g_577660));
+}
+
+// FUNCTION: STUNTGP_D3D 0x425ae0
+void FUN_425ae0()
+{
+    memset(g_5775d0, 0, sizeof(g_5775d0));
+    g_5775d0[0][0] = 10000.0f;
+    g_5775d0[1][0] = -10000.0f;
+    g_5775d0[2][0] = 10000.0f;
+    g_5775d0[3][0] = -10000.0f;
+    g_5775d0[0][1] = 10000.0f;
+    g_5775d0[1][1] = 10000.0f;
+    g_5775d0[2][1] = -10000.0f;
+    g_5775d0[3][1] = -10000.0f;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42e420

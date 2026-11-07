@@ -697,6 +697,21 @@ void FUN_428520(CameraPath *path, Vec4 *out, float t)
     out->z = acc.z;
 }
 
+// FUNCTION: STUNTGP_D3D 0x4286e0
+void FUN_4286e0(float *value, float step)
+{
+    float v = *value;
+    if (g_62d480[0x4c] & 0x80)
+    {
+        v += step;
+    }
+    if ((g_62d480[0x4b] & 0x80) && v > 0.0f)
+    {
+        v -= step;
+    }
+    *value = fmod(v, 1.0);
+}
+
 // GLOBAL: STUNTGP_D3D 0x499f88
 float g_499f88;
 
