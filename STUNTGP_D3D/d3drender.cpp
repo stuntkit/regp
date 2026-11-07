@@ -843,6 +843,20 @@ void FUN_42f6a0()
     DirectDrawEnumerateEx(FUN_42f530, &g_5ba788, DDENUM_ATTACHEDSECONDARYDEVICES | DDENUM_NONDISPLAYDEVICES);
 }
 
+// FUNCTION: STUNTGP_D3D 0x42f7f0
+void FUN_42f7f0(D3DVIEWPORT2 *viewport, DWORD width, DWORD height)
+{
+    memset(viewport, 0, sizeof(D3DVIEWPORT2));
+    viewport->dwSize = sizeof(D3DVIEWPORT2);
+    viewport->dwWidth = width;
+    viewport->dwHeight = height;
+    viewport->dvMaxZ = 1.0f;
+    viewport->dvClipX = -1.0f;
+    viewport->dvClipWidth = 2.0f;
+    viewport->dvClipY = 1.0f;
+    viewport->dvClipHeight = 2.0f;
+}
+
 // FUNCTION: STUNTGP_D3D 0x42f9c0
 void FUN_42f9c0()
 {

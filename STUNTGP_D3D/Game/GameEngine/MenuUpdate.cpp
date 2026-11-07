@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include "../../globals.h"
 #include "../../sound.h"
 #include "../../d3drender.h"
@@ -78,6 +79,7 @@ struct BitWriter
 void FUN_437eb0();
 void FUN_441e20();
 int FUN_43d730(int id);
+int FeCsv_ReadInt(int *value, char *text, int *pos);
 int FUN_43d760(int id);
 void FUN_442ad0(int type, int duration, int delay, int end, int from, int to, float scale);
 int FUN_43efc0();
@@ -122,6 +124,15 @@ void FUN_424bd0(float x, float y)
 // STUB: STUNTGP_D3D 0x434b50
 void FUN_434b50()
 {
+}
+
+// FUNCTION: STUNTGP_D3D 0x435f60
+void FUN_435f60(void *unused, int *out, char *text, int *pos)
+{
+    out[0] = 0;
+    FeCsv_ReadInt(&out[1], text, pos);
+    FeCsv_ReadInt(&out[2], text, pos);
+    FeCsv_ReadInt(&out[3], text, pos);
 }
 
 // FUNCTION: STUNTGP_D3D 0x436400
@@ -860,6 +871,16 @@ float FUN_43d810(float current, float target, float rate)
             return step + current;
         }
         return target;
+    }
+    return current;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d8f0
+float FUN_43d8f0(float current, float target, float step)
+{
+    if (current != target)
+    {
+        return fabs(target - current) > step ? (target < current ? -step : step) + current : target;
     }
     return current;
 }

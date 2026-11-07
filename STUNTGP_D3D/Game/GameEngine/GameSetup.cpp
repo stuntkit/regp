@@ -647,6 +647,23 @@ void FUN_42b7f0(Scene *scene, Camera *camera, int arg)
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x42b8b0
+int FUN_42b8b0(Scene *scene, DWORD index, int lod)
+{
+    ObjectDef *objects = (&scene->objects)[lod];
+    ObjectDef *target = &objects[index];
+    ObjectDef *object = objects;
+    for (DWORD i = 0; i < index; i++)
+    {
+        if (object->unk34 == target->unk34 && object->unk24 != 0)
+        {
+            return 1;
+        }
+        object++;
+    }
+    return 0;
+}
+
 // Camera height for the race scene list.
 // GLOBAL: STUNTGP_D3D 0x60dfa8
 float g_60dfa8;

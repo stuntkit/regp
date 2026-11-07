@@ -12,6 +12,21 @@
 
 #include "globals.h"
 #include "surface.h"
+
+// GLOBAL: STUNTGP_D3D 0x57b424
+char g_57b424[0x2ee0];
+
+// GLOBAL: STUNTGP_D3D 0x57e304
+char *g_57e304;
+
+// GLOBAL: STUNTGP_D3D 0x57eb08
+char *g_57eb08;
+
+// GLOBAL: STUNTGP_D3D 0x580af0
+char g_580af0[0x1c20];
+
+// GLOBAL: STUNTGP_D3D 0x589600
+int g_589600;
 #include "d3drender.h"
 #include "font.h"
 
@@ -296,6 +311,19 @@ void FUN_42bf00()
     {
         Font_Select(i);
         Font_Load(g_fontFiles[i].name);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42c1d0
+void FUN_42c1d0()
+{
+    if (g_589600 != 1)
+    {
+        memset(g_57b424, 0, sizeof(g_57b424));
+        memset(g_580af0, 0, sizeof(g_580af0));
+        g_57eb08 = g_580af0;
+        g_57e304 = g_57b424;
+        g_589600 = 1;
     }
 }
 

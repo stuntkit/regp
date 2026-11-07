@@ -664,7 +664,11 @@ struct ObjectDef
     WORD flags;       // 0x02
     BYTE unk04[0x4];  // 0x04
     Vec4 *matrix;     // 0x08
-    BYTE unk0c[0x34]; // 0x0c
+    BYTE unk0c[0x18]; // 0x0c
+    WORD unk24;       // 0x24
+    BYTE unk26[0xe];  // 0x26
+    int unk34;        // 0x34
+    BYTE unk38[0x8];  // 0x38
 };
 
 struct SceneView

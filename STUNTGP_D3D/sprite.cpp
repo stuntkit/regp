@@ -55,6 +55,10 @@ int g_5df524 = 0;
 // GLOBAL: STUNTGP_D3D 0x4793d4
 int g_4793d4 = -1;
 
+// Line spacing as a fraction of the font height.
+// GLOBAL: STUNTGP_D3D 0x4793d8
+float g_4793d8 = 0.85f;
+
 // Frame texture layout used by FUN_439520: shadow inset, corner size, row end.
 // GLOBAL: STUNTGP_D3D 0x4793dc
 int g_4793dc = 12;
@@ -444,6 +448,21 @@ void FUN_438a20(float x, float y, int layer, int sub, int style, const char *tex
 {
     FUN_4291a0(unk18);
     FUN_438990(x, y, layer, sub, style, text, size, color, flags, unk18);
+}
+
+// FUNCTION: STUNTGP_D3D 0x438a60
+float FUN_438a60(const char *text, float size)
+{
+    int lines = 1;
+    float height = FUN_438950(size) * g_4793d8;
+    for (int i = 0; text[i]; i++)
+    {
+        if (text[i] == '|' || text[i] == (char)0xff)
+        {
+            lines++;
+        }
+    }
+    return height * lines;
 }
 
 // FUNCTION: STUNTGP_D3D 0x438be0
