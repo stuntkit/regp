@@ -421,9 +421,9 @@ struct Car
     float leaderGap;          // 0x2638
     BYTE unk263c[0x4];        // 0x263c
     int unk2640;              // 0x2640
-    float unk2644;            // 0x2644
+    int unk2644;              // 0x2644 path knot
     float unk2648;            // 0x2648
-    float unk264c;            // 0x264c
+    int unk264c;              // 0x264c path knot
     float unk2650;            // 0x2650
     BYTE unk2654[0x20];       // 0x2654
     int unk2674;              // 0x2674
@@ -439,7 +439,8 @@ struct Car
     float unk288c;            // 0x288c
     float unk2890;            // 0x2890
     float unk2894;            // 0x2894
-    BYTE unk2898[0x8];        // 0x2898
+    BYTE unk2898[0x4];        // 0x2898
+    float unk289c;            // 0x289c
     int unk28a0;              // 0x28a0
     int unk28a4;              // 0x28a4
     int unk28a8;              // 0x28a8

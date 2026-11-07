@@ -148,9 +148,56 @@ float g_472b88[4] = {0.0f, 0.05f, 0.1f, 0.2f};
 // GLOBAL: STUNTGP_D3D 0x472b98
 float g_472b98 = 0.5f;
 
-// STUB: STUNTGP_D3D 0x405370
-void FUN_405370(float *pos, CameraPath *path, float *index, float *distance)
+// Walks the knot index along the path until pos projects onto its segment, then returns the percentage covered.
+// FUNCTION: STUNTGP_D3D 0x405370
+void FUN_405370(float *pos, CameraPath *path, int *index, float *distance)
 {
+    Vec4 seg;
+    Vec4 *points = path->points;
+    float len = 1.0f;
+    int i = *index;
+    int dir = 0;
+    float t;
+    for (;;)
+    {
+        DWORD a;
+        if (i < 0)
+        {
+            a = path->count - (DWORD)-i % path->count;
+        }
+        else
+        {
+            a = (DWORD)i % path->count;
+        }
+        DWORD b = (a + 1) % path->count;
+        seg.x = points[b].x - points[a].x;
+        seg.y = points[b].y - points[a].y;
+        seg.z = points[b].z - points[a].z;
+        FUN_44eda0(&seg.x, &len);
+        Vec4 r;
+        r.x = pos[0] - points[a].x;
+        r.y = pos[1] - points[a].y;
+        r.z = pos[2] - points[a].z;
+        t = r.x * seg.x + r.y * seg.y + r.z * seg.z;
+        if (t < 0.0f)
+        {
+            if (dir <= 0.0f)
+            {
+                i--;
+                dir = -1;
+                continue;
+            }
+        }
+        else if (t >= len && dir >= 0.0f)
+        {
+            i++;
+            dir = 1;
+            continue;
+        }
+        break;
+    }
+    *index = i;
+    *distance = (t / len + i) * 100.0f / path->count;
 }
 
 // STUB: STUNTGP_D3D 0x405610
@@ -158,9 +205,58 @@ void FUN_405610(float amount)
 {
 }
 
-// STUB: STUNTGP_D3D 0x406140
+void FUN_4143e0(float amount);
+void FUN_414420(float amount);
+void FUN_4288d0(CameraPath *path, Vec4 *out, float dist);
+
+// Steers towards a point, harder at low speed.
+// FUNCTION: STUNTGP_D3D 0x406020
+void FUN_406020(Vec4 *target, float amount)
+{
+    Vec4 d;
+    Vec4 p;
+    d.x = g_4d5bb8->posX - target->x;
+    d.y = g_4d5bb8->posY - target->y;
+    d.z = g_4d5bb8->posZ - target->z;
+    float dot = g_482688 * d.x + g_48268c * d.y + g_482690 * d.z;
+    p.x = g_482688 * dot;
+    p.y = g_48268c * dot;
+    p.z = g_482690 * dot;
+    d.x += p.x;
+    d.y = p.y + d.y;
+    d.z = p.z + d.z;
+    float steer = (d.x * g_4d5bb8->axisX.x + d.y * g_4d5bb8->axisX.y + d.z * g_4d5bb8->axisX.z) * 0.0005f;
+    steer *= 2.25f;
+    float speed = g_4d5bb8->unk289c * 0.35f;
+    if (speed < 1.0f)
+    {
+        speed = 1.0f;
+    }
+    steer /= speed;
+    if (g_4d5bb8->axisY.y < 0.0f)
+    {
+        steer = -steer;
+    }
+    amount = steer * amount;
+    if (amount >= 0.0f)
+    {
+        FUN_4143e0(amount);
+    }
+    else
+    {
+        FUN_414420(-amount);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x406140
 void FUN_406140(float amount)
 {
+    Vec4 p;
+    FUN_4288d0(g_49a158, &p, g_49a16c + 2000.0f);
+    if (!g_4d5bb8->unk1fd8)
+    {
+        FUN_406020(&p, amount);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x406190
