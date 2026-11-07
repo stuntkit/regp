@@ -25,6 +25,7 @@ int g_60d61c;
 #include <cstring>
 
 #include "GameUpdate.h"
+#include "GameSetup.h"
 
 // TODO: update this based on currrent date and a compile-time define?
 
@@ -323,14 +324,23 @@ void FUN_449d60()
 {
 }
 
-// STUB: STUNTGP_D3D 0x42e870
+// FUNCTION: STUNTGP_D3D 0x42e870
 void FUN_42e870()
 {
-}
-
-// STUB: STUNTGP_D3D 0x433f40
-void FUN_433f40()
-{
+    if (g_62498c != g_624988)
+    {
+        FUN_424c30(g_62498c);
+    }
+    FUN_42e820();
+    FUN_44fd60();
+    FUN_425ad0();
+    FUN_402e90();
+    FUN_42dcf0();
+    FUN_42e800();
+    FUN_42b040();
+    FUN_4277d0();
+    FUN_429a40();
+    g_61c508 = (g_61c508 + 1) & 0xffff;
 }
 
 // STUB: STUNTGP_D3D 0x44ae40
@@ -531,12 +541,6 @@ void FUN_4487d0(int index, float x, float y, float z)
 // STUB: STUNTGP_D3D 0x4476c0
 void FUN_4476c0(int type, float x, float y, float z, float width, float height)
 {
-}
-
-// STUB: STUNTGP_D3D 0x4290d0
-float FUN_4290d0(const char *text, float scale)
-{
-    return 0.0f;
 }
 
 extern int g_60f2b4;

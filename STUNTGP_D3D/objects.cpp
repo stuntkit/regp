@@ -2,6 +2,12 @@
 
 #include <stdlib.h>
 
+extern int g_5ff3e8;
+extern int g_5ff4ac;
+void FUN_45f8f0(int track, int loop);
+int FUN_43eee0(int screen);
+void FUN_43dc30(int track);
+
 // GLOBAL: STUNTGP_D3D 0x5fd250
 int g_5fd250;
 
@@ -25,6 +31,10 @@ PoolObject *g_5ff400[16];
 
 // GLOBAL: STUNTGP_D3D 0x5ff440
 int g_5ff440;
+
+// Music track per front-end screen.
+// GLOBAL: STUNTGP_D3D 0x5fcab0
+int g_5fcab0[64];
 
 // GLOBAL: STUNTGP_D3D 0x6087a0
 void *g_6087a0;
@@ -91,10 +101,49 @@ PoolObject *FUN_43e000(int a, int screen)
     return NULL;
 }
 
-// STUB: STUNTGP_D3D 0x43ee40
+// Queues a screen to replace the current one once the fade-out finishes.
+// FUNCTION: STUNTGP_D3D 0x43ee40
 int FUN_43ee40(PoolObject *object)
 {
-    return 0;
+    if (g_5ff3f8 && !g_5ff3fc)
+    {
+        g_5ff3f8->destroy(g_5ff3f8);
+        Pool_Free(g_5ff3f8);
+    }
+    g_5ff3f8 = NULL;
+    if (g_5ff3e8 <= 0 || g_5ff3e8 > 3)
+    {
+        return 0;
+    }
+    if (object->unk00[2])
+    {
+        int track = FUN_43eee0(object->unk00[2]);
+        if (track != g_5ff4ac)
+        {
+            FUN_43dc30(track);
+            g_5ff4ac = track;
+        }
+    }
+    g_5ff3f8 = object;
+    g_5ff3fc = FALSE;
+    if (g_5ff3f0)
+    {
+        g_5ff3f0->message(g_5ff3f0, 0x14, 0);
+    }
+    g_5ff3e8 = 2;
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43eee0
+int FUN_43eee0(int screen)
+{
+    return g_5fcab0[screen];
+}
+
+// FUNCTION: STUNTGP_D3D 0x43dc30
+void FUN_43dc30(int track)
+{
+    FUN_45f8f0(track, 1);
 }
 
 // FUNCTION: STUNTGP_D3D 0x43de50

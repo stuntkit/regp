@@ -56,6 +56,73 @@ extern float g_482668;
 
 void FUN_441f90();
 void FUN_45e0e0();
+
+extern char g_GraphicsDirectory[128];
+extern char g_GameLocation[256];
+extern int g_D3DUVFix;
+extern int g_61c50c;
+extern int g_6244c8;
+extern int g_6244cc;
+extern int g_6244d0;
+extern int g_61c5ec;
+extern DWORD g_61297c;
+
+// Scene render list entry; a list runs until a NULL scene.
+struct SceneSlot
+{
+    Scene *scene; // 0x00
+    int unk04;    // 0x04
+    int unk08;    // 0x08
+    int unk0c;    // 0x0c
+};
+
+// The in-race list at 0x636438 continues into g_636448.
+// GLOBAL: STUNTGP_D3D 0x636418
+SceneSlot g_636418[2];
+
+// GLOBAL: STUNTGP_D3D 0x636438
+SceneSlot g_636438;
+
+struct RenderMaterial
+{
+    DWORD unk00;    // 0x00
+    DWORD unk04;    // 0x04
+    float alpha;    // 0x08
+    BYTE unk0c[0x84];
+};
+
+// GLOBAL: STUNTGP_D3D 0x62447c
+RenderMaterial *g_62447c;
+
+// GLOBAL: STUNTGP_D3D 0x62449c
+DWORD g_62449c;
+
+// GLOBAL: STUNTGP_D3D 0x6249a0
+int g_6249a0;
+
+// GLOBAL: STUNTGP_D3D 0x6249a4
+int g_6249a4;
+
+// GLOBAL: STUNTGP_D3D 0x477c30
+DWORD g_477c30 = 0x200000;
+
+// GLOBAL: STUNTGP_D3D 0x4955e0
+DWORD *g_4955e0;
+
+// GLOBAL: STUNTGP_D3D 0x4955e4
+DWORD *g_4955e4;
+
+// GLOBAL: STUNTGP_D3D 0x62f5d8
+DWORD g_62f5d8;
+
+// GLOBAL: STUNTGP_D3D 0x632cf8
+DWORD g_632cf8;
+
+void FUN_42e240(Scene *scene);
+void FUN_4311c0(Scene *scene);
+void FUN_42b7f0(Scene *scene, Camera *camera, int arg);
+void FUN_42b6e0();
+void FUN_434030();
 void Timer_Reset();
 
 // GLOBAL: STUNTGP_D3D 0x5fd248
@@ -370,11 +437,6 @@ void FUN_4199a0()
     }
 }
 
-// STUB: STUNTGP_D3D 0x424c30
-void FUN_424c30(int param)
-{
-}
-
 void FUN_429510();
 
 // FUNCTION: STUNTGP_D3D 0x401d40
@@ -409,13 +471,40 @@ void FUN_426260()
 {
 }
 
-// STUB: STUNTGP_D3D 0x428fa0
-void FUN_428fa0()
+// FUNCTION: STUNTGP_D3D 0x42b740
+void FUN_42b740()
+{
+    g_4955e4 = &g_632cf8;
+    g_4955e0 = &g_62f5d8;
+    g_632cf8 = 0;
+    g_62f5d8 = 0;
+    if (g_612be8 != 2)
+    {
+        if (g_636448)
+        {
+            FUN_42b7f0(g_636448, &g_4864e8, 0);
+        }
+        FUN_42b6e0();
+        FUN_434030();
+        if (g_636418[0].scene)
+        {
+            FUN_42b7f0(g_636418[0].scene, &g_4864e8, 0);
+        }
+    }
+}
+
+// STUB: STUNTGP_D3D 0x42b7f0
+void FUN_42b7f0(Scene *scene, Camera *camera, int arg)
 {
 }
 
-// STUB: STUNTGP_D3D 0x42b740
-void FUN_42b740()
+// STUB: STUNTGP_D3D 0x42b6e0
+void FUN_42b6e0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x434030
+void FUN_434030()
 {
 }
 
@@ -434,23 +523,152 @@ void FUN_42d700()
 {
 }
 
-// STUB: STUNTGP_D3D 0x42e380
+// STUB: STUNTGP_D3D 0x42e240
+void FUN_42e240(Scene *scene)
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x42e380
 void FUN_42e380()
 {
+    SceneSlot *slot = g_6244f8 == 1 ? &g_636438 : g_636418;
+    while (slot->scene)
+    {
+        FUN_42e240(slot->scene);
+        slot++;
+    }
+    for (DWORD i = 0; i < g_62449c; i++)
+    {
+        g_62447c[i].alpha = g_62447c[i].alpha * 255.0f * (1.0f / 255.0f);
+    }
 }
 
-// STUB: STUNTGP_D3D 0x42e3e0
+// FUNCTION: STUNTGP_D3D 0x42e3e0
 void FUN_42e3e0()
 {
+    g_6249a0 = 0;
+    g_6249a4 = 256;
+    if (g_477c30 >= 0x3ffff8)
+    {
+        // STRING: STUNTGP_D3D 0x477c34
+        sprintf(g_GraphicsDirectory, "%s\\Graphics24\\", g_GameLocation);
+    }
 }
 
-// STUB: STUNTGP_D3D 0x42e430
+// GLOBAL: STUNTGP_D3D 0x61c5f4
+void *g_61c5f4;
+
+// GLOBAL: STUNTGP_D3D 0x61c5f8
+void *g_61c5f8;
+
+// GLOBAL: STUNTGP_D3D 0x61c5fc
+void *g_61c5fc;
+
+// GLOBAL: STUNTGP_D3D 0x61c600
+void *g_61c600;
+
+// GLOBAL: STUNTGP_D3D 0x61c518
+void *g_61c518;
+
+// GLOBAL: STUNTGP_D3D 0x61c51c
+void *g_61c51c;
+
+// GLOBAL: STUNTGP_D3D 0x624530
+void *g_624530;
+
+// Allocates the per-frame render buffers.
+// FUNCTION: STUNTGP_D3D 0x42e430
 void FUN_42e430()
 {
+    g_61c50c = (int)Mem_Alloc(0x78000, 0);
+    g_6244c8 = (int)Mem_Alloc(0xc000, 0);
+    g_6244cc = (int)Mem_Alloc(0x2000, 0);
+    g_6244d0 = (int)Mem_Alloc(0x800, 0);
+    g_61c5ec = (int)Mem_Alloc(0xc000, 0);
+    g_61c5f4 = Mem_Alloc(0xf000, 0);
+    g_61c5f8 = Mem_Alloc(0xf000, 0);
+    g_61c5fc = Mem_Alloc(0xf000, 0);
+    g_61c600 = Mem_Alloc(0xf000, 0);
+    g_61c5f0 = (OverlayPoly *)Mem_Alloc(0x11000, 0);
+    g_61c518 = Mem_Alloc(0x1000, 0);
+    g_61c51c = Mem_Alloc(0x1000, 0);
+    g_624530 = Mem_Alloc(0x4800, 0);
 }
 
 // STUB: STUNTGP_D3D 0x42e510
 void FUN_42e510()
+{
+}
+
+// GLOBAL: STUNTGP_D3D 0x624988
+int g_624988;
+
+// GLOBAL: STUNTGP_D3D 0x62498c
+int g_62498c;
+
+// GLOBAL: STUNTGP_D3D 0x61c508
+DWORD g_61c508;
+
+// GLOBAL: STUNTGP_D3D 0x61c510
+int g_61c510;
+
+// GLOBAL: STUNTGP_D3D 0x61c520
+int g_61c520;
+
+// GLOBAL: STUNTGP_D3D 0x61c5ec
+int g_61c5ec;
+
+// FUNCTION: STUNTGP_D3D 0x42e800
+void FUN_42e800()
+{
+    g_61c510 = g_61c50c;
+    g_61c520 = g_61c5ec;
+}
+
+// Detail level from the menu setting; g_589e08 forces specular off.
+// FUNCTION: STUNTGP_D3D 0x42e820
+void FUN_42e820()
+{
+    g_624980 = 0;
+    g_624984 = 0;
+    if (g_61297c > 80)
+    {
+        g_624980 = 1;
+        g_624984 = 1;
+    }
+    else if (g_61297c > 50)
+    {
+        g_624980 = 1;
+        g_624984 = 0;
+    }
+    if (g_589e08 == 1)
+    {
+        g_624984 = 0;
+    }
+}
+
+// STUB: STUNTGP_D3D 0x425ad0
+void FUN_425ad0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x42dcf0
+void FUN_42dcf0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x42b040
+void FUN_42b040()
+{
+}
+
+// STUB: STUNTGP_D3D 0x4277d0
+void FUN_4277d0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x429a40
+void FUN_429a40()
 {
 }
 
@@ -518,9 +736,17 @@ void FUN_42f090()
 {
 }
 
-// STUB: STUNTGP_D3D 0x431300
+// FUNCTION: STUNTGP_D3D 0x431300
 void FUN_431300()
 {
+    FUN_4328c0(0);
+    FUN_432a60();
+    FUN_4328c0(0);
+    FUN_432a60();
+    FUN_4328c0(0);
+    FUN_432a60();
+    FUN_431790();
+    FUN_430690();
 }
 
 // STUB: STUNTGP_D3D 0x431360
@@ -528,13 +754,43 @@ void FUN_431360()
 {
 }
 
-// STUB: STUNTGP_D3D 0x431420
+// FUNCTION: STUNTGP_D3D 0x431420
 void FUN_431420()
 {
+    if (g_d3dDevice)
+    {
+        D3DMATRIX projection;
+        float m[16];
+        D3DMATRIX identity;
+        memcpy(m, g_61c3e8, sizeof(m));
+        Matrix_Transpose(m, g_61c3e8);
+        memset(&identity, 0, sizeof(identity));
+        identity._11 = 1.0f;
+        identity._22 = 1.0f;
+        identity._33 = 1.0f;
+        identity._44 = 1.0f;
+        g_d3dDevice->SetTransform(D3DTRANSFORMSTATE_WORLD, &identity);
+        g_d3dDevice->SetTransform(D3DTRANSFORMSTATE_VIEW, &identity);
+        g_d3dDevice->SetTransform(D3DTRANSFORMSTATE_PROJECTION, &projection);
+    }
 }
 
-// STUB: STUNTGP_D3D 0x4312c0
+// FUNCTION: STUNTGP_D3D 0x4312c0
 void FUN_4312c0()
+{
+    if (g_D3DUVFix)
+    {
+        SceneSlot *slot = g_6244f8 == 1 ? &g_636438 : g_636418;
+        while (slot->scene)
+        {
+            FUN_4311c0(slot->scene);
+            slot++;
+        }
+    }
+}
+
+// STUB: STUNTGP_D3D 0x4311c0
+void FUN_4311c0(Scene *scene)
 {
 }
 

@@ -1094,11 +1094,6 @@ void FUN_41d9f0(int *a, int *b)
 {
 }
 
-// STUB: STUNTGP_D3D 0x461150
-void FUN_461150(int id, int a, int b, int c, int d, int e, int f)
-{
-}
-
 // STUB: STUNTGP_D3D 0x444070
 void FUN_444070()
 {

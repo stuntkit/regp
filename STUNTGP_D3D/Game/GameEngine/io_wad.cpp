@@ -1,4 +1,5 @@
 #include "io_wad.h"
+#include "../../mem.h"
 
 struct WadEntry
 {
@@ -317,9 +318,86 @@ int size_of_file(char *path)
     return disk_size_of_file(buffer);
 }
 
-// STUB: STUNTGP_D3D 0x4623c0
+extern int g_489714;
+extern int g_489718;
+
+// GLOBAL: STUNTGP_D3D 0x62f5c8
+int g_62f5c8;
+
+// GLOBAL: STUNTGP_D3D 0x62f5cc
+BYTE *g_62f5cc;
+
+// GLOBAL: STUNTGP_D3D 0x62f5d0
+BYTE *g_62f5d0;
+
+// GLOBAL: STUNTGP_D3D 0x48971c
+int g_48971c = 0;
+
+// GLOBAL: STUNTGP_D3D 0x489720
+int g_489720 = 0;
+
+void FUN_442180();
+
+// Fatal error: shuts the game down and exits; the message is not shown.
+// FUNCTION: STUNTGP_D3D 0x4234d0
+void FUN_4234d0(char *msg)
+{
+    FUN_442180();
+    exit(1);
+}
+
+// Decodes an uncompressed 24-bit TGA into top-down RGB.
+// FUNCTION: STUNTGP_D3D 0x4622c0
+void FUN_4622c0(BYTE *tga, BYTE *dst, void *palette, int size)
+{
+    int step;
+    BYTE type = tga[2];
+    if (type != 2 || tga[0x10] != 24)
+    {
+        // STRING: STUNTGP_D3D 0x48a588
+        FUN_4234d0("Unsupported TGA format...\n");
+    }
+    g_62f5c8 = tga[0x10];
+    g_489714 = g_48971c = *(WORD *)(tga + 0xc);
+    g_489718 = g_489720 = *(WORD *)(tga + 0xe);
+    g_62f5d0 = tga + tga[0] + 0x12;
+    if (!(type & 0x20))
+    {
+        step = -1;
+        dst += (g_489720 - 1) * g_48971c * 3;
+    }
+    else
+    {
+        step = 1;
+    }
+    for (int y = 0; y < g_489720; y++)
+    {
+        for (int i = 0; i < g_48971c * 3; i += 3)
+        {
+            dst[i] = g_62f5d0[i + 2];
+            dst[i + 1] = g_62f5d0[i + 1];
+            dst[i + 2] = g_62f5d0[i];
+        }
+        g_62f5d0 += g_48971c * 3;
+        dst += g_48971c * step * 3;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x4623c0
 void FUN_4623c0(char *path, void *buffer, void *arg)
 {
+    int size = size_of_file(path);
+    if (!size)
+    {
+        char msg[128];
+        // STRING: STUNTGP_D3D 0x48a5a4
+        sprintf(msg, "File: %s not found...", path);
+        FUN_4234d0(msg);
+    }
+    g_62f5cc = (BYTE *)Mem_Alloc(size, 0);
+    bload(path, (char *)g_62f5cc, size);
+    FUN_4622c0(g_62f5cc, (BYTE *)buffer, arg, size);
+    Mem_Free(g_62f5cc);
 }
 
 // FUNCTION: STUNTGP_D3D 0x44b470

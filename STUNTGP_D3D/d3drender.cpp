@@ -1,10 +1,13 @@
 #include "d3drender.h"
 #include "common.h"
 #include "sprite.h"
+#include "font.h"
 #include "globals.h"
 #include "windowInit.h"
 #include "vecmath.h"
+#include "surface.h"
 #include "Game/GameEngine/io_wad.h"
+#include "Game/GameEngine/GameSetup.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -53,6 +56,19 @@ OverlayPoly *g_61c5f0 = NULL;
 
 // GLOBAL: STUNTGP_D3D 0x61c604
 DWORD g_61c604 = 0;
+
+// GLOBAL: STUNTGP_D3D 0x58332c
+int g_58332c = 0;
+
+// Per texture slot: set when the texture has transparent texels.
+// GLOBAL: STUNTGP_D3D 0x59207c
+BYTE g_59207c[255];
+
+// GLOBAL: STUNTGP_D3D 0x592028
+BYTE *g_592028;
+
+// GLOBAL: STUNTGP_D3D 0x592050
+int g_592050 = 0;
 
 // GLOBAL: STUNTGP_D3D 0x61c5e4
 int g_61c5e4 = 0;
@@ -135,6 +151,28 @@ ResourceFile g_textureFiles[255];
 
 // GLOBAL: STUNTGP_D3D 0x5895c0
 ResourceFile g_fontFiles[8];
+
+// GLOBAL: STUNTGP_D3D 0x5895bc
+ResourceFile *g_5895bc;
+
+// Pool holding the registered file names.
+// GLOBAL: STUNTGP_D3D 0x580aec
+char *g_580aec;
+
+// GLOBAL: STUNTGP_D3D 0x58271c
+int g_58271c;
+
+// Records a font file so it can be reloaded when surfaces are lost.
+// FUNCTION: STUNTGP_D3D 0x42be90
+void FUN_42be90(char *path)
+{
+    g_5895bc->name = g_580aec;
+    g_5895bc->slot = g_58271c;
+    g_5895bc++;
+    g_5895bc->name = NULL;
+    strcpy(g_580aec, path);
+    g_580aec += strlen(path) + 1;
+}
 
 // GLOBAL: STUNTGP_D3D 0x489714
 int g_489714 = 320;
@@ -257,19 +295,135 @@ int FUN_4251a0(SpriteDesc *desc)
     return 1;
 }
 
-// STUB: STUNTGP_D3D 0x430280
-void FUN_430280(BYTE *src, BYTE *dst, int width, int height)
+// Converts 24-bit RGB to ARGB1555. Near-black is lifted so it stays opaque; magenta becomes
+// transparent and flags the texture as needing alpha.
+// FUNCTION: STUNTGP_D3D 0x430280
+void FUN_430280(BYTE *src, WORD *dst, DWORD width, DWORD height)
 {
+    DWORD count = width * height;
+    for (DWORD i = 0; i < count; i++)
+    {
+        BYTE r = src[0];
+        BYTE g = src[1];
+        BYTE b = src[2];
+        BYTE a;
+        if (r < 8 && g < 8 && b < 8)
+        {
+            r = g = b = 8;
+            a = 0xff;
+        }
+        else if (r == 0xff && g == 0 && b == r)
+        {
+            r = 1;
+            a = 0;
+            b = r;
+            *g_592028 = r;
+        }
+        else
+        {
+            a = 0xff;
+        }
+        src += 3;
+        *dst = ((((a & 0x80) << 1 | (r >> 3 << 3)) << 5 | (g >> 3 << 3)) << 2) | (b >> 3);
+        dst++;
+    }
 }
 
-// STUB: STUNTGP_D3D 0x430330
+// FUNCTION: STUNTGP_D3D 0x430690
+void FUN_430690()
+{
+    memset(g_59207c, 0, sizeof(g_59207c));
+    g_592028 = g_59207c;
+}
+
+// GLOBAL: STUNTGP_D3D 0x583330
+int g_583330;
+
+// Loads an RLE packed image; the header holds the size at offsets 6 and 8.
+// FUNCTION: STUNTGP_D3D 0x430330
 void FUN_430330(char *path, BYTE *dst)
 {
+    int size = size_of_file(path);
+    BYTE *data = (BYTE *)malloc(size);
+    bload(path, (char *)data, size);
+    FUN_4234e0(dst, data + 10);
+    g_489714 = *(WORD *)(data + 6);
+    g_489718 = *(WORD *)(data + 8);
+    free(data);
+    g_583330 = 0;
 }
 
-// STUB: STUNTGP_D3D 0x431560
+// GLOBAL: STUNTGP_D3D 0x46f080
+// IID_IDirect3DTexture2
+
+// GLOBAL: STUNTGP_D3D 0x5d91c0
+DDPIXELFORMAT *g_5d91c0;
+
+// STUB: STUNTGP_D3D 0x4234e0
+void FUN_4234e0(BYTE *dst, BYTE *src)
+{
+}
+
+// STUB: STUNTGP_D3D 0x430100
+void FUN_430100(LPDIRECTDRAWSURFACE4 surface, BYTE *image, DWORD width, DWORD height, int bits)
+{
+}
+
+// Uploads an image into texture slot through a system-memory staging surface.
+// FUNCTION: STUNTGP_D3D 0x431560
 void FUN_431560(int slot, BYTE *image)
 {
+    DDSURFACEDESC2 desc;
+    LPDIRECT3DTEXTURE2 texture;
+    LPDIRECTDRAWSURFACE4 surface;
+    int res;
+    memset(&desc, 0, sizeof(desc));
+    desc.dwWidth = g_489714;
+    surface = NULL;
+    texture = NULL;
+    desc.dwHeight = g_489718;
+    desc.dwSize = sizeof(desc);
+    desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
+    desc.ddpfPixelFormat = *g_5d91c0;
+    desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
+    res = g_dd4->CreateSurface(&desc, &surface, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    FUN_430100(surface, image, g_489714, g_489718, 16);
+    res = surface->QueryInterface(IID_IDirect3DTexture2, (void **)&texture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = surface->GetSurfaceDesc(&desc);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_ALLOCONLOAD;
+    desc.dwFlags = (g_59207c[slot] ? 0x10000 : 0) + 0x101007;
+    desc.ddsCaps.dwCaps2 = 0x80;
+    desc.dwTextureStage = 0;
+    if (g_6227d4[slot].texture)
+    {
+        res = g_6227d4[slot].texture->Load(texture);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+    }
+    if (g_6227d4[slot].unk04[0])
+    {
+        res = ((LPDIRECT3DTEXTURE2)g_6227d4[slot].unk04[0])->Load(texture);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+    }
+    FUN_4300f0(texture);
+    ddReleaseSurface(&surface);
 }
 
 // FUNCTION: STUNTGP_D3D 0x4316f0
@@ -282,7 +436,7 @@ int FUN_4316f0(int slot, char *path)
     {
         BYTE *data = (BYTE *)malloc(size + 16);
         FUN_4623c0(path, data, &g_571fd4);
-        FUN_430280(data, image, g_489714, g_489718);
+        FUN_430280(data, (WORD *)image, g_489714, g_489718);
         free(data);
     }
     else
@@ -292,6 +446,197 @@ int FUN_4316f0(int slot, char *path)
     FUN_431560(slot, image);
     free(image);
     return 1;
+}
+
+// GLOBAL: STUNTGP_D3D 0x576bdc
+int g_576bdc;
+
+// Screen-space clip rectangle, and the same grown by 100 pixels.
+// GLOBAL: STUNTGP_D3D 0x576c14
+float g_576c14;
+
+// GLOBAL: STUNTGP_D3D 0x576c18
+float g_576c18;
+
+// GLOBAL: STUNTGP_D3D 0x576c1c
+float g_576c1c;
+
+// GLOBAL: STUNTGP_D3D 0x576c20
+float g_576c20;
+
+// GLOBAL: STUNTGP_D3D 0x576c24
+float g_576c24;
+
+// GLOBAL: STUNTGP_D3D 0x576c28
+float g_576c28;
+
+// GLOBAL: STUNTGP_D3D 0x576c2c
+float g_576c2c;
+
+// GLOBAL: STUNTGP_D3D 0x576c30
+float g_576c30;
+
+// Viewport layout for the split-screen modes (1 = full screen).
+// FUNCTION: STUNTGP_D3D 0x424c30
+void FUN_424c30(int mode)
+{
+    float x;
+    float y;
+    float w;
+    float h;
+    if (mode >= 17)
+    {
+        mode = 1;
+    }
+    switch (mode)
+    {
+    case 1:
+        w = g_576bc4;
+        x = 0.0f;
+        y = 0.0f;
+        g_576bd8 = 0;
+        h = g_576bc8;
+        break;
+    case 2:
+        w = g_576bc4;
+        h = g_576bc8 * 0.5625f;
+        x = (g_576bc4 - w) * 0.5f;
+        y = (g_576bc8 - h) * 0.5f;
+        g_576bd8 = 1;
+        break;
+    case 3:
+        w = g_576bc4 * 0.75f;
+        h = g_576bc8 * 0.75f;
+        x = (g_576bc4 - w) * 0.5f;
+        y = (g_576bc8 - h) * 0.5f;
+        g_576bd8 = 1;
+        break;
+    case 4:
+        w = g_576bc4 * 0.5f;
+        h = g_576bc8 * 0.5f;
+        x = (g_576bc4 - w) * 0.5f;
+        y = (g_576bc8 - h) * 0.5f;
+        g_576bd8 = 1;
+        break;
+    case 5:
+        w = g_576bc4 * 0.25f;
+        h = g_576bc8 * 0.25f;
+        x = (g_576bc4 - w) * 0.5f;
+        y = (g_576bc8 - h) * 0.5f;
+        g_576bd8 = 1;
+        break;
+    case 6:
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = (g_576bc4 - w) * 0.5f;
+        y = 0.0f;
+        g_576bd8 = 1;
+        break;
+    case 7:
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = (g_576bc4 - w) * 0.5f;
+        y = h;
+        g_576bd8 = 1;
+        break;
+    case 8:
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = 0.0f;
+        y = (g_576bc8 - h) * 0.5f;
+        g_576bd8 = 1;
+        break;
+    case 9:
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = w;
+        y = (g_576bc8 - h) * 0.5f;
+        g_576bd8 = 1;
+        break;
+    case 10:
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = (g_576bc4 - w) * 0.5f;
+        y = 0.0f;
+        g_576bd8 = 1;
+        break;
+    case 11:
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = 0.0f;
+        y = g_576bc8 - h;
+        g_576bd8 = 1;
+        break;
+    case 12:
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = w;
+        y = g_576bc8 - h;
+        g_576bd8 = 1;
+        break;
+    case 13:
+        y = 0.0f;
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = 0.0f;
+        g_576bd8 = 1;
+        break;
+    case 14:
+        y = 0.0f;
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = w;
+        g_576bd8 = 1;
+        break;
+    case 15:
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = 0.0f;
+        y = g_576bc8 - h;
+        g_576bd8 = 1;
+        break;
+    case 16:
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = w;
+        y = g_576bc8 - h;
+        g_576bd8 = 1;
+        break;
+    }
+    g_DD_DISPLAYRESWIDTH = (int)w;
+    g_DD_DISPLAYRESHEIGHT = (int)h;
+    FUN_425070();
+    w *= 0.5f;
+    h *= 0.5f;
+    g_576b9c = w;
+    g_576ba0 = h;
+    x = g_576be4 + x + w;
+    y = g_576be8 + y + h;
+    g_576b8c = (int)x;
+    g_576b90 = (int)y;
+    g_576b94 = x;
+    g_576b98 = y;
+    g_576bdc = mode;
+    g_624988 = mode;
+    g_62498c = mode;
+    FUN_4250a0(0.0f, 0.0f, 640.0f, 480.0f);
+}
+
+// FUNCTION: STUNTGP_D3D 0x4250a0
+void FUN_4250a0(float left, float top, float right, float bottom)
+{
+    g_clipLeft = left;
+    g_clipTop = top;
+    g_clipRight = right;
+    g_clipBottom = bottom;
+    g_576c14 = (left - 320.0f) * g_576b9c * (1.0f / 320.0f) + g_576b94;
+    g_576c18 = (right - 320.0f) * g_576b9c * (1.0f / 320.0f) + g_576b94;
+    g_576c1c = (top - 240.0f) * g_576ba0 * (1.0f / 240.0f) + g_576b98;
+    g_576c20 = (bottom - 240.0f) * g_576ba0 * (1.0f / 240.0f) + g_576b98;
+    g_576c24 = g_576c14 - 100.0f;
+    g_576c28 = g_576c18 + 100.0f;
+    g_576c2c = g_576c1c - 100.0f;
+    g_576c30 = g_576c20 + 100.0f;
 }
 
 // FUNCTION: STUNTGP_D3D 0x425070
@@ -325,6 +670,28 @@ void FUN_427270()
 void FUN_431a80()
 {
     FUN_423430();
+}
+
+// FUNCTION: STUNTGP_D3D 0x42f340
+void FUN_42f340()
+{
+    if (g_589e08 != 1)
+    {
+        g_592050 = 1;
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, TRUE);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 1);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42f380
+void FUN_42f380()
+{
+    if (g_589e08 != 1)
+    {
+        g_592050 = 0;
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, FALSE);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 0xa0);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x432190
@@ -366,6 +733,118 @@ void FUN_432190(int mode)
         break;
     }
     g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+}
+
+// FUNCTION: STUNTGP_D3D 0x432300
+void FUN_432300(Font *font, D3DCOLOR color, DWORD flags)
+{
+    int texture;
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 1);
+    if (!(flags & 0x14))
+    {
+        int mode;
+        if (flags & 8)
+        {
+            mode = 0x60;
+        }
+        else
+        {
+            mode = 0x28;
+        }
+        FUN_432190(mode);
+        texture = font->glyphs[0].texture;
+    }
+    else
+    {
+        FUN_432190(0x70);
+        texture = font->glyphs[0].textureAlt;
+    }
+    if (g_61c5e4 != texture)
+    {
+        g_d3dDevice->SetTexture(0, g_6227d4[texture].texture);
+        g_61c5e4 = texture;
+    }
+    FUN_42f380();
+}
+
+// FUNCTION: STUNTGP_D3D 0x432380
+void FUN_432380()
+{
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_ONE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ZERO);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, FALSE);
+    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 0xa0);
+    if (g_624984 == 1)
+    {
+        FUN_42f340();
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x4323f0
+float FUN_4323f0(Font *font, char c, float x, float y, float z, D3DCOLOR color, float scale, DWORD flags)
+{
+    D3DTLVERTEX2 v[4];
+    Glyph *glyph = &font->glyphs[g_57b318[(BYTE)c]];
+    float w = glyph->width * scale;
+    float h = glyph->height * scale;
+
+    v[0].sx = x;
+    v[0].sy = y;
+    v[0].sz = z;
+    v[0].rhw = z;
+    v[0].tu1 = glyph->u0;
+    v[0].tv1 = glyph->v0;
+    v[0].color = color | 0xff000000;
+    v[0].specular = 0;
+
+    v[1].sx = x + w;
+    v[1].sy = y;
+    v[1].sz = z;
+    v[1].rhw = z;
+    v[1].tu1 = glyph->u1;
+    v[1].tv1 = glyph->v0;
+    v[1].color = color | 0xff000000;
+    v[1].specular = 0;
+
+    v[2].sx = x + w;
+    v[2].sy = y + h;
+    v[2].sz = z;
+    v[2].rhw = z;
+    v[2].tu1 = glyph->u1;
+    v[2].tv1 = glyph->v1;
+    v[2].color = color | 0xff000000;
+    v[2].specular = 0;
+
+    v[3].sx = x;
+    v[3].sy = y + h;
+    v[3].sz = z;
+    v[3].rhw = z;
+    v[3].tu1 = glyph->u0;
+    v[3].tv1 = glyph->v1;
+    v[3].color = color | 0xff000000;
+    v[3].specular = 0;
+
+    D3DTLVERTEX2 *p = v;
+    for (int i = 0; i < 4; i++)
+    {
+        p->sx = (p->sx - 320.0f) * g_624990 + g_576b94;
+        p->sy = (p->sy - 240.0f) * g_624994 + g_576b98;
+        p++;
+    }
+    if (flags & 2)
+    {
+        v[0].sx = v[0].sx + font->slantScale * font->slant * h;
+        v[1].sx = v[1].sx + font->slantScale * font->slant * h;
+        v[2].sx = v[2].sx - font->slantScale * font->slant * h;
+        v[3].sx = v[3].sx - font->slantScale * font->slant * h;
+    }
+    g_d3dDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, FVF_TLVERTEX2, v, 4, D3DDP_DONOTCLIP | D3DDP_DONOTLIGHT);
+    if (g_57b418 != 0.0f && c >= '0' && c <= '9')
+    {
+        return g_57b418 * scale + 1.0f;
+    }
+    return glyph->width * scale + 1.0f;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4328c0
@@ -433,6 +912,78 @@ void FUN_432a60()
     }
 }
 
+// Queued primitives per render pass.
+struct RenderBucket
+{
+    void *data; // 0x00
+    int count;  // 0x04
+    int unk08;  // 0x08
+    int unk0c;  // 0x0c
+};
+
+// GLOBAL: STUNTGP_D3D 0x6243cc
+int g_6243cc;
+
+// GLOBAL: STUNTGP_D3D 0x6243dc
+int g_6243dc;
+
+// GLOBAL: STUNTGP_D3D 0x6243e0
+RenderBucket g_6243e0[8];
+
+extern void *g_61c5f8;
+extern void *g_61c600;
+
+// STUB: STUNTGP_D3D 0x433290
+void FUN_433290(void *data, int count)
+{
+}
+
+// STUB: STUNTGP_D3D 0x4334c0
+void FUN_4334c0(void *data, int count)
+{
+}
+
+// STUB: STUNTGP_D3D 0x4336c0
+void FUN_4336c0(void *data, int count)
+{
+}
+
+// STUB: STUNTGP_D3D 0x4338e0
+void FUN_4338e0(void *data, int count)
+{
+}
+
+// STUB: STUNTGP_D3D 0x433c50
+void FUN_433c50(void *data, int count)
+{
+}
+
+// Draws the queued world primitives pass by pass.
+// FUNCTION: STUNTGP_D3D 0x433f40
+void FUN_433f40()
+{
+    FUN_432a90();
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 0xa0);
+    FUN_433290(g_6243e0[0].data, g_6243e0[0].count);
+    FUN_4334c0(g_6243e0[2].data, g_6243e0[2].count);
+    FUN_4334c0(g_6243e0[3].data, g_6243e0[3].count);
+    if (g_624984 == 1)
+    {
+        FUN_4336c0(g_6243e0[4].data, g_6243e0[4].count);
+        FUN_4336c0(g_6243e0[5].data, g_6243e0[5].count);
+    }
+    else
+    {
+        FUN_4334c0(g_6243e0[4].data, g_6243e0[4].count);
+        FUN_4334c0(g_6243e0[5].data, g_6243e0[5].count);
+    }
+    FUN_433c50(g_6243e0[6].data, g_6243e0[6].count);
+    FUN_433c50(g_6243e0[7].data, g_6243e0[7].count);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 1);
+    FUN_4338e0(g_61c600, g_6243cc);
+    FUN_4338e0(g_61c5f8, g_6243dc);
+}
+
 // FUNCTION: STUNTGP_D3D 0x432a90
 void FUN_432a90()
 {
@@ -447,9 +998,105 @@ void FUN_432a90()
     }
 }
 
-// STUB: STUNTGP_D3D 0x432840
+// FUNCTION: STUNTGP_D3D 0x4327c0
+void FUN_4327c0(WORD *pixels, DWORD width, DWORD height)
+{
+    DWORD count = width * height;
+    for (DWORD i = 0; i < count; i++)
+    {
+        *pixels ^= 0x7fff;
+        pixels++;
+    }
+}
+
+// Creates a video-memory texture from an image and returns its texture slot.
+// FUNCTION: STUNTGP_D3D 0x4325e0
+int FUN_4325e0(BYTE *image, DWORD width, DWORD height)
+{
+    DDSURFACEDESC2 desc;
+    LPDIRECT3DTEXTURE2 stagingTexture;
+    LPDIRECTDRAWSURFACE4 surface;
+    LPDIRECT3DTEXTURE2 texture;
+    LPDIRECTDRAWSURFACE4 staging;
+    int res;
+    SurfaceSlot *slot = &g_surfaceSlots[g_surfaceSlotCount++];
+    memset(&desc, 0, sizeof(desc));
+    staging = NULL;
+    surface = NULL;
+    stagingTexture = NULL;
+    texture = NULL;
+    desc.dwWidth = width;
+    desc.dwHeight = height;
+    desc.dwSize = sizeof(desc);
+    desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
+    desc.ddpfPixelFormat = *g_5d91c0;
+    desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
+    res = g_dd4->CreateSurface(&desc, &staging, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    FUN_430100(staging, image, width, height, 16);
+    res = staging->QueryInterface(IID_IDirect3DTexture2, (void **)&stagingTexture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = staging->GetSurfaceDesc(&desc);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT | DDSD_CKSRCBLT;
+    desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_ALLOCONLOAD;
+    res = g_dd4->CreateSurface(&desc, &surface, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = surface->QueryInterface(IID_IDirect3DTexture2, (void **)&texture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = texture->Load(stagingTexture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    FUN_4300f0(stagingTexture);
+    ddReleaseSurface(&staging);
+    slot->unk04 = (DWORD)texture;
+    slot->surface = surface;
+    g_6243b8->texture = texture;
+    g_6243b8++;
+    return g_6243b8 - g_6227d4 - 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4327e0
+void FUN_4327e0(BYTE *texture, Font *font, int arg)
+{
+    if (g_58332c == 1)
+    {
+        FUN_430280(texture, (WORD *)texture, 256, 256);
+        font->glyphs[0].texture = FUN_4325e0(texture, 256, 256);
+        FUN_4327c0((WORD *)texture, 256, 256);
+        font->glyphs[0].textureAlt = FUN_4325e0(texture, 256, 256);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x432840
 void FUN_432840(BYTE *texture, Font *font, int arg)
 {
+    g_489714 = 256;
+    g_489718 = 256;
+    if (g_58332c == 1)
+    {
+        FUN_430280(texture, (WORD *)texture, 256, 256);
+        FUN_431560(font->glyphs[0].texture, texture);
+        FUN_4327c0((WORD *)texture, 256, 256);
+        FUN_431560(font->glyphs[0].textureAlt, texture);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x432af0

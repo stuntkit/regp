@@ -15,6 +15,7 @@ HRESULT Music_StopStream();
 void Sound_ApplyVolumes();
 void Sound_SetVolumes(DWORD master, DWORD sfx, DWORD music, DWORD quality);
 void Sound_Shutdown();
+int FUN_461150(int id, int a, int b, int volume, int c, int d, int e);
 extern DWORD g_masterVolume;
 extern int g_sfxVolume;
 extern int g_sfxVolumeTarget;
