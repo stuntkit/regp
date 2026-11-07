@@ -782,12 +782,11 @@ void FUN_42b740()
 void FUN_42b7b0(Scene *scene, int value)
 {
     scene->flags |= 8;
-    // One object list per level of detail, starting at scene->objects.
-    ObjectDef *object = (&scene->objects)[scene->lod];
+    ObjectDef *object = scene->lods[scene->lod];
     value = (value << 8) | 0x80;
     for (DWORD i = 0; i < scene->objectCount; i++)
     {
-        if (object->type == 1)
+        if (object->visible == 1)
         {
             object->flags |= value;
         }
@@ -809,12 +808,12 @@ void FUN_42b7f0(Scene *scene, Camera *camera, int arg)
 // FUNCTION: STUNTGP_D3D 0x42b8b0
 int FUN_42b8b0(Scene *scene, DWORD index, int lod)
 {
-    ObjectDef *objects = (&scene->objects)[lod];
+    ObjectDef *objects = scene->lods[lod];
     ObjectDef *target = &objects[index];
     ObjectDef *object = objects;
     for (DWORD i = 0; i < index; i++)
     {
-        if (object->unk34 == target->unk34 && object->unk24 != 0)
+        if (object->verts == target->verts && object->vertCount != 0)
         {
             return 1;
         }
@@ -1385,8 +1384,8 @@ void FUN_42f090()
     {
         if (g_60d78c[i].type == 2)
         {
-            g_60f02c[i].model = (CarModel *)g_636418[g_477c4c[car]].scene;
-            g_60f02c[i].unk04 = (CarModel *)g_636418[g_477c64[car]].scene;
+            g_60f02c[i].model = g_636418[g_477c4c[car]].scene;
+            g_60f02c[i].unk04 = g_636418[g_477c64[car]].scene;
             car++;
         }
     }

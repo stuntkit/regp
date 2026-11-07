@@ -2082,30 +2082,30 @@ void FUN_4137b0()
 void FUN_4166f0()
 {
     Car *car = g_4d5bb8;
-    ModelPart *part = car->unk26b0->parts[car->unk26b0->current];
+    ObjectDef *meshes = car->unk26b0->lods[car->unk26b0->lod];
     if (!car->unk226c)
     {
         if (car->unk328c.active == 1)
         {
-            part->meshes[19].visible = 0;
+            meshes[19].visible = 0;
         }
         if (car->unk33cc.active == 1)
         {
-            part->meshes[20].visible = 0;
+            meshes[20].visible = 0;
         }
     }
     else if (car->unk328c.active == 1)
     {
-        part->meshes[19].visible = 1;
-        part->meshes[19].matrix[1].x = car->unk328c.unk024.x;
-        part->meshes[19].matrix[1].y = car->unk328c.unk024.y;
-        part->meshes[19].matrix[1].z = car->unk328c.unk024.z;
+        meshes[19].visible = 1;
+        meshes[19].matrix[1].x = car->unk328c.unk024.x;
+        meshes[19].matrix[1].y = car->unk328c.unk024.y;
+        meshes[19].matrix[1].z = car->unk328c.unk024.z;
         if (car->unk33cc.active == 1)
         {
-            part->meshes[20].visible = 1;
-            part->meshes[20].matrix[1].x = car->unk33cc.unk024.x;
-            part->meshes[20].matrix[1].y = car->unk33cc.unk024.y;
-            part->meshes[20].matrix[1].z = car->unk33cc.unk024.z;
+            meshes[20].visible = 1;
+            meshes[20].matrix[1].x = car->unk33cc.unk024.x;
+            meshes[20].matrix[1].y = car->unk33cc.unk024.y;
+            meshes[20].matrix[1].z = car->unk33cc.unk024.z;
         }
     }
 }
@@ -2114,13 +2114,13 @@ void FUN_4166f0()
 void FUN_413da0()
 {
     g_4d5bb8->unk3134 = 1;
-    ModelPart *part = g_4d5bb8->unk26b0->parts[g_4d5bb8->unk26b0->current];
-    part->meshes[11].visible = 1;
-    part->meshes[12].visible = 1;
-    part->meshes[13].visible = 1;
-    part->meshes[14].visible = 1;
-    part->meshes[15].visible = 1;
-    part->meshes[16].visible = 1;
+    ObjectDef *meshes = g_4d5bb8->unk26b0->lods[g_4d5bb8->unk26b0->lod];
+    meshes[11].visible = 1;
+    meshes[12].visible = 1;
+    meshes[13].visible = 1;
+    meshes[14].visible = 1;
+    meshes[15].visible = 1;
+    meshes[16].visible = 1;
     g_4d5bb8->unk3928 = g_4d5bb8->unk3924;
     FUN_4166f0();
     g_4d5bb8->unk328c.unk13c = 1;
@@ -2231,15 +2231,15 @@ void FUN_414710()
 // FUNCTION: STUNTGP_D3D 0x414b30
 void FUN_414b30()
 {
-    CarModel *model = g_4d5bb8->unk26b0;
+    Scene *model = g_4d5bb8->unk26b0;
     int i;
     for (i = 0; i < 3; i++)
     {
-        model->parts[i]->meshes[6].visible = 0;
+        model->lods[i][6].visible = 0;
     }
-    ModelPart *part = model->parts[model->current];
-    ModelMesh *mesh = &part->meshes[6];
-    ModelMesh *wheel = &part->meshes[1];
+    ObjectDef *meshes = model->lods[model->lod];
+    ObjectDef *mesh = &meshes[6];
+    ObjectDef *wheel = &meshes[1];
     for (i = 0; i < 4; i++, mesh++, wheel++)
     {
         if (g_4d5bb8->unk2cf4[i] != 0.0f)
@@ -2305,7 +2305,7 @@ void FUN_414c60()
     Vec4 pos;
     pos.x = 0.0f;
     pos.y = g_4d5bb8->unk244;
-    pos.z = g_4d5bb8->unk26b0->parts[0]->meshes[23].matrix->z;
+    pos.z = g_4d5bb8->unk26b0->lods[0][23].matrix->z;
     FUN_41e510(g_4d5bb8->unk351c, &g_4d5bb8->unk391c, &g_4d5bb8->unk3920, &pos, &g_474c08);
 }
 
@@ -2354,7 +2354,7 @@ void FUN_415640()
         g_4d5bb8->unk28a8 = 120;
     }
     int level = g_4d5bb8->unk28a8;
-    ModelMesh *mesh = &g_4d5bb8->unk26b0->parts[g_4d5bb8->unk26b0->current]->meshes[5];
+    ObjectDef *mesh = &g_4d5bb8->unk26b0->lods[g_4d5bb8->unk26b0->lod][5];
     mesh->visible = level != 0;
     if (level != g_4d5bb8->unk28a4)
     {
@@ -2379,9 +2379,9 @@ void FUN_4156e0(Car *car)
         FUN_4152c0(car);
         for (int i = 0; i < 4; i++)
         {
-            ModelPart *part = g_4d5bb8->unk26b0->parts[i];
-            part->meshes[10].visible = 1;
-            part->meshes[5].visible = 1;
+            ObjectDef *meshes = g_4d5bb8->unk26b0->lods[i];
+            meshes[10].visible = 1;
+            meshes[5].visible = 1;
         }
     }
 }
@@ -2394,9 +2394,9 @@ void FUN_415730(Car *car)
         g_4d5bb8->unk28a0 = 0;
         for (int i = 0; i < 4; i++)
         {
-            ModelPart *part = g_4d5bb8->unk26b0->parts[i];
-            part->meshes[10].visible = 0;
-            part->meshes[5].visible = 0;
+            ObjectDef *meshes = g_4d5bb8->unk26b0->lods[i];
+            meshes[10].visible = 0;
+            meshes[5].visible = 0;
         }
     }
 }
@@ -2405,7 +2405,7 @@ void FUN_415730(Car *car)
 // FUNCTION: STUNTGP_D3D 0x415770
 void FUN_415770()
 {
-    if (g_4d5bb8->unk26b0->meshCount > 10)
+    if (g_4d5bb8->unk26b0->objectCount > 10)
     {
         DWORD count = g_624474->count;
         int pos = g_4d5bb8->unk24a4;
@@ -2434,6 +2434,23 @@ void FUN_415770()
 // STUB: STUNTGP_D3D 0x415880
 void FUN_415880()
 {
+}
+
+// Scrolls the second float of every unk2c entry of one mesh, wrapping at 1.
+// FUNCTION: STUNTGP_D3D 0x4167a0
+void FUN_4167a0(int index)
+{
+    ObjectDef *mesh = &g_4d5bb8->unk26b0->lods[0][index];
+    BYTE *entry = mesh->unk2c;
+    for (DWORD i = 0; i < mesh->unk26; i++)
+    {
+        ((float *)entry)[1] += 0.02f;
+        if (((float *)entry)[1] > 1.0f)
+        {
+            ((float *)entry)[1] -= 1.0f;
+        }
+        entry += 16;
+    }
 }
 
 // STUB: STUNTGP_D3D 0x416800
@@ -3431,10 +3448,10 @@ void FUN_414f00()
     Car *car = g_49a1f8;
     for (int i = 0; i < 6; i++)
     {
-        if (car->active == 1 && car->unk26b0->meshCount >= 23)
+        if (car->active == 1 && car->unk26b0->objectCount >= 23)
         {
-            car->unk2d04[0].pos = *car->unk26b0->parts[0]->meshes[23].matrix;
-            car->unk2d04[1].pos = *car->unk26b0->parts[0]->meshes[24].matrix;
+            car->unk2d04[0].pos = *car->unk26b0->lods[0][23].matrix;
+            car->unk2d04[1].pos = *car->unk26b0->lods[0][24].matrix;
         }
         car++;
     }
@@ -3448,14 +3465,14 @@ void FUN_4150d0()
     for (int i = 0; i < 6; i++)
     {
         car->unk28bc[1].active = car->unk28bc[0].active = 0;
-        if (car->active == 1 && car->unk26b0->meshCount >= 21)
+        if (car->active == 1 && car->unk26b0->objectCount >= 21)
         {
-            ModelMesh *mesh = &car->unk26b0->parts[0]->meshes[21];
+            ObjectDef *mesh = &car->unk26b0->lods[0][21];
             car->unk28bc[0].active = 1;
             car->unk28bc[0].trail.pos = *mesh->matrix;
-            if (car->unk26b0->meshCount >= 22)
+            if (car->unk26b0->objectCount >= 22)
             {
-                mesh = &car->unk26b0->parts[0]->meshes[22];
+                mesh = &car->unk26b0->lods[0][22];
                 car->unk28bc[1].active = 1;
                 car->unk28bc[1].trail.pos = *mesh->matrix;
             }
@@ -3475,17 +3492,17 @@ void FUN_4162c0()
         {
             car->unk328c.active = 0;
             car->unk33cc.active = 0;
-            if (car->unk26b0->meshCount > 19)
+            if (car->unk26b0->objectCount > 19)
             {
-                ModelPart *part = car->unk26b0->parts[car->unk26b0->current];
+                ObjectDef *meshes = car->unk26b0->lods[car->unk26b0->lod];
                 car->unk328c.active = 1;
-                car->unk328c.unk004 = part->meshes[19].matrix[0];
-                car->unk328c.unk014 = part->meshes[19].matrix[1];
-                if (part->meshes[20].visible == 1 && car->unk26b0->meshCount > 20)
+                car->unk328c.unk004 = meshes[19].matrix[0];
+                car->unk328c.unk014 = meshes[19].matrix[1];
+                if (meshes[20].visible == 1 && car->unk26b0->objectCount > 20)
                 {
                     car->unk33cc.active = 1;
-                    car->unk33cc.unk004 = part->meshes[20].matrix[0];
-                    car->unk33cc.unk014 = part->meshes[20].matrix[1];
+                    car->unk33cc.unk004 = meshes[20].matrix[0];
+                    car->unk33cc.unk014 = meshes[20].matrix[1];
                 }
             }
         }
@@ -3515,16 +3532,16 @@ void FUN_417e10()
     {
         if (car->active == 1)
         {
-            if (car->unk26b0->meshCount <= 11)
+            if (car->unk26b0->objectCount <= 11)
             {
                 car->unk3134 = 0;
             }
             else
             {
-                ModelPart *part = car->unk26b0->parts[car->unk26b0->current];
+                ObjectDef *meshes = car->unk26b0->lods[car->unk26b0->lod];
                 float top = 0.0f;
-                DWORD count = part->meshes[11].pointCount;
-                Vec4 *points = part->meshes[11].points;
+                DWORD count = meshes[11].pointCount;
+                Vec4 *points = meshes[11].points;
                 for (DWORD j = 0; j < count; j++)
                 {
                     if (top < points[j].z)
@@ -3532,9 +3549,9 @@ void FUN_417e10()
                         top = points[j].z;
                     }
                 }
-                car->unk3148 = part->meshes[11].matrix[2];
+                car->unk3148 = meshes[11].matrix[2];
                 car->unk3148.x = -car->unk3148.x;
-                car->unk3138 = part->meshes[11].matrix[0];
+                car->unk3138 = meshes[11].matrix[0];
                 car->unk3158 = top * 0.99f;
                 car->unk3134 = 1;
             }

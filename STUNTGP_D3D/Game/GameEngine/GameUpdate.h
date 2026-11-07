@@ -131,38 +131,8 @@ struct Wheel
     float unk94;        // 0x0094
 };
 
-struct ModelMesh
-{
-    short visible;     // 0x00
-    BYTE unk02[0x6];   // 0x02
-    Vec4 *matrix;      // 0x08
-    BYTE unk0c[0x18];  // 0x0c
-    WORD vertCount;    // 0x24
-    BYTE unk26[0x2];   // 0x26
-    WORD pointCount;   // 0x28
-    BYTE unk2a[0x4];   // 0x2a
-    WORD unk2e;        // 0x2e
-    Vec4 *points;      // 0x30
-    BYTE *verts;       // 0x34 8 bytes per vertex
-    BYTE unk38[0x8];   // 0x38
-};
-
-struct ModelPart
-{
-    ModelMesh meshes[32]; // 0x00
-};
-
-struct CarModel
-{
-    BYTE unk00[0x4];      // 0x00
-    short unk04;          // 0x04
-    BYTE unk06[0x1e];     // 0x06
-    DWORD meshCount;      // 0x24
-    BYTE unk28[0x20];     // 0x28
-    ModelPart *parts[5];  // 0x48
-    int current;          // 0x5c
-    char **textures;      // 0x60 NULL-terminated
-};
+// Car models are Scenes too (FUN_42f090 hands loaded scenes to the drivers).
+struct Scene;
 
 // Ring buffer of recent world positions, fed by FUN_41e510.
 struct Trail
@@ -201,8 +171,8 @@ struct SkidMark
 // One per car.
 struct Driver
 {
-    CarModel *model;  // 0x00
-    CarModel *unk04;  // 0x04
+    Scene *model;  // 0x00
+    Scene *unk04;  // 0x04
     int unk08;        // 0x08
     int unk0c;        // 0x0c
     int unk10;        // 0x10
@@ -531,8 +501,8 @@ struct Car
     int unk26a4;              // 0x26a4
     int unk26a8;              // 0x26a8
     BYTE unk26ac[0x4];        // 0x26ac
-    CarModel *unk26b0;        // 0x26b0
-    CarModel *unk26b4;        // 0x26b4
+    Scene *unk26b0;        // 0x26b0
+    Scene *unk26b4;        // 0x26b4
     BYTE unk26b8[0x54];       // 0x26b8
     float unk270c[16];        // 0x270c
     float wheelMatrix[4][16]; // 0x274c
@@ -774,21 +744,23 @@ struct InputState
     BYTE prevButtons[0x20]; // 0x5c
 };
 
+// One mesh of a Scene; each Scene::lods entry points at objectCount of these.
 struct ObjectDef
 {
-    WORD type;        // 0x00
-    WORD flags;       // 0x02
-    WORD unk04;       // 0x04
-    BYTE unk06[0x2];  // 0x06
-    Vec4 *matrix;     // 0x08
-    BYTE unk0c[0x18]; // 0x0c
-    WORD unk24;       // 0x24
-    WORD unk26;       // 0x26, vertex count
-    BYTE unk28[0x4];  // 0x28
-    BYTE *unk2c;      // 0x2c, vertices, 16 bytes each
-    BYTE unk30[0x4];  // 0x30
-    int unk34;        // 0x34
-    BYTE unk38[0x8];  // 0x38
+    short visible;     // 0x00, 0 hides the mesh
+    WORD flags;        // 0x02
+    WORD unk04;        // 0x04
+    BYTE unk06[0x2];   // 0x06
+    Vec4 *matrix;      // 0x08
+    BYTE unk0c[0x18];  // 0x0c
+    WORD vertCount;    // 0x24, entries in verts
+    WORD unk26;        // 0x26, entries in unk2c
+    WORD pointCount;   // 0x28, entries in points
+    BYTE unk2a[0x2];   // 0x2a
+    BYTE *unk2c;       // 0x2c, 16 bytes per entry, colour at +0xc
+    Vec4 *points;      // 0x30
+    BYTE *verts;       // 0x34, 8 bytes per vertex
+    BYTE unk38[0x8];   // 0x38
 };
 
 struct SceneView
@@ -808,7 +780,8 @@ struct Scene
 {
     BYTE unk00[0x2];     // 0x00
     WORD flags;          // 0x02
-    BYTE unk04[0x8];     // 0x04
+    short unk04;         // 0x04
+    BYTE unk06[0x6];     // 0x06
     Camera *camera;      // 0x0c
     BYTE unk10[0x14];    // 0x10
     DWORD objectCount;   // 0x24
@@ -816,9 +789,8 @@ struct Scene
     BYTE unk2c[0x14];    // 0x2c
     DWORD *unk40;        // 0x40
     SceneView *view;     // 0x44
-    ObjectDef *objects;  // 0x48, level of detail 0
-    ObjectDef *unk4c[4]; // 0x4c, further levels of detail
-    int lod;             // 0x5c
+    ObjectDef *lods[5];  // 0x48, object list per level of detail
+    int lod;             // 0x5c, current level of detail
     char **textures;     // 0x60, NULL-terminated
     int unk64;           // 0x64
 };

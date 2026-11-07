@@ -1445,7 +1445,7 @@ void FUN_426260()
     Scene *scene = g_636418[3].scene;
     if (scene && scene->objectCount > 1)
     {
-        ObjectDef *def = scene->objects;
+        ObjectDef *def = scene->lods[0];
         for (DWORD i = 0; i < scene->objectCount; i++)
         {
             int type = g_624484[i].type;
@@ -1626,7 +1626,7 @@ void FUN_427140()
 {
     if (g_636418[3].scene && g_636418[3].scene->objectCount > 1)
     {
-        ObjectDef *def = g_636418[3].scene->objects;
+        ObjectDef *def = g_636418[3].scene->lods[0];
         AnimObject *obj = g_576cd0;
         DWORD count = g_636418[3].scene->objectCount;
         for (DWORD i = 1; i < count; i++)
