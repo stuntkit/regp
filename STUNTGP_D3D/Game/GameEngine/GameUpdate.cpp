@@ -964,6 +964,28 @@ void FUN_41a9b0()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x41a9e0
+void FUN_41a9e0()
+{
+    unsigned int value = g_570ac4->unk25;
+    if (value)
+    {
+        if (value & 0x80)
+        {
+            g_4d5bb8->unk2364 = value & 0x7f;
+            g_4d5bb8->unk2368 = 16;
+        }
+        else
+        {
+            g_4d5bb8->unk2360 = value;
+            if (g_4d5bb8->unk2360 != 0.0f)
+            {
+                g_4d5bb8->unk236c = 16;
+            }
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x41aa60
 void FUN_41aa60()
 {

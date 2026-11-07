@@ -253,7 +253,8 @@ struct ReplayFrame
     char unk22;           // 0x22
     char unk23;           // 0x23
     BYTE flags;           // 0x24
-    BYTE unk25[0x7];      // 0x25
+    BYTE unk25;           // 0x25
+    BYTE unk26[0x6];      // 0x26
 };
 
 // Ghost/replay buffer: 0x80 byte header followed by frames.
@@ -387,7 +388,7 @@ struct Car
     float unk1fd0;            // 0x1fd0
     int unk1fd4;              // 0x1fd4
     int unk1fd8;              // 0x1fd8
-    BYTE unk1fdc[0x4];        // 0x1fdc
+    unsigned int unk1fdc;     // 0x1fdc
     Wheel wheels[4];          // 0x1fe0
     float unk2240[4];         // 0x2240
     int unk2250;              // 0x2250
@@ -439,8 +440,8 @@ struct Car
     int unk2354;              // 0x2354
     int unk2358;              // 0x2358
     int unk235c;              // 0x235c
-    int unk2360;              // 0x2360
-    int unk2364;              // 0x2364
+    float unk2360;            // 0x2360
+    float unk2364;            // 0x2364
     int unk2368;              // 0x2368
     int unk236c;              // 0x236c
     int unk2370;              // 0x2370

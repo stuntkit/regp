@@ -434,7 +434,19 @@ void FUN_4190b0(Car *car, unsigned int percent)
     }
 }
 
+extern int g_4d5ca8;
+
 void FUN_442cf0(int frames, char *text, Car *car, int mode, int clear);
+
+// FUNCTION: STUNTGP_D3D 0x419110
+void FUN_419110()
+{
+    char text[64];
+    // STRING: STUNTGP_D3D 0x474684
+    sprintf(text, "%s %s\n", g_60f02c[g_4d5bb8 - g_49a1f8].name, g_6127a0[21]);
+    FUN_442cf0(180, text, g_4d5bb8, 1, 0);
+    g_4d5ca8 = 1;
+}
 
 // FUNCTION: STUNTGP_D3D 0x419180
 void FUN_419180()
