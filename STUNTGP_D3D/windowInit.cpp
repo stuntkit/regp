@@ -419,10 +419,11 @@ int FUN_422ac0(LPDIRECTDRAW4 dd, LPDIRECTDRAWSURFACE4 *surface, int width, int h
 // {
 // }
 
-// // STUB: STUNTGP_D3D 0x422ba0
-// void FUN_422ba0()
-// {
-// }
+// FUNCTION: STUNTGP_D3D 0x422ba0
+void FUN_422ba0(LPDIRECTDRAWSURFACE4 surface)
+{
+    surface->Unlock(NULL);
+}
 
 // FUNCTION: STUNTGP_D3D 0x422bb0
 void FUN_422bb0(DWORD mask, int *bits, int *shift)
@@ -657,4 +658,14 @@ int FUN_4230b0(LPDIRECTDRAWPALETTE *palette, BYTE *src)
     }
     ReleaseDC(NULL, hDC);
     return res;
+}
+
+// FUNCTION: STUNTGP_D3D 0x423430
+void FUN_423430()
+{
+    if (g_6244ec != 1)
+    {
+        FUN_422ba0(*g_61c358);
+        g_6244ec = 1;
+    }
 }

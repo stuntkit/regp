@@ -1,0 +1,97 @@
+#ifndef D3DRENDER_H
+#define D3DRENDER_H
+#define WIN32_LEAN_AND_MEAN
+#include <d3d.h>
+#include <ddraw.h>
+#include <windows.h>
+
+// Pre-transformed vertex with two texture coordinate sets (D3DFVF_TLVERTEX | D3DFVF_TEX2).
+struct D3DTLVERTEX2
+{
+    float sx;
+    float sy;
+    float sz;
+    float rhw;
+    D3DCOLOR color;
+    D3DCOLOR specular;
+    float tu1;
+    float tv1;
+    float tu2;
+    float tv2;
+};
+
+#define FVF_TLVERTEX2 (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX2)
+
+struct OverlayVertex
+{
+    float x;
+    float y;
+    float z;
+    float unk0c;
+    float u;
+    float v;
+    D3DCOLOR color;
+    DWORD unk1c;
+};
+
+// Queued screen-space polygon, flushed by FUN_432f60.
+struct OverlayPoly
+{
+    int texture;
+    DWORD flags;
+    DWORD alpha;
+    DWORD numVerts;
+    OverlayVertex verts[8];
+};
+
+struct TextureSlot
+{
+    LPDIRECT3DTEXTURE2 texture;
+    DWORD unk04[6];
+};
+
+extern LPDIRECT3DDEVICE3 g_d3dDevice;
+extern BOOL g_d3dInScene;
+
+extern int g_576bc4;
+extern int g_576bc8;
+extern int g_576bd8;
+extern int g_576be0;
+
+extern int *g_5d91b4;
+extern int g_592054;
+extern int g_592058;
+extern int g_59205c;
+extern int g_592060;
+extern int g_592064;
+extern float g_477ccc;
+
+extern OverlayPoly *g_61c5f0;
+extern DWORD g_61c604;
+extern int g_61c5e4;
+extern TextureSlot g_6227d4[];
+
+struct SpriteDesc;
+
+extern D3DTLVERTEX2 g_58d818[4];
+extern float g_624990;
+extern float g_624994;
+extern float g_576b94;
+extern float g_576b98;
+
+int FUN_4251a0(SpriteDesc *desc);
+void FUN_432af0(D3DTLVERTEX2 *verts, SpriteDesc *desc);
+void FUN_432c00(D3DTLVERTEX2 *verts, SpriteDesc *desc);
+void FUN_431a80();
+void FUN_432190(int mode);
+void FUN_4328c0(int color);
+void FUN_432a60();
+void FUN_432a90();
+void FUN_432f60();
+void FUN_433ee0();
+void FUN_433f20();
+void FUN_44fd60();
+void FUN_425870();
+void FUN_42e420();
+
+#endif /* D3DRENDER_H */

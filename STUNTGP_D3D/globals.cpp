@@ -26,6 +26,10 @@ HWND g_Hwnd = 0;
 // GLOBAL: STUNTGP_D3D 0x6244f4
 float g_6244f4 = 0;
 
+// Set once the back buffer has been unlocked for the frame.
+// GLOBAL: STUNTGP_D3D 0x6244ec
+int g_6244ec = 0;
+
 // Timing stuff
 
 // GLOBAL: STUNTGP_D3D 0x61c37c
