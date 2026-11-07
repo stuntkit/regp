@@ -113,29 +113,140 @@ void FUN_408d80()
     }
 }
 
-// STUB: STUNTGP_D3D 0x40c710
+// STUB: STUNTGP_D3D 0x40c220
+void FUN_40c220()
+{
+}
+
+// STUB: STUNTGP_D3D 0x40c320
+void FUN_40c320()
+{
+}
+
+// STUB: STUNTGP_D3D 0x40c500
+void FUN_40c500()
+{
+}
+
+// STUB: STUNTGP_D3D 0x40c5f0
+void FUN_40c5f0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x40c6c0
+void FUN_40c6c0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x40cf90
+void FUN_40cf90()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x40c710
 void FUN_40c710()
 {
+    FUN_40c220();
+    FUN_40c320();
+    FUN_40cf90();
+    FUN_40c5f0();
+    FUN_40c6c0();
 }
 
-// STUB: STUNTGP_D3D 0x40c730
+// FUNCTION: STUNTGP_D3D 0x40c730
 void FUN_40c730()
 {
+    FUN_40c220();
+    FUN_40c320();
+    FUN_40c500();
+    FUN_40c5f0();
+    FUN_40c6c0();
 }
 
-// STUB: STUNTGP_D3D 0x40cb90
+// FUNCTION: STUNTGP_D3D 0x40cb90
 void FUN_40cb90()
 {
+    if (g_4d5bb8->unk71ec)
+    {
+        g_4d5bb8->unk1cf8 *= 0.9f;
+    }
+    g_4d5bb8->unk22b4 = g_4d5bb8->unk22bc;
+    g_4d5bb8->unk22bc = 0;
+    g_4d5bb8->unk2250 = 0;
+    if (!g_4d5bb8->unk71ec && g_4d5bb8->unk71fc > 60.0f)
+    {
+        return;
+    }
+    if ((g_4d5bb8->unk1f10 && g_4d5bb8->controls[0]) || (!g_4d5bb8->unk1f10 && g_4d5bb8->controls[1]))
+    {
+        g_4d5bb8->unk1cf8 += 0.15f;
+        if (g_4d5bb8->unk1cf8 > 1.0f)
+        {
+            g_4d5bb8->unk1cf8 = 1.0f;
+        }
+        if (g_4d5bb8->controls[8])
+        {
+            g_4d5bb8->unk2250 = 1;
+        }
+        g_4d5bb8->unk22bc = 1;
+    }
+    else if (g_4d5bb8->unk71ec)
+    {
+        g_4d5bb8->unk1cf8 *= 0.5f;
+    }
 }
 
-// STUB: STUNTGP_D3D 0x40d160
+// STUB: STUNTGP_D3D 0x40cc90
+void FUN_40cc90()
+{
+}
+
+// STUB: STUNTGP_D3D 0x40ced0
+void FUN_40ced0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x40d050
+void FUN_40d050()
+{
+}
+
+// STUB: STUNTGP_D3D 0x40d090
+void FUN_40d090()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x40d160
 void FUN_40d160()
 {
+    FUN_40d050();
+    FUN_40cb90();
+    FUN_40cc90();
+    FUN_40ced0();
+    FUN_40d090();
 }
 
-// STUB: STUNTGP_D3D 0x40d6b0
+// FUNCTION: STUNTGP_D3D 0x40d6b0
 void FUN_40d6b0()
 {
+    char text[64];
+    if (g_4d5bb8->unk7648 != 1)
+    {
+        if (g_4d5bb8->unk2570 > 10.0f)
+        {
+            g_4d5bb8->race.unk7c = 0;
+            return;
+        }
+        g_4d5bb8->unk2578 = (g_4d5bb8->unk2578 + 1) % 60;
+        if (g_4d5bb8->race.unk7c == 0)
+        {
+            // STRING: STUNTGP_D3D 0x473a1c
+            sprintf(text, "%s %s\n", g_60f050[g_4d5bb8 - g_49a1f8].name, g_6127a0[22]);
+            FUN_442cf0(180, text, g_4d5bb8, 0, 0);
+            g_4d5bb8->race.unk7c++;
+            g_4d5bb8->unk2578 = 0;
+        }
+    }
 }
 
 // Reads this tick's controls; they are held released while the car is locked out.
@@ -648,9 +759,121 @@ void FUN_443700(Car *car)
     }
 }
 
-// STUB: STUNTGP_D3D 0x4082d0
+extern int g_60f02c[0x96];
+
+// STUB: STUNTGP_D3D 0x422200
+void FUN_422200(Body *body)
+{
+}
+
+// Lays out the collision points for the current car's model.
+// FUNCTION: STUNTGP_D3D 0x4082d0
 void FUN_4082d0()
 {
+    Body *body = &g_4d5bb8->body;
+    body->points[0].radius = 70.0f;
+    body->points[1].radius = 70.0f;
+    body->points[2].radius = 70.0f;
+    body->points[3].radius = 70.0f;
+    body->points[1].local.x = 60.000004f;
+    body->points[3].local.x = 60.000004f;
+    body->points[0].local.x = -60.000004f;
+    body->points[0].local.y = 0.0f;
+    body->points[0].local.z = -110.0f;
+    body->points[0].unk44 = 0.25f;
+    body->points[1].local.y = 0.0f;
+    body->points[1].local.z = -110.0f;
+    body->points[1].unk44 = 0.25f;
+    body->points[2].local.x = -60.000004f;
+    body->points[2].local.y = 0.0f;
+    body->points[2].local.z = 110.0f;
+    body->points[2].unk44 = 0.25f;
+    body->numPoints = 4;
+    body->points[3].local.y = 0.0f;
+    body->points[3].local.z = 110.0f;
+    body->points[3].unk44 = 0.25f;
+    switch (g_60f02c[(g_4d5bb8 - g_49a1f8) * 25 + 2])
+    {
+    case 1:
+    case 3:
+    case 4:
+    case 5:
+    case 8:
+    case 9:
+    case 10:
+    case 12:
+    case 14:
+    case 15:
+    case 16:
+    case 18:
+    case 19:
+    case 20:
+        body->numPoints = 5;
+        body->points[4].local.x = 0.0f;
+        body->points[4].local.y = 30.000002f;
+        body->points[4].local.z = 0.0f;
+        body->points[4].unk44 = 0.25f;
+        body->points[4].radius = 60.000004f;
+        break;
+    case 2:
+    case 7:
+    case 11:
+    case 13:
+        body->numPoints = 5;
+        body->points[4].local.x = 0.0f;
+        body->points[4].local.y = 50.0f;
+        body->points[4].local.z = 0.0f;
+        body->points[4].unk44 = 0.25f;
+        body->points[4].radius = 80.0f;
+        break;
+    case 17:
+        body->points[4].local.x = 0.0f;
+        body->points[4].local.y = 50.0f;
+        body->points[4].local.z = 0.0f;
+        body->points[4].unk44 = 0.25f;
+        body->points[4].radius = 80.0f;
+        body->numPoints = 6;
+        body->points[5].local.x = 0.0f;
+        body->points[5].local.y = 130.0f;
+        body->points[5].local.z = 0.0f;
+        body->points[5].unk44 = 0.25f;
+        body->points[5].radius = 80.0f;
+        break;
+    case 6:
+        body->points[4].local.x = 0.0f;
+        body->points[4].local.y = 60.000004f;
+        body->points[4].local.z = 70.0f;
+        body->points[4].unk44 = 0.25f;
+        body->points[4].radius = 110.0f;
+        body->numPoints = 6;
+        body->points[5].local.x = 0.0f;
+        body->points[5].local.y = 60.000004f;
+        body->points[5].local.z = -70.0f;
+        body->points[5].unk44 = 0.25f;
+        body->points[5].radius = 110.0f;
+        break;
+    }
+    FUN_422200(body);
+    unsigned int i;
+    for (i = 0; i < body->numPoints; i++)
+    {
+        body->points[i].world.x = body->points[i].local.x + body->pos.x;
+        body->points[i].world.y = body->pos.y + body->points[i].local.y;
+        body->points[i].world.z = body->points[i].local.z + body->pos.z;
+        body->points[i].prev = body->points[i].world;
+    }
+    body->radius = 0.0f;
+    for (i = 0; i < body->numPoints; i++)
+    {
+        float r = (float)sqrt(body->points[i].local.x * body->points[i].local.x +
+                              body->points[i].local.y * body->points[i].local.y +
+                              body->points[i].local.z * body->points[i].local.z) +
+                  body->points[i].radius;
+        if (r > body->radius)
+        {
+            body->radius = r;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x4085e0

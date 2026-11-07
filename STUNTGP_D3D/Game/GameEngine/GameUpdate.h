@@ -75,7 +75,9 @@ struct CarRace
     BYTE unk30[0x14]; // 0x30
     int unk44;        // 0x44
     int unk48;        // 0x48
-    BYTE unk4c[0x50]; // 0x4c
+    BYTE unk4c[0x30]; // 0x4c
+    int unk7c;        // 0x7c
+    BYTE unk80[0x1c]; // 0x80
 };
 
 struct Vector4
@@ -111,7 +113,7 @@ struct BodyPoint
     Vec4 prev;        // 0x20
     BYTE unk30[0x10]; // 0x30
     float unk40;      // 0x40
-    BYTE unk44[0x4];  // 0x44
+    float unk44;      // 0x44
     float radius;     // 0x48
 };
 
@@ -124,7 +126,7 @@ struct Body
     float vel[3];          // 0x030
     BYTE unk03c[0x4];      // 0x03c
     float unk40;           // 0x040
-    BYTE unk044[0x4];      // 0x044
+    float radius;          // 0x044
     float mat0[16];        // 0x048
     float mat1[16];        // 0x088
     float mat2[16];        // 0x0c8
@@ -213,7 +215,10 @@ struct Car
     BYTE unk2291[0xf];       // 0x2291
     BYTE prevControls[0xa];  // 0x22a0
     BYTE controls[0xa];      // 0x22aa
-    BYTE unk22b4[0x14];      // 0x22b4
+    int unk22b4;             // 0x22b4
+    BYTE unk22b8[0x4];       // 0x22b8
+    int unk22bc;             // 0x22bc
+    BYTE unk22c0[0x8];       // 0x22c0
     int unk22c8;             // 0x22c8
     BYTE unk22cc[0x10];      // 0x22cc
     float unk22dc;           // 0x22dc
@@ -278,7 +283,7 @@ struct Car
     int unk256c;             // 0x256c
     float unk2570;           // 0x2570
     float unk2574;           // 0x2574
-    BYTE unk2578[0x4];       // 0x2578
+    unsigned int unk2578;    // 0x2578
     float unk257c;           // 0x257c
     int unk2580;             // 0x2580
     BYTE unk2584[0x94];      // 0x2584
@@ -297,7 +302,11 @@ struct Car
     float unk2894;           // 0x2894
     BYTE unk2898[0x108c];    // 0x2898
     int unk3924;             // 0x3924
-    BYTE unk3928[0x3940];    // 0x3928
+    BYTE unk3928[0x38c4];    // 0x3928
+    int unk71ec;             // 0x71ec
+    BYTE unk71f0[0xc];       // 0x71f0
+    unsigned int unk71fc;    // 0x71fc
+    BYTE unk7200[0x68];      // 0x7200
     unsigned short *unk7268; // 0x7268
     BYTE unk726c[0x4];       // 0x726c
     Body body;               // 0x7270
