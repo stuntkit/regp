@@ -78,6 +78,8 @@ extern float g_624990;
 extern float g_624994;
 extern float g_576b94;
 extern float g_576b98;
+extern TextureSlot *g_6243b8;
+extern int g_6243bc;
 extern int g_576b8c;
 extern int g_576b90;
 extern float g_576b9c;
@@ -117,6 +119,9 @@ void FUN_433ee0();
 void FUN_433f20();
 void FUN_44fd60();
 void FUN_425870();
+void FUN_425070();
+void FUN_427240();
+void FUN_427270();
 void FUN_42e420();
 
 #endif /* D3DRENDER_H */

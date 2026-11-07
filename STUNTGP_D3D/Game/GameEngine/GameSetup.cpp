@@ -13,8 +13,31 @@
 #include "MenuUpdate.h"
 #include "../../objects.h"
 #include "../../sprite.h"
+#include "../../d3drender.h"
+#include "../../surface.h"
 
 void FUN_4411c0();
+void FUN_401d40();
+void FUN_402420();
+void FUN_413190();
+void FUN_413220();
+void FUN_426260();
+void FUN_428fa0();
+void FUN_42b740();
+void FUN_42c510();
+void FUN_42d070();
+void FUN_42d700();
+void FUN_42e380();
+void FUN_42e3e0();
+void FUN_42e430();
+void FUN_42e510();
+void FUN_42e6d0();
+void FUN_42f090();
+void FUN_431300();
+void FUN_431360();
+void FUN_431420();
+void FUN_4312c0();
+void FUN_4342c0();
 int FUN_445ad0();
 extern int g_5fd250;
 
@@ -33,6 +56,30 @@ int g_5fd24c;
 
 // GLOBAL: STUNTGP_D3D 0x5fd254
 int g_5fd254;
+
+// GLOBAL: STUNTGP_D3D 0x6244f8
+int g_6244f8;
+
+// GLOBAL: STUNTGP_D3D 0x624980
+int g_624980;
+
+// GLOBAL: STUNTGP_D3D 0x624984
+int g_624984;
+
+// GLOBAL: STUNTGP_D3D 0x57b41c
+int g_57b41c;
+
+// GLOBAL: STUNTGP_D3D 0x589e08
+int g_589e08;
+
+// GLOBAL: STUNTGP_D3D 0x498230
+int g_498230;
+
+// GLOBAL: STUNTGP_D3D 0x498234
+int g_498234;
+
+// GLOBAL: STUNTGP_D3D 0x498238
+int g_498238;
 
 struct Unk4d5cc0
 {
@@ -273,8 +320,170 @@ void FUN_424c30(int param)
 
 void FUN_429510();
 
-// STUB: STUNTGP_D3D 0x42e6e0
+// FUNCTION: STUNTGP_D3D 0x401d40
+void FUN_401d40()
+{
+    if (g_612be8 != 2)
+    {
+        SceneView *view = g_636448->view;
+        g_498238 = view->unk34;
+        g_498230 = view->unk2c;
+        g_498234 = view->unk30;
+    }
+}
+
+// STUB: STUNTGP_D3D 0x402420
+void FUN_402420()
+{
+}
+
+// STUB: STUNTGP_D3D 0x413190
+void FUN_413190()
+{
+}
+
+// STUB: STUNTGP_D3D 0x413220
+void FUN_413220()
+{
+}
+
+// STUB: STUNTGP_D3D 0x426260
+void FUN_426260()
+{
+}
+
+// STUB: STUNTGP_D3D 0x428fa0
+void FUN_428fa0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x42b740
+void FUN_42b740()
+{
+}
+
+// STUB: STUNTGP_D3D 0x42c510
+void FUN_42c510()
+{
+}
+
+// STUB: STUNTGP_D3D 0x42d070
+void FUN_42d070()
+{
+}
+
+// STUB: STUNTGP_D3D 0x42d700
+void FUN_42d700()
+{
+}
+
+// STUB: STUNTGP_D3D 0x42e380
+void FUN_42e380()
+{
+}
+
+// STUB: STUNTGP_D3D 0x42e3e0
+void FUN_42e3e0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x42e430
+void FUN_42e430()
+{
+}
+
+// STUB: STUNTGP_D3D 0x42e510
+void FUN_42e510()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x42e6d0
+void FUN_42e6d0()
+{
+    g_589e08 = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x42e6e0
 void FUN_42e6e0()
+{
+    FUN_42e510();
+    FUN_42d070();
+    FUN_44fd60();
+    FUN_4342c0();
+    FUN_42f090();
+    if (!g_6244f8)
+    {
+        FUN_42e6d0();
+        FUN_431360();
+        g_6244f8 = 1;
+        g_624980 = 1;
+        g_624984 = 1;
+    }
+    else
+    {
+        FUN_431300();
+    }
+    FUN_429510();
+    FUN_42e3e0();
+    FUN_425070();
+    FUN_413190();
+    FUN_413220();
+    FUN_42c510();
+    WAD_FlushWadCache();
+    FUN_428fa0();
+    g_6243bc = g_6243b8 - g_6227d4;
+    FUN_42e430();
+    FUN_427270();
+    FUN_42e380();
+    FUN_402420();
+    FUN_44ee00();
+    FUN_42b740();
+    FUN_42d700();
+    FUN_426260();
+    FUN_45e0e0();
+    FUN_401d40();
+    FUN_44fd60();
+    g_6244f4 = 0;
+    FUN_4320c0(1.0f);
+    if (g_636448)
+    {
+        // STRING: STUNTGP_D3D 0x4864e8
+        g_636448->name = "";
+    }
+    g_6244f8 = 0;
+    FUN_431420();
+    FUN_4312c0();
+    g_6244f8 = 1;
+    g_57b41c = 0;
+}
+
+// STUB: STUNTGP_D3D 0x42f090
+void FUN_42f090()
+{
+}
+
+// STUB: STUNTGP_D3D 0x431300
+void FUN_431300()
+{
+}
+
+// STUB: STUNTGP_D3D 0x431360
+void FUN_431360()
+{
+}
+
+// STUB: STUNTGP_D3D 0x431420
+void FUN_431420()
+{
+}
+
+// STUB: STUNTGP_D3D 0x4312c0
+void FUN_4312c0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x4342c0
+void FUN_4342c0()
 {
 }
 

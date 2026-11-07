@@ -86,19 +86,6 @@ struct AnimObject
     BYTE unk40[0x8];  // 0x40
 };
 
-struct ObjectDef
-{
-    BYTE unk00[0x40]; // 0x00
-};
-
-struct Scene
-{
-    BYTE unk00[0x24];   // 0x00
-    DWORD objectCount;  // 0x24
-    BYTE unk28[0x20];   // 0x28
-    ObjectDef *objects; // 0x48
-};
-
 // GLOBAL: STUNTGP_D3D 0x576cd0
 AnimObject g_576cd0[32];
 

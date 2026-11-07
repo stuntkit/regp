@@ -256,7 +256,7 @@ void FUN_43d250()
 // FUNCTION: STUNTGP_D3D 0x441190
 void FUN_441190()
 {
-    for (SpriteFile *file = g_47f318; file->name; file++)
+    for (int i = 0; g_47f318[i].name; i++)
     {
     }
     FUN_441340();

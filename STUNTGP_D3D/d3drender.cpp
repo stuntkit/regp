@@ -76,6 +76,42 @@ float g_576b94 = 0.0f;
 // GLOBAL: STUNTGP_D3D 0x576b98
 float g_576b98 = 0.0f;
 
+// GLOBAL: STUNTGP_D3D 0x6243b8
+TextureSlot *g_6243b8 = NULL;
+
+// GLOBAL: STUNTGP_D3D 0x6243bc
+int g_6243bc = 0;
+
+// GLOBAL: STUNTGP_D3D 0x6244a8
+short g_6244a8[16];
+
+// GLOBAL: STUNTGP_D3D 0x6244c8
+int g_6244c8;
+
+// GLOBAL: STUNTGP_D3D 0x6244cc
+int g_6244cc;
+
+// GLOBAL: STUNTGP_D3D 0x6244d0
+int g_6244d0;
+
+// GLOBAL: STUNTGP_D3D 0x6244d4
+int g_6244d4;
+
+// GLOBAL: STUNTGP_D3D 0x6244d8
+int g_6244d8;
+
+// GLOBAL: STUNTGP_D3D 0x6244dc
+int g_6244dc;
+
+// GLOBAL: STUNTGP_D3D 0x6244e0
+int g_6244e0;
+
+// GLOBAL: STUNTGP_D3D 0x6244e4
+int g_6244e4;
+
+// GLOBAL: STUNTGP_D3D 0x61c50c
+int g_61c50c = 0;
+
 // GLOBAL: STUNTGP_D3D 0x576b8c
 int g_576b8c = 0;
 
@@ -256,6 +292,33 @@ int FUN_4316f0(int slot, char *path)
     FUN_431560(slot, image);
     free(image);
     return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x425070
+void FUN_425070()
+{
+    g_624990 = g_DD_DISPLAYRESWIDTH * (1.0f / 640.0f);
+    g_624994 = g_DD_DISPLAYRESHEIGHT * (1.0f / 480.0f);
+}
+
+// FUNCTION: STUNTGP_D3D 0x427240
+void FUN_427240()
+{
+    g_6244dc = g_6244cc;
+    g_6244d8 = g_6244c8;
+    g_6244e4 = g_6244d4;
+    g_6244e0 = g_6244d0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x427270
+void FUN_427270()
+{
+    g_6244d4 = g_61c50c + 0x60000;
+    FUN_427240();
+    for (int i = 0; i < 16; i++)
+    {
+        g_6244a8[i] = i;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x431a80

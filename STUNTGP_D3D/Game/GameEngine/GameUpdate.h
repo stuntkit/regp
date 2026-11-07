@@ -116,6 +116,32 @@ struct InputState
     BYTE buttons[0x40]; // 0x3c
 };
 
+struct ObjectDef
+{
+    BYTE unk00[0x40]; // 0x00
+};
+
+struct SceneView
+{
+    BYTE unk00[0x2c]; // 0x00
+    int unk2c;        // 0x2c
+    int unk30;        // 0x30
+    int unk34;        // 0x34
+};
+
+struct Scene
+{
+    BYTE unk00[0xc];    // 0x00
+    char *name;         // 0x0c
+    BYTE unk10[0x14];   // 0x10
+    DWORD objectCount;  // 0x24
+    BYTE unk28[0x1c];   // 0x28
+    SceneView *view;    // 0x44
+    ObjectDef *objects; // 0x48
+};
+
+extern Scene *g_636448;
+
 // 10 entries at 0x576618
 struct InputSlot
 {
