@@ -151,6 +151,28 @@ ResourceFile g_textureFiles[255];
 // GLOBAL: STUNTGP_D3D 0x5895c0
 ResourceFile g_fontFiles[8];
 
+// GLOBAL: STUNTGP_D3D 0x5895bc
+ResourceFile *g_5895bc;
+
+// Pool holding the registered file names.
+// GLOBAL: STUNTGP_D3D 0x580aec
+char *g_580aec;
+
+// GLOBAL: STUNTGP_D3D 0x58271c
+int g_58271c;
+
+// Records a font file so it can be reloaded when surfaces are lost.
+// FUNCTION: STUNTGP_D3D 0x42be90
+void FUN_42be90(char *path)
+{
+    g_5895bc->name = g_580aec;
+    g_5895bc->slot = g_58271c;
+    g_5895bc++;
+    g_5895bc->name = NULL;
+    strcpy(g_580aec, path);
+    g_580aec += strlen(path) + 1;
+}
+
 // GLOBAL: STUNTGP_D3D 0x489714
 int g_489714 = 320;
 
@@ -640,6 +662,24 @@ void FUN_4327c0(WORD *pixels, DWORD width, DWORD height)
     {
         *pixels ^= 0x7fff;
         pixels++;
+    }
+}
+
+// STUB: STUNTGP_D3D 0x4325e0
+int FUN_4325e0(BYTE *image, DWORD width, DWORD height)
+{
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4327e0
+void FUN_4327e0(BYTE *texture, Font *font, int arg)
+{
+    if (g_58332c == 1)
+    {
+        FUN_430280(texture, (WORD *)texture, 256, 256);
+        font->glyphs[0].texture = FUN_4325e0(texture, 256, 256);
+        FUN_4327c0((WORD *)texture, 256, 256);
+        font->glyphs[0].textureAlt = FUN_4325e0(texture, 256, 256);
     }
 }
 

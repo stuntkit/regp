@@ -59,6 +59,10 @@ extern char g_GraphicsDirectory[128];
 extern char g_GameLocation[256];
 extern int g_D3DUVFix;
 extern int g_61c50c;
+extern int g_6244c8;
+extern int g_6244cc;
+extern int g_6244d0;
+extern int g_61c5ec;
 extern DWORD g_61297c;
 
 // Scene render list entry; a list runs until a NULL scene.
@@ -470,11 +474,6 @@ void FUN_426260()
 {
 }
 
-// STUB: STUNTGP_D3D 0x428fa0
-void FUN_428fa0()
-{
-}
-
 // FUNCTION: STUNTGP_D3D 0x42b740
 void FUN_42b740()
 {
@@ -559,9 +558,44 @@ void FUN_42e3e0()
     }
 }
 
-// STUB: STUNTGP_D3D 0x42e430
+// GLOBAL: STUNTGP_D3D 0x61c5f4
+void *g_61c5f4;
+
+// GLOBAL: STUNTGP_D3D 0x61c5f8
+void *g_61c5f8;
+
+// GLOBAL: STUNTGP_D3D 0x61c5fc
+void *g_61c5fc;
+
+// GLOBAL: STUNTGP_D3D 0x61c600
+void *g_61c600;
+
+// GLOBAL: STUNTGP_D3D 0x61c518
+void *g_61c518;
+
+// GLOBAL: STUNTGP_D3D 0x61c51c
+void *g_61c51c;
+
+// GLOBAL: STUNTGP_D3D 0x624530
+void *g_624530;
+
+// Allocates the per-frame render buffers.
+// FUNCTION: STUNTGP_D3D 0x42e430
 void FUN_42e430()
 {
+    g_61c50c = (int)Mem_Alloc(0x78000, 0);
+    g_6244c8 = (int)Mem_Alloc(0xc000, 0);
+    g_6244cc = (int)Mem_Alloc(0x2000, 0);
+    g_6244d0 = (int)Mem_Alloc(0x800, 0);
+    g_61c5ec = (int)Mem_Alloc(0xc000, 0);
+    g_61c5f4 = Mem_Alloc(0xf000, 0);
+    g_61c5f8 = Mem_Alloc(0xf000, 0);
+    g_61c5fc = Mem_Alloc(0xf000, 0);
+    g_61c600 = Mem_Alloc(0xf000, 0);
+    g_61c5f0 = (OverlayPoly *)Mem_Alloc(0x11000, 0);
+    g_61c518 = Mem_Alloc(0x1000, 0);
+    g_61c51c = Mem_Alloc(0x1000, 0);
+    g_624530 = Mem_Alloc(0x4800, 0);
 }
 
 // STUB: STUNTGP_D3D 0x42e510

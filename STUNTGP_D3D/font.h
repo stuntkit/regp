@@ -47,6 +47,8 @@ void FUN_428ab0(Font *font, BYTE *cell, DWORD *outWidth, DWORD *outHeight, DWORD
 void FUN_429180(Font *font, DWORD width);
 void FUN_4291b0(Font *font, float value);
 void FUN_4291d0(Font *font, float value);
+void FUN_428e40(char *name);
+void FUN_428fa0();
 void Font_Load(char *name);
 void FUN_428c00(Font *font, BYTE *data, BYTE *texture);
 void FUN_4291a0(float value);

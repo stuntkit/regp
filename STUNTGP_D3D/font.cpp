@@ -4,6 +4,10 @@
 #include "globals.h"
 #include "mem.h"
 
+#include <stdio.h>
+
+extern char g_GraphicsDirectory[128];
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -190,6 +194,24 @@ void FUN_428c00(Font *font, BYTE *data, BYTE *texture)
     font->glyphs[0x99] = font->glyphs[g_57b318[' ']];
 }
 
+// FUNCTION: STUNTGP_D3D 0x428e40
+void FUN_428e40(char *name)
+{
+    char path[128];
+    Font *font = g_currentFont;
+    // STRING: STUNTGP_D3D 0x477758
+    sprintf(path, "%s\\Fonts\\%s.TGA", g_GraphicsDirectory, name);
+    BYTE *data = (BYTE *)Mem_Alloc(size_of_file(path), 0);
+    FUN_4623c0(path, data, font->unk04);
+    BYTE *texture = (BYTE *)Mem_Alloc(0x30000, 0);
+    FUN_428c00(font, data, texture);
+    FUN_4327e0(texture, font, 0);
+    FUN_42be90(path);
+    Mem_Free(texture);
+    Mem_Free(data);
+    g_fontCount++;
+}
+
 // FUNCTION: STUNTGP_D3D 0x428ee0
 void Font_Load(char *name)
 {
@@ -213,6 +235,55 @@ void Font_Select(DWORD font)
         font = g_fontCount - 1;
     }
     g_currentFont = &g_fonts[font];
+}
+
+// Loads the charset index and the fonts sized for the display width.
+// FUNCTION: STUNTGP_D3D 0x428fa0
+void FUN_428fa0()
+{
+    char path[128];
+    FUN_4291a0(0.0f);
+    g_currentFont = g_fonts;
+    g_fontCount = 0;
+    // STRING: STUNTGP_D3D 0x477768
+    sprintf(path, "%s\\Fonts\\INDEX.TXT", g_GraphicsDirectory);
+    bload(path, (char *)g_577ad0, sizeof(g_577ad0));
+    if (g_DD_DISPLAYRESWIDTH >= 1280)
+    {
+        // STRING: STUNTGP_D3D 0x47777c
+        FUN_428e40("I32");
+        g_currentFont = &g_fonts[g_fontCount];
+        // STRING: STUNTGP_D3D 0x477780
+        FUN_428e40("I32_b025");
+    }
+    else if (g_DD_DISPLAYRESWIDTH >= 1152)
+    {
+        // STRING: STUNTGP_D3D 0x47778c
+        FUN_428e40("I32");
+        g_currentFont = &g_fonts[g_fontCount];
+        // STRING: STUNTGP_D3D 0x477790
+        FUN_428e40("I32_b025");
+    }
+    else if (g_DD_DISPLAYRESWIDTH >= 1024)
+    {
+        // STRING: STUNTGP_D3D 0x47779c
+        FUN_428e40("I32_b05");
+        g_currentFont = &g_fonts[g_fontCount];
+        // STRING: STUNTGP_D3D 0x4777a4
+        FUN_428e40("I32_b025");
+    }
+    else if (g_DD_DISPLAYRESWIDTH >= 800)
+    {
+        // STRING: STUNTGP_D3D 0x4777b0
+        FUN_428e40("I32_b05");
+    }
+    else
+    {
+        // STRING: STUNTGP_D3D 0x4777b8
+        FUN_428e40("I32_b05");
+    }
+    FUN_428a80();
+    Font_Select(0);
 }
 
 // FUNCTION: STUNTGP_D3D 0x429180
