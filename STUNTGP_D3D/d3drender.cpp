@@ -77,7 +77,7 @@ int g_61c5e4 = 0;
 TextureSlot g_6227d4[1];
 
 // GLOBAL: STUNTGP_D3D 0x58d818
-D3DTLVERTEX2 g_58d818[4];
+D3DTLVERTEX2 g_58d818[8];
 
 // Virtual 640x480 to display scale and offset.
 // GLOBAL: STUNTGP_D3D 0x624990
