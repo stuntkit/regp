@@ -372,22 +372,23 @@ struct Car
     int unk2398;              // 0x2398
     int unk239c;              // 0x239c
     int unk23a0;              // 0x23a0
-    int unk23a4;              // 0x23a4
+    unsigned int unk23a4;     // 0x23a4
     int unk23a8;              // 0x23a8
     int unk23ac;              // 0x23ac
     float unk23b0;            // 0x23b0
     BYTE unk23b4[0x4];        // 0x23b4
     float unk23b8;            // 0x23b8
     int unk23bc;              // 0x23bc
-    BYTE unk23c0[0x4];        // 0x23c0
+    int unk23c0;              // 0x23c0
     int unk23c4;              // 0x23c4
     int unk23c8;              // 0x23c8
     int unk23cc;              // 0x23cc
     int unk23d0;              // 0x23d0
-    int unk23d4;              // 0x23d4
+    unsigned int unk23d4;     // 0x23d4
     int unk23d8;              // 0x23d8
     int unk23dc[24];          // 0x23dc
-    BYTE unk243c[0x68];       // 0x243c
+    BYTE unk243c[0x4];        // 0x243c
+    DWORD unk2440[25];        // 0x2440 per-lap times
     int unk24a4;              // 0x24a4
     int unk24a8;              // 0x24a8
     int unk24ac;              // 0x24ac
@@ -395,7 +396,10 @@ struct Car
     int unk24e0;              // 0x24e0
     int unk24e4;              // 0x24e4
     int unk24e8;              // 0x24e8
-    BYTE unk24ec[0x7c];       // 0x24ec
+    BYTE unk24ec[0x4];        // 0x24ec
+    DWORD unk24f0[10];        // 0x24f0
+    DWORD unk2518[10];        // 0x2518
+    DWORD unk2540[10];        // 0x2540
     int unk2568;              // 0x2568
     int unk256c;              // 0x256c
     float unk2570;            // 0x2570
@@ -403,7 +407,9 @@ struct Car
     unsigned int unk2578;     // 0x2578
     float unk257c;            // 0x257c
     int unk2580;              // 0x2580
-    BYTE unk2584[0x94];       // 0x2584
+    BYTE unk2584[0x88];       // 0x2584
+    float unk260c;            // 0x260c
+    BYTE unk2610[0x8];        // 0x2610
     float unk2618;            // 0x2618
     float unk261c;            // 0x261c
     BYTE unk2620[0x10];       // 0x2620
@@ -412,7 +418,9 @@ struct Car
     float leaderGap;          // 0x2638
     BYTE unk263c[0x4];        // 0x263c
     int unk2640;              // 0x2640
-    BYTE unk2644[0x60];       // 0x2644
+    BYTE unk2644[0x30];       // 0x2644
+    int unk2674;              // 0x2674
+    BYTE unk2678[0x2c];       // 0x2678
     int unk26a4;              // 0x26a4
     int unk26a8;              // 0x26a8
     BYTE unk26ac[0x4];        // 0x26ac

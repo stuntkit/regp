@@ -16,6 +16,13 @@ extern float g_482688;
 extern float g_48268c;
 extern float g_482690;
 extern DWORD g_60eff8;
+extern DWORD g_60effc;
+extern DWORD g_60f000[4];
+extern int g_60f2b4;
+extern int g_576be0;
+
+int FUN_442fb0();
+void FUN_443de0();
 
 void FUN_442cf0(int a, char *text, Car *car, int b, int c);
 void FUN_401d70(float *v, float scale);
@@ -1877,9 +1884,171 @@ void FUN_41d760()
 {
 }
 
-// STUB: STUNTGP_D3D 0x41dd60
+// FUNCTION: STUNTGP_D3D 0x407000
+void FUN_407000()
+{
+    g_4d5bb8->unk2674 = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x41d3b0
+void FUN_41d3b0()
+{
+    for (int i = 0; i < 10; i++)
+    {
+        g_4d5bb8->unk2518[i] = g_4d5bb8->unk24f0[i];
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x41d3d0
+void FUN_41d3d0()
+{
+    for (int i = 0; i < 10; i++)
+    {
+        g_4d5bb8->unk2540[i] = g_4d5bb8->unk24f0[i];
+    }
+}
+
+// STUB: STUNTGP_D3D 0x41d3f0
+void FUN_41d3f0(int time, char *out)
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x41d8a0
+void FUN_41d8a0()
+{
+    if (g_4d5bb8->active == 1 && FUN_402590(g_4d5bb8))
+    {
+        unsigned int lap = g_4d5bb8->unk23a4;
+        if (lap > 1 && lap <= g_60eff8 && lap >= g_60eff8)
+        {
+            FUN_442cf0(180, g_6127a0[46], g_4d5bb8, 2, 0);
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x41d8f0
+void FUN_41d8f0()
+{
+    char text[64];
+    char time[16];
+    if (g_4d5bb8->unk23a4 < g_60eff8)
+    {
+        if (g_4d5bb8->unk23a4 == 1)
+        {
+            // STRING: STUNTGP_D3D 0x4748fc
+            sprintf(text, "LAP %d/%d", 1, g_60eff8);
+        }
+        else
+        {
+            // STRING: STUNTGP_D3D 0x474908
+            sprintf(text, "LAP %d/%d - TIME:", g_4d5bb8->unk23a4, g_60eff8);
+            FUN_41d3f0(g_4d5bb8->unk23c8, time);
+            // STRING: STUNTGP_D3D 0x47491c
+            sprintf(text, "%s %s", text, time);
+        }
+        FUN_442cf0(180, text, g_4d5bb8, 2, 0);
+    }
+}
+
+// STUB: STUNTGP_D3D 0x41da70
+void FUN_41da70()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x41dc30
+void FUN_41dc30()
+{
+    if (g_4d5bb8->unk23c4 < g_4d5bb8->unk23d4)
+    {
+        g_4d5bb8->unk23d4 = g_4d5bb8->unk23c4;
+        FUN_41d3b0();
+    }
+    if (g_4d5bb8->unk23c4 < g_60f000[0])
+    {
+        g_60effc = g_60f000[0];
+        g_60f000[0] = g_4d5bb8->unk23c4;
+        FUN_41d3d0();
+        if (g_60f2b0 == 4)
+        {
+            if (FUN_402590(g_4d5bb8))
+            {
+                if (FUN_442fb0() == 1)
+                {
+                    g_4d5bb8->unk23c0 = 1;
+                }
+                FUN_443de0();
+            }
+        }
+        else if (g_60f2b0 == 2)
+        {
+            if (g_4d5bb8->unk23a4 < g_60eff8 && FUN_402590(g_4d5bb8))
+            {
+                FUN_443de0();
+            }
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x41dce0
+void FUN_41dce0()
+{
+    unsigned int lap = g_4d5bb8->unk23a4;
+    if (!lap)
+    {
+        g_4d5bb8->unk2440[0] = (int)g_4d5bb8->unk260c;
+    }
+    else
+    {
+        g_4d5bb8->unk2440[lap] = (int)g_4d5bb8->unk260c - g_4d5bb8->unk2440[lap - 1];
+    }
+    if (g_4d5bb8->unk2440[g_4d5bb8->unk23a4] > g_4d5bb8->unk23d8)
+    {
+        g_4d5bb8->unk23d8 = g_4d5bb8->unk2440[g_4d5bb8->unk23a4];
+    }
+    if (g_4d5bb8->unk2440[g_4d5bb8->unk23a4] > g_60f000[2])
+    {
+        g_60f000[2] = g_4d5bb8->unk2440[g_4d5bb8->unk23a4];
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x41dd60
 void FUN_41dd60()
 {
+    if (g_60f2b4 == 3)
+    {
+        return;
+    }
+    g_4d5bb8->unk26a8 = 0;
+    FUN_41dce0();
+    if (g_60f2b0 != 3)
+    {
+        FUN_41dc30();
+    }
+    g_4d5bb8->unk23c8 = g_4d5bb8->unk23c4;
+    g_4d5bb8->unk23dc[g_4d5bb8->unk23a4] = g_4d5bb8->unk23c4;
+    if (g_4d5bb8->unk23a4 > 24)
+    {
+        g_4d5bb8->unk23dc[g_4d5bb8->unk23a4] = 0;
+    }
+    else
+    {
+        g_4d5bb8->unk23a4++;
+    }
+    g_4d5bb8->unk23bc++;
+    g_4d5bb8->unk23c4 = 0;
+    FUN_407000();
+    if (g_60eff8 != 100 && g_4d5bb8->unk23a4 > g_60eff8 && !g_4d5bb8->unk24e0)
+    {
+        FUN_41da70();
+    }
+    if (g_60f2b0 == 2)
+    {
+        FUN_41d8a0();
+        if (g_576be0)
+        {
+            FUN_41d8f0();
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x41de70

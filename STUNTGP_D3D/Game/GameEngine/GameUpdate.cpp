@@ -1238,6 +1238,38 @@ int g_60eff0;
 // GLOBAL: STUNTGP_D3D 0x60eff8
 DWORD g_60eff8;
 
+// GLOBAL: STUNTGP_D3D 0x60effc
+DWORD g_60effc;
+
+// GLOBAL: STUNTGP_D3D 0x60d630
+DWORD *g_60d630;
+
+// GLOBAL: STUNTGP_D3D 0x60d66c
+int g_60d66c;
+
+extern DWORD g_60f000[4];
+
+// Whether the best lap beats the stored record.
+// FUNCTION: STUNTGP_D3D 0x442fb0
+int FUN_442fb0()
+{
+    if (!g_60d66c)
+    {
+        return 0;
+    }
+    return g_60f000[0] < g_60d630[7];
+}
+
+// FUNCTION: STUNTGP_D3D 0x443de0
+void FUN_443de0()
+{
+    if (g_4d5bb8->race.unk4c[7] != 1)
+    {
+        g_4d5bb8->race.unk4c[7] = 1;
+        g_4d5bb8->race.unk4c[8] = 0;
+    }
+}
+
 // Only steps while the car is active, so inactive slots shift the rest onto the wrong cars.
 // FUNCTION: STUNTGP_D3D 0x412780
 void FUN_412780()
