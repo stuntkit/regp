@@ -107,7 +107,8 @@ struct TrackHeader
     int unk064;               // 0x064
     BYTE unk068[0x70 - 0x68];
     int unk070;               // 0x070
-    BYTE unk074[0x7c - 0x74];
+    int unk074;               // 0x074
+    int unk078;               // 0x078
     int unk07c;               // 0x07c
     int unk080;               // 0x080
     int unk084;               // 0x084
@@ -120,7 +121,9 @@ struct TrackHeader
     BYTE unk0ec[0xfc - 0xec];
     DWORD unk0fc;             // 0x0fc
     int unk100;               // 0x100
-    BYTE unk104[0x148 - 0x104];
+    BYTE unk104[0x10c - 0x104];
+    DWORD unk10c;             // 0x10c
+    BYTE unk110[0x148 - 0x110];
     BYTE data[1];             // 0x148
 };
 
@@ -174,6 +177,8 @@ extern void *g_61c5fc;
 extern void *g_61c600;
 
 struct AnimDef;
+extern CameraPath *g_624474;
+extern DWORD g_624498;
 extern AnimDef *g_624484;
 
 // GLOBAL: STUNTGP_D3D 0x62449c
@@ -965,6 +970,20 @@ void FUN_42ed30()
     g_62446c = &g_58d810->data[g_58d810->unk07c];
     g_624468 = &g_58d810->data[g_58d810->unk084];
     g_624464 = &g_58d810->data[g_58d810->unk080];
+}
+
+// FUNCTION: STUNTGP_D3D 0x42ee50
+void FUN_42ee50()
+{
+    TrackHeader *header = g_58d810;
+    CameraPath *paths = (CameraPath *)&header->data[header->unk078];
+    DWORD count = header->unk10c / sizeof(CameraPath);
+    for (DWORD i = 0; i < count; i++)
+    {
+        paths[i].points = (Vec4 *)&header->data[header->unk074] + (int)paths[i].points;
+    }
+    g_624474 = paths;
+    g_624498 = count;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42eee0

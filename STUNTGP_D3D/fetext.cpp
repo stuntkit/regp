@@ -1572,6 +1572,17 @@ int FeCsv_SkipLine(char *text, int *pos)
     return FeCsv_SkipBlankLines(text, pos);
 }
 
+// FUNCTION: STUNTGP_D3D 0x43c600
+int FUN_43c600(const char *expected, char *text, int *pos)
+{
+    char field[64];
+    if (!FeCsv_ReadField(field, text, pos))
+    {
+        return 0;
+    }
+    return strcmp(field, expected) == 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43c680
 int FeCsv_ReadField(char *out, char *text, int *pos)
 {
