@@ -385,27 +385,27 @@ int FUN_435e30(int id, ShopCar *car, char *text, int *pos)
     FeCsv_ReadInt(&car->unk04, text, pos);
     FeCsv_ReadInt(&car->unk08, text, pos);
     // STRING: STUNTGP_D3D 0x479250
-    FUN_435f60("Engine ", car->parts[2], text, pos);
+    FUN_435f60("Engine ", car->parts[5], text, pos);
     // STRING: STUNTGP_D3D 0x479258
-    FUN_435f60("Battery", car->parts[1], text, pos);
+    FUN_435f60("Battery", car->parts[4], text, pos);
     // STRING: STUNTGP_D3D 0x479260
-    FUN_435f60("Tyres  ", car->parts[9], text, pos);
+    FUN_435f60("Tyres  ", car->parts[12], text, pos);
     // STRING: STUNTGP_D3D 0x479268
-    FUN_435f60("Brakes ", car->parts[5], text, pos);
+    FUN_435f60("Brakes ", car->parts[8], text, pos);
     // STRING: STUNTGP_D3D 0x479270
-    FUN_435f60("Shocks ", car->parts[0], text, pos);
+    FUN_435f60("Shocks ", car->parts[3], text, pos);
     // STRING: STUNTGP_D3D 0x479278
-    FUN_435f60("Chassis", car->parts[3], text, pos);
+    FUN_435f60("Chassis", car->parts[6], text, pos);
     // STRING: STUNTGP_D3D 0x479280
-    FUN_435f60("Drive  ", car->parts[10], text, pos);
+    FUN_435f60("Drive  ", car->parts[13], text, pos);
     // STRING: STUNTGP_D3D 0x479288
-    FUN_435f60("Horn   ", car->parts[6], text, pos);
+    FUN_435f60("Horn   ", car->parts[9], text, pos);
     // STRING: STUNTGP_D3D 0x479290
-    FUN_435f60("Boost  ", car->parts[8], text, pos);
+    FUN_435f60("Boost  ", car->parts[11], text, pos);
     // STRING: STUNTGP_D3D 0x479298
-    FUN_435f60("BMS    ", car->parts[4], text, pos);
+    FUN_435f60("BMS    ", car->parts[7], text, pos);
     // STRING: STUNTGP_D3D 0x4792a0
-    FUN_435f60("Gears  ", car->parts[7], text, pos);
+    FUN_435f60("Gears  ", car->parts[10], text, pos);
     FUN_437cc0(id);
     FeCsv_SkipBlankLines(text, pos);
     return 1;
@@ -430,7 +430,8 @@ void FUN_436410()
 {
 }
 
-void FUN_4365d0(int a, const char *name, ShopItem *item, ShopCar *car, int part, int b);
+void FUN_4365d0(int sponsor, const char *name, ShopItem *item, ShopCar *car, int part, int b);
+int FUN_436420(int sponsor, ShopItem *item, int *used, int unused);
 
 // FUNCTION: STUNTGP_D3D 0x436490
 void FUN_436490(int a, ShopEntry *out, ShopCar *car, ShopItem *item, int unused)
@@ -466,9 +467,320 @@ void FUN_436490(int a, ShopEntry *out, ShopCar *car, ShopItem *item, int unused)
     FUN_4365d0(a, "UpgradeGears     ", &out->item, car, 10, 0);
 }
 
-// STUB: STUNTGP_D3D 0x4365d0
-void FUN_4365d0(int a, const char *name, ShopItem *item, ShopCar *car, int part, int b)
+// STUB: STUNTGP_D3D 0x43db20
+ShopItem *FUN_43db20(int part, int index)
 {
+    return NULL;
+}
+
+int FUN_437a90(int id);
+
+// Adds the part fitted in car slot `part` to the running totals in item.
+// FUNCTION: STUNTGP_D3D 0x4365d0
+void FUN_4365d0(int sponsor, const char *name, ShopItem *item, ShopCar *car, int part, int b)
+{
+    int *slot = car->parts[part];
+    ShopItem *parts = FUN_43db20(part, 1);
+    if (!slot[1])
+    {
+        ShopItem *base = FUN_43db20(part, FUN_437a90(part));
+        item->unk008 += base->unk008;
+        item->price += base->price;
+    }
+    else
+    {
+        ShopItem *src = &parts[slot[1] - 1];
+        item->price += FUN_436420(sponsor, src, slot, 0);
+        item->unk008 += src->unk008;
+        if (src->unk104 >= 0.0f)
+        {
+            item->unk104 = src->unk104;
+        }
+        if (src->unk108 >= 0.0f)
+        {
+            item->unk108 = src->unk108;
+        }
+        if (src->unk10c >= 0.0f)
+        {
+            item->unk10c = src->unk10c;
+        }
+        if (src->unk110 >= 0.0f)
+        {
+            item->unk110 = src->unk110;
+        }
+        if (src->unk114 >= 0.0f)
+        {
+            item->unk114 = src->unk114;
+        }
+        if (src->unk118 >= 0.0f)
+        {
+            item->unk118 = src->unk118;
+        }
+        if (src->unk00c >= 0.0f)
+        {
+            item->unk00c = src->unk00c;
+        }
+        if (src->unk010 >= 0.0f)
+        {
+            item->unk010 = src->unk010;
+        }
+        if (src->unk014 >= 0.0f)
+        {
+            item->unk014 = src->unk014;
+        }
+        if (src->unk070 >= 0.0f)
+        {
+            item->unk070 = src->unk070;
+        }
+        if (src->unk018 >= 0.0f)
+        {
+            item->unk018 = src->unk018;
+        }
+        if (src->unk01c >= 0.0f)
+        {
+            item->unk01c = src->unk01c;
+        }
+        if (src->unk020 >= 0.0f)
+        {
+            item->unk020 = src->unk020;
+        }
+        if (src->unk024 >= 0.0f)
+        {
+            item->unk024 = src->unk024;
+        }
+        if (src->unk028 >= 0.0f)
+        {
+            item->unk028 = src->unk028;
+        }
+        if (src->unk02c >= 0)
+        {
+            item->unk02c = src->unk02c;
+        }
+        if (src->unk030 >= 0)
+        {
+            item->unk030 = src->unk030;
+        }
+        if (src->unk040 >= 0.0f)
+        {
+            item->unk040 = src->unk040;
+        }
+        if (src->unk094 >= 0.0f)
+        {
+            item->unk094 = src->unk094;
+        }
+        if (src->unk098 >= 0.0f)
+        {
+            item->unk098 = src->unk098;
+        }
+        if (src->unk034 >= 0)
+        {
+            item->unk034 = src->unk034;
+        }
+        if (src->unk038 >= 0.0f)
+        {
+            item->unk038 = src->unk038;
+        }
+        if (src->unk03c >= 0.0f)
+        {
+            item->unk03c = src->unk03c;
+        }
+        if (src->unk044 >= 0.0f)
+        {
+            item->unk044 = src->unk044;
+        }
+        if (src->unk048 >= 0.0f)
+        {
+            item->unk048 = src->unk048;
+        }
+        if (src->unk04c >= 0.0f)
+        {
+            item->unk04c = src->unk04c;
+        }
+        if (src->unk050 >= 0.0f)
+        {
+            item->unk050 = src->unk050;
+        }
+        if (src->unk054 >= 0.0f)
+        {
+            item->unk054 = src->unk054;
+        }
+        if (src->unk058 >= 0.0f)
+        {
+            item->unk058 = src->unk058;
+        }
+        if (src->unk05c >= 0.0f)
+        {
+            item->unk05c = src->unk05c;
+        }
+        if (src->unk060 >= 0.0f)
+        {
+            item->unk060 = src->unk060;
+        }
+        if (src->unk064 >= 0.0f)
+        {
+            item->unk064 = src->unk064;
+        }
+        if (src->unk068 >= 0.0f)
+        {
+            item->unk068 = src->unk068;
+        }
+        if (src->unk06c >= 0.0f)
+        {
+            item->unk06c = src->unk06c;
+        }
+        if (src->unk11c >= 0.0f)
+        {
+            item->unk11c = src->unk11c;
+        }
+        if (src->unk120 >= 0.0f)
+        {
+            item->unk120 = src->unk120;
+        }
+        if (src->unk074 >= 0.0f)
+        {
+            item->unk074 = src->unk074;
+        }
+        if (src->unk078 >= 0.0f)
+        {
+            item->unk078 = src->unk078;
+        }
+        if (src->unk07c >= 0.0f)
+        {
+            item->unk07c = src->unk07c;
+        }
+        if (src->unk080 >= 0.0f)
+        {
+            item->unk080 = src->unk080;
+        }
+        if (src->unk084 >= 0.0f)
+        {
+            item->unk084 = src->unk084;
+        }
+        if (src->unk088 >= 0.0f)
+        {
+            item->unk088 = src->unk088;
+        }
+        if (src->unk08c >= 0)
+        {
+            item->unk08c = src->unk08c;
+        }
+        if (src->unk090 >= 0)
+        {
+            item->unk090 = src->unk090;
+        }
+        if (src->unk09c >= 0.0f)
+        {
+            item->unk09c = src->unk09c;
+        }
+        if (src->unk0a0 >= 0.0f)
+        {
+            item->unk0a0 = src->unk0a0;
+        }
+        if (src->unk0a4 >= 0.0f)
+        {
+            item->unk0a4 = src->unk0a4;
+        }
+        if (src->unk0a8 >= 0.0f)
+        {
+            item->unk0a8 = src->unk0a8;
+        }
+        if (src->unk0ac >= 0.0f)
+        {
+            item->unk0ac = src->unk0ac;
+        }
+        if (src->unk0b0 >= 0.0f)
+        {
+            item->unk0b0 = src->unk0b0;
+        }
+        if (src->unk0b4 >= 0.0f)
+        {
+            item->unk0b4 = src->unk0b4;
+        }
+        if (src->unk0b8 >= 0.0f)
+        {
+            item->unk0b8 = src->unk0b8;
+        }
+        if (src->unk100 >= 0.0f)
+        {
+            item->unk100 = src->unk100;
+        }
+        if (src->unk0bc >= 0.0f)
+        {
+            item->unk0bc = src->unk0bc;
+        }
+        if (src->unk0c0 >= 0.0f)
+        {
+            item->unk0c0 = src->unk0c0;
+        }
+        if (src->unk0c4 >= 0.0f)
+        {
+            item->unk0c4 = src->unk0c4;
+        }
+        if (src->unk0c8 >= 0.0f)
+        {
+            item->unk0c8 = src->unk0c8;
+        }
+        if (src->unk0cc >= 0.0f)
+        {
+            item->unk0cc = src->unk0cc;
+        }
+        if (src->unk0d0 >= 0.0f)
+        {
+            item->unk0d0 = src->unk0d0;
+        }
+        if (src->unk0e8 >= 0)
+        {
+            item->unk0e8 = src->unk0e8;
+        }
+        if (src->unk0ec >= 0)
+        {
+            item->unk0ec = src->unk0ec;
+        }
+        if (src->unk0f0 >= 0)
+        {
+            item->unk0f0 = src->unk0f0;
+        }
+        if (src->unk0f4 >= 0)
+        {
+            item->unk0f4 = src->unk0f4;
+        }
+        if (src->unk0d4 >= 0.0f)
+        {
+            item->unk0d4 = src->unk0d4;
+        }
+        if (src->unk0d8 >= 0.0f)
+        {
+            item->unk0d8 = src->unk0d8;
+        }
+        if (src->unk0dc >= 0.0f)
+        {
+            item->unk0dc = src->unk0dc;
+        }
+        if (src->unk0e0 >= 0.0f)
+        {
+            item->unk0e0 = src->unk0e0;
+        }
+        if (src->unk0e4 >= 0.0f)
+        {
+            item->unk0e4 = src->unk0e4;
+        }
+        if (src->unk0f8 >= 0)
+        {
+            item->unk0f8 = src->unk0f8;
+        }
+        if (src->unk0fc >= 0)
+        {
+            item->unk0fc = src->unk0fc;
+        }
+        if (src->sponsor >= 0)
+        {
+            item->sponsor = src->sponsor;
+        }
+        if (src->unk128 >= 0.0f)
+        {
+            item->unk128 = src->unk128;
+        }
+    }
 }
 
 // Price after the used-item and sponsor discounts.

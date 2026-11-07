@@ -66,10 +66,81 @@ struct MenuRound
 // Shop catalogue entry.
 struct ShopItem
 {
-    int price;           // 0x000
-    BYTE unk004[0x120];  // 0x004
-    int sponsor;         // 0x124
-    int unk128;          // 0x128
+    int price;    // 0x000
+    int unk004;   // 0x004
+    float unk008; // 0x008
+    float unk00c; // 0x00c
+    float unk010; // 0x010
+    float unk014; // 0x014
+    float unk018; // 0x018
+    float unk01c; // 0x01c
+    float unk020; // 0x020
+    float unk024; // 0x024
+    float unk028; // 0x028
+    int unk02c;   // 0x02c
+    int unk030;   // 0x030
+    int unk034;   // 0x034
+    float unk038; // 0x038
+    float unk03c; // 0x03c
+    float unk040; // 0x040
+    float unk044; // 0x044
+    float unk048; // 0x048
+    float unk04c; // 0x04c
+    float unk050; // 0x050
+    float unk054; // 0x054
+    float unk058; // 0x058
+    float unk05c; // 0x05c
+    float unk060; // 0x060
+    float unk064; // 0x064
+    float unk068; // 0x068
+    float unk06c; // 0x06c
+    float unk070; // 0x070
+    float unk074; // 0x074
+    float unk078; // 0x078
+    float unk07c; // 0x07c
+    float unk080; // 0x080
+    float unk084; // 0x084
+    float unk088; // 0x088
+    int unk08c;   // 0x08c
+    int unk090;   // 0x090
+    float unk094; // 0x094
+    float unk098; // 0x098
+    float unk09c; // 0x09c
+    float unk0a0; // 0x0a0
+    float unk0a4; // 0x0a4
+    float unk0a8; // 0x0a8
+    float unk0ac; // 0x0ac
+    float unk0b0; // 0x0b0
+    float unk0b4; // 0x0b4
+    float unk0b8; // 0x0b8
+    float unk0bc; // 0x0bc
+    float unk0c0; // 0x0c0
+    float unk0c4; // 0x0c4
+    float unk0c8; // 0x0c8
+    float unk0cc; // 0x0cc
+    float unk0d0; // 0x0d0
+    float unk0d4; // 0x0d4
+    float unk0d8; // 0x0d8
+    float unk0dc; // 0x0dc
+    float unk0e0; // 0x0e0
+    float unk0e4; // 0x0e4
+    int unk0e8;   // 0x0e8
+    int unk0ec;   // 0x0ec
+    int unk0f0;   // 0x0f0
+    int unk0f4;   // 0x0f4
+    int unk0f8;   // 0x0f8
+    int unk0fc;   // 0x0fc
+    float unk100; // 0x100
+    float unk104; // 0x104
+    float unk108; // 0x108
+    float unk10c; // 0x10c
+    float unk110; // 0x110
+    float unk114; // 0x114
+    float unk118; // 0x118
+    float unk11c; // 0x11c
+    float unk120; // 0x120
+    int sponsor;  // 0x124
+    float unk128; // 0x128
 };
 
 // Car%02d row of the front-end csv, read by FUN_435e30.
@@ -78,8 +149,7 @@ struct ShopCar
     int unk00;        // 0x00
     int unk04;        // 0x04
     int unk08;        // 0x08
-    BYTE unk0c[0x30]; // 0x0c
-    int parts[11][4]; // 0x3c, filled by FUN_435f60
+    int parts[14][4]; // 0x0c, indexed by part id, 3..13 read from the csv
 };
 
 struct ShopEntry
