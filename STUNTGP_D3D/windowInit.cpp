@@ -1,5 +1,9 @@
 #include "windowInit.h"
 
+// The original never addresses the stack through esp: it was built without frame pointer omission.
+// TODO: move to /Oy- in CMakeLists.txt once verified for the other translation units.
+#pragma optimize("y", off)
+
 // TODO: should we set this as a struct???
 // GLOBAL: STUNTGP_D3D 0x4754d0
 errorMessage errorMessages[] = {
@@ -155,9 +159,8 @@ int DAT_CAPS = 0;
 // FUNCTION: STUNTGP_D3D 0x422700
 HWND windowCreateInternal(HINSTANCE hInstance, LPCTSTR className, LPCTSTR windowName)
 {
-    int height = GetSystemMetrics(SM_CYFULLSCREEN);
-    int width = GetSystemMetrics(SM_CXFULLSCREEN);
-    HWND wHandle = CreateWindowEx(WS_EX_APPWINDOW, className, windowName, WS_POPUP, 0, 0, width, height, NULL, NULL,
+    HWND wHandle = CreateWindowEx(WS_EX_APPWINDOW, className, windowName, WS_POPUP, 0, 0,
+                                  GetSystemMetrics(SM_CXFULLSCREEN), GetSystemMetrics(SM_CYFULLSCREEN), NULL, NULL,
                                   hInstance, NULL);
     if (!wHandle)
     {
@@ -195,21 +198,21 @@ const char *ddGetErrMessage(int res)
     // TODO
 }
 
-// // STUB: STUNTGP_D3D 0x422780
-// void FUN_422780()
-// {
-// }
-
-// // STUB: STUNTGP_D3D 0x4227b0
-// void FUN_4227b0()
-// {
-// }
-
-// TODO: move to another file, this shouldn't inline at all
 // FUNCTION: STUNTGP_D3D 0x422780
-int ddSetCoopLevel(LPDIRECTDRAW lplpDD, HWND hWnd)
+int ddSetCoopLevel(LPDIRECTDRAW *lplpDD, HWND hWnd)
 {
-    int res = lplpDD->SetCooperativeLevel(hWnd, DDSCL_FULLSCREEN | DDSCL_ALLOWREBOOT | DDSCL_EXCLUSIVE);
+    int res = (*lplpDD)->SetCooperativeLevel(hWnd, DDSCL_FULLSCREEN | DDSCL_ALLOWREBOOT | DDSCL_EXCLUSIVE);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    return res;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4227b0
+int dd4SetCoopLevel(LPDIRECTDRAW4 *lplpDD4, HWND hWnd)
+{
+    int res = (*lplpDD4)->SetCooperativeLevel(hWnd, DDSCL_FULLSCREEN | DDSCL_ALLOWREBOOT | DDSCL_EXCLUSIVE);
     if (res != DD_OK)
     {
         exitError(ddGetErrMessage(res));
@@ -220,37 +223,24 @@ int ddSetCoopLevel(LPDIRECTDRAW lplpDD, HWND hWnd)
 // FUNCTION: STUNTGP_D3D 0x4227e0
 int windowDDCreate(LPDIRECTDRAW *lplpDD, GUID *lpGUID, HWND hWnd)
 {
-    int res = 0;
-    res = DirectDrawCreate(lpGUID, lplpDD, NULL);
+    int res = DirectDrawCreate(lpGUID, lplpDD, NULL);
     if (res != DD_OK)
     {
         exitError(ddGetErrMessage(res));
     }
-    ddSetCoopLevel(*lplpDD, hWnd);
+    ddSetCoopLevel(lplpDD, hWnd);
     return res;
 }
 
-// FUNCTION: STUNTGP_D3D 0x4227b0
-int dd4SetCoopLevel(LPDIRECTDRAW4 ppvObj, HWND hWnd)
+// FUNCTION: STUNTGP_D3D 0x422820
+int ddGetDD4(LPDIRECTDRAW *lplpDD, LPDIRECTDRAW4 *lplpDD4, HWND hWnd)
 {
-    // TODO; move the last parameter to define and use in both SetCooperativeLevel?
-    int res = ppvObj->SetCooperativeLevel(hWnd, DDSCL_FULLSCREEN | DDSCL_ALLOWREBOOT | DDSCL_EXCLUSIVE);
+    int res = (*lplpDD)->QueryInterface(IID_IDirectDraw4, (LPVOID *)lplpDD4);
     if (res != DD_OK)
     {
         exitError(ddGetErrMessage(res));
     }
-    return res;
-}
-
-// STUB: STUNTGP_D3D 0x422820
-int ddGetDD4(LPDIRECTDRAW lplpDD, LPDIRECTDRAW4 *ppvObj, HWND hWnd)
-{
-    int res = lplpDD->QueryInterface(IID_IDirectDraw4, (LPVOID *)ppvObj);
-    if (res != DD_OK)
-    {
-        exitError(ddGetErrMessage(res));
-    }
-    dd4SetCoopLevel(*ppvObj, hWnd);
+    dd4SetCoopLevel(lplpDD4, hWnd);
     return res;
 }
 

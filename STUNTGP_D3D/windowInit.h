@@ -16,12 +16,10 @@ struct errorMessage
 HWND windowCreateInternal(HINSTANCE hInstance, LPCTSTR className, LPCTSTR windowName);
 
 const char *ddGetErrMessage(int res);
-void FUN_422780();
-void FUN_4227b0();
-int ddSetCoopLevel(LPDIRECTDRAW lplpDD, HWND hWnd);
+int ddSetCoopLevel(LPDIRECTDRAW *lplpDD, HWND hWnd);
 int windowDDCreate(LPDIRECTDRAW *lplpDD, GUID *lpGUID, HWND hWnd);
-int dd4SetCoopLevel(LPDIRECTDRAW4 ppvObj, HWND hWnd);
-int ddGetDD4(LPDIRECTDRAW lplpDD, LPDIRECTDRAW4 *ppvObj, HWND hWnd);
+int dd4SetCoopLevel(LPDIRECTDRAW4 *lplpDD4, HWND hWnd);
+int ddGetDD4(LPDIRECTDRAW *lplpDD, LPDIRECTDRAW4 *lplpDD4, HWND hWnd);
 void FUN_422860();
 void FUN_422880();
 void FUN_4228a0();
@@ -51,3 +49,11 @@ int FUN_4230b0(LPDIRECTDRAWPALETTE outPalette, void *sth);
 
 // GLOBAL: STUNTSP_D3D 0x5728dc
 extern int DAT_CAPS;
+
+// TODO(merge): transitional overloads for callers that still pass the interfaces by value.
+// The original callers pass the address of the global (e.g. &g_dd); remove these once they do.
+// Taking a reference keeps the forwarded pointer identical to the original call.
+inline int ddGetDD4(LPDIRECTDRAW &lpDD, LPDIRECTDRAW4 *lplpDD4, HWND hWnd)
+{
+    return ddGetDD4(&lpDD, lplpDD4, hWnd);
+}
