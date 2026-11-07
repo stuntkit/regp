@@ -46,7 +46,16 @@ struct Car
     int active;           // 0x1ba8
     BYTE unk1bac[0x6c4];  // 0x1bac
     int unk2270;          // 0x2270
-    BYTE unk2274[0x2f4];  // 0x2274
+    BYTE unk2274[0x13c];  // 0x2274
+    float unk23b0;        // 0x23b0
+    BYTE unk23b4[0x8];    // 0x23b4
+    int unk23bc;          // 0x23bc
+    BYTE unk23c0[0xc];    // 0x23c0
+    int unk23cc;          // 0x23cc
+    int unk23d0;          // 0x23d0
+    int unk23d4;          // 0x23d4
+    int unk23d8;          // 0x23d8
+    BYTE unk23dc[0x18c];  // 0x23dc
     int unk2568;          // 0x2568
     int unk256c;          // 0x256c
     int unk2570;          // 0x2570

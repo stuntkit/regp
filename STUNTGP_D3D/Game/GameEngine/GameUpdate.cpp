@@ -450,9 +450,192 @@ void FUN_431810()
 
 // --- timer ---
 
-// STUB: STUNTGP_D3D 0x443a80
+void FUN_443100();
+void FUN_443630();
+void FUN_443780();
+void FUN_443890();
+void FUN_443950();
+void FUN_443980();
+void FUN_443e20();
+void FUN_444390();
+void FUN_444410();
+void FUN_4446d0();
+void FUN_444ae0();
+void FUN_444c00();
+void FUN_444c50();
+void FUN_40e360(Car *sub);
+void FUN_40e380(Car *sub);
+
+// GLOBAL: STUNTGP_D3D 0x474630
+Car *g_474630;
+
+// GLOBAL: STUNTGP_D3D 0x60df98
+int g_60df98;
+
+// GLOBAL: STUNTGP_D3D 0x60f010
+float g_60f010;
+
+// GLOBAL: STUNTGP_D3D 0x60f2b0
+DWORD g_60f2b0;
+
+// GLOBAL: STUNTGP_D3D 0x60f2c8
+int g_60f2c8;
+
+// GLOBAL: STUNTGP_D3D 0x60f2cc
+int g_60f2cc;
+
+// STUB: STUNTGP_D3D 0x443100
+void FUN_443100()
+{
+}
+
+// STUB: STUNTGP_D3D 0x443630
+void FUN_443630()
+{
+}
+
+// STUB: STUNTGP_D3D 0x443780
+void FUN_443780()
+{
+}
+
+// STUB: STUNTGP_D3D 0x443890
+void FUN_443890()
+{
+}
+
+// STUB: STUNTGP_D3D 0x443950
+void FUN_443950()
+{
+}
+
+// STUB: STUNTGP_D3D 0x443980
+void FUN_443980()
+{
+}
+
+// STUB: STUNTGP_D3D 0x443e20
+void FUN_443e20()
+{
+}
+
+// STUB: STUNTGP_D3D 0x444390
+void FUN_444390()
+{
+}
+
+// STUB: STUNTGP_D3D 0x444410
+void FUN_444410()
+{
+}
+
+// STUB: STUNTGP_D3D 0x4446d0
+void FUN_4446d0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x444ae0
+void FUN_444ae0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x444c00
+void FUN_444c00()
+{
+}
+
+// STUB: STUNTGP_D3D 0x444c50
+void FUN_444c50()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x4439f0
+void FUN_4439f0()
+{
+    g_60f2c4 = 0;
+    switch (g_60df98)
+    {
+    case 2:
+    case 5:
+        FUN_443950();
+        break;
+    case 4:
+        FUN_443100();
+        break;
+    case 3:
+        FUN_443980();
+        break;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x443a30
+void FUN_443a30()
+{
+    if (g_60f2cc != 480)
+    {
+        if (g_60f010 * g_4d5bb8->unk23b0 * 0.01f > g_60f010 - 30000.0f)
+        {
+            g_60f2cc = 480;
+            FUN_444c00();
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x443a80
 void FUN_443a80()
 {
+    if (g_60f2c8)
+    {
+        if (--g_60f2c8 <= 0)
+        {
+            FUN_4439f0();
+            g_60f2c8 = 0;
+        }
+    }
+    FUN_443780();
+    switch (g_60f2b0)
+    {
+    case 2:
+    case 5:
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            GameSlot *slot = &g_498248[i];
+            if (slot->active == 1)
+            {
+                g_4722d0 = slot;
+                g_4d5bb8 = (Car *)slot->data;
+                g_61b740 = &slot->fx;
+                FUN_443e20();
+                FUN_4446d0();
+                FUN_444c50();
+                FUN_444ae0();
+                FUN_444410();
+                FUN_444390();
+            }
+        }
+        g_4722d0 = g_498248;
+        break;
+    }
+    case 3:
+        g_4d5bb8 = g_474630 = (Car *)g_4722d0->data;
+        FUN_443890();
+        FUN_444c50();
+        FUN_444ae0();
+        FUN_4446d0();
+        FUN_40e360((Car *)g_4722d0->data);
+        FUN_40e380((Car *)g_4722d0->data);
+        break;
+    case 4:
+        g_4d5bb8 = g_474630 = (Car *)g_4722d0->data;
+        FUN_443630();
+        FUN_443e20();
+        FUN_444c50();
+        FUN_443a30();
+        FUN_40e360((Car *)g_4722d0->data);
+        FUN_40e380((Car *)g_4722d0->data);
+        break;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x442de0
