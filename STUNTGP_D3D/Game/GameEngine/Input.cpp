@@ -162,9 +162,9 @@ void FUN_45ee60()
     if (g_612be8 == 1)
     {
         g_61295c = 0;
-        for (unsigned int i = 0; i < 4; i++)
+        Controller *c = g_62d580;
+        for (unsigned int i = 0; i < 4; i++, c++)
         {
-            Controller *c = &g_62d580[i];
             if (c->unk018 != 0xffff)
             {
                 if (c->active == 0)
@@ -212,7 +212,11 @@ void FUN_45ef00()
 void FUN_45ef30(Controller *c, BYTE *map)
 {
     int deadZone = c->state.range / 2;
-    if (fabs(c->state.y) > deadZone || fabs(c->state.x) > deadZone || c->state.buttons[map[4]] ||
+    if (fabs(c->state.y) > deadZone)
+    {
+        g_612970 = 1;
+    }
+    else if (fabs(c->state.x) > deadZone || c->state.buttons[map[4]] ||
         c->state.buttons[map[5]] || c->state.buttons[map[6]] || c->state.buttons[map[7]] ||
         c->state.buttons[map[8]] || c->state.buttons[map[9]] || c->state.buttons[map[10]] ||
         c->state.buttons[map[11]] || c->state.buttons[map[12]])
