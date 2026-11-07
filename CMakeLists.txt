@@ -209,7 +209,7 @@ if (MSVC_FOR_DECOMP)
     set(CMAKE_CXX_FLAGS_RELEASE " /D \"NDEBUG\"")
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/Zi /D \"NDEBUG\"") #/ZI in debug
     set(CMAKE_CXX_FLAGS_MINSIZEREL "/Os /D \"NDEBUG\"")
-  elif (TARGET StuntGP_D3D)
+  elseif (TARGET StuntGP_D3D)
   set(CMAKE_CXX_FLAGS "/FD /Gr /ML /W3 /GX /G5 /c /D \"WIN32\" /D \"_WINDOWS\"") # G6???
   set(CMAKE_CXX_FLAGS_DEBUG "/Gm /ZI /Od /D \"_DEBUG\"")
   set(CMAKE_CXX_FLAGS_RELEASE "/EHs /O2 /D \"NDEBUG\"")
