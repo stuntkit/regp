@@ -124,6 +124,7 @@ if(STUNTGP_BUILD_D3D)
     STUNTGP_D3D/common.cpp
     STUNTGP_D3D/windowInit.cpp
     STUNTGP_D3D/pure_api.cpp
+    STUNTGP_D3D/mem.cpp
     STUNTGP_D3D/Game/GameEngine/Game.cpp
     STUNTGP_D3D/Game/GameEngine/Engine_LevelScript.cpp
     STUNTGP_D3D/Game/GameEngine/io_wad.cpp
