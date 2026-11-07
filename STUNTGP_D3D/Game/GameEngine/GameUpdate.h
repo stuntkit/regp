@@ -562,11 +562,12 @@ struct Car
     SkidMark skids[4];        // 0x3964
     int unk6da4;              // 0x6da4
     int unk6da8;              // 0x6da8
-    BYTE unk6dac[0x8];        // 0x6dac
-    int unk6db4;              // 0x6db4
-    BYTE unk6db8[0xfc];       // 0x6db8
-    int unk6eb4;              // 0x6eb4
-    BYTE unk6eb8[0x2fc];      // 0x6eb8
+    int unk6dac;              // 0x6dac
+    int unk6db0;              // 0x6db0
+    int unk6db4[64];          // 0x6db4
+    int unk6eb4[64];          // 0x6eb4
+    int unk6fb4[64];          // 0x6fb4
+    int unk70b4[64];          // 0x70b4
     DWORD unk71b4;            // 0x71b4
     DWORD unk71b8;            // 0x71b8
     DWORD unk71bc;            // 0x71bc

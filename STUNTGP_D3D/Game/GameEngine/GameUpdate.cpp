@@ -951,6 +951,27 @@ void FUN_41a900()
     g_4d5bb8->unk22c0 = (g_570ac4->flags >> 3) & 1;
 }
 
+// FUNCTION: STUNTGP_D3D 0x41a930
+void FUN_41a930()
+{
+    Car *car = g_4d5bb8;
+    car->unk22b4 = car->unk22bc;
+    int boost = (g_570ac4->flags >> 2) & 1;
+    car->unk22bc = boost;
+    if (boost == 1)
+    {
+        car->unk1cf8 += 0.15f;
+        if (car->unk1cf8 > 1.0f)
+        {
+            car->unk1cf8 = 1.0f;
+        }
+    }
+    else if (car->unk71ec)
+    {
+        car->unk1cf8 *= 0.5f;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x41a9b0
 void FUN_41a9b0()
 {

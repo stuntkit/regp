@@ -537,6 +537,23 @@ void FUN_40b930(char *text)
     Script_GetFloat(section, "FA", &g_4d5bb8->unkcb4);
 }
 
+void Script_GetInt(char *section, char *key, int *out);
+
+// FUNCTION: STUNTGP_D3D 0x40bc30
+void FUN_40bc30(char *text)
+{
+    // STRING: STUNTGP_D3D 0x473834
+    char *section = strstr(text, "-SFX[] =");
+    // STRING: STUNTGP_D3D 0x473840
+    Script_GetInt(section, "Engine_Rev", (int *)&g_4d5bb8->race.unk80[1]);
+    // STRING: STUNTGP_D3D 0x47384c
+    Script_GetInt(section, "Engine_Idle", (int *)&g_4d5bb8->race.unk80[2]);
+    // STRING: STUNTGP_D3D 0x473858
+    Script_GetInt(section, "Engine_Boost", (int *)&g_4d5bb8->race.unk80[3]);
+    // STRING: STUNTGP_D3D 0x473868
+    Script_GetInt(section, "Horn", (int *)&g_4d5bb8->race.unk80[0]);
+}
+
 // FUNCTION: STUNTGP_D3D 0x40bf20
 void FUN_40bf20()
 {
@@ -1839,10 +1856,28 @@ void FUN_411890()
 // FUNCTION: STUNTGP_D3D 0x4118b0
 void FUN_4118b0()
 {
-    g_4d5bb8->unk6db4 = 0;
+    g_4d5bb8->unk6db4[0] = 0;
     g_4d5bb8->unk6da4 = 0;
-    g_4d5bb8->unk6eb4 = 0;
+    g_4d5bb8->unk6eb4[0] = 0;
     g_4d5bb8->unk6da8 = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4118d0
+void FUN_4118d0()
+{
+    Car *car = g_4d5bb8;
+    int i;
+    for (i = 0; i <= car->unk6da4; i++)
+    {
+        car->unk6fb4[i] = car->unk6db4[i];
+    }
+    for (i = 0; i <= car->unk6da8; i++)
+    {
+        car->unk70b4[i] = car->unk6eb4[i];
+    }
+    car->unk6dac = car->unk6da4;
+    car->unk6db0 = car->unk6da8;
+    FUN_4118b0();
 }
 
 // GLOBAL: STUNTGP_D3D 0x474290
