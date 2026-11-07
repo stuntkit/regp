@@ -39,7 +39,8 @@ struct Fader
 {
     float x;          // 0x00
     float y;          // 0x04
-    BYTE unk08[0x8];  // 0x08
+    float unk08;      // 0x08
+    BYTE unk0c[0x4];  // 0x0c
     int active;       // 0x10
     float value;      // 0x14
     float target;     // 0x18
@@ -59,6 +60,22 @@ struct SlotEvent
     int unk04;        // 0x04
     DWORD order;      // 0x08
     BYTE unk0c[0x48]; // 0x0c
+};
+
+struct CarRace
+{
+    DWORD unk00;      // 0x00
+    BYTE unk04[0x14]; // 0x04
+    int unk18;        // 0x18
+    int unk1c;        // 0x1c
+    BYTE unk20[0x4];  // 0x20
+    DWORD unk24;      // 0x24
+    BYTE unk28[0x4];  // 0x28
+    DWORD unk2c;      // 0x2c
+    BYTE unk30[0x14]; // 0x30
+    int unk44;        // 0x44
+    int unk48;        // 0x48
+    BYTE unk4c[0x50]; // 0x4c
 };
 
 // 6 entries at 0x49a1f8
@@ -105,13 +122,7 @@ struct Car
     BYTE unk726c[0x3dc];  // 0x726c
     int unk7648;          // 0x7648
     BYTE unk764c[0x3c];   // 0x764c
-    DWORD unk7688;        // 0x7688
-    BYTE unk768c[0x14];   // 0x768c
-    int unk76a0;          // 0x76a0
-    int unk76a4;          // 0x76a4
-    BYTE unk76a8[0xc];    // 0x76a8
-    DWORD unk76b4;        // 0x76b4
-    BYTE unk76b8[0x6c];   // 0x76b8
+    CarRace race;         // 0x7688
 };
 
 // One of the four per-player blocks at 0x498248 (0x74c bytes each).
@@ -327,4 +338,5 @@ void FUN_42eaa0();
 void FUN_442030();
 
 extern Car g_49a1f8[6];
+extern Car *g_4d5bb8;
 #endif /* GAMEUPDATE_H */
