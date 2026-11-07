@@ -2,10 +2,12 @@
 
 #include <cstring>
 #include <float.h>
+#include <math.h>
 
 #include "../../globals.h"
 #include "../../surface.h"
 #include "../../timer.h"
+#include "../../vecmath.h"
 
 // GLOBAL: STUNTGP_D3D 0x60d618
 int g_60d618;
@@ -63,7 +65,7 @@ float g_4d5b18;
 int g_4d5b1c;
 
 // GLOBAL: STUNTGP_D3D 0x612990
-int g_612990;
+DWORD g_612990;
 
 // GLOBAL: STUNTGP_D3D 0x61299c
 int g_61299c;
@@ -126,37 +128,397 @@ void FUN_401770()
 void FUN_4023f0()
 {
     GameSlot *slot = g_4722d0;
-    slot->unk0d8 = 0;
-    slot->unk0dc = 0;
-    slot->unk0e0 = 0;
-    slot->unk104 = 0;
-    slot->unk108 = 0;
-    slot->unk10c = 0;
+    slot->accelX = 0;
+    slot->accelY = 0;
+    slot->accelZ = 0;
+    slot->angAccelX = 0;
+    slot->angAccelY = 0;
+    slot->angAccelZ = 0;
 }
 
-// STUB: STUNTGP_D3D 0x402950
+// GLOBAL: STUNTGP_D3D 0x4864e8
+Camera g_4864e8 = {
+    {0.0f, 0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, -1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.0f}, 0, NULL, NULL, 2,
+};
+
+// FUNCTION: STUNTGP_D3D 0x4023d0
+void FUN_4023d0()
+{
+    GameSlot *slot = g_4722d0;
+    slot->velX = 0;
+    slot->velY = 0;
+    slot->velZ = 0;
+    slot->speed = 0;
+}
+
+// STUB: STUNTGP_D3D 0x412910
+void FUN_412910()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x4028d0
+void FUN_4028d0(int mode)
+{
+    GameSlot *slot = g_4722d0;
+    slot->camMode = mode;
+    slot->roll = 0;
+    slot->unk1a4 = 300;
+    FUN_412910();
+}
+
+// FUNCTION: STUNTGP_D3D 0x402950
 void FUN_402950()
 {
+    if (g_4722d0->preset)
+    {
+        g_4722d0->camMode = g_4722d0->presetMode;
+        g_4722d0->cam = g_4864e8;
+        g_4722d0->cam.pos = g_4722d0->preset->pos;
+        g_4722d0->cam.target = g_4722d0->preset->target;
+        g_4722d0->cam.up = g_4722d0->preset->up;
+        g_4722d0->fov = g_4722d0->preset->fov;
+        g_4722d0->fov2 = g_4722d0->preset->fov;
+        g_4722d0->roll = g_4722d0->preset->roll;
+        FUN_4023d0();
+        FUN_4023f0();
+        FUN_44f4c0();
+        if (g_4722d0->presetMode == 4)
+        {
+            g_4722d0->cam.target.x = g_4722d0->data->unk22dc + g_4722d0->data->posX;
+            g_4722d0->cam.target.y = g_4722d0->data->unk22e0 + g_4722d0->data->posY;
+            g_4722d0->cam.target.z = g_4722d0->data->unk22e4 + g_4722d0->data->posZ;
+        }
+        g_4722d0->preset = NULL;
+    }
 }
 
-// STUB: STUNTGP_D3D 0x402a80
+// FUNCTION: STUNTGP_D3D 0x402a80
 void FUN_402a80()
 {
+    if (g_4722d0->fovPending)
+    {
+        g_4722d0->fov = g_4722d0->fovNext;
+        g_4722d0->fovPending = 0;
+        FUN_44f4c0();
+    }
 }
 
-// STUB: STUNTGP_D3D 0x402f60
+// FUNCTION: STUNTGP_D3D 0x402f60
 void FUN_402f60()
 {
+    g_4722d0->angVelX += g_4722d0->angAccelX;
+    g_4722d0->angVelY += g_4722d0->angAccelY;
+    g_4722d0->angVelZ += g_4722d0->angAccelZ;
+    g_4722d0->angX = (g_4722d0->angX - (int)(g_4722d0->angVelX * -93206.75555555556)) & 0x1ffffff;
+    g_4722d0->angY = (g_4722d0->angY - (int)(g_4722d0->angVelY * -93206.75555555556)) & 0x1ffffff;
+    g_4722d0->angZ = (int)(g_4722d0->angVelZ * 93206.75555555556) & 0x1ffffff;
+    g_4722d0->angVelX *= 0.95f;
+    g_4722d0->angVelY *= 0.95f;
+    if ((float)fabs(g_4722d0->angVelX) < 0.1f)
+    {
+        g_4722d0->angVelX = 0;
+    }
+    if ((float)fabs(g_4722d0->angVelY) < 0.1f)
+    {
+        g_4722d0->angVelY = 0;
+    }
+    if ((float)fabs(g_4722d0->angVelZ) < 0.1f)
+    {
+        g_4722d0->angVelZ = 0;
+    }
 }
 
-// STUB: STUNTGP_D3D 0x403080
+// FUNCTION: STUNTGP_D3D 0x403080
 void FUN_403080()
 {
+    g_4722d0->velX += g_4722d0->accelX;
+    g_4722d0->velY += g_4722d0->accelY;
+    g_4722d0->velZ += g_4722d0->accelZ;
+    g_4722d0->velX *= 0.95f;
+    g_4722d0->velY *= 0.95f;
+    g_4722d0->velZ *= 0.95f;
+    g_4722d0->speed = (float)sqrt(
+        g_4722d0->velX * g_4722d0->velX + g_4722d0->velY * g_4722d0->velY + g_4722d0->velZ * g_4722d0->velZ
+    );
+    if ((float)fabs(g_4722d0->velX) < 0.1f)
+    {
+        g_4722d0->velX = 0;
+    }
+    if ((float)fabs(g_4722d0->velY) < 0.1f)
+    {
+        g_4722d0->velY = 0;
+    }
+    if ((float)fabs(g_4722d0->velZ) < 0.1f)
+    {
+        g_4722d0->velZ = 0;
+    }
 }
 
-// STUB: STUNTGP_D3D 0x4039b0
+// GLOBAL: STUNTGP_D3D 0x4722d8
+CameraPreset g_4722d8[32] = {
+    {{20946.87890625f, 2384.298095703125f, -10466.134765625f, 0.0f},
+     {0.0f, 0.0f, 0.0f, 1.0f},
+     {0.0f, 0.0f, 1.0f, 0.0f},
+     0.0f,
+     0x41700000,
+     1.4e-44f,
+     0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x499f90
+int g_499f90;
+
+// GLOBAL: STUNTGP_D3D 0x60f020
+int g_60f020;
+
+// FUNCTION: STUNTGP_D3D 0x4028f0
+void FUN_4028f0(CameraPreset *preset, int mode)
+{
+    g_4722d0->preset = preset;
+    g_4722d0->presetMode = mode;
+}
+
+// FUNCTION: STUNTGP_D3D 0x402ab0
+void FUN_402ab0(float fov)
+{
+    g_4722d0->fovPending = 1;
+    g_4722d0->fovNext = fov;
+}
+
+// FUNCTION: STUNTGP_D3D 0x403310
+void FUN_403310(float fov)
+{
+    g_4722d0->fov = fov;
+    g_4722d0->unk0bc = 1.333f;
+    g_4722d0->unk0c0 = 1.0f;
+    FUN_44f4c0();
+}
+
+// FUNCTION: STUNTGP_D3D 0x403770
+void FUN_403770(Car *car)
+{
+    Vec4 target;
+    Vec4 delta;
+
+    if (car->active)
+    {
+        target.x = car->unk22dc + car->posX;
+        target.y = car->unk22e0 + car->posY;
+        target.z = car->unk22e4 + car->posZ;
+        delta.x = target.x - g_4722d0->cam.target.x;
+        delta.y = target.y - g_4722d0->cam.target.y;
+        delta.z = target.z - g_4722d0->cam.target.z;
+        delta.x *= 0.125f;
+        delta.y *= 0.125f;
+        delta.z *= 0.125f;
+        g_4722d0->cam.target.x += delta.x;
+        g_4722d0->cam.target.y += delta.y;
+        g_4722d0->cam.target.z += delta.z;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x403800
+CameraPreset *FUN_403800(Car *car)
+{
+    CameraPreset *cur;
+    CameraPreset *next;
+    float dx;
+    float dy;
+    float dz;
+    float dist;
+
+    if (g_499f90 == 1 || car->active != 1 || !(cur = g_4722d0->unk1cc))
+    {
+        return g_4722d8;
+    }
+    next = cur + 1;
+    if (next >= &g_4722d8[g_499f90])
+    {
+        next = g_4722d8;
+    }
+    dx = cur->pos.x - car->posX;
+    dy = cur->pos.y - car->posY;
+    dz = cur->pos.z - car->posZ;
+    dist = dx * dx + dy * dy + dz * dz;
+    dx = next->pos.x - car->posX;
+    dy = next->pos.y - car->posY;
+    dz = next->pos.z - car->posZ;
+    if (dx * dx + dy * dy + dz * dz < dist)
+    {
+        return next;
+    }
+    return cur;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4038c0
+void FUN_4038c0(Car *car)
+{
+    CameraPreset *preset;
+    float dx;
+    float dy;
+    float dz;
+    float scale;
+
+    if (g_4722d0->unk19c < 1.0f)
+    {
+        return;
+    }
+    preset = g_4722d0->unk1cc;
+    switch (preset->unk34)
+    {
+    case 0:
+        FUN_402ab0(preset->fov);
+        break;
+    case 1:
+        dx = preset->pos.x - car->posX;
+        dy = preset->pos.y - car->posY;
+        dz = preset->pos.z - car->posZ;
+        scale = (float)sqrt(dx * dx + dy * dy + dz * dz) * 2.5e-05f;
+        scale *= 10.0f;
+        if (scale > 1.0f)
+        {
+            scale = 1.0f;
+        }
+        FUN_402ab0(scale * preset->fov);
+        break;
+    case 2:
+        dx = preset->pos.x - car->posX;
+        dy = preset->pos.y - car->posY;
+        dz = preset->pos.z - car->posZ;
+        scale = (float)sqrt(dx * dx + dy * dy + dz * dz) * 2.5e-05f;
+        scale *= 2.75f;
+        if (scale > 1.0f)
+        {
+            scale = 1.0f;
+        }
+        FUN_402ab0(scale * preset->fov);
+        break;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x40d200
+void FUN_40d200(Car *car)
+{
+    car->unk22ec = 18.0f;
+    car->unk22f0 = 0.0f;
+    car->unk22f4 = 0.0f;
+    car->unk22fc = 1000.0f;
+    car->unk2300 = 0.125f;
+    car->unk22dc = 0.0f;
+    car->unk22e0 = 150.0f;
+    car->unk22e4 = 0.0f;
+    car->unk22c8 = 5;
+    car->unk2304 = 0.0f;
+    FUN_4028d0(5);
+    FUN_403310(2.09f);
+    FUN_402ab0(2.09f);
+    g_60f020 = 2;
+}
+
+// FUNCTION: STUNTGP_D3D 0x40d280
+void FUN_40d280(Car *car)
+{
+    car->unk22ec = 13.0f;
+    car->unk22f0 = 0.0f;
+    car->unk22f4 = 0.0f;
+    car->unk22fc = 600.0f;
+    car->unk2300 = 0.5f;
+    car->unk22dc = 0.0f;
+    car->unk22e0 = 150.0f;
+    car->unk22e4 = 0.0f;
+    car->unk22c8 = 5;
+    car->unk2304 = 0.0f;
+    FUN_4028d0(5);
+    FUN_403310(2.09f);
+    FUN_402ab0(2.09f);
+    g_60f020 = 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4039b0
 void FUN_4039b0()
 {
+    Car *car = g_4722d0->data;
+    CameraPreset *preset;
+
+    switch (g_4722d0->camMode)
+    {
+    case 10:
+        preset = FUN_403800(car);
+        if (preset != g_4722d0->unk1cc)
+        {
+            car->unk22dc = 0.0f;
+            car->unk22e0 = 0.0f;
+            car->unk22e4 = 0.0f;
+            FUN_4028f0(preset, 10);
+            g_4722d0->unk1cc = preset;
+        }
+        if (g_4722d0->unk1cc->unk34 != 3)
+        {
+            FUN_403770(car);
+        }
+        FUN_4038c0(car);
+        break;
+    case 11:
+        if (g_4722d0->unk1d4 == 1)
+        {
+            g_4722d0->unk1d4 = 0;
+            FUN_40d200(car);
+            FUN_4028d0(11);
+        }
+        break;
+    case 12:
+        if (g_4722d0->unk1d4 == 1)
+        {
+            g_4722d0->unk1d4 = 0;
+            FUN_40d280(car);
+            car->unk22ec = 6.0f;
+            car->unk22f0 = 200.0f;
+            car->unk22f4 = 0.0f;
+            car->unk22fc = 1350.0f;
+            FUN_402ab0(1.25f);
+            FUN_4028d0(12);
+        }
+        break;
+    case 13:
+        if (g_4722d0->unk1d4 == 1)
+        {
+            g_4722d0->unk1d4 = 0;
+            FUN_40d280(car);
+            car->unk22ec = 20.0f;
+            car->unk22f0 = 260.0f;
+            car->unk22f4 = 0.0f;
+            car->unk22fc = 2000.0f;
+            FUN_4028d0(13);
+        }
+        break;
+    case 14:
+        if (g_4722d0->unk1d4 == 1)
+        {
+            g_4722d0->unk1d4 = 0;
+            FUN_40d280(car);
+            car->unk22ec = 30.0f;
+            car->unk22f0 = 45.0f;
+            car->unk22f4 = 0.0f;
+            car->unk22fc = 2000.0f;
+            FUN_4028d0(14);
+        }
+        break;
+    case 15:
+        if (g_4722d0->unk1d4 == 1)
+        {
+            g_4722d0->unk1d4 = 0;
+            FUN_40d280(car);
+            FUN_4028d0(15);
+        }
+        break;
+    case 16:
+        if (g_4722d0->unk1d4 == 1)
+        {
+            g_4722d0->unk1d4 = 0;
+            FUN_4028d0(16);
+        }
+        break;
+    }
 }
 
 // STUB: STUNTGP_D3D 0x404450
@@ -488,7 +850,7 @@ void FUN_446110()
     int searching = 1;
     for (SoundZone *zone = &g_483f98[1]; zone->id != -1 && searching == 1; zone++)
     {
-        if (FUN_4278a0(zone->bounds, &g_4722d0->unk008) == 1)
+        if (FUN_4278a0(zone->bounds, &g_4722d0->cam.pos.x) == 1)
         {
             found = zone;
             searching = 0;

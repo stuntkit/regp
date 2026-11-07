@@ -302,9 +302,578 @@ int FUN_4421f0()
     return 0;
 }
 
-// STUB: STUNTGP_D3D 0x442640
+// STUB: STUNTGP_D3D 0x418180
+void FUN_418180()
+{
+}
+
+// STUB: STUNTGP_D3D 0x45e4f0
+void FUN_45e4f0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x416050
+void FUN_416050()
+{
+}
+
+// STUB: STUNTGP_D3D 0x449d60
+void FUN_449d60()
+{
+}
+
+// STUB: STUNTGP_D3D 0x428f70
+void FUN_428f70(DWORD font)
+{
+}
+
+// STUB: STUNTGP_D3D 0x4291f0
+void FUN_4291f0(const char *text, int align, float x, float y, float z, DWORD color, float scale, int flags)
+{
+}
+
+// STUB: STUNTGP_D3D 0x42e870
+void FUN_42e870()
+{
+}
+
+// STUB: STUNTGP_D3D 0x433f40
+void FUN_433f40()
+{
+}
+
+// STUB: STUNTGP_D3D 0x44ae40
+void FUN_44ae40()
+{
+}
+
+// STUB: STUNTGP_D3D 0x401b00
+void FUN_401b00()
+{
+}
+
+// STUB: STUNTGP_D3D 0x431830
+void FUN_431830(int a)
+{
+}
+
+// STUB: STUNTGP_D3D 0x430d40
+void FUN_430d40(int a, int b)
+{
+}
+
+// STUB: STUNTGP_D3D 0x448110
+void FUN_448110()
+{
+}
+
+// STUB: STUNTGP_D3D 0x447100
+void FUN_447100()
+{
+}
+
+// STUB: STUNTGP_D3D 0x447280
+void FUN_447280(float x, float y, float width, float height)
+{
+}
+
+// STUB: STUNTGP_D3D 0x446c20
+void FUN_446c20(float x, float y)
+{
+}
+
+// STUB: STUNTGP_D3D 0x446d90
+void FUN_446d90(int value, float x, float y, float width, float height)
+{
+}
+
+// GLOBAL: STUNTGP_D3D 0x6244fc
+int g_6244fc;
+
+// GLOBAL: STUNTGP_D3D 0x624500
+int g_624500;
+
+// GLOBAL: STUNTGP_D3D 0x61b74c
+int g_61b74c;
+
+// GLOBAL: STUNTGP_D3D 0x61b754
+int g_61b754;
+
+// GLOBAL: STUNTGP_D3D 0x485198
+int g_485198;
+
+// FUNCTION: STUNTGP_D3D 0x4473f0
+void FUN_4473f0()
+{
+    float width;
+    float x;
+
+    if (g_612bf4 == 1 || g_612958 == 1)
+    {
+        return;
+    }
+    if (g_61294c != 1)
+    {
+        g_61b754 = 0;
+        g_61b74c = 0;
+        return;
+    }
+    if (!g_61b754)
+    {
+        FUN_430d40(15, 0x1a);
+        g_61b754 = 1;
+    }
+    FUN_447100();
+    switch (g_4835e0)
+    {
+    case 4:
+    case 6:
+        width = 323.2f;
+        break;
+    default:
+        width = 256.0f;
+        break;
+    }
+    x = (640.0f - width) * 0.5f;
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.x = x;
+    g_spriteDesc.y = 120.0f;
+    g_spriteDesc.z = 0.96f;
+    if (!g_61b754)
+    {
+        g_spriteDesc.u0 = 952.0f;
+        g_spriteDesc.v0 = 800.0f;
+        g_spriteDesc.u1 = 1016.0f;
+        g_spriteDesc.v1 = 864.0f;
+        g_spriteDesc.texture = 11;
+        FUN_447280(x, 120.0f, width, 240.0f);
+    }
+    else
+    {
+        g_spriteDesc.u0 = 0.0f;
+        g_spriteDesc.v0 = 0.0f;
+        g_spriteDesc.u1 = 1024.0f;
+        g_spriteDesc.v1 = 1024.0f;
+        g_spriteDesc.texture = 15;
+    }
+    g_spriteDesc.width = width;
+    g_spriteDesc.height = 240.0f;
+    g_spriteDesc.blendMode = 0x20;
+    FUN_432e00(&g_spriteDesc);
+    if (!g_61b754)
+    {
+        g_spriteDesc.flags = 2;
+        g_spriteDesc.x = (width - 65.0f) * 0.5f + x;
+        g_spriteDesc.y = 136.0f;
+        g_spriteDesc.z = 0.99f;
+        g_spriteDesc.u0 = 320.0f;
+        g_spriteDesc.v0 = 644.0f;
+        g_spriteDesc.u1 = 580.0f;
+        g_spriteDesc.v1 = 732.0f;
+        g_spriteDesc.width = 65.0f;
+        g_spriteDesc.height = 22.0f;
+        g_spriteDesc.texture = 14;
+        g_spriteDesc.blendMode = 0x20;
+        FUN_432e00(&g_spriteDesc);
+    }
+    FUN_446c20(x, 120.0f);
+    x = width - 64.0f - 12.0f - 12.8f + x + 12.8f;
+    FUN_446d90(g_sfxSetting, x, 255.2f, 64.0f, 12.0f);
+    FUN_446d90(g_musicSetting, x, 275.2f, 64.0f, 12.0f);
+    if (g_485198 == 1)
+    {
+        FUN_446d90(g_61297c, x, 295.2f, 64.0f, 12.0f);
+    }
+    if (g_61b744)
+    {
+        FUN_4291f0(g_6127a0[98 + g_61b744->unk01c], 1, 320.0f, 80.0f, 0.98f, 0xffff00, 2.0f, 6);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x40de80
+void FUN_40de80()
+{
+    if (g_473a24 > 300)
+    {
+        return;
+    }
+    if (!g_4d5b1c)
+    {
+        g_4d5b1c = 1;
+        FUN_430d40(11, 0x1c);
+        FUN_430d40(14, 0x1d);
+        FUN_448110();
+        return;
+    }
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.x = g_61b740->faders[1].x - 48.0f;
+    g_spriteDesc.y = g_61b740->faders[1].y - 80.0f - g_4d5b18;
+    g_spriteDesc.z = 0.97f;
+    g_spriteDesc.u0 = 0.0f;
+    g_spriteDesc.v0 = 0.0f;
+    g_spriteDesc.u1 = 1024.0f;
+    g_spriteDesc.v1 = 1024.0f;
+    g_spriteDesc.width = 200.0f;
+    g_spriteDesc.height = 200.0f;
+    g_spriteDesc.texture = 14;
+    g_spriteDesc.blendMode = 0x70;
+    g_spriteDesc.alpha = 0xff;
+    FUN_432e00(&g_spriteDesc);
+    g_spriteDesc.texture = 11;
+    g_spriteDesc.blendMode = 0x58;
+    FUN_432e00(&g_spriteDesc);
+}
+
+// FUNCTION: STUNTGP_D3D 0x40df90
+void FUN_40df90()
+{
+    DWORD color;
+
+    FUN_428f70(1);
+    color = g_612990 % 60 < 20 ? 0xff404000 : 0xffffff00;
+    FUN_4291f0(g_6127a0[95], 1, g_6244fc + 320.0f, 448.0f - g_624500, 0.99f, color, 2.0f, 6);
+    FUN_4291f0(g_6127a0[104], 1, g_6244fc + 320.0f, g_624500, 0.99f, color, 2.0f, 6);
+}
+
+// STUB: STUNTGP_D3D 0x447fa0
+void FUN_447fa0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x4487d0
+void FUN_4487d0(int index, float x, float y, float z)
+{
+}
+
+// STUB: STUNTGP_D3D 0x4476c0
+void FUN_4476c0(int type, float x, float y, float z, float width, float height)
+{
+}
+
+// STUB: STUNTGP_D3D 0x4290d0
+float FUN_4290d0(const char *text, float scale)
+{
+    return 0.0f;
+}
+
+// STUB: STUNTGP_D3D 0x443770
+int FUN_443770()
+{
+    return 0;
+}
+
+// GLOBAL: STUNTGP_D3D 0x4856c0
+char *g_4856c0[6] = {"PLAYER 10", "PLAYER 20", "PLAYER 30", "PLAYER 40", "PLAYER 50", "PLAYER 60"};
+
+// GLOBAL: STUNTGP_D3D 0x4856d8
+char *g_4856d8[6] = {"4:07:13", "4:10:56", "4:11:31", "4:14:79", "4:17:01", "4:21:36"};
+
+// GLOBAL: STUNTGP_D3D 0x4856f0
+char *g_4856f0[6] = {"1:07:13", "1:10:56", "1:11:31", "1:14:79", "1:17:01", "1:21:36"};
+
+// GLOBAL: STUNTGP_D3D 0x485708
+char *g_485708[6] = {"6234567", "5234567", "4234567", "3234567", "2234567", "1234567"};
+
+// GLOBAL: STUNTGP_D3D 0x612d14
+int g_612d14[6];
+
+// GLOBAL: STUNTGP_D3D 0x60d728
+DWORD g_60d728;
+
+// FUNCTION: STUNTGP_D3D 0x449fb0
+void FUN_449fb0()
+{
+    CarRace *race;
+    int title;
+    char **column;
+    float rowHeight;
+    float y;
+    Fader *row;
+    float pad;
+    int place;
+    int i;
+    DWORD color;
+    float rowX;
+    float rowY;
+    float width;
+    float top;
+    float height;
+    const char *text;
+
+    race = &g_4722d0->data->race;
+    if (!race->unk1c)
+    {
+        return;
+    }
+    if (g_60d728 < 2)
+    {
+        g_60d728++;
+        return;
+    }
+    if (g_4d5bb8->race.unk2c > 120)
+    {
+        return;
+    }
+    if (g_61b634 != 0x1b)
+    {
+        FUN_430d40(15, 0x1b);
+    }
+    switch (race->unk48)
+    {
+    case 0:
+        title = 3;
+        column = g_4856d8;
+        rowHeight = 70.4f;
+        break;
+    case 1:
+        title = 2;
+        column = g_4856f0;
+        rowHeight = 70.4f;
+        break;
+    case 2:
+        title = 4;
+        column = g_485708;
+        rowHeight = 89.6f;
+        break;
+    }
+    FUN_447fa0();
+    y = 0.0f;
+    row = &g_61b740->faders[12];
+    FUN_428f70(1);
+    pad = 5.0f;
+    place = g_4722d0->data->unk24e4;
+    for (i = 0; i < 6; i++)
+    {
+        if (!g_612d14[i])
+        {
+            break;
+        }
+        if (i == place && race->unk24 > 30 && !g_61b740->faders[12 + place].active)
+        {
+            color = 0xff404000;
+        }
+        else
+        {
+            color = 0xffffff00;
+        }
+        rowY = y + row->y;
+        rowX = row->x;
+        width = 521.60004f - (row->x - row->unk08);
+        if (race->unk44)
+        {
+            pad += 0.5f;
+            width = (g_61b740->faders[10].x - g_61b740->faders[10].unk08) * pad + width;
+        }
+        FUN_4487d0(i, rowX - 76.8f, rowY - 19.2f, 0.99f);
+        top = rowY - 4.0f;
+        FUN_4476c0(10, width, top, 0.96f, rowHeight, 35.2f);
+        height = FUN_4290d0(g_4856c0[i], 1.6f);
+        FUN_4476c0(9, rowX, top, 0.96f, height, 35.2f);
+        FUN_4291f0(g_4856c0[i], 0, rowX, rowY, 0.99f, color, 1.6f, 6);
+        FUN_4291f0(column[i], 1, width, rowY, 0.99f, color, 1.6f, 6);
+        y += 51.2f;
+        row++;
+    }
+
+    text = g_6127a0[1];
+    rowX = g_61b740->faders[9].x;
+    rowY = g_61b740->faders[9].y;
+    height = FUN_4290d0(text, 1.6f) + 16.0f;
+    FUN_4476c0(0x21, rowX - 16.0f, rowY - 12.0f, 0.96f, height, 51.2f);
+    FUN_4291f0(text, 0, rowX, rowY, 0.99f, 0xffffff00, 1.6f, 6);
+
+    rowX = g_61b740->faders[10].x;
+    rowY = g_61b740->faders[10].y;
+    text = g_6127a0[title];
+    height = FUN_4290d0(text, 1.6f);
+    FUN_4476c0(0x44, rowX, rowY - 12.0f, 0.96f, height, 51.2f);
+    FUN_4291f0(text, 2, rowX, rowY, 0.99f, 0xffffff00, 1.6f, 6);
+    FUN_428f70(0);
+
+    if (race->unk24 > 30 && !g_61b740->faders[11].active)
+    {
+        color = 0xff404000;
+    }
+    else
+    {
+        color = 0xffffff00;
+    }
+    text = FUN_443770() == 2 ? g_6127a0[6] : g_6127a0[95];
+    height = FUN_4290d0(text, 1.0f);
+    FUN_4476c0(0x12, g_61b740->faders[11].x, g_61b740->faders[11].y - 5.0f, 0.96f, height, 26.4f);
+    FUN_4291f0(text, 1, g_61b740->faders[11].x, g_61b740->faders[11].y, 0.99f, color, 1.0f, 6);
+}
+
+// FUNCTION: STUNTGP_D3D 0x442500
+void FUN_442500()
+{
+    FUN_418180();
+    FUN_45e4f0();
+    FUN_416050();
+    FUN_449d60();
+}
+
+// FUNCTION: STUNTGP_D3D 0x442520
+void FUN_442520()
+{
+    FUN_428f70(1);
+    // STRING: STUNTGP_D3D 0x4826cc
+    FUN_4291f0("GAMEOVER!", 1, 320.0f, 208.0f, 0.98f, 0xffffff, 2.0f, 0);
+    // STRING: STUNTGP_D3D 0x4826d8
+    FUN_4291f0("PLEASE WAIT FOR RACE TO FINISH...", 1, 320.0f, 272.0f, 0.98f, 0xffffff, 2.0f, 0);
+    FUN_428f70(0);
+}
+
+// FUNCTION: STUNTGP_D3D 0x442590
+void FUN_442590()
+{
+    FUN_428f70(1);
+    // STRING: STUNTGP_D3D 0x4826fc
+    FUN_4291f0("NO PLAYER AVAILABLE...", 1, 320.0f, 240.0f, 0.98f, 0xffffff, 2.0f, 0);
+    FUN_428f70(0);
+}
+
+// FUNCTION: STUNTGP_D3D 0x4425d0
+void FUN_4425d0()
+{
+    if (g_61299c && !g_4722d0->active)
+    {
+        if (g_4722d0->data->race.unk18 == 1)
+        {
+            FUN_442520();
+        }
+        else
+        {
+            FUN_442590();
+        }
+        return;
+    }
+    FUN_402e90();
+    FUN_442500();
+    FUN_42e870();
+    FUN_433f40();
+    FUN_42e420();
+    FUN_442a00();
+    FUN_44ae40();
+    FUN_442a20();
+    FUN_401b00();
+    FUN_432f60();
+    FUN_431830(0);
+}
+
+// FUNCTION: STUNTGP_D3D 0x449b50
+void FUN_449b50()
+{
+    DWORD t;
+    DWORD alpha;
+
+    if (g_61294c == 1)
+    {
+        return;
+    }
+    t = g_498248[0].data->race.unk00;
+    if (t == 0 || t >= 240)
+    {
+        return;
+    }
+    if (g_61b634 != 0x10 && g_61b634 != 0x11 && g_61b634 != 0x12 && g_61b634 != 0x13)
+    {
+        return;
+    }
+    if ((t <= 30 || t >= 120) && t % 60 < 30)
+    {
+        alpha = t % 60 * 192 / 30;
+    }
+    else
+    {
+        alpha = 192;
+    }
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.x = 217.6f;
+    g_spriteDesc.y = 73.6f;
+    g_spriteDesc.z = 0.98f;
+    g_spriteDesc.u0 = 0.0f;
+    g_spriteDesc.v0 = 0.0f;
+    g_spriteDesc.u1 = 1024.0f;
+    g_spriteDesc.v1 = 1024.0f;
+    g_spriteDesc.width = 204.8f;
+    g_spriteDesc.height = 204.8f;
+    g_spriteDesc.texture = 15;
+    g_spriteDesc.color = 0;
+    g_spriteDesc.blendMode = 0x48;
+    g_spriteDesc.alpha = alpha;
+    FUN_432e00(&g_spriteDesc);
+}
+
+// FUNCTION: STUNTGP_D3D 0x40e030
+void FUN_40e030()
+{
+    if (g_61299c == 1)
+    {
+        FUN_40de80();
+        FUN_40df90();
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x442640
 void FUN_442640()
 {
+    switch (g_576be0)
+    {
+    case 0:
+        FUN_424c30(1);
+        FUN_4425d0();
+        break;
+    case 1:
+        g_4722d0 = &g_498248[0];
+        FUN_424c30(6);
+        FUN_4425d0();
+        g_4722d0 = &g_498248[1];
+        FUN_424c30(7);
+        FUN_4425d0();
+        break;
+    case 2:
+        g_4722d0 = &g_498248[0];
+        FUN_424c30(8);
+        FUN_4425d0();
+        g_4722d0 = &g_498248[1];
+        FUN_424c30(9);
+        FUN_4425d0();
+        break;
+    case 3:
+        g_4722d0 = &g_498248[0];
+        FUN_424c30(10);
+        FUN_4425d0();
+        g_4722d0 = &g_498248[1];
+        FUN_424c30(11);
+        FUN_4425d0();
+        g_4722d0 = &g_498248[2];
+        FUN_424c30(12);
+        FUN_4425d0();
+        break;
+    case 4:
+        g_4722d0 = &g_498248[0];
+        FUN_424c30(13);
+        FUN_4425d0();
+        g_4722d0 = &g_498248[1];
+        FUN_424c30(14);
+        FUN_4425d0();
+        g_4722d0 = &g_498248[2];
+        FUN_424c30(15);
+        FUN_4425d0();
+        g_4722d0 = &g_498248[3];
+        FUN_424c30(16);
+        FUN_4425d0();
+        break;
+    }
+    FUN_424c30(1);
+    FUN_402580();
+    g_61b740 = &g_4722d0->fx;
+    FUN_4473f0();
+    FUN_449fb0();
+    FUN_449b50();
+    FUN_40e030();
+    FUN_442200();
 }
 
 // FUNCTION: STUNTGP_D3D 0x4427b0

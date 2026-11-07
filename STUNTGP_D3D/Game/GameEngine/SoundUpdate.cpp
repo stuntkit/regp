@@ -262,10 +262,10 @@ void FUN_461ae0(LPDIRECTSOUND3DLISTENER listener, GameSlot *slot)
 {
     if (listener && slot->active)
     {
-        listener->SetPosition(slot->unk008, slot->unk00c, slot->unk010, DS3D_IMMEDIATE);
-        listener->SetVelocity(slot->unk0c4, slot->unk0c8, slot->unk0cc, DS3D_IMMEDIATE);
+        listener->SetPosition(slot->cam.pos.x, slot->cam.pos.y, slot->cam.pos.z, DS3D_IMMEDIATE);
+        listener->SetVelocity(slot->velX, slot->velY, slot->velZ, DS3D_IMMEDIATE);
         listener->SetOrientation(
-            slot->unk09c, slot->unk0a0, slot->unk0a4, -slot->unk08c, -slot->unk090, -slot->unk094, DS3D_IMMEDIATE
+            slot->axisZ.x, slot->axisZ.y, slot->axisZ.z, -slot->axisY.x, -slot->axisY.y, -slot->axisY.z, DS3D_IMMEDIATE
         );
     }
 }
