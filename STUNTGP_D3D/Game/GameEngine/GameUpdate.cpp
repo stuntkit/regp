@@ -1493,6 +1493,28 @@ void FUN_4268f0(AnimObject *obj, ObjectDef *def)
     m[2] = dir;
 }
 
+extern float g_48266c;
+
+// FUNCTION: STUNTGP_D3D 0x426970
+void FUN_426970(Unk62a078 *p)
+{
+    p->flags = 7;
+    p->unk68 = 0.01f;
+    p->mode = 2;
+    p->unk7c = 1;
+    p->gravity = g_48266c * -0.05f;
+    p->anim = NULL;
+    p->size = 10.0f;
+    p->sizeIn = 3.0f;
+    p->sizeOut = 12.0f;
+    p->alpha = 128.0f;
+    p->alphaIn = 0.0f;
+    p->alphaOut = 18.0f;
+    p->colors[0] = 0x406090;
+    p->texture = 7;
+    p->unk98 = 0x60;
+}
+
 // FUNCTION: STUNTGP_D3D 0x426c70
 void FUN_426c70(AnimObject *obj, ObjectDef *def)
 {
