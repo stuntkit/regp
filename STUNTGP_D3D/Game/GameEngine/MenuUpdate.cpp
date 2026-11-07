@@ -370,6 +370,47 @@ int FUN_435b60(char *text, int *pos)
     return 1;
 }
 
+void FUN_435f60(void *unused, int *out, char *text, int *pos);
+int FUN_437cc0(int track);
+int FeCsv_SkipBlankLines(char *text, int *pos);
+
+// FUNCTION: STUNTGP_D3D 0x435e30
+int FUN_435e30(int id, ShopCar *car, char *text, int *pos)
+{
+    char key[64];
+    memset(car, 0, sizeof(ShopCar));
+    // STRING: STUNTGP_D3D 0x479248
+    sprintf(key, "Car%02d", id);
+    FUN_43c600(key, text, pos);
+    FeCsv_ReadInt(&car->unk04, text, pos);
+    FeCsv_ReadInt(&car->unk08, text, pos);
+    // STRING: STUNTGP_D3D 0x479250
+    FUN_435f60("Engine ", car->parts[2], text, pos);
+    // STRING: STUNTGP_D3D 0x479258
+    FUN_435f60("Battery", car->parts[1], text, pos);
+    // STRING: STUNTGP_D3D 0x479260
+    FUN_435f60("Tyres  ", car->parts[9], text, pos);
+    // STRING: STUNTGP_D3D 0x479268
+    FUN_435f60("Brakes ", car->parts[5], text, pos);
+    // STRING: STUNTGP_D3D 0x479270
+    FUN_435f60("Shocks ", car->parts[0], text, pos);
+    // STRING: STUNTGP_D3D 0x479278
+    FUN_435f60("Chassis", car->parts[3], text, pos);
+    // STRING: STUNTGP_D3D 0x479280
+    FUN_435f60("Drive  ", car->parts[10], text, pos);
+    // STRING: STUNTGP_D3D 0x479288
+    FUN_435f60("Horn   ", car->parts[6], text, pos);
+    // STRING: STUNTGP_D3D 0x479290
+    FUN_435f60("Boost  ", car->parts[8], text, pos);
+    // STRING: STUNTGP_D3D 0x479298
+    FUN_435f60("BMS    ", car->parts[4], text, pos);
+    // STRING: STUNTGP_D3D 0x4792a0
+    FUN_435f60("Gears  ", car->parts[7], text, pos);
+    FUN_437cc0(id);
+    FeCsv_SkipBlankLines(text, pos);
+    return 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x435f60
 void FUN_435f60(void *unused, int *out, char *text, int *pos)
 {
@@ -386,6 +427,47 @@ void FUN_436400(const char *name, int *value)
 
 // FUNCTION: STUNTGP_D3D 0x436410
 void FUN_436410()
+{
+}
+
+void FUN_4365d0(int a, const char *name, ShopItem *item, ShopCar *car, int part, int b);
+
+// FUNCTION: STUNTGP_D3D 0x436490
+void FUN_436490(int a, ShopEntry *out, ShopCar *car, ShopItem *item, int unused)
+{
+    memset(out, 0, sizeof(ShopEntry));
+    out->car = *car;
+    out->item = *item;
+    if (out->car.unk00)
+    {
+        out->item.price -= out->item.price * g_menuState.usedItemDiscountPercent / 100;
+    }
+    // STRING: STUNTGP_D3D 0x4792d4
+    FUN_4365d0(a, "UpgradeEngine    ", &out->item, car, 5, 0);
+    // STRING: STUNTGP_D3D 0x4792e8
+    FUN_4365d0(a, "UpgradeBattery   ", &out->item, car, 4, 0);
+    // STRING: STUNTGP_D3D 0x4792fc
+    FUN_4365d0(a, "UpgradeTyres     ", &out->item, car, 12, 0);
+    // STRING: STUNTGP_D3D 0x479310
+    FUN_4365d0(a, "UpgradeBrakes    ", &out->item, car, 8, 0);
+    // STRING: STUNTGP_D3D 0x479324
+    FUN_4365d0(a, "UpgradeSuspension", &out->item, car, 3, 0);
+    // STRING: STUNTGP_D3D 0x479338
+    FUN_4365d0(a, "UpgradeChassis   ", &out->item, car, 6, 0);
+    // STRING: STUNTGP_D3D 0x47934c
+    FUN_4365d0(a, "UpgradeDrive     ", &out->item, car, 13, 0);
+    // STRING: STUNTGP_D3D 0x479360
+    FUN_4365d0(a, "UpgradeHorns     ", &out->item, car, 9, 0);
+    // STRING: STUNTGP_D3D 0x479374
+    FUN_4365d0(a, "UpgradeBoost     ", &out->item, car, 11, 0);
+    // STRING: STUNTGP_D3D 0x479388
+    FUN_4365d0(a, "UpgradeBms       ", &out->item, car, 7, 0);
+    // STRING: STUNTGP_D3D 0x47939c
+    FUN_4365d0(a, "UpgradeGears     ", &out->item, car, 10, 0);
+}
+
+// STUB: STUNTGP_D3D 0x4365d0
+void FUN_4365d0(int a, const char *name, ShopItem *item, ShopCar *car, int part, int b)
 {
 }
 

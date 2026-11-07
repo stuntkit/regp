@@ -72,6 +72,22 @@ struct ShopItem
     int unk128;          // 0x128
 };
 
+// Car%02d row of the front-end csv, read by FUN_435e30.
+struct ShopCar
+{
+    int unk00;        // 0x00
+    int unk04;        // 0x04
+    int unk08;        // 0x08
+    BYTE unk0c[0x30]; // 0x0c
+    int parts[11][4]; // 0x3c, filled by FUN_435f60
+};
+
+struct ShopEntry
+{
+    ShopCar car;   // 0x000
+    ShopItem item; // 0x0ec
+};
+
 // Menu entry; entries with a negative id are skipped, a zero text ends the list.
 struct MenuItem
 {
