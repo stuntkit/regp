@@ -223,23 +223,8 @@ char *g_482b88[76] = {
     "Car4sh",
 };
 
-// GLOBAL: STUNTGP_D3D 0x60d744
-int g_60d744;
-
-// GLOBAL: STUNTGP_D3D 0x60d748
-int g_60d748;
-
-// GLOBAL: STUNTGP_D3D 0x60d768
-DWORD g_60d768;
-
 // GLOBAL: STUNTGP_D3D 0x60dfec
 int g_60dfec;
-
-// GLOBAL: STUNTGP_D3D 0x60d73c
-DWORD g_60d73c;
-
-// GLOBAL: STUNTGP_D3D 0x60d788
-int g_60d788;
 
 // GLOBAL: STUNTGP_D3D 0x612960
 int g_612960;
@@ -255,8 +240,8 @@ void FUN_445120()
 {
     g_60eff8 = 100;
     g_60dfec = 2;
-    g_60eff4 = g_60d768;
-    if (g_60d768 < 1200)
+    g_60eff4 = g_60d730.unk038;
+    if (g_60d730.unk038 < 1200)
     {
         g_60eff4 = 5400;
     }
@@ -267,8 +252,8 @@ void FUN_4452e0()
 {
     if (g_612bec == 1)
     {
-        FUN_445f70(g_60d744);
-        sprintf(g_LevelScript, g_482b88[g_60d748]);
+        FUN_445f70(g_60d730.unk014);
+        sprintf(g_LevelScript, g_482b88[g_60d730.unk018]);
     }
 }
 
@@ -286,7 +271,7 @@ void FUN_445310()
 // FUNCTION: STUNTGP_D3D 0x445350
 void FUN_445350()
 {
-    g_60d788 = 1;
+    g_60d730.unk058 = 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x446a70
@@ -297,7 +282,7 @@ void FUN_446a70()
     {
         g_61297c = 0;
     }
-    g_60d73c = g_61297c;
+    g_60d730.unk00c = g_61297c;
 }
 
 // FUNCTION: STUNTGP_D3D 0x446a90

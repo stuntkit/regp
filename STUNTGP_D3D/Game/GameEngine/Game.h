@@ -32,29 +32,6 @@ void FUN_442a20();
 
 extern int g_frameCount;
 
-struct RaceResult
-{
-    int unk00; // 0x00
-    int unk04; // 0x04
-    int unk08; // 0x08
-    int unk0c; // 0x0c
-    int unk10; // 0x10
-    int unk14; // 0x14
-};
-
-// Per-player race slot, one per car.
-struct RaceEntry
-{
-    int type;              // 0x000
-    int unk004;            // 0x004
-    int unk008;            // 0x008
-    int unk00c;            // 0x00c
-    char unk010[0x24];     // 0x010
-    BYTE unk034[0x104];    // 0x034
-    RaceResult result;     // 0x138
-};
-
-extern RaceEntry g_60d78c[6];
 
 struct GhostRecord
 {

@@ -265,8 +265,6 @@ Unk4d5cc0 g_4d5cc0[6];
 // GLOBAL: STUNTGP_D3D 0x49a164
 int g_49a164;
 
-// GLOBAL: STUNTGP_D3D 0x60df90
-Unk4d5cc0 *g_60df90;
 
 // GLOBAL: STUNTGP_D3D 0x474670
 int g_474670 = -1;
@@ -1516,7 +1514,7 @@ void FUN_42f090()
     int car = 0;
     for (int i = 0; i < 6; i++)
     {
-        if (g_60d78c[i].type == 2)
+        if (g_60d730.entries[i].type == 2)
         {
             g_60f02c[i].model = g_636418[g_477c4c[car]].scene;
             g_60f02c[i].unk04 = g_636418[g_477c64[car]].scene;
@@ -1736,7 +1734,7 @@ void FUN_43d1f0()
 // FUNCTION: STUNTGP_D3D 0x443050
 void FUN_443050()
 {
-    g_60df90 = &g_4d5cc0[2];
+    g_60d730.unk860 = &g_4d5cc0[2];
 }
 
 // FUNCTION: STUNTGP_D3D 0x445ad0

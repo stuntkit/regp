@@ -23,8 +23,6 @@ extern DWORD g_musicSetting;
 extern BOOL g_soundInitialised;
 extern DWORD g_sfxSetting;
 extern int g_musicVolume;
-extern DWORD g_60d734;
-extern DWORD g_60d738;
 extern DWORD g_62f5ac;
 struct SoundChannel
 {
