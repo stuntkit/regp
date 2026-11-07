@@ -68,9 +68,63 @@ void FUN_450190(Camera *cam)
 {
 }
 
-// STUB: STUNTGP_D3D 0x44eb70
+// GLOBAL: STUNTGP_D3D 0x61c3a4
+float g_61c3a4[16];
+
+// FUNCTION: STUNTGP_D3D 0x44fb00
+void FUN_44fb00(float *m, DWORD yaw, DWORD pitch, DWORD roll)
+{
+    yaw &= 0x1fff;
+    pitch &= 0x1fff;
+    roll &= 0x1fff;
+    float cy = g_cosTable[yaw];
+    float cp = g_cosTable[pitch];
+    float cr = g_cosTable[roll];
+    float sy = g_sinTable[yaw];
+    float sp = g_sinTable[pitch];
+    float sr = g_sinTable[roll];
+    m[0] = cr * cp;
+    m[1] = sr * cp;
+    m[2] = -sp;
+    m[3] = 0.0f;
+    m[4] = sp * sy * cr - sr * cy;
+    m[5] = cr * cy + sp * sy * sr;
+    m[6] = sy * cp;
+    m[7] = 0.0f;
+    m[8] = sp * cy * cr + sr * sy;
+    m[9] = sp * cy * sr - sy * cr;
+    m[10] = cp * cy;
+    m[11] = 0.0f;
+    m[12] = 0.0f;
+    m[13] = 0.0f;
+    m[14] = 0.0f;
+    m[15] = 1.0f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x44eb70
 void FUN_44eb70(DWORD yaw, DWORD pitch, DWORD roll, float *x, float *y, float *z)
 {
+    FUN_44fb00(g_61c3a4, yaw, pitch, roll);
+    float vx = *x;
+    float vy = *y;
+    float vz = *z;
+    *x = g_61c3a4[0] * vx + g_61c3a4[4] * vy + g_61c3a4[8] * vz;
+    *y = g_61c3a4[1] * vx + g_61c3a4[5] * vy + g_61c3a4[9] * vz;
+    *z = g_61c3a4[2] * vx + g_61c3a4[6] * vy + g_61c3a4[10] * vz;
+}
+
+// Rotates v by the yaw/pitch/roll angles given in degrees.
+// FUNCTION: STUNTGP_D3D 0x44ec00
+void FUN_44ec00(float *angles, float *v)
+{
+    FUN_44fb00(g_61c3a4, (DWORD)(angles[0] * (8192.0f / 360.0f)), (DWORD)(angles[1] * (8192.0f / 360.0f)),
+               (DWORD)(angles[2] * (8192.0f / 360.0f)));
+    float vx = v[0];
+    float vy = v[1];
+    float vz = v[2];
+    v[0] = g_61c3a4[0] * vx + g_61c3a4[4] * vy + g_61c3a4[8] * vz;
+    v[1] = g_61c3a4[1] * vx + g_61c3a4[5] * vy + g_61c3a4[9] * vz;
+    v[2] = g_61c3a4[2] * vx + g_61c3a4[6] * vy + g_61c3a4[10] * vz;
 }
 
 // FUNCTION: STUNTGP_D3D 0x44f0e0

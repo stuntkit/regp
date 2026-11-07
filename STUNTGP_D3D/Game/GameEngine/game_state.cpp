@@ -9,12 +9,6 @@ void FUN_402580()
     g_4722d0 = g_498248;
 }
 
-struct CameraPath
-{
-    int id;           // 0x00
-    BYTE unk04[0x18]; // 0x04
-};
-
 // GLOBAL: STUNTGP_D3D 0x624474
 CameraPath *g_624474;
 

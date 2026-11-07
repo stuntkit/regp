@@ -13,6 +13,8 @@ void FUN_44f4c0();
 void FUN_44f4e0(float *m);
 void FUN_450190(Camera *cam);
 void FUN_44eb70(DWORD yaw, DWORD pitch, DWORD roll, float *x, float *y, float *z);
+void FUN_44ec00(float *angles, float *v);
+void FUN_44fb00(float *m, DWORD yaw, DWORD pitch, DWORD roll);
 
 extern float g_61c3e8[16];
 extern float g_61c468[16];

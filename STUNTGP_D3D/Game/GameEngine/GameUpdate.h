@@ -23,6 +23,18 @@ struct Camera
     int unk4c;    // 0x4c
 };
 
+// Spline of camera positions, looked up by id.
+struct CameraPath
+{
+    int id;             // 0x00
+    Vec4 *points;       // 0x04
+    unsigned int count; // 0x08
+    int unk0c;          // 0x0c
+    int mode;           // 0x10
+    BYTE unk14[0x4];    // 0x14
+    float unk18;        // 0x18
+};
+
 // Preset a GameSlot camera is reset to (GameSlot::preset).
 struct CameraPreset
 {
@@ -123,7 +135,9 @@ struct Car
     float unk230;            // 0x0230
     float unk234;            // 0x0234
     float unk238;            // 0x0238
-    BYTE unk023c[0x18];      // 0x023c
+    BYTE unk023c[0x8];       // 0x023c
+    float unk244;            // 0x0244
+    BYTE unk0248[0xc];       // 0x0248
     float unk254;            // 0x0254
     BYTE unk0258[0xa60];     // 0x0258
     Vector4 unkcb8[4];       // 0x0cb8
@@ -135,9 +149,16 @@ struct Car
     float posX;              // 0x1bac
     float posY;              // 0x1bb0
     float posZ;              // 0x1bb4
-    BYTE unk1bb8[0xd4];      // 0x1bb8
+    float posW;              // 0x1bb8
+    BYTE unk1bbc[0x10];      // 0x1bbc
+    float matrix[16];        // 0x1bcc
+    BYTE unk1c0c[0x80];      // 0x1c0c
     float unk1c8c[3];        // 0x1c8c
-    BYTE unk1c98[0x58];      // 0x1c98
+    BYTE unk1c98[0x24];      // 0x1c98
+    Vec4 axisX;              // 0x1cbc
+    Vec4 axisY;              // 0x1ccc
+    Vec4 axisZ;              // 0x1cdc
+    BYTE unk1cec[0x4];       // 0x1cec
     float unk1cf0;           // 0x1cf0
     BYTE unk1cf4[0x4];       // 0x1cf4
     int unk1cf8;             // 0x1cf8
@@ -163,7 +184,7 @@ struct Car
     BYTE controls[0xa];      // 0x22aa
     BYTE unk22b4[0x14];      // 0x22b4
     int unk22c8;             // 0x22c8
-    BYTE unk22cc[0x10];      // 0x22cc
+    Vec4 camOffset;          // 0x22cc
     float unk22dc;           // 0x22dc
     float unk22e0;           // 0x22e0
     float unk22e4;           // 0x22e4
@@ -174,9 +195,9 @@ struct Car
     BYTE unk22f8[0x4];       // 0x22f8
     float unk22fc;           // 0x22fc
     float unk2300;           // 0x2300
-    float unk2304;           // 0x2304
+    int unk2304;             // 0x2304
     float unk2308[4];        // 0x2308
-    BYTE unk2318[0x10];      // 0x2318
+    float unk2318[4];        // 0x2318
     float unk2328;           // 0x2328
     float unk232c;           // 0x232c
     float unk2330;           // 0x2330
@@ -239,7 +260,11 @@ struct Car
     BYTE unk2644[0x6c];      // 0x2644
     int unk26b0;             // 0x26b0
     int unk26b4;             // 0x26b4
-    BYTE unk26b8[0x4bb0];    // 0x26b8
+    BYTE unk26b8[0x4b34];    // 0x26b8
+    unsigned int unk71ec;    // 0x71ec
+    BYTE unk71f0[0x48];      // 0x71f0
+    float unk7238;           // 0x7238
+    BYTE unk723c[0x2c];      // 0x723c
     unsigned short *unk7268; // 0x7268
     BYTE unk726c[0x3c0];     // 0x726c
     int unk762c;             // 0x762c
@@ -258,9 +283,10 @@ struct Car
 struct GameSlot
 {
     int active;            // 0x000
-    int camMode;           // 0x004
+    unsigned int camMode;  // 0x004
     Camera cam;            // 0x008
-    BYTE unk058[0x20];     // 0x058
+    BYTE unk058[0x10];     // 0x058
+    Vec4 prevTarget;       // 0x068
     float roll;            // 0x078
     Vec4 axisX;            // 0x07c
     Vec4 axisY;            // 0x08c
@@ -274,7 +300,7 @@ struct GameSlot
     float velX;            // 0x0c4
     float velY;            // 0x0c8
     float velZ;            // 0x0cc
-    BYTE unk0d0[0x4];      // 0x0d0
+    float velW;            // 0x0d0
     float speed;           // 0x0d4
     float accelX;          // 0x0d8
     float accelY;          // 0x0dc
@@ -299,8 +325,12 @@ struct GameSlot
     float unk19c;          // 0x19c
     float fov2;            // 0x1a0
     int unk1a4;            // 0x1a4
-    void *unk1a8;          // 0x1a8
-    BYTE unk1ac[0x20];     // 0x1ac
+    CameraPath *path;      // 0x1a8
+    Vec4 unk1ac;           // 0x1ac
+    unsigned int unk1bc;   // 0x1bc
+    float unk1c0;          // 0x1c0
+    float unk1c4;          // 0x1c4
+    BYTE unk1c8[0x4];      // 0x1c8
     CameraPreset *unk1cc;  // 0x1cc
     BYTE unk1d0[0x4];      // 0x1d0
     int unk1d4;            // 0x1d4
@@ -391,7 +421,9 @@ struct InputState
 
 struct ObjectDef
 {
-    BYTE unk00[0x40]; // 0x00
+    BYTE unk00[0x8];  // 0x00
+    Vec4 *matrix;     // 0x08
+    BYTE unk0c[0x34]; // 0x0c
 };
 
 struct SceneView

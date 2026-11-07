@@ -115,6 +115,7 @@ Car *g_612d14[6];
 Car *g_474630 = g_49a1f8;
 
 void FUN_41af50();
+void FUN_404450();
 void FUN_418830();
 void FUN_41e2d0();
 
@@ -409,7 +410,7 @@ void FUN_40d200(Car *car)
     car->unk22e0 = 150.0f;
     car->unk22e4 = 0.0f;
     car->unk22c8 = 5;
-    car->unk2304 = 0.0f;
+    car->unk2304 = 0;
     FUN_4028d0(5);
     FUN_403310(2.09f);
     FUN_402ab0(2.09f);
@@ -428,7 +429,7 @@ void FUN_40d280(Car *car)
     car->unk22e0 = 150.0f;
     car->unk22e4 = 0.0f;
     car->unk22c8 = 5;
-    car->unk2304 = 0.0f;
+    car->unk2304 = 0;
     FUN_4028d0(5);
     FUN_403310(2.09f);
     FUN_402ab0(2.09f);
@@ -520,11 +521,6 @@ void FUN_4039b0()
         }
         break;
     }
-}
-
-// STUB: STUNTGP_D3D 0x404450
-void FUN_404450()
-{
 }
 
 // FUNCTION: STUNTGP_D3D 0x405210
