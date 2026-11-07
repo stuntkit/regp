@@ -60,4 +60,14 @@ struct SurfaceSlot
 
 extern DWORD g_surfaceSlotCount;
 extern SurfaceSlot g_surfaceSlots[255];
+
+// --- windowInit (agent C) ---
+extern LPDIRECTDRAWSURFACE4 *g_61c358;
+extern int g_DD_DISPLAYPITCH;
+extern int g_DD_RSHIFT;
+extern int g_DD_GSHIFT;
+extern int g_DD_BSHIFT;
+extern int g_DD_RBITS;
+extern int g_DD_GBITS;
+extern int g_DD_BBITS;
 #endif /* GLOBALS_H */
