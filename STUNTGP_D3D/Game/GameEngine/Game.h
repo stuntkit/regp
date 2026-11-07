@@ -4,6 +4,7 @@
 #include <windows.h>
 
 #include "../../globals.h"
+#include "../../input.h"
 #include "../../mem.h"
 #include "../../random.h"
 #include "../../timer.h"

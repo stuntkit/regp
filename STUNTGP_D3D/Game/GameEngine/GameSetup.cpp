@@ -2,9 +2,17 @@
 
 #include <mmsystem.h>
 #include <dsound.h>
+#include <stdio.h>
 #include <string.h>
 
+#include "../../globals.h"
+#include "../../mem.h"
+#include "../../vecmath.h"
+#include "io_wad.h"
+
 void FUN_4411c0();
+
+extern char g_LevelScript[32];
 
 struct Unk62d580
 {
@@ -88,9 +96,46 @@ struct SoundChannel
 // GLOBAL: STUNTGP_D3D 0x62e118
 SoundChannel g_62e118[0x80];
 
-// STUB: STUNTGP_D3D 0x401de0
+struct Unk497f20
+{
+    float unk00;
+    float unk04;
+    float unk08;
+    BYTE unk0c[0x50 - 0x0c];
+    float unk50;
+    float unk54;
+    float unk58;
+    float unk5c;
+    float unk60;
+    float unk64;
+};
+
+// GLOBAL: STUNTGP_D3D 0x497f20
+Unk497f20 g_497f20;
+
+// GLOBAL: STUNTGP_D3D 0x472210
+float g_472210[16] = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+
+// GLOBAL: STUNTGP_D3D 0x472250
+float g_472250[16] = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+
+// GLOBAL: STUNTGP_D3D 0x472290
+float g_472290[16] = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+
+// FUNCTION: STUNTGP_D3D 0x401de0
 void FUN_401de0()
 {
+    g_497f20.unk00 = 0.0f;
+    g_497f20.unk04 = 125.0f;
+    g_497f20.unk08 = -12500.0f;
+    g_497f20.unk50 = 0.0f;
+    g_497f20.unk54 = 0.0f;
+    g_497f20.unk58 = 0.0f;
+    g_497f20.unk60 = 1.0f;
+    g_497f20.unk64 = 100.0f;
+    Matrix_Identity(g_472210);
+    Matrix_Identity(g_472250);
+    Matrix_Identity(g_472290);
 }
 
 // STUB: STUNTGP_D3D 0x40a2f0
@@ -129,11 +174,6 @@ void FUN_4199a0()
 
 // STUB: STUNTGP_D3D 0x422420
 void FUN_422420()
-{
-}
-
-// STUB: STUNTGP_D3D 0x4249b0
-void FUN_4249b0()
 {
 }
 
@@ -236,9 +276,29 @@ void FUN_445fa0()
 {
 }
 
-// STUB: STUNTGP_D3D 0x4469f0
+// STUB: STUNTGP_D3D 0x446840
+void FUN_446840(char *script)
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x4469f0
 void FUN_4469f0()
 {
+    char path[128];
+
+    // STRING: STUNTGP_D3D 0x4850d8
+    sprintf(path, "%s\\Config\\Levels\\%s.cfg", g_GameDirectory, g_LevelScript);
+    int size = size_of_file(path);
+    if (size == 0)
+    {
+        // STRING: STUNTGP_D3D 0x4850f0
+        sprintf(path, "%s\\Config\\Levels\\Default.cfg", g_GameDirectory);
+        size = size_of_file(path);
+    }
+    char *script = (char *)Mem_Alloc(size + 32, 0);
+    bload(path, script, size);
+    FUN_446840(script);
+    Mem_Free(script);
 }
 
 // FUNCTION: STUNTGP_D3D 0x45ec30

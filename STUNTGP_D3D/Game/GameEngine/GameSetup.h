@@ -10,7 +10,6 @@ void FUN_40e050();
 void FUN_413670();
 void FUN_4199a0();
 void FUN_422420();
-void FUN_4249b0();
 void FUN_424c30(int param);
 void FUN_429510();
 void FUN_42e6e0();
