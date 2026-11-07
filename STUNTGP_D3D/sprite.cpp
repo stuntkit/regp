@@ -1198,7 +1198,7 @@ void FUN_43f6b0()
     FUN_438190(rect.left, rect.top, rect.right, rect.bottom);
     if (g_frontEnd.screen != NULL)
     {
-        if (g_frontEnd.screen->unk00[1] != 1)
+        if (g_frontEnd.screen->type != 1)
         {
             FUN_438be0(320.0f, 16.0f, 2, 4, 1, 1.25f, 0xffffffff, 0x803);
         }

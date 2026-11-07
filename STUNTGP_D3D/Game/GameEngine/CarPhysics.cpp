@@ -480,7 +480,7 @@ void FUN_40a160()
     float step = 0.02226562425494194f;
     for (unsigned int i = 0; i < 128; i++)
     {
-        g_4d5bb8->unk470[i] = (float)sqrt(sum);
+        g_4d5bb8->unk470[0][i] = (float)sqrt(sum);
         sum += step;
         if (i > 32)
         {
@@ -508,6 +508,282 @@ void FUN_40a2c0(float (*m)[16])
     {
         Matrix_Identity(m[i]);
     }
+}
+
+extern FILE *g_5da2e4;
+void FUN_434900(float *values, DWORD count);
+
+// FUNCTION: STUNTGP_D3D 0x40a870
+void FUN_40a870()
+{
+    // STRING: STUNTGP_D3D 0x472c78
+    fprintf(g_5da2e4, "-ENGINE[] =\n");
+    // STRING: STUNTGP_D3D 0x472c88
+    fprintf(g_5da2e4, " RpmIdle         = %f\n", g_4d5bb8->unk460);
+    // STRING: STUNTGP_D3D 0x472ca0
+    fprintf(g_5da2e4, " RpmLimit        = %f\n", g_4d5bb8->unk464);
+    // STRING: STUNTGP_D3D 0x472cb8
+    fprintf(g_5da2e4, " RpmMax          = %f\n", g_4d5bb8->unk045c);
+    // STRING: STUNTGP_D3D 0x472cd0
+    fprintf(g_5da2e4, " Cm              = %f\n", g_4d5bb8->unk468);
+    // STRING: STUNTGP_D3D 0x472ce8
+    fprintf(g_5da2e4, " MaxTorque       = %f\n", g_4d5bb8->unk46c);
+    for (int i = 0; i < 4; i++)
+    {
+        // STRING: STUNTGP_D3D 0x472d00
+        fprintf(g_5da2e4, " TorqueEnv[%d] =\n", i);
+        FUN_434900(g_4d5bb8->unk470[i], 128);
+    }
+    // STRING: STUNTGP_D3D 0x472d14
+    fprintf(g_5da2e4, "-ENGINE_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40a990
+void FUN_40a990()
+{
+    // STRING: STUNTGP_D3D 0x472d24
+    fprintf(g_5da2e4, "-GEARBOX[] =\n");
+    // STRING: STUNTGP_D3D 0x472d34
+    fprintf(g_5da2e4, " DriveMode       = %d\n", g_4d5bb8->unkc70);
+    // STRING: STUNTGP_D3D 0x472d4c
+    fprintf(g_5da2e4, " FinalDrive      = %f\n", g_4d5bb8->unkc7c[0]);
+    // STRING: STUNTGP_D3D 0x472d64
+    fprintf(g_5da2e4, " NrOfGears       = %d\n", g_4d5bb8->unkc74);
+    // STRING: STUNTGP_D3D 0x472d7c
+    fprintf(g_5da2e4, " ShiftTime       = %f\n", g_4d5bb8->unkca0);
+    // STRING: STUNTGP_D3D 0x472d94
+    fprintf(g_5da2e4, " Efficiency      = %f\n", g_4d5bb8->unkca4);
+    // STRING: STUNTGP_D3D 0x472dac
+    fprintf(g_5da2e4, " 4WDPowerSplit   = %f\n", g_4d5bb8->unkca8);
+    // STRING: STUNTGP_D3D 0x472dc4
+    fprintf(g_5da2e4, " Ratios[]        =");
+    for (int i = 1; i < 9; i++)
+    {
+        // STRING: STUNTGP_D3D 0x472dd8
+        fprintf(g_5da2e4, "%12f, ", g_4d5bb8->unkc7c[i]);
+    }
+    // STRING: STUNTGP_D3D 0x472de0
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x472de4
+    fprintf(g_5da2e4, "-GEARBOX_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40aae0
+void FUN_40aae0()
+{
+    // STRING: STUNTGP_D3D 0x472df4
+    fprintf(g_5da2e4, "-TYRES[] =\n");
+    // STRING: STUNTGP_D3D 0x472e00
+    fprintf(g_5da2e4, " TyreFrictionEnv =\n");
+    FUN_434900(g_4d5bb8->tyreFrictionEnv, 128);
+    for (int i = 0; i < 4; i++)
+    {
+        // STRING: STUNTGP_D3D 0x472e14
+        fprintf(g_5da2e4, "-TYRE %d\n", i);
+        // STRING: STUNTGP_D3D 0x472e20
+        fprintf(g_5da2e4, " Radius          = %f\n", g_4d5bb8->unkcb8[i].x);
+        // STRING: STUNTGP_D3D 0x472e38
+        fprintf(g_5da2e4, " Pressure        = %f\n", g_4d5bb8->unkcb8[i].y);
+        // STRING: STUNTGP_D3D 0x472e50
+        fprintf(g_5da2e4, " Cs              = %f\n", g_4d5bb8->unkcb8[i].z);
+        // STRING: STUNTGP_D3D 0x472e68
+        fprintf(g_5da2e4, " Ck              = %f\n", g_4d5bb8->unkcb8[i].w);
+        // STRING: STUNTGP_D3D 0x472e80
+        fprintf(g_5da2e4, " MaxTravelIn     = %f\n", g_4d5bb8->suspension[i].maxTravelIn);
+        // STRING: STUNTGP_D3D 0x472e98
+        fprintf(g_5da2e4, " MaxDampingIn    = %f\n", g_4d5bb8->suspension[i].maxDampingIn);
+        // STRING: STUNTGP_D3D 0x472eb0
+        fprintf(g_5da2e4, " MaxStiffnessIn  = %f\n", g_4d5bb8->suspension[i].maxStiffnessIn);
+        // STRING: STUNTGP_D3D 0x472ec8
+        fprintf(g_5da2e4, " MaxTravelOut    = %f\n", g_4d5bb8->suspension[i].maxTravelOut);
+        // STRING: STUNTGP_D3D 0x472ee0
+        fprintf(g_5da2e4, " MaxDampingOut   = %f\n", g_4d5bb8->suspension[i].maxDampingOut);
+        // STRING: STUNTGP_D3D 0x472ef8
+        fprintf(g_5da2e4, " MaxStiffnessOut = %f\n", g_4d5bb8->suspension[i].maxStiffnessOut);
+    }
+    // STRING: STUNTGP_D3D 0x472f10
+    fprintf(g_5da2e4, "-TYRES_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40acc0
+void FUN_40acc0()
+{
+    // STRING: STUNTGP_D3D 0x472f20
+    fprintf(g_5da2e4, "-AERODYNAMICS[] =\n");
+    // STRING: STUNTGP_D3D 0x472f34
+    fprintf(g_5da2e4, " Cd              = %f\n", g_4d5bb8->unkcac);
+    // STRING: STUNTGP_D3D 0x472f4c
+    fprintf(g_5da2e4, " Cl              = %f\n", g_4d5bb8->unkcb0);
+    // STRING: STUNTGP_D3D 0x472f64
+    fprintf(g_5da2e4, " FA              = %f\n", g_4d5bb8->unkcb4);
+    // STRING: STUNTGP_D3D 0x472f7c
+    fprintf(g_5da2e4, "-AERODYNAMICS_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40ad50
+void FUN_40ad50()
+{
+    // STRING: STUNTGP_D3D 0x472f90
+    fprintf(g_5da2e4, "-DIMENSIONS[] =\n");
+    // STRING: STUNTGP_D3D 0x472fa4
+    fprintf(g_5da2e4, " Mass            = %f\n", g_4d5bb8->unk220);
+    // STRING: STUNTGP_D3D 0x472fbc
+    fprintf(g_5da2e4, " Com_a           = %f\n", g_4d5bb8->unk224);
+    // STRING: STUNTGP_D3D 0x472fd4
+    fprintf(g_5da2e4, " Com_b           = %f\n", g_4d5bb8->unk228);
+    // STRING: STUNTGP_D3D 0x472fec
+    fprintf(g_5da2e4, " Com_h           = %f\n", g_4d5bb8->unk22c);
+    // STRING: STUNTGP_D3D 0x473004
+    fprintf(g_5da2e4, " WheelBase       = %f\n", g_4d5bb8->unk230);
+    // STRING: STUNTGP_D3D 0x47301c
+    fprintf(g_5da2e4, " TrackFront      = %f\n", g_4d5bb8->unk234);
+    // STRING: STUNTGP_D3D 0x473034
+    fprintf(g_5da2e4, " TrackRear       = %f\n", g_4d5bb8->unk238);
+    // STRING: STUNTGP_D3D 0x47304c
+    fprintf(g_5da2e4, " Length          = %f\n", g_4d5bb8->unk23c);
+    // STRING: STUNTGP_D3D 0x473064
+    fprintf(g_5da2e4, " Width           = %f\n", g_4d5bb8->unk240);
+    // STRING: STUNTGP_D3D 0x47307c
+    fprintf(g_5da2e4, " Height          = %f\n", g_4d5bb8->unk244);
+    // STRING: STUNTGP_D3D 0x473094
+    fprintf(g_5da2e4, " RideHeight      = %f\n", g_4d5bb8->unk248);
+    // STRING: STUNTGP_D3D 0x4730ac
+    fprintf(g_5da2e4, "-DIMENSIONS_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40aef0
+void FUN_40aef0()
+{
+    // STRING: STUNTGP_D3D 0x4730c0
+    fprintf(g_5da2e4, "-STEERING[] =\n");
+    // STRING: STUNTGP_D3D 0x4730d0
+    fprintf(g_5da2e4, " MaxAngle        = %f\n", g_4d5bb8->unk24c);
+    // STRING: STUNTGP_D3D 0x4730e8
+    fprintf(g_5da2e4, " Sensitivity     = %f\n", g_4d5bb8->unk254);
+    // STRING: STUNTGP_D3D 0x473100
+    fprintf(g_5da2e4, " Acceleration    = %f\n", g_4d5bb8->unk250);
+    // STRING: STUNTGP_D3D 0x473118
+    fprintf(g_5da2e4, " AlignmentTorque =\n");
+    FUN_434900(g_4d5bb8->unk258, 128);
+    // STRING: STUNTGP_D3D 0x47312c
+    fprintf(g_5da2e4, "-STEERING_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40afb0
+void FUN_40afb0()
+{
+    // STRING: STUNTGP_D3D 0x47313c
+    fprintf(g_5da2e4, "-CONTROL[] =\n");
+    // STRING: STUNTGP_D3D 0x47314c
+    fprintf(g_5da2e4, " DigitalSteeringInputEnv =\n");
+    FUN_434900(g_4d5bb8->unk1188[0], 128);
+    // STRING: STUNTGP_D3D 0x473168
+    fprintf(g_5da2e4, " DigitalBrakeInputEnv =\n");
+    FUN_434900(g_4d5bb8->unk1188[1], 128);
+    // STRING: STUNTGP_D3D 0x473184
+    fprintf(g_5da2e4, " AnalogSteeringInputEnv =\n");
+    FUN_434900(g_4d5bb8->unk1188[2], 128);
+    // STRING: STUNTGP_D3D 0x4731a0
+    fprintf(g_5da2e4, " AnalogBrakeInputEnv =\n");
+    FUN_434900(g_4d5bb8->unk1188[3], 128);
+    // STRING: STUNTGP_D3D 0x4731b8
+    fprintf(g_5da2e4, " AnalogVelocitySteeringInputEnv =\n");
+    FUN_434900(g_4d5bb8->unk1188[4], 128);
+    // STRING: STUNTGP_D3D 0x4731dc
+    fprintf(g_5da2e4, "-CONTROL_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40b0b0
+void FUN_40b0b0()
+{
+    // STRING: STUNTGP_D3D 0x4731ec
+    fprintf(g_5da2e4, "-FUEL[] =\n");
+    // STRING: STUNTGP_D3D 0x4731f8
+    fprintf(g_5da2e4, " MaxFuel         = %f\n", g_4d5bb8->unkf78);
+    // STRING: STUNTGP_D3D 0x473210
+    fprintf(g_5da2e4, " UnitMass        = %f\n", g_4d5bb8->unkf7c);
+    // STRING: STUNTGP_D3D 0x473228
+    fprintf(g_5da2e4, " MaxConsumption  = %f\n", g_4d5bb8->unkf80);
+    // STRING: STUNTGP_D3D 0x473240
+    fprintf(g_5da2e4, " RefuelRate      = %f\n", g_4d5bb8->unk1184);
+    // STRING: STUNTGP_D3D 0x473258
+    fprintf(g_5da2e4, " ConsumptionEnv =\n");
+    FUN_434900(g_4d5bb8->unkf84, 128);
+    // STRING: STUNTGP_D3D 0x47326c
+    fprintf(g_5da2e4, "-FUEL_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40b190
+void FUN_40b190()
+{
+    // STRING: STUNTGP_D3D 0x473278
+    fprintf(g_5da2e4, "-TURBO[] =\n");
+    // STRING: STUNTGP_D3D 0x473284
+    fprintf(g_5da2e4, " RpmAcc          = %f\n", g_4d5bb8->unkd60);
+    // STRING: STUNTGP_D3D 0x47329c
+    fprintf(g_5da2e4, " RpmMax          = %f\n", g_4d5bb8->unkd64);
+    // STRING: STUNTGP_D3D 0x4732b4
+    fprintf(g_5da2e4, " Cm              = %f\n", g_4d5bb8->unkd68);
+    // STRING: STUNTGP_D3D 0x4732cc
+    fprintf(g_5da2e4, " PowerMultiplier = %f\n", g_4d5bb8->unkd6c);
+    // STRING: STUNTGP_D3D 0x4732e4
+    fprintf(g_5da2e4, " MaxConsumption  = %f\n", g_4d5bb8->unkf70);
+    // STRING: STUNTGP_D3D 0x4732fc
+    fprintf(g_5da2e4, " FuelCutoffPoint = %f\n", g_4d5bb8->unkf74);
+    // STRING: STUNTGP_D3D 0x473314
+    fprintf(g_5da2e4, " PowerEnv =\n");
+    FUN_434900(g_4d5bb8->unkd70, 128);
+    // STRING: STUNTGP_D3D 0x473324
+    fprintf(g_5da2e4, "-TURBO_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40b2b0
+void FUN_40b2b0()
+{
+    // STRING: STUNTGP_D3D 0x473334
+    fprintf(g_5da2e4, "-BRAKE[] =\n");
+    // STRING: STUNTGP_D3D 0x473340
+    fprintf(g_5da2e4, " Bias            = %f\n", g_4d5bb8->unkd5c);
+    // STRING: STUNTGP_D3D 0x473358
+    fprintf(g_5da2e4, " Acceleration    = %f\n", g_4d5bb8->unkd58);
+    // STRING: STUNTGP_D3D 0x473370
+    fprintf(g_5da2e4, "-BRAKE_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40b320
+void FUN_40b320()
+{
+    // STRING: STUNTGP_D3D 0x473380
+    fprintf(g_5da2e4, "-SFX[] =\n");
+    // STRING: STUNTGP_D3D 0x47338c
+    fprintf(g_5da2e4, " Engine_Rev         = %d\n", g_4d5bb8->race.unk80[1]);
+    // STRING: STUNTGP_D3D 0x4733a8
+    fprintf(g_5da2e4, " Engine_Idle        = %d\n", g_4d5bb8->race.unk80[2]);
+    // STRING: STUNTGP_D3D 0x4733c4
+    fprintf(g_5da2e4, " Engine_Boost       = %d\n", g_4d5bb8->race.unk80[3]);
+    // STRING: STUNTGP_D3D 0x4733e0
+    fprintf(g_5da2e4, " Horn               = %d\n", g_4d5bb8->race.unk80[0]);
+    // STRING: STUNTGP_D3D 0x4733fc
+    fprintf(g_5da2e4, "-SFX_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40b3c0
+void FUN_40b3c0()
+{
+    // STRING: STUNTGP_D3D 0x473408
+    fprintf(g_5da2e4, "-STUNT[] =\n");
+    // STRING: STUNTGP_D3D 0x473414
+    fprintf(g_5da2e4, " LaunchTime         = %f\n", g_4d5bb8->unk1b94);
+    // STRING: STUNTGP_D3D 0x473430
+    fprintf(g_5da2e4, " LaunchTolerance    = %f\n", g_4d5bb8->unk1b98);
+    // STRING: STUNTGP_D3D 0x47344c
+    fprintf(g_5da2e4, " LaunchSpd          = %f\n", g_4d5bb8->unk1b9c);
+    // STRING: STUNTGP_D3D 0x473468
+    fprintf(g_5da2e4, " MaxRotSpd_X        = %f\n", g_4d5bb8->unk1ba0);
+    // STRING: STUNTGP_D3D 0x473484
+    fprintf(g_5da2e4, " MaxRotSpd_Y        = %f\n", g_4d5bb8->unk1ba4);
+    // STRING: STUNTGP_D3D 0x4734a0
+    fprintf(g_5da2e4, "-STUNT_END\n\n");
 }
 
 void Script_GetFloat(char *section, char *key, float *out);
@@ -2082,30 +2358,30 @@ void FUN_4137b0()
 void FUN_4166f0()
 {
     Car *car = g_4d5bb8;
-    ModelPart *part = car->unk26b0->parts[car->unk26b0->current];
+    ObjectDef *meshes = car->unk26b0->lods[car->unk26b0->lod];
     if (!car->unk226c)
     {
         if (car->unk328c.active == 1)
         {
-            part->meshes[19].visible = 0;
+            meshes[19].visible = 0;
         }
         if (car->unk33cc.active == 1)
         {
-            part->meshes[20].visible = 0;
+            meshes[20].visible = 0;
         }
     }
     else if (car->unk328c.active == 1)
     {
-        part->meshes[19].visible = 1;
-        part->meshes[19].matrix[1].x = car->unk328c.unk024.x;
-        part->meshes[19].matrix[1].y = car->unk328c.unk024.y;
-        part->meshes[19].matrix[1].z = car->unk328c.unk024.z;
+        meshes[19].visible = 1;
+        meshes[19].matrix[1].x = car->unk328c.unk024.x;
+        meshes[19].matrix[1].y = car->unk328c.unk024.y;
+        meshes[19].matrix[1].z = car->unk328c.unk024.z;
         if (car->unk33cc.active == 1)
         {
-            part->meshes[20].visible = 1;
-            part->meshes[20].matrix[1].x = car->unk33cc.unk024.x;
-            part->meshes[20].matrix[1].y = car->unk33cc.unk024.y;
-            part->meshes[20].matrix[1].z = car->unk33cc.unk024.z;
+            meshes[20].visible = 1;
+            meshes[20].matrix[1].x = car->unk33cc.unk024.x;
+            meshes[20].matrix[1].y = car->unk33cc.unk024.y;
+            meshes[20].matrix[1].z = car->unk33cc.unk024.z;
         }
     }
 }
@@ -2114,13 +2390,13 @@ void FUN_4166f0()
 void FUN_413da0()
 {
     g_4d5bb8->unk3134 = 1;
-    ModelPart *part = g_4d5bb8->unk26b0->parts[g_4d5bb8->unk26b0->current];
-    part->meshes[11].visible = 1;
-    part->meshes[12].visible = 1;
-    part->meshes[13].visible = 1;
-    part->meshes[14].visible = 1;
-    part->meshes[15].visible = 1;
-    part->meshes[16].visible = 1;
+    ObjectDef *meshes = g_4d5bb8->unk26b0->lods[g_4d5bb8->unk26b0->lod];
+    meshes[11].visible = 1;
+    meshes[12].visible = 1;
+    meshes[13].visible = 1;
+    meshes[14].visible = 1;
+    meshes[15].visible = 1;
+    meshes[16].visible = 1;
     g_4d5bb8->unk3928 = g_4d5bb8->unk3924;
     FUN_4166f0();
     g_4d5bb8->unk328c.unk13c = 1;
@@ -2231,15 +2507,15 @@ void FUN_414710()
 // FUNCTION: STUNTGP_D3D 0x414b30
 void FUN_414b30()
 {
-    CarModel *model = g_4d5bb8->unk26b0;
+    Scene *model = g_4d5bb8->unk26b0;
     int i;
     for (i = 0; i < 3; i++)
     {
-        model->parts[i]->meshes[6].visible = 0;
+        model->lods[i][6].visible = 0;
     }
-    ModelPart *part = model->parts[model->current];
-    ModelMesh *mesh = &part->meshes[6];
-    ModelMesh *wheel = &part->meshes[1];
+    ObjectDef *meshes = model->lods[model->lod];
+    ObjectDef *mesh = &meshes[6];
+    ObjectDef *wheel = &meshes[1];
     for (i = 0; i < 4; i++, mesh++, wheel++)
     {
         if (g_4d5bb8->unk2cf4[i] != 0.0f)
@@ -2305,7 +2581,7 @@ void FUN_414c60()
     Vec4 pos;
     pos.x = 0.0f;
     pos.y = g_4d5bb8->unk244;
-    pos.z = g_4d5bb8->unk26b0->parts[0]->meshes[23].matrix->z;
+    pos.z = g_4d5bb8->unk26b0->lods[0][23].matrix->z;
     FUN_41e510(g_4d5bb8->unk351c, &g_4d5bb8->unk391c, &g_4d5bb8->unk3920, &pos, &g_474c08);
 }
 
@@ -2354,7 +2630,7 @@ void FUN_415640()
         g_4d5bb8->unk28a8 = 120;
     }
     int level = g_4d5bb8->unk28a8;
-    ModelMesh *mesh = &g_4d5bb8->unk26b0->parts[g_4d5bb8->unk26b0->current]->meshes[5];
+    ObjectDef *mesh = &g_4d5bb8->unk26b0->lods[g_4d5bb8->unk26b0->lod][5];
     mesh->visible = level != 0;
     if (level != g_4d5bb8->unk28a4)
     {
@@ -2379,9 +2655,9 @@ void FUN_4156e0(Car *car)
         FUN_4152c0(car);
         for (int i = 0; i < 4; i++)
         {
-            ModelPart *part = g_4d5bb8->unk26b0->parts[i];
-            part->meshes[10].visible = 1;
-            part->meshes[5].visible = 1;
+            ObjectDef *meshes = g_4d5bb8->unk26b0->lods[i];
+            meshes[10].visible = 1;
+            meshes[5].visible = 1;
         }
     }
 }
@@ -2394,9 +2670,9 @@ void FUN_415730(Car *car)
         g_4d5bb8->unk28a0 = 0;
         for (int i = 0; i < 4; i++)
         {
-            ModelPart *part = g_4d5bb8->unk26b0->parts[i];
-            part->meshes[10].visible = 0;
-            part->meshes[5].visible = 0;
+            ObjectDef *meshes = g_4d5bb8->unk26b0->lods[i];
+            meshes[10].visible = 0;
+            meshes[5].visible = 0;
         }
     }
 }
@@ -2405,7 +2681,7 @@ void FUN_415730(Car *car)
 // FUNCTION: STUNTGP_D3D 0x415770
 void FUN_415770()
 {
-    if (g_4d5bb8->unk26b0->meshCount > 10)
+    if (g_4d5bb8->unk26b0->objectCount > 10)
     {
         DWORD count = g_624474->count;
         int pos = g_4d5bb8->unk24a4;
@@ -2434,6 +2710,23 @@ void FUN_415770()
 // STUB: STUNTGP_D3D 0x415880
 void FUN_415880()
 {
+}
+
+// Scrolls the second float of every unk2c entry of one mesh, wrapping at 1.
+// FUNCTION: STUNTGP_D3D 0x4167a0
+void FUN_4167a0(int index)
+{
+    ObjectDef *mesh = &g_4d5bb8->unk26b0->lods[0][index];
+    BYTE *entry = mesh->unk2c;
+    for (DWORD i = 0; i < mesh->unk26; i++)
+    {
+        ((float *)entry)[1] += 0.02f;
+        if (((float *)entry)[1] > 1.0f)
+        {
+            ((float *)entry)[1] -= 1.0f;
+        }
+        entry += 16;
+    }
 }
 
 // STUB: STUNTGP_D3D 0x416800
@@ -3431,10 +3724,10 @@ void FUN_414f00()
     Car *car = g_49a1f8;
     for (int i = 0; i < 6; i++)
     {
-        if (car->active == 1 && car->unk26b0->meshCount >= 23)
+        if (car->active == 1 && car->unk26b0->objectCount >= 23)
         {
-            car->unk2d04[0].pos = *car->unk26b0->parts[0]->meshes[23].matrix;
-            car->unk2d04[1].pos = *car->unk26b0->parts[0]->meshes[24].matrix;
+            car->unk2d04[0].pos = *car->unk26b0->lods[0][23].matrix;
+            car->unk2d04[1].pos = *car->unk26b0->lods[0][24].matrix;
         }
         car++;
     }
@@ -3448,14 +3741,14 @@ void FUN_4150d0()
     for (int i = 0; i < 6; i++)
     {
         car->unk28bc[1].active = car->unk28bc[0].active = 0;
-        if (car->active == 1 && car->unk26b0->meshCount >= 21)
+        if (car->active == 1 && car->unk26b0->objectCount >= 21)
         {
-            ModelMesh *mesh = &car->unk26b0->parts[0]->meshes[21];
+            ObjectDef *mesh = &car->unk26b0->lods[0][21];
             car->unk28bc[0].active = 1;
             car->unk28bc[0].trail.pos = *mesh->matrix;
-            if (car->unk26b0->meshCount >= 22)
+            if (car->unk26b0->objectCount >= 22)
             {
-                mesh = &car->unk26b0->parts[0]->meshes[22];
+                mesh = &car->unk26b0->lods[0][22];
                 car->unk28bc[1].active = 1;
                 car->unk28bc[1].trail.pos = *mesh->matrix;
             }
@@ -3475,17 +3768,17 @@ void FUN_4162c0()
         {
             car->unk328c.active = 0;
             car->unk33cc.active = 0;
-            if (car->unk26b0->meshCount > 19)
+            if (car->unk26b0->objectCount > 19)
             {
-                ModelPart *part = car->unk26b0->parts[car->unk26b0->current];
+                ObjectDef *meshes = car->unk26b0->lods[car->unk26b0->lod];
                 car->unk328c.active = 1;
-                car->unk328c.unk004 = part->meshes[19].matrix[0];
-                car->unk328c.unk014 = part->meshes[19].matrix[1];
-                if (part->meshes[20].visible == 1 && car->unk26b0->meshCount > 20)
+                car->unk328c.unk004 = meshes[19].matrix[0];
+                car->unk328c.unk014 = meshes[19].matrix[1];
+                if (meshes[20].visible == 1 && car->unk26b0->objectCount > 20)
                 {
                     car->unk33cc.active = 1;
-                    car->unk33cc.unk004 = part->meshes[20].matrix[0];
-                    car->unk33cc.unk014 = part->meshes[20].matrix[1];
+                    car->unk33cc.unk004 = meshes[20].matrix[0];
+                    car->unk33cc.unk014 = meshes[20].matrix[1];
                 }
             }
         }
@@ -3515,16 +3808,16 @@ void FUN_417e10()
     {
         if (car->active == 1)
         {
-            if (car->unk26b0->meshCount <= 11)
+            if (car->unk26b0->objectCount <= 11)
             {
                 car->unk3134 = 0;
             }
             else
             {
-                ModelPart *part = car->unk26b0->parts[car->unk26b0->current];
+                ObjectDef *meshes = car->unk26b0->lods[car->unk26b0->lod];
                 float top = 0.0f;
-                DWORD count = part->meshes[11].pointCount;
-                Vec4 *points = part->meshes[11].points;
+                DWORD count = meshes[11].pointCount;
+                Vec4 *points = meshes[11].points;
                 for (DWORD j = 0; j < count; j++)
                 {
                     if (top < points[j].z)
@@ -3532,9 +3825,9 @@ void FUN_417e10()
                         top = points[j].z;
                     }
                 }
-                car->unk3148 = part->meshes[11].matrix[2];
+                car->unk3148 = meshes[11].matrix[2];
                 car->unk3148.x = -car->unk3148.x;
-                car->unk3138 = part->meshes[11].matrix[0];
+                car->unk3138 = meshes[11].matrix[0];
                 car->unk3158 = top * 0.99f;
                 car->unk3134 = 1;
             }

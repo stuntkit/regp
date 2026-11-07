@@ -39,6 +39,7 @@ extern int g_489720;
 #include "../../sintable.h"
 #include "../../sound.h"
 #include "io_wad.h"
+#include "game_state.h"
 #include "../../random.h"
 #include "../../surface.h"
 #include "../../timer.h"
@@ -875,8 +876,28 @@ void FUN_418d10()
     g_4d5ca8 = g_4d5cac = 0;
 }
 
+// GLOBAL: STUNTGP_D3D 0x4d5ca4
+int g_4d5ca4;
+
+extern float g_60f010;
+void FUN_447aa0(Fader *fader);
+
+// FUNCTION: STUNTGP_D3D 0x418d20
+void FUN_418d20(Car *car)
+{
+    int t = car->unk7674;
+    if (t)
+    {
+        car->unk24a4 = t - (int)(5000.0f / (g_60f010 / (float)g_624474[1].count));
+        if (g_4d5ca4 == 1)
+        {
+            FUN_447aa0(&g_498248[0].fx.faders[6]);
+            g_4d5ca4 = 0;
+        }
+    }
+}
+
 GameSlot *FUN_402590(Car *car);
-void FUN_402580();
 void FUN_419180();
 
 // FUNCTION: STUNTGP_D3D 0x418d90
@@ -1424,7 +1445,7 @@ void FUN_426260()
     Scene *scene = g_636418[3].scene;
     if (scene && scene->objectCount > 1)
     {
-        ObjectDef *def = scene->objects;
+        ObjectDef *def = scene->lods[0];
         for (DWORD i = 0; i < scene->objectCount; i++)
         {
             int type = g_624484[i].type;
@@ -1470,6 +1491,28 @@ void FUN_4268f0(AnimObject *obj, ObjectDef *def)
     dir.z = 128.0f;
     Vec3_Normalize(&dir.x);
     m[2] = dir;
+}
+
+extern float g_48266c;
+
+// FUNCTION: STUNTGP_D3D 0x426970
+void FUN_426970(Unk62a078 *p)
+{
+    p->flags = 7;
+    p->unk68 = 0.01f;
+    p->mode = 2;
+    p->unk7c = 1;
+    p->gravity = g_48266c * -0.05f;
+    p->anim = NULL;
+    p->size = 10.0f;
+    p->sizeIn = 3.0f;
+    p->sizeOut = 12.0f;
+    p->alpha = 128.0f;
+    p->alphaIn = 0.0f;
+    p->alphaOut = 18.0f;
+    p->colors[0] = 0x406090;
+    p->texture = 7;
+    p->unk98 = 0x60;
 }
 
 // FUNCTION: STUNTGP_D3D 0x426c70
@@ -1605,7 +1648,7 @@ void FUN_427140()
 {
     if (g_636418[3].scene && g_636418[3].scene->objectCount > 1)
     {
-        ObjectDef *def = g_636418[3].scene->objects;
+        ObjectDef *def = g_636418[3].scene->lods[0];
         AnimObject *obj = g_576cd0;
         DWORD count = g_636418[3].scene->objectCount;
         for (DWORD i = 1; i < count; i++)

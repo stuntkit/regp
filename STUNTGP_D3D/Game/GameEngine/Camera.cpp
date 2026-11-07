@@ -575,7 +575,7 @@ void FUN_404450()
         g_4722d0->cam.pos.y = tmp.y + g_4722d0->data->posY;
         g_4722d0->cam.pos.z = tmp.z + g_4722d0->data->posZ;
 
-        tmp = ((Scene *)g_4722d0->data->unk26b0)->objects->matrix[3];
+        tmp = g_4722d0->data->unk26b0->lods[0]->matrix[3];
         tmp.x = -tmp.x;
         g_4722d0->cam.up.x = tmp.x * g_4722d0->data->matrix[0] + tmp.y * g_4722d0->data->matrix[4] +
                              tmp.z * g_4722d0->data->matrix[8];
@@ -583,7 +583,7 @@ void FUN_404450()
                              tmp.z * g_4722d0->data->matrix[9];
         g_4722d0->cam.up.z = tmp.x * g_4722d0->data->matrix[2] + tmp.y * g_4722d0->data->matrix[6] +
                              tmp.z * g_4722d0->data->matrix[10];
-        tmp = ((Scene *)g_4722d0->data->unk26b0)->objects->matrix[2];
+        tmp = g_4722d0->data->unk26b0->lods[0]->matrix[2];
         tmp.y = -tmp.y;
         off.x = tmp.x * g_4722d0->data->matrix[0] + tmp.y * g_4722d0->data->matrix[4] + tmp.z * g_4722d0->data->matrix[8];
         off.y = tmp.x * g_4722d0->data->matrix[1] + tmp.y * g_4722d0->data->matrix[5] + tmp.z * g_4722d0->data->matrix[9];
