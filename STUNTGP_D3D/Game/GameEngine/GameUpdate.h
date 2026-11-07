@@ -185,13 +185,19 @@ struct SkidMark
     BYTE unk0c[0xd04];  // 0x00c
 };
 
-// 6 entries at 0x60f050, one per car
+// One per car.
 struct Driver
 {
-    char name[0x40];  // 0x00
-    CarModel *unk40;  // 0x40
-    int unk44;        // 0x44
-    BYTE unk48[0x1c]; // 0x48
+    CarModel *model;  // 0x00
+    CarModel *unk04;  // 0x04
+    int unk08;        // 0x08
+    int unk0c;        // 0x0c
+    int unk10;        // 0x10
+    int unk14;        // 0x14
+    int unk18;        // 0x18
+    int unk1c;        // 0x1c
+    int unk20;        // 0x20
+    char name[0x40];  // 0x24
 };
 
 // Collision point of a car body, offsets relative to the body position.
@@ -405,7 +411,7 @@ struct Car
     int unk26a8;              // 0x26a8
     BYTE unk26ac[0x4];        // 0x26ac
     CarModel *unk26b0;        // 0x26b0
-    int unk26b4;              // 0x26b4
+    CarModel *unk26b4;        // 0x26b4
     BYTE unk26b8[0x94];       // 0x26b8
     float wheelMatrix[4][16]; // 0x274c
     BYTE unk284c[0x40];       // 0x284c
@@ -561,20 +567,20 @@ struct Unk62a078
 {
     int unk00;          // 0x00 1 = live, 2 = dead
     DWORD flags;        // 0x04
-    float pos[3];       // 0x08
-    BYTE unk14[0x44];   // 0x14
+    Vec4 pos;           // 0x08
+    BYTE unk18[0x40];   // 0x18
     float vel[3];       // 0x58
     BYTE unk64[0x8];    // 0x64
     float gravity;      // 0x6c
     DWORD time;         // 0x70
     DWORD lifetime;     // 0x74
     int mode;           // 0x78
-    BYTE unk7c[0x4];    // 0x7c
+    int unk7c;          // 0x7c
     DWORD *anim;        // 0x80
     int frame;          // 0x84
-    BYTE unk88[0x4];    // 0x88
+    int texture;        // 0x88
     DWORD colors[3];    // 0x8c
-    BYTE unk98[0x4];    // 0x98
+    DWORD unk98;        // 0x98
     float size;         // 0x9c
     float sizeIn;       // 0xa0
     float sizeOut;      // 0xa4
@@ -648,7 +654,17 @@ struct Scene
     ObjectDef *objects; // 0x48
 };
 
-extern Scene *g_636448;
+// Scene render list entry; a list runs until a NULL scene.
+struct SceneSlot
+{
+    Scene *scene; // 0x00
+    int unk04;    // 0x04
+    void *data;   // 0x08
+    int size;     // 0x0c
+};
+
+// Two NULL-terminated lists share this array: the menu list from [0], the race list from [2].
+extern SceneSlot g_636418[16];
 
 // 10 entries at 0x576618
 struct InputSlot
@@ -791,7 +807,7 @@ extern Car *g_4d5bb8;
 extern Camera g_4864e8;
 void FUN_410a10(int index);
 extern Car *g_474630;
-extern Driver g_60f050[6];
+extern Driver g_60f02c[6];
 extern DWORD g_60f2b0;
 void FUN_401220(int type, int mode, unsigned int points);
 #endif /* GAMEUPDATE_H */

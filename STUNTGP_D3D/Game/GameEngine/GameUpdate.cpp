@@ -5,8 +5,10 @@
 #include <float.h>
 #include <math.h>
 
+#include "../../d3drender.h"
 #include "../../gametext.h"
 #include "../../globals.h"
+#include "../../sintable.h"
 #include "../../sound.h"
 #include "io_wad.h"
 #include "../../random.h"
@@ -70,27 +72,36 @@ int g_61299c;
 
 void FUN_441e20();
 
+// Animation setup of a scene object, as loaded with the level.
+struct AnimDef
+{
+    Vec4 rot;   // 0x00
+    Vec4 spin;  // 0x10
+    Vec4 unk20; // 0x20
+    int type;   // 0x30
+    int unk34;  // 0x34
+    int unk38;  // 0x38
+    int unk3c;  // 0x3c
+};
+
 struct AnimObject
 {
-    int type;         // 0x00
-    float rotX;       // 0x04
-    float rotY;       // 0x08
-    float rotZ;       // 0x0c
-    int unk10;        // 0x10
-    float spinX;      // 0x14
-    float spinY;      // 0x18
-    float spinZ;      // 0x1c
-    BYTE unk20[0x18]; // 0x20
-    int angleA;       // 0x38
-    int angleB;       // 0x3c
-    BYTE unk40[0x8];  // 0x40
+    int type;    // 0x00
+    Vec4 rot;    // 0x04
+    Vec4 spin;   // 0x14
+    Vec4 unk24;  // 0x24
+    int unk34;   // 0x34
+    int angleA;  // 0x38
+    int angleB;  // 0x3c
+    int unk40;   // 0x40
+    int unk44;   // 0x44
 };
 
 // GLOBAL: STUNTGP_D3D 0x576cd0
 AnimObject g_576cd0[32];
 
-// GLOBAL: STUNTGP_D3D 0x636448
-Scene *g_636448;
+// GLOBAL: STUNTGP_D3D 0x624484
+AnimDef *g_624484;
 
 // 6 entries at 0x49a1f8, 0x7724 bytes each
 // GLOBAL: STUNTGP_D3D 0x49a1f8
@@ -98,9 +109,6 @@ Car g_49a1f8[6];
 
 // GLOBAL: STUNTGP_D3D 0x4d5bb8
 Car *g_4d5bb8;
-
-// GLOBAL: STUNTGP_D3D 0x60f050
-Driver g_60f050[6];
 
 // GLOBAL: STUNTGP_D3D 0x60f2b0
 DWORD g_60f2b0;
@@ -797,7 +805,7 @@ void FUN_41e2d0()
         {
             int index = g_612d14[0] - g_49a1f8;
             // STRING: STUNTGP_D3D 0x474924
-            sprintf(text, "%s %s", g_60f050[index].name, g_6127a0[24]);
+            sprintf(text, "%s %s", g_60f02c[index].name, g_6127a0[24]);
             FUN_442cf0(180, text, &g_49a1f8[index], 1, 100);
         }
         g_612d14[i]->unk24ac = i;
@@ -898,6 +906,43 @@ int FUN_4278a0(float *bounds, float *point)
     return *(int *)&d < 0;
 }
 
+// STUB: STUNTGP_D3D 0x425df0
+void FUN_425df0(Scene *scene, ObjectDef *def, int type)
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x426260
+void FUN_426260()
+{
+    if (g_612be8 == 2)
+    {
+        return;
+    }
+    Scene *scene = g_636418[3].scene;
+    if (scene && scene->objectCount > 1)
+    {
+        ObjectDef *def = scene->objects;
+        for (DWORD i = 0; i < scene->objectCount; i++)
+        {
+            int type = g_624484[i].type;
+            if (type == 1 || type == 2 || type == 3)
+            {
+                FUN_425df0(scene, def, type);
+            }
+            AnimDef *src = &g_624484[i];
+            AnimObject *obj = &g_576cd0[i];
+            obj->type = src->type;
+            obj->rot = src->rot;
+            obj->spin = src->spin;
+            obj->unk24 = src->unk20;
+            obj->unk34 = src->unk34;
+            obj->unk44 = src->unk38;
+            obj->angleA = 0;
+            def++;
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x427010
 void FUN_427010(AnimObject *obj)
 {
@@ -924,46 +969,46 @@ void FUN_427050(AnimObject *obj, ObjectDef *def)
     float x;
     float y;
     float z;
-    delta[0] = obj->spinX * (1.0f / 60.0f);
-    delta[1] = obj->spinY * (1.0f / 60.0f);
-    delta[2] = obj->spinZ * (1.0f / 60.0f);
-    obj->rotX = x = obj->rotX + delta[0];
-    obj->rotY = y = obj->rotY + delta[1];
-    obj->rotZ = z = obj->rotZ + delta[2];
+    delta[0] = obj->spin.x * (1.0f / 60.0f);
+    delta[1] = obj->spin.y * (1.0f / 60.0f);
+    delta[2] = obj->spin.z * (1.0f / 60.0f);
+    obj->rot.x = x = obj->rot.x + delta[0];
+    obj->rot.y = y = obj->rot.y + delta[1];
+    obj->rot.z = z = obj->rot.z + delta[2];
     if (x < 0.0f)
     {
-        obj->rotX = x + 360.0f;
+        obj->rot.x = x + 360.0f;
     }
     else if (x > 360.0f)
     {
-        obj->rotX = x - 360.0f;
+        obj->rot.x = x - 360.0f;
     }
     if (y < 0.0f)
     {
-        obj->rotY = y + 360.0f;
+        obj->rot.y = y + 360.0f;
     }
     else if (y > 360.0f)
     {
-        obj->rotY = y - 360.0f;
+        obj->rot.y = y - 360.0f;
     }
     if (z < 0.0f)
     {
-        obj->rotZ = z + 360.0f;
+        obj->rot.z = z + 360.0f;
     }
     else if (z > 360.0f)
     {
-        obj->rotZ = z - 360.0f;
+        obj->rot.z = z - 360.0f;
     }
 }
 
 // FUNCTION: STUNTGP_D3D 0x427140
 void FUN_427140()
 {
-    if (g_636448 && g_636448->objectCount > 1)
+    if (g_636418[3].scene && g_636418[3].scene->objectCount > 1)
     {
-        ObjectDef *def = g_636448->objects;
+        ObjectDef *def = g_636418[3].scene->objects;
         AnimObject *obj = g_576cd0;
-        DWORD count = g_636448->objectCount;
+        DWORD count = g_636418[3].scene->objectCount;
         for (DWORD i = 1; i < count; i++)
         {
             obj++;
@@ -1697,6 +1742,85 @@ void FUN_45e180(Unk62a078 *p)
     }
 }
 
+// 3D billboard draw request, filled from the template g_486538.
+struct Billboard
+{
+    DWORD unk00;      // 0x00
+    short texture;    // 0x04
+    short alpha;      // 0x06
+    DWORD colors[4];  // 0x08
+    Vec4 pos;         // 0x18
+    float size[3];    // 0x28
+    int unk34;        // 0x34
+    Vec4 unk38;       // 0x38
+    Vec4 dir;         // 0x48
+    int unk58;        // 0x58
+    int unk5c;        // 0x5c
+    int unk60;        // 0x60
+    int unk64;        // 0x64
+};
+
+// GLOBAL: STUNTGP_D3D 0x486538
+Billboard g_486538 = {0x20, 1, 0x80, {0xffffff, 0xffffff, 0xffffff, 0xffffff}, {0.0f, 0.0f, 0.0f, 0.0f},
+                       {1.0f, 1.0f, 1.0f}, 0, {0.0f, 0.0f, -1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.0f}, 1, 0, 0, 2};
+
+// FUNCTION: STUNTGP_D3D 0x45e4b0
+void FUN_45e4b0(Billboard *billboard, float angle)
+{
+    int i = (int)(angle * (8192.0f / 360.0f));
+    billboard->dir.z = 0.0f;
+    billboard->dir.x = g_cosTable[i];
+    billboard->dir.y = g_sinTable[i];
+}
+
+// STUB: STUNTGP_D3D 0x434590
+void FUN_434590(Billboard *billboard)
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e4f0
+void FUN_45e4f0()
+{
+    if (g_62d478)
+    {
+        Billboard billboard = g_486538;
+        Unk62a078 *p = g_62a078;
+        for (int i = 0x40; i; i--, p++)
+        {
+            if (p->unk00 == 1 && p->unk7c == 1)
+            {
+                if (p->anim)
+                {
+                    billboard.texture = (short)(((TextureSlot *)p->anim[0] - g_6227d4) + p->frame / 4096);
+                }
+                else
+                {
+                    billboard.texture = (short)p->texture;
+                }
+                if (p->flags & 4)
+                {
+                    FUN_45e4b0(&billboard, p->angle);
+                }
+                else
+                {
+                    billboard.dir = g_486538.dir;
+                }
+                billboard.alpha = (short)(int)p->alphaNow;
+                billboard.unk00 = p->unk98;
+                billboard.colors[0] = p->color;
+                billboard.colors[1] = p->color;
+                billboard.colors[2] = p->color;
+                billboard.colors[3] = p->color;
+                billboard.pos = p->pos;
+                billboard.size[0] = p->sizeNow;
+                billboard.size[1] = p->sizeNow;
+                billboard.size[2] = p->sizeNow;
+                FUN_434590(&billboard);
+            }
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x45e1d0
 void FUN_45e1d0()
 {
@@ -1709,9 +1833,9 @@ void FUN_45e1d0()
             if (p->unk00 == 1)
             {
                 g_62d478 = 1;
-                p->pos[0] = p->vel[0] + p->pos[0];
-                p->pos[1] = p->vel[1] + p->pos[1];
-                p->pos[2] = p->vel[2] + p->pos[2];
+                p->pos.x = p->vel[0] + p->pos.x;
+                p->pos.y = p->vel[1] + p->pos.y;
+                p->pos.z = p->vel[2] + p->pos.z;
                 if (p->vel[1] < 166.66667f)
                 {
                     FUN_401d70(p->vel, p->gravity);

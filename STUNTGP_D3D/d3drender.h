@@ -73,7 +73,7 @@ extern TextureSlot g_6227d4[];
 
 struct SpriteDesc;
 
-extern D3DTLVERTEX2 g_58d818[4];
+extern D3DTLVERTEX2 g_58d818[8];
 extern float g_624990;
 extern float g_624994;
 extern float g_576b94;

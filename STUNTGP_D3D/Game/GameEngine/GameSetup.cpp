@@ -67,28 +67,23 @@ extern int g_6244d0;
 extern int g_61c5ec;
 extern DWORD g_61297c;
 
-// Scene render list entry; a list runs until a NULL scene.
-struct SceneSlot
-{
-    Scene *scene; // 0x00
-    int unk04;    // 0x04
-    int unk08;    // 0x08
-    int unk0c;    // 0x0c
-};
-
-// The in-race list at 0x636438 continues into g_636448.
 // GLOBAL: STUNTGP_D3D 0x636418
-SceneSlot g_636418[2];
-
-// GLOBAL: STUNTGP_D3D 0x636438
-SceneSlot g_636438;
+SceneSlot g_636418[16];
 
 struct RenderMaterial
 {
-    DWORD unk00;    // 0x00
-    DWORD unk04;    // 0x04
-    float alpha;    // 0x08
-    BYTE unk0c[0x84];
+    DWORD unk00;      // 0x00
+    DWORD unk04;      // 0x04
+    float alpha;      // 0x08
+    BYTE unk0c[0x5c]; // 0x0c
+    float unk68;      // 0x68
+    float unk6c;      // 0x6c
+    float unk70;      // 0x70
+    int unk74;        // 0x74
+    int unk78;        // 0x78
+    int unk7c;        // 0x7c
+    int unk80;        // 0x80
+    BYTE unk84[0xc];  // 0x84
 };
 
 // GLOBAL: STUNTGP_D3D 0x62447c
@@ -201,7 +196,7 @@ Unk62a078 g_62a078[0x40];
 int g_62d478;
 
 // GLOBAL: STUNTGP_D3D 0x60f02c
-int g_60f02c[0x96];
+Driver g_60f02c[6];
 
 // GLOBAL: STUNTGP_D3D 0x61b634
 int g_61b634;
@@ -411,8 +406,8 @@ void FUN_413670()
         g_49a1f8[i] = g_49a1f8[0];
         g_49a1f8[i].posX += 500.0f;
         FUN_408640(&g_49a1f8[i], &g_49a1f8[i].posX);
-        g_49a1f8[i].unk26b0 = g_60f050[i - 1].unk40;
-        g_49a1f8[i].unk26b4 = g_60f050[i - 1].unk44;
+        g_49a1f8[i].unk26b0 = g_60f02c[i].model;
+        g_49a1f8[i].unk26b4 = g_60f02c[i].unk04;
     }
     FUN_413500();
     FUN_417e10();
@@ -444,7 +439,7 @@ void FUN_401d40()
 {
     if (g_612be8 != 2)
     {
-        SceneView *view = g_636448->view;
+        SceneView *view = g_636418[3].scene->view;
         g_498238 = view->unk34;
         g_498230 = view->unk2c;
         g_498234 = view->unk30;
@@ -466,11 +461,6 @@ void FUN_413220()
 {
 }
 
-// STUB: STUNTGP_D3D 0x426260
-void FUN_426260()
-{
-}
-
 // FUNCTION: STUNTGP_D3D 0x42b740
 void FUN_42b740()
 {
@@ -480,9 +470,9 @@ void FUN_42b740()
     g_62f5d8 = 0;
     if (g_612be8 != 2)
     {
-        if (g_636448)
+        if (g_636418[3].scene)
         {
-            FUN_42b7f0(g_636448, &g_4864e8, 0);
+            FUN_42b7f0(g_636418[3].scene, &g_4864e8, 0);
         }
         FUN_42b6e0();
         FUN_434030();
@@ -518,9 +508,76 @@ void FUN_42d070()
 {
 }
 
-// STUB: STUNTGP_D3D 0x42d700
+struct Unk624488
+{
+    int unk00;   // 0x00
+    int unk04;   // 0x04
+    int unk08;   // 0x08
+    int unk0c;   // 0x0c
+    float unk10; // 0x10
+};
+
+// GLOBAL: STUNTGP_D3D 0x589628
+RenderMaterial g_589628;
+
+// GLOBAL: STUNTGP_D3D 0x5898d0
+Ambience g_5898d0;
+
+// No reference lands between this and 0x589df8, so the count is the size of that gap.
+// GLOBAL: STUNTGP_D3D 0x5898f8
+Unk624488 g_5898f8[64];
+
+// GLOBAL: STUNTGP_D3D 0x589e04
+int g_589e04;
+
+// GLOBAL: STUNTGP_D3D 0x624488
+Unk624488 *g_624488;
+
+// GLOBAL: STUNTGP_D3D 0x624494
+Ambience *g_624494;
+
+// GLOBAL: STUNTGP_D3D 0x62452c
+int g_62452c;
+
+// STUB: STUNTGP_D3D 0x42d970
+void FUN_42d970()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x42d700
 void FUN_42d700()
 {
+    if (g_612be8 == 2)
+    {
+        g_589e04 = 0;
+        g_62447c = &g_589628;
+        g_62449c = 0;
+        g_62452c = 0;
+        g_624494 = &g_5898d0;
+        g_624488 = g_5898f8;
+    }
+    RenderMaterial *material = g_62447c;
+    for (DWORD i = 0; i < g_62449c; i++)
+    {
+        if (material->unk00 == 1 && material->unk04 == 1)
+        {
+            float alpha = material->alpha * 4.75f;
+            material->alpha = alpha * alpha;
+        }
+        else
+        {
+            float g = material->unk6c * material->alpha;
+            float b = material->unk70 * material->alpha;
+            float r = material->unk68 * material->alpha;
+            material->unk78 = (int)r;
+            material->unk7c = (int)g;
+            material->unk80 = (int)b;
+        }
+        material++;
+    }
+    g_624504 = *g_624494;
+    FUN_42d7e0();
+    FUN_42d970();
 }
 
 // STUB: STUNTGP_D3D 0x42e240
@@ -531,7 +588,7 @@ void FUN_42e240(Scene *scene)
 // FUNCTION: STUNTGP_D3D 0x42e380
 void FUN_42e380()
 {
-    SceneSlot *slot = g_6244f8 == 1 ? &g_636438 : g_636418;
+    SceneSlot *slot = g_6244f8 == 1 ? &g_636418[2] : g_636418;
     while (slot->scene)
     {
         FUN_42e240(slot->scene);
@@ -720,9 +777,9 @@ void FUN_42e6e0()
     FUN_44fd60();
     g_6244f4 = 0;
     FUN_4320c0(1.0f);
-    if (g_636448)
+    if (g_636418[3].scene)
     {
-        g_636448->camera = &g_4864e8;
+        g_636418[3].scene->camera = &g_4864e8;
     }
     g_6244f8 = 0;
     FUN_431420();
@@ -731,9 +788,82 @@ void FUN_42e6e0()
     g_57b41c = 0;
 }
 
-// STUB: STUNTGP_D3D 0x42f090
+// Scene to load into g_636418[slot]; the list ends at id 0.
+struct SceneLoad
+{
+    int id;   // 0x00
+    int slot; // 0x04
+};
+
+// GLOBAL: STUNTGP_D3D 0x58c230
+int g_58c230;
+
+// GLOBAL: STUNTGP_D3D 0x58c538
+BYTE *g_58c538;
+
+// GLOBAL: STUNTGP_D3D 0x58c540
+SceneLoad g_58c540[24];
+
+// GLOBAL: STUNTGP_D3D 0x58c600
+BYTE g_58c600[0x200];
+
+// GLOBAL: STUNTGP_D3D 0x58c800
+Scene *g_58c800;
+
+// GLOBAL: STUNTGP_D3D 0x58c808
+int g_58c808;
+
+// GLOBAL: STUNTGP_D3D 0x58c80c
+BYTE *g_58c80c;
+
+// GLOBAL: STUNTGP_D3D 0x58c810
+BYTE g_58c810[0x1000];
+
+// GLOBAL: STUNTGP_D3D 0x58d810
+void *g_58d810;
+
+// Scene slots of each car's two models.
+// GLOBAL: STUNTGP_D3D 0x477c4c
+int g_477c4c[6] = {4, 6, 8, 10, 12, 14};
+
+// GLOBAL: STUNTGP_D3D 0x477c64
+int g_477c64[6] = {5, 7, 9, 11, 13, 15};
+
+// STUB: STUNTGP_D3D 0x42efb0
+void FUN_42efb0(int id)
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x42f090
 void FUN_42f090()
 {
+    if (g_612be8 == 2)
+    {
+        g_58c540[0].id = 0;
+        g_58c808 = 0;
+    }
+    memset(g_58c810, 0, sizeof(g_58c810));
+    g_58c80c = g_58c810;
+    g_58c538 = g_58c600;
+    for (SceneLoad *load = g_58c540; load->id;)
+    {
+        FUN_42efb0(load->id);
+        int slot = load->slot;
+        load++;
+        g_636418[slot].scene = g_58c800;
+        g_636418[slot].data = g_58d810;
+        g_636418[slot].size = g_58c230;
+    }
+    int car = 0;
+    for (int i = 0; i < 6; i++)
+    {
+        if (g_60d78c[i].type == 2)
+        {
+            g_60f02c[i].model = (CarModel *)g_636418[g_477c4c[car]].scene;
+            g_60f02c[i].unk04 = (CarModel *)g_636418[g_477c64[car]].scene;
+            car++;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x431300
@@ -780,7 +910,7 @@ void FUN_4312c0()
 {
     if (g_D3DUVFix)
     {
-        SceneSlot *slot = g_6244f8 == 1 ? &g_636438 : g_636418;
+        SceneSlot *slot = g_6244f8 == 1 ? &g_636418[2] : g_636418;
         while (slot->scene)
         {
             FUN_4311c0(slot->scene);
@@ -1044,10 +1174,10 @@ void FUN_446840(char *script)
     Script_GetInt(p, "G", &green);
     // STRING: STUNTGP_D3D 0x484ff8
     Script_GetInt(p, "B", &blue);
-    g_624504 = intensity * (1.0f / 255.0f);
-    g_624508 = red;
-    g_62450c = green;
-    g_624510 = blue;
+    g_624504.intensity = intensity * (1.0f / 255.0f);
+    g_624504.red = red;
+    g_624504.green = green;
+    g_624504.blue = blue;
     FUN_42d7e0();
     // STRING: STUNTGP_D3D 0x484ffc
     p = strstr(script, "-FogColour[] =");

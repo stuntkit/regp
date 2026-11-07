@@ -77,7 +77,7 @@ int g_61c5e4 = 0;
 TextureSlot g_6227d4[1];
 
 // GLOBAL: STUNTGP_D3D 0x58d818
-D3DTLVERTEX2 g_58d818[4];
+D3DTLVERTEX2 g_58d818[8];
 
 // Virtual 640x480 to display scale and offset.
 // GLOBAL: STUNTGP_D3D 0x624990
@@ -670,6 +670,79 @@ void FUN_427270()
 void FUN_431a80()
 {
     FUN_423430();
+}
+
+// Outlines the display area with four lines; ends are nudged half a pixel so the corners close.
+// FUNCTION: STUNTGP_D3D 0x431830
+void FUN_431830(D3DCOLOR color)
+{
+    FUN_42f380();
+    color |= 0xff000000;
+    float width = (float)g_DD_DISPLAYRESWIDTH;
+    float halfWidth = width * 0.5f;
+    float height = (float)g_DD_DISPLAYRESHEIGHT;
+    float halfHeight = height * 0.5f;
+    float left = g_576b94 - halfWidth;
+    float top = g_576b98 - halfHeight;
+    float topEdge = top + 0.5f;
+    float right = left + width - 0.5f;
+    float bottom = top + height - 0.5f;
+    g_58d818[0].sx = left;
+    g_58d818[0].sy = topEdge;
+    g_58d818[0].sz = 0.94f;
+    g_58d818[0].rhw = 0.94f;
+    g_58d818[0].color = color;
+    g_58d818[0].specular = 0xff000000;
+    g_58d818[1].sx = right + 0.5f;
+    g_58d818[1].sy = topEdge;
+    g_58d818[1].sz = 0.94f;
+    g_58d818[1].rhw = 0.94f;
+    g_58d818[1].color = color;
+    g_58d818[1].specular = 0xff000000;
+    g_58d818[2].sx = right;
+    g_58d818[2].sy = topEdge;
+    g_58d818[2].sz = 0.94f;
+    g_58d818[2].rhw = 0.94f;
+    g_58d818[2].color = color;
+    g_58d818[2].specular = 0xff000000;
+    g_58d818[3].sx = right;
+    g_58d818[3].sy = bottom + 0.5f;
+    g_58d818[3].sz = 0.94f;
+    g_58d818[3].rhw = 0.94f;
+    g_58d818[3].color = color;
+    g_58d818[3].specular = 0xff000000;
+    g_58d818[4].sx = right;
+    g_58d818[4].sy = bottom;
+    g_58d818[4].sz = 0.94f;
+    g_58d818[4].rhw = 0.94f;
+    g_58d818[4].color = color;
+    g_58d818[4].specular = 0xff000000;
+    g_58d818[5].sx = left;
+    g_58d818[5].sy = bottom;
+    g_58d818[5].sz = 0.94f;
+    g_58d818[5].rhw = 0.94f;
+    g_58d818[5].color = color;
+    g_58d818[5].specular = 0xff000000;
+    g_58d818[6].sx = left;
+    g_58d818[6].sy = bottom;
+    g_58d818[6].sz = 0.94f;
+    g_58d818[6].rhw = 0.94f;
+    g_58d818[6].color = color;
+    g_58d818[6].specular = 0xff000000;
+    g_58d818[7].sx = left;
+    g_58d818[7].sy = topEdge - 0.5f;
+    g_58d818[7].sz = 0.94f;
+    g_58d818[7].rhw = 0.94f;
+    g_58d818[7].color = color;
+    g_58d818[7].specular = 0xff000000;
+    FUN_432190(0x28);
+    g_d3dDevice->SetTexture(0, NULL);
+    g_d3dDevice->DrawPrimitive(D3DPT_LINELIST, FVF_TLVERTEX2, g_58d818, 8, D3DDP_DONOTCLIP | D3DDP_DONOTLIGHT);
+    g_61c5e4 = -1;
+    if (g_624984 == 1)
+    {
+        FUN_42f340();
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x42f340

@@ -309,10 +309,7 @@ void FUN_418180()
 {
 }
 
-// STUB: STUNTGP_D3D 0x45e4f0
-void FUN_45e4f0()
-{
-}
+void FUN_45e4f0();
 
 // STUB: STUNTGP_D3D 0x416050
 void FUN_416050()
@@ -353,10 +350,7 @@ void FUN_401b00()
 {
 }
 
-// STUB: STUNTGP_D3D 0x431830
-void FUN_431830(int a)
-{
-}
+void FUN_431830(D3DCOLOR color);
 
 // STUB: STUNTGP_D3D 0x448110
 void FUN_448110()
@@ -991,22 +985,11 @@ void FUN_441f70()
     }
 }
 
-struct RaceResult
-{
-    int unk00;              // 0x00
-    int unk04;              // 0x04
-    int unk08;              // 0x08
-    int unk0c;              // 0x0c
-    int unk10;              // 0x10
-    int unk14;              // 0x14
-    BYTE unk18[0x150 - 0x18];
-};
-
 // GLOBAL: STUNTGP_D3D 0x60d76c
 int g_60d76c[4];
 
-// GLOBAL: STUNTGP_D3D 0x60d8c4
-RaceResult g_60d8c4[6];
+// GLOBAL: STUNTGP_D3D 0x60d78c
+RaceEntry g_60d78c[6];
 
 // GLOBAL: STUNTGP_D3D 0x60df74
 int g_60df74;
@@ -1064,7 +1047,7 @@ void FUN_445530()
     g_60d76c[3] = g_60f000[3];
     for (int i = 0; i < 6; i++)
     {
-        RaceResult *result = &g_60d8c4[i];
+        RaceResult *result = &g_60d78c[i].result;
         if (g_49a1f8[i].active == 1)
         {
             result->unk04 = g_49a1f8[i].unk24e4 + 1;

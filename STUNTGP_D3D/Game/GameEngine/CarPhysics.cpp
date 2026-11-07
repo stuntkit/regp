@@ -76,7 +76,6 @@ CameraPath *FUN_428800(int id);
 
 extern int g_60d688[37];
 extern DWORD g_61297c;
-extern int g_60f02c[0x96];
 extern CameraPath *g_571328;
 extern float g_60e1f0[0x80];
 extern float g_60e3f0[0x80];
@@ -871,7 +870,7 @@ void FUN_40d6b0()
         if (g_4d5bb8->race.unk7c == 0)
         {
             // STRING: STUNTGP_D3D 0x473a1c
-            sprintf(text, "%s %s\n", g_60f050[g_4d5bb8 - g_49a1f8].name, g_6127a0[22]);
+            sprintf(text, "%s %s\n", g_60f02c[g_4d5bb8 - g_49a1f8].name, g_6127a0[22]);
             FUN_442cf0(180, text, g_4d5bb8, 0, 0);
             g_4d5bb8->race.unk7c++;
             g_4d5bb8->unk2578 = 0;
@@ -1589,7 +1588,7 @@ void FUN_418660(Car *car)
 {
     char text[64];
     // STRING: STUNTGP_D3D 0x474668
-    sprintf(text, "%s %s\n", g_60f050[car - g_49a1f8].name, g_6127a0[17]);
+    sprintf(text, "%s %s\n", g_60f02c[car - g_49a1f8].name, g_6127a0[17]);
     FUN_442cf0(180, text, car, 1, 0);
 }
 
@@ -1841,8 +1840,6 @@ void FUN_443700(Car *car)
     }
 }
 
-extern int g_60f02c[0x96];
-
 // Moves the body's points so their centroid is at the origin.
 // FUNCTION: STUNTGP_D3D 0x422200
 void FUN_422200(Body *body)
@@ -1898,7 +1895,7 @@ void FUN_4082d0()
     body->points[3].local.y = 0.0f;
     body->points[3].local.z = 110.0f;
     body->points[3].unk44 = 0.25f;
-    switch (g_60f02c[(g_4d5bb8 - g_49a1f8) * 25 + 2])
+    switch (g_60f02c[g_4d5bb8 - g_49a1f8].unk08)
     {
     case 1:
     case 3:
@@ -2149,7 +2146,7 @@ void FUN_413500()
 {
     for (int i = 0; i < 6; i++)
     {
-        if (g_60f02c[i * 25] == 0)
+        if (!g_60f02c[i].model)
         {
             g_49a1f8[i].active = 0;
         }

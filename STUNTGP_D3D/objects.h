@@ -26,11 +26,42 @@ struct PoolObject
     int (*message)(PoolObject *object, int msg, int arg);
 };
 
-// Current and pending front-end screens; the flags mark screens not owned by the pool.
-extern PoolObject *g_5ff3f0;
-extern BOOL g_5ff3f4;
-extern PoolObject *g_5ff3f8;
-extern BOOL g_5ff3fc;
+// Front-end state, cleared as one block by FUN_43dda0.
+struct FrontEnd
+{
+    int state; // 0x00
+    // Screen fade in 16.16 fixed point.
+    int fade; // 0x04
+    // Current and pending screens; the flags mark screens not owned by the pool.
+    PoolObject *screen;      // 0x08
+    BOOL screenStatic;       // 0x0c
+    PoolObject *nextScreen;  // 0x10
+    BOOL nextScreenStatic;   // 0x14
+    PoolObject *objects[16]; // 0x18
+    int objectCount;         // 0x58
+    int unk5c;               // 0x5c
+    int unk60;               // 0x60
+    float unk64;             // 0x64
+    float unk68;             // 0x68
+    float unk6c;             // 0x6c
+    float unk70;             // 0x70
+    int unk74;               // 0x74
+    int unk78;               // 0x78
+    int unk7c;               // 0x7c
+    float unk80;             // 0x80
+    int unk84;               // 0x84
+    float unk88[6];          // 0x88
+    float unka0[6];          // 0xa0
+    // Player locked to the menu, or 0 for any.
+    int lockedPlayer; // 0xb8
+    int unkbc;        // 0xbc
+    int unkc0;        // 0xc0
+    int musicTrack;   // 0xc4
+    int unkc8;        // 0xc8
+    int unkcc;        // 0xcc
+};
+
+extern FrontEnd g_frontEnd;
 
 void Pool_Init();
 void Pool_Free(void *ptr);
