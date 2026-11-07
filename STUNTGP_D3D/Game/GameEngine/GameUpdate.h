@@ -110,10 +110,17 @@ struct InputState
     int unk00;          // 0x00
     int unk04;          // 0x04
     int range;          // 0x08
-    int x;              // 0x0c
-    int y;              // 0x10
-    BYTE unk14[0x28];   // 0x14
-    BYTE buttons[0x40]; // 0x3c
+    int x;                  // 0x0c
+    int y;                  // 0x10
+    int z;                  // 0x14
+    int rx;                 // 0x18
+    int ry;                 // 0x1c
+    int rz;                 // 0x20
+    int sliders[2];         // 0x24
+    DWORD pov[2];           // 0x2c
+    BYTE unk34[0x8];        // 0x34
+    BYTE buttons[0x20];     // 0x3c
+    BYTE prevButtons[0x20]; // 0x5c
 };
 
 // 10 entries at 0x576618
