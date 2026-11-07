@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "../../gametext.h"
+#include "../../vecmath.h"
 
 extern float g_482678;
 extern float g_48267c;
@@ -112,9 +113,76 @@ void FUN_408d80()
     }
 }
 
-// STUB: STUNTGP_D3D 0x40d790
+// STUB: STUNTGP_D3D 0x40c710
+void FUN_40c710()
+{
+}
+
+// STUB: STUNTGP_D3D 0x40c730
+void FUN_40c730()
+{
+}
+
+// STUB: STUNTGP_D3D 0x40cb90
+void FUN_40cb90()
+{
+}
+
+// STUB: STUNTGP_D3D 0x40d160
+void FUN_40d160()
+{
+}
+
+// STUB: STUNTGP_D3D 0x40d6b0
+void FUN_40d6b0()
+{
+}
+
+// Reads this tick's controls; they are held released while the car is locked out.
+// FUNCTION: STUNTGP_D3D 0x40d790
 void FUN_40d790()
 {
+    if (g_4d5bb8->active == 1)
+    {
+        if (g_4d5bb8->unk7644 != 0)
+        {
+            g_4d5bb8->unk7644--;
+            g_4d5bb8->unk1cfc = 0;
+            FUN_40cb90();
+        }
+        if (g_4d5bb8->unk2278 == 0 || g_4d5bb8->unk7644 != 0)
+        {
+            g_4d5bb8->controls[0] = 0;
+            g_4d5bb8->controls[1] = 0;
+            g_4d5bb8->controls[4] = 0;
+            g_4d5bb8->controls[5] = 0;
+            g_4d5bb8->controls[8] = 0;
+            g_4d5bb8->controls[9] = 0;
+            if (g_4d5bb8->unk7648 == 1)
+            {
+                g_4d5bb8->controls[2] = 0;
+                g_4d5bb8->controls[3] = 0;
+            }
+        }
+        else
+        {
+            switch (g_4d5bb8->inputMode)
+            {
+            case 0:
+                FUN_40c730();
+                break;
+            case 2:
+            case 4:
+                FUN_40d160();
+                break;
+            case 1:
+            case 3:
+                FUN_40c710();
+                break;
+            }
+        }
+        FUN_40d6b0();
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x40e470
@@ -580,19 +648,87 @@ void FUN_443700(Car *car)
     }
 }
 
-// STUB: STUNTGP_D3D 0x4085e0
+// STUB: STUNTGP_D3D 0x4082d0
+void FUN_4082d0()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x4085e0
 void FUN_4085e0()
 {
+    Body *body = &g_4d5bb8->body;
+    body->pos.x = 0.0f;
+    body->pos.y = 1000.0f;
+    body->pos.z = -10000.0f;
+    body->unk40 = 1000.0f;
+    Matrix_Identity(body->mat0);
+    Matrix_Identity(body->mat1);
+    Matrix_Identity(body->mat2);
+    body->vel[0] = 0.0f;
+    body->vel[1] = 0.0f;
+    body->vel[2] = 0.0f;
+    FUN_4082d0();
 }
 
-// STUB: STUNTGP_D3D 0x408640
+// FUNCTION: STUNTGP_D3D 0x408640
 void FUN_408640(Car *car, float *pos)
 {
+    Body *body = &car->body;
+    car->unk1bbc = *(Vec4 *)pos;
+    *(Vec4 *)&car->posX = *(Vec4 *)pos;
+    body->prevPos = *(Vec4 *)pos;
+    body->pos = *(Vec4 *)pos;
+    for (unsigned int i = 0; i < body->numPoints; i++)
+    {
+        body->points[i].world.x = body->points[i].local.x + body->pos.x;
+        body->points[i].world.y = body->pos.y + body->points[i].local.y;
+        body->points[i].world.z = body->points[i].local.z + body->pos.z;
+        body->points[i].prev = body->points[i].world;
+    }
 }
 
-// STUB: STUNTGP_D3D 0x408710
+// Places the car 2000 units ahead of the slot camera, 500 up.
+// FUNCTION: STUNTGP_D3D 0x408710
 void FUN_408710()
 {
+    Body *body = &g_474630->body;
+    Vec4 dir = g_4722d0->axisZ;
+    Vec4 up;
+    up.x = 0.0f;
+    up.y = dir.y;
+    up.z = 0.0f;
+    dir.x -= up.x;
+    dir.y -= up.y;
+    dir.z -= up.z;
+    Vec3_Normalize(&dir.x);
+    dir.x *= 2000.0f;
+    dir.y *= 2000.0f;
+    dir.z *= 2000.0f;
+    dir.y += 500.0f;
+    body->pos.x = dir.x + g_4722d0->cam.pos.x;
+    body->pos.y = dir.y + g_4722d0->cam.pos.y;
+    body->pos.z = dir.z + g_4722d0->cam.pos.z;
+    for (unsigned int i = 0; i < body->numPoints; i++)
+    {
+        body->points[i].world.x = body->points[i].local.x + body->pos.x;
+        body->points[i].world.y = body->points[i].local.y + body->pos.y;
+        body->points[i].world.z = body->points[i].local.z + body->pos.z;
+    }
+    Matrix_Identity(body->mat0);
+    Matrix_Identity(body->mat1);
+    Matrix_Identity(body->mat2);
+    body->vel[0] = 0.0f;
+    body->vel[1] = 0.0f;
+    body->vel[2] = 0.0f;
+    g_474630->posX = dir.x + g_4722d0->cam.pos.x;
+    g_474630->posY = dir.y + g_4722d0->cam.pos.y;
+    g_474630->posZ = dir.z + g_4722d0->cam.pos.z;
+    Matrix_Identity(g_474630->unk1bcc);
+    Matrix_Identity(g_474630->unk1c0c);
+    Matrix_Identity(g_474630->unk1c4c);
+    g_474630->unk1c8c[0] = 0.0f;
+    g_474630->unk1c8c[1] = 0.0f;
+    g_474630->unk1c8c[2] = 0.0f;
 }
 
 // STUB: STUNTGP_D3D 0x40bde0

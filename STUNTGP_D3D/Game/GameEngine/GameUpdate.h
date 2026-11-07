@@ -103,6 +103,37 @@ struct Wheel
     BYTE unk007c[0x1c]; // 0x007c
 };
 
+// Collision point of a car body, offsets relative to the body position.
+struct BodyPoint
+{
+    Vec4 local;       // 0x00
+    Vec4 world;       // 0x10
+    Vec4 prev;        // 0x20
+    BYTE unk30[0x10]; // 0x30
+    float unk40;      // 0x40
+    BYTE unk44[0x4];  // 0x44
+    float radius;     // 0x48
+};
+
+// Car+0x7270
+struct Body
+{
+    Vec4 pos;              // 0x000
+    Vec4 prevPos;          // 0x010
+    BYTE unk020[0x10];     // 0x020
+    float vel[3];          // 0x030
+    BYTE unk03c[0x4];      // 0x03c
+    float unk40;           // 0x040
+    BYTE unk044[0x4];      // 0x044
+    float mat0[16];        // 0x048
+    float mat1[16];        // 0x088
+    float mat2[16];        // 0x0c8
+    BYTE unk108[0x34];     // 0x108
+    DWORD numPoints;       // 0x13c
+    BYTE unk140[0x4];      // 0x140
+    BodyPoint points[8];   // 0x144
+};
+
 // 6 entries at 0x60f050, one per car
 struct Driver
 {
@@ -146,13 +177,18 @@ struct Car
     float posX;              // 0x1bac
     float posY;              // 0x1bb0
     float posZ;              // 0x1bb4
-    BYTE unk1bb8[0xd4];      // 0x1bb8
+    BYTE unk1bb8[0x4];       // 0x1bb8
+    Vec4 unk1bbc;            // 0x1bbc
+    float unk1bcc[16];       // 0x1bcc
+    float unk1c0c[16];       // 0x1c0c
+    float unk1c4c[16];       // 0x1c4c
     float unk1c8c[3];        // 0x1c8c
     BYTE unk1c98[0x58];      // 0x1c98
     float unk1cf0;           // 0x1cf0
     BYTE unk1cf4[0x4];       // 0x1cf4
     float unk1cf8;           // 0x1cf8
-    BYTE unk1cfc[0x20c];     // 0x1cfc
+    int unk1cfc;             // 0x1cfc
+    BYTE unk1d00[0x208];     // 0x1d00
     float unk1f08;           // 0x1f08
     BYTE unk1f0c[0x4];       // 0x1f0c
     int unk1f10;             // 0x1f10
@@ -263,12 +299,15 @@ struct Car
     int unk3924;             // 0x3924
     BYTE unk3928[0x3940];    // 0x3928
     unsigned short *unk7268; // 0x7268
-    BYTE unk726c[0x3c0];     // 0x726c
+    BYTE unk726c[0x4];       // 0x726c
+    Body body;               // 0x7270
+    BYTE unk7614[0x18];      // 0x7614
     int unk762c;             // 0x762c
     BYTE unk7630[0x8];       // 0x7630
     int unk7638;             // 0x7638
     int unk763c;             // 0x763c
-    BYTE unk7640[0x8];       // 0x7640
+    int unk7640;             // 0x7640
+    int unk7644;             // 0x7644
     int unk7648;             // 0x7648
     BYTE unk764c[0x34];      // 0x764c
     DWORD unk7680;           // 0x7680
