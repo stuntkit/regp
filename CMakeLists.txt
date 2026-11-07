@@ -214,7 +214,7 @@ if (MSVC_FOR_DECOMP)
   set(CMAKE_CXX_FLAGS "/FD /Gr /ML /W3 /GX /G5 /c /D \"WIN32\" /D \"_WINDOWS\"") # G6???
   set(CMAKE_CXX_FLAGS_DEBUG "/Gm /ZI /Od /D \"_DEBUG\"")
   set(CMAKE_CXX_FLAGS_RELEASE "/EHs /O2 /D \"NDEBUG\"")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/EHs /Zp4 /O2 /Zi /D \"NDEBUG\"") #/ZI in debug
+  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/EHs /Zp4 /O2 /Oy- /Oa /Zi /D \"NDEBUG\"") #/ZI in debug
   set(CMAKE_CXX_FLAGS_MINSIZEREL "/Os /D \"NDEBUG\"")
   endif()
 

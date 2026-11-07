@@ -15,10 +15,6 @@
 #include "common.h"
 // #include "pure.h"
 
-// The original keeps EBP frames (no /Oy); per-function pragma toggling breaks
-// return-block duplication, so it stays off for the whole span.
-#pragma optimize("y", off)
-
 // FUNCTION: STUNTGP_D3D 0x44e490
 void FUN_44e490()
 {
@@ -281,8 +277,6 @@ void FUN_44ea10()
 void FUN_44ea50()
 {
 }
-
-#pragma optimize("", on)
 
 // FUNCTION: STUNTGP_D3D 0x44ea60
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nCmdShow)

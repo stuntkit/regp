@@ -1,8 +1,5 @@
 #include "Engine_LevelScript.h"
 
-// The original keeps EBP frames everywhere (/Oy-). Drop this once the global flags do.
-#pragma optimize("y", off)
-
 // GLOBAL: STUNTGP_D3D 0x48491c
 char g_GraphicsDirectory[128] = "D:\\Game\\Graphics24\\";
 

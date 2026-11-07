@@ -1,11 +1,5 @@
 #include "windowInit.h"
 
-// The original never addresses the stack through esp: it was built without frame pointer omission.
-// Its scheduling (vtable loads hoisted above global stores) also matches /Oa, assume no aliasing.
-// TODO: move to /Oy- /Oa in CMakeLists.txt once verified for the other translation units.
-#pragma optimize("y", off)
-#pragma optimize("a", on)
-
 // LIBRARY: STUNTGP_D3D 0x4627a4
 // _DirectDrawCreate@12
 

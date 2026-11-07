@@ -1,8 +1,5 @@
 #include "io_wad.h"
 
-// The original keeps EBP frames everywhere (/Oy-). Drop this once the global flags do.
-#pragma optimize("y", off)
-
 struct WadEntry
 {
     char *dir;

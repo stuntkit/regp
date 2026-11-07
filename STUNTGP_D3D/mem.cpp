@@ -3,9 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// The original keeps EBP frames everywhere (/Oy-). Drop this once the global flags do.
-#pragma optimize("y", off)
-
 struct MemSlot
 {
     char *data;
