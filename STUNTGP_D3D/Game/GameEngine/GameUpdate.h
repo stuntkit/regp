@@ -659,8 +659,8 @@ struct SceneSlot
 {
     Scene *scene; // 0x00
     int unk04;    // 0x04
-    int unk08;    // 0x08
-    int unk0c;    // 0x0c
+    void *data;   // 0x08
+    int size;     // 0x0c
 };
 
 // Two NULL-terminated lists share this array: the menu list from [0], the race list from [2].

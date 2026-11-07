@@ -718,9 +718,82 @@ void FUN_42e6e0()
     g_57b41c = 0;
 }
 
-// STUB: STUNTGP_D3D 0x42f090
+// Scene to load into g_636418[slot]; the list ends at id 0.
+struct SceneLoad
+{
+    int id;   // 0x00
+    int slot; // 0x04
+};
+
+// GLOBAL: STUNTGP_D3D 0x58c230
+int g_58c230;
+
+// GLOBAL: STUNTGP_D3D 0x58c538
+BYTE *g_58c538;
+
+// GLOBAL: STUNTGP_D3D 0x58c540
+SceneLoad g_58c540[24];
+
+// GLOBAL: STUNTGP_D3D 0x58c600
+BYTE g_58c600[0x200];
+
+// GLOBAL: STUNTGP_D3D 0x58c800
+Scene *g_58c800;
+
+// GLOBAL: STUNTGP_D3D 0x58c808
+int g_58c808;
+
+// GLOBAL: STUNTGP_D3D 0x58c80c
+BYTE *g_58c80c;
+
+// GLOBAL: STUNTGP_D3D 0x58c810
+BYTE g_58c810[0x1000];
+
+// GLOBAL: STUNTGP_D3D 0x58d810
+void *g_58d810;
+
+// Scene slots of each car's two models.
+// GLOBAL: STUNTGP_D3D 0x477c4c
+int g_477c4c[6] = {4, 6, 8, 10, 12, 14};
+
+// GLOBAL: STUNTGP_D3D 0x477c64
+int g_477c64[6] = {5, 7, 9, 11, 13, 15};
+
+// STUB: STUNTGP_D3D 0x42efb0
+void FUN_42efb0(int id)
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x42f090
 void FUN_42f090()
 {
+    if (g_612be8 == 2)
+    {
+        g_58c540[0].id = 0;
+        g_58c808 = 0;
+    }
+    memset(g_58c810, 0, sizeof(g_58c810));
+    g_58c80c = g_58c810;
+    g_58c538 = g_58c600;
+    for (SceneLoad *load = g_58c540; load->id;)
+    {
+        FUN_42efb0(load->id);
+        int slot = load->slot;
+        load++;
+        g_636418[slot].scene = g_58c800;
+        g_636418[slot].data = g_58d810;
+        g_636418[slot].size = g_58c230;
+    }
+    int car = 0;
+    for (int i = 0; i < 6; i++)
+    {
+        if (g_60d78c[i].type == 2)
+        {
+            g_60f02c[i].model = (CarModel *)g_636418[g_477c4c[car]].scene;
+            g_60f02c[i].unk04 = (CarModel *)g_636418[g_477c64[car]].scene;
+            car++;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x431300
