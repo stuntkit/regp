@@ -31,7 +31,7 @@ struct CameraPath
     unsigned int count; // 0x08
     int unk0c;          // 0x0c
     int mode;           // 0x10
-    BYTE unk14[0x4];    // 0x14
+    int unk14;          // 0x14
     float unk18;        // 0x18
 };
 

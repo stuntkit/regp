@@ -50,9 +50,25 @@ void FUN_402ad0()
     g_4722d0->cam.up.z = 0.0f;
 }
 
-// STUB: STUNTGP_D3D 0x402b90
+void FUN_428520(CameraPath *path, Vec4 *out, float t);
+void FUN_428740(float *t, float *speed);
+extern float g_499f8c;
+extern float g_499f88;
+
+// FUNCTION: STUNTGP_D3D 0x402b90
 void FUN_402b90()
 {
+    Vec4 p;
+    CameraPath *path = g_4722d0->path;
+    float lead = path->unk14;
+    FUN_428520(path, &p, path->count * g_499f8c);
+    g_4722d0->cam.pos = p;
+    g_4722d0->cam.pos.y += 500.0f;
+    FUN_428520(path, &p, path->count * (lead * 0.001f + g_499f8c));
+    g_4722d0->cam.target = p;
+    g_4722d0->cam.target.y += 500.0f;
+    FUN_428740(&g_499f8c, &g_499f88);
+    g_4722d0->camMode = 3;
 }
 
 // FUNCTION: STUNTGP_D3D 0x402c80
