@@ -249,8 +249,12 @@ void FUN_45f110()
     g_612968 = 0;
     g_61296c = g_612970;
     g_612970 = 0;
-    for (unsigned int i = 0; i < 4 && g_612968 != 1; i++)
+    for (unsigned int i = 0; i < 4; i++)
     {
+        if (g_612968 == 1)
+        {
+            break;
+        }
         Controller *c = &g_62d580[i];
         if (c->active == 1)
         {

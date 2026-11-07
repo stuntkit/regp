@@ -309,23 +309,22 @@ void FUN_442a40(int type, int duration, int delay, int end, int from, int to, fl
 // FUNCTION: STUNTGP_D3D 0x442ad0
 void FUN_442ad0(int type, int duration, int delay, int end, int from, int to, float scale)
 {
-    GameSlot *slot = g_4722d0;
-    slot->fadeActive = 1;
-    slot->fadeType = type;
-    slot->fadeValue = from;
-    slot->fadeFrom = from;
-    slot->fadeTo = to;
-    slot->fadeTime = 0;
-    slot->fadeDuration = duration;
-    slot->fadeDelay = delay;
-    slot->fadeEnd = end;
+    g_4722d0->fadeActive = 1;
+    g_4722d0->fadeType = type;
+    g_4722d0->fadeValue = from;
+    g_4722d0->fadeFrom = from;
+    g_4722d0->fadeTo = to;
+    g_4722d0->fadeTime = 0;
+    g_4722d0->fadeDuration = duration;
+    g_4722d0->fadeDelay = delay;
+    g_4722d0->fadeEnd = end;
     if (scale < 1.0f)
     {
-        slot->fadeScale = scale - 0.05f;
+        g_4722d0->fadeScale = scale - 0.05f;
     }
     else
     {
-        slot->fadeScale = scale;
+        g_4722d0->fadeScale = scale;
     }
 }
 
