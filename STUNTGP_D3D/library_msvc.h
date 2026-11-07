@@ -898,4 +898,7 @@
 // LIBRARY: STUNTGP_D3D 0x464f66
 // ___from_strstr_to_strchr
 
+// LIBRARY: STUNTGP_D3D 0x463041
+// __control87
+
 #endif

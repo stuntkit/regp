@@ -438,8 +438,8 @@ void FUN_427140()
 // FUNCTION: STUNTGP_D3D 0x4294f0
 void FUN_4294f0()
 {
-    _controlfp(_PC_53, _MCW_PC);
-    _controlfp(_RC_NEAR, _MCW_RC);
+    _control87(_PC_53, _MCW_PC);
+    _control87(_RC_NEAR, _MCW_RC);
 }
 
 // FUNCTION: STUNTGP_D3D 0x429510
