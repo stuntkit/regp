@@ -32,6 +32,7 @@ struct CameraPreset
     float fov;   // 0x30
     int unk34;   // 0x34
     float roll;  // 0x38
+    int unk3c;   // 0x3c
 };
 
 struct Fader
@@ -70,11 +71,21 @@ struct Car
     float posZ;           // 0x1bb4
     BYTE unk1bb8[0x6b8];  // 0x1bb8
     int unk2270;          // 0x2270
-    BYTE unk2274[0x68];   // 0x2274
+    BYTE unk2274[0x54];   // 0x2274
+    int unk22c8;          // 0x22c8
+    BYTE unk22cc[0x10];   // 0x22cc
     float unk22dc;        // 0x22dc
     float unk22e0;        // 0x22e0
     float unk22e4;        // 0x22e4
-    BYTE unk22e8[0xdc];   // 0x22e8
+    BYTE unk22e8[0x4];    // 0x22e8
+    float unk22ec;        // 0x22ec
+    float unk22f0;        // 0x22f0
+    float unk22f4;        // 0x22f4
+    BYTE unk22f8[0x4];    // 0x22f8
+    float unk22fc;        // 0x22fc
+    float unk2300;        // 0x2300
+    float unk2304;        // 0x2304
+    BYTE unk2308[0xbc];   // 0x2308
     int unk23c4;          // 0x23c4
     BYTE unk23c8[0x118];  // 0x23c8
     int unk24e0;          // 0x24e0
@@ -137,7 +148,8 @@ struct GameSlot
     float angAccelX;       // 0x104
     float angAccelY;       // 0x108
     float angAccelZ;       // 0x10c
-    BYTE unk110[0x90];     // 0x110
+    BYTE unk110[0x8c];     // 0x110
+    float unk19c;          // 0x19c
     float fov2;            // 0x1a0
     int unk1a4;            // 0x1a4
     void *unk1a8;          // 0x1a8
