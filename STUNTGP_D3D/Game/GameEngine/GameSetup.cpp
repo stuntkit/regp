@@ -1501,6 +1501,30 @@ void FUN_45e0e0()
     g_62d478 = 0;
 }
 
+// FUNCTION: STUNTGP_D3D 0x45e110
+void FUN_45e110(Unk62a078 *particle)
+{
+    particle->sizeNow = 0.0f;
+    particle->alphaNow = 0.0f;
+    particle->frame = 0;
+    Unk62a078 *slot = g_62a078;
+    unsigned int i = 0;
+    while (slot->unk00 == 1)
+    {
+        i++;
+        slot++;
+        if (i >= 0x40)
+        {
+            return;
+        }
+    }
+    *slot = *particle;
+    slot->unk00 = 1;
+    slot->time = 0;
+    g_62d478 = 1;
+    slot->angle = 0.0f;
+}
+
 // FUNCTION: STUNTGP_D3D 0x45ec30
 void FUN_45ec30()
 {

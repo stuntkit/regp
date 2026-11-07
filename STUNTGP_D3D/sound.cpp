@@ -9,6 +9,7 @@ int FUN_462090();
 extern int g_576be0;
 extern int g_4897ac;
 extern int g_4897b4;
+extern int g_62df0c;
 
 // GLOBAL: STUNTGP_D3D 0x489790
 DWORD g_masterVolume = 255;
@@ -156,6 +157,18 @@ HRESULT FUN_45fb50(LPDIRECTSOUND ds, char *file, DWORD flags, int a, int b, int 
         return DS_OK;
     }
     return FUN_45fda0(&g_musicBuffer);
+}
+
+// FUNCTION: STUNTGP_D3D 0x45fd40
+void FUN_45fd40(LPDIRECTSOUNDBUFFER buffer)
+{
+    LPVOID data;
+    DWORD size;
+    if (buffer->Lock(0, g_62df0c, &data, &size, NULL, NULL, 0) == DS_OK)
+    {
+        memset(data, 0, g_62df0c);
+        buffer->Unlock(data, g_62df0c, NULL, 0);
+    }
 }
 
 // STUB: STUNTGP_D3D 0x45fda0

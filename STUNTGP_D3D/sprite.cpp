@@ -864,6 +864,20 @@ int FUN_440310(int value)
     return value;
 }
 
+// FUNCTION: STUNTGP_D3D 0x440320
+int FUN_440320()
+{
+    char path[0x400];
+    char *dir = FUN_4401e0(g_4798bc);
+    if (!FUN_4401c0(dir))
+    {
+        return 1;
+    }
+    // STRING: STUNTGP_D3D 0x479a34
+    sprintf(path, "%s\\setup.bin", dir);
+    return FUN_440380(path) ? 4 : 6;
+}
+
 // FUNCTION: STUNTGP_D3D 0x440380
 BOOL FUN_440380(char *path)
 {

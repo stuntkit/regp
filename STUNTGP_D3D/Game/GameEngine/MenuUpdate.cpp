@@ -102,6 +102,8 @@ struct Unk456070
     int unk48[5];     // 0x48
 };
 
+void FUN_456070(Unk456070 *object);
+
 struct Unk457ea0
 {
     BYTE unk00[0x40];  // 0x00
@@ -1468,6 +1470,21 @@ void FUN_454b40(Unk454b40 *object, int x, int y)
     object->unk30 = fy;
 }
 
+// FUNCTION: STUNTGP_D3D 0x454c80
+int FUN_454c80(Unk454b20 *object, int column, int row)
+{
+    if (column < 0 || row < 0 || column >= 8 || row >= 4)
+    {
+        return 0;
+    }
+    int len = strlen(object->text);
+    if (len < 3)
+    {
+        return column != 7 || row != 3;
+    }
+    return column >= 6 && row == 3;
+}
+
 // FUNCTION: STUNTGP_D3D 0x454d80
 void FUN_454d80(MenuHolder *object)
 {
@@ -1552,6 +1569,27 @@ void FUN_455fc0(Unk455fc0 *object)
     g_menuState.unk00e0 = object->unk24;
     g_menuState.unk00e4 = object->unk28;
     g_menuState.unk00e8 = object->unk2c;
+}
+
+// FUNCTION: STUNTGP_D3D 0x456010
+int FUN_456010(Unk456070 *object)
+{
+    object->unk1c = 0x293;
+    object->unk14 = 15;
+    object->unk18 = 0;
+    for (int i = 0; i < 5; i++)
+    {
+        object->unk34[i] = 0;
+        object->unk48[i] = 0;
+    }
+    g_menuState.unk423c = 0;
+    g_menuState.unk46ac[0] = 0;
+    g_menuState.unk46a8 = 0;
+    g_menuState.unk46ac[1] = 0;
+    g_menuState.unk46ac[2] = 0;
+    g_menuState.unk46ac[3] = 0;
+    FUN_456070(object);
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x456070
