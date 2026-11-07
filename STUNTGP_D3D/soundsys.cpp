@@ -1,5 +1,6 @@
 #include "soundsys.h"
 
+#include <stdio.h>
 #include <string.h>
 
 #include "globals.h"
@@ -7,11 +8,16 @@
 #include <mmsystem.h>
 #include <dsound.h>
 
+extern char g_SoundDirectory[128];
+
 // LIBRARY: STUNTGP_D3D 0x4627b0
 // _DirectSoundCreate@12
 
 // LIBRARY: STUNTGP_D3D 0x4627b6
 // _DirectSoundEnumerateA@8
+
+// GLOBAL: STUNTGP_D3D 0x46fe80
+// IID_IDirectSound3DListener
 
 struct SoundDef
 {
@@ -36,6 +42,9 @@ struct SoundDriver
     GUID guid;
     char name[0x80];
 };
+
+// GLOBAL: STUNTGP_D3D 0x489794
+int g_489794 = 22050;
 
 // GLOBAL: STUNTGP_D3D 0x489798
 int g_489798 = 0xff;
@@ -202,6 +211,78 @@ SoundTable g_489d40 = {{
     {"fe-vmodscroll", 71, 1},
 }};
 
+// GLOBAL: STUNTGP_D3D 0x62df08
+int g_62df08;
+
+// GLOBAL: STUNTGP_D3D 0x62df0c
+int g_62df0c;
+
+// GLOBAL: STUNTGP_D3D 0x62df14
+int g_62df14;
+
+// GLOBAL: STUNTGP_D3D 0x62df18
+char g_62df18;
+
+// GLOBAL: STUNTGP_D3D 0x62df1c
+int g_62df1c;
+
+// GLOBAL: STUNTGP_D3D 0x62df20
+int g_62df20;
+
+// GLOBAL: STUNTGP_D3D 0x62df24
+int g_62df24;
+
+// GLOBAL: STUNTGP_D3D 0x62df28
+int g_62df28;
+
+// GLOBAL: STUNTGP_D3D 0x62df2c
+int g_62df2c;
+
+// GLOBAL: STUNTGP_D3D 0x62df30
+int g_62df30;
+
+// GLOBAL: STUNTGP_D3D 0x62df34
+int g_62df34;
+
+// GLOBAL: STUNTGP_D3D 0x62df38
+int g_62df38;
+
+// GLOBAL: STUNTGP_D3D 0x62df3c
+int g_62df3c;
+
+// GLOBAL: STUNTGP_D3D 0x62df40
+int g_62df40;
+
+// GLOBAL: STUNTGP_D3D 0x62df50
+int g_62df50;
+
+// GLOBAL: STUNTGP_D3D 0x62df54
+char g_62df54;
+
+// GLOBAL: STUNTGP_D3D 0x62e06c
+int g_62e06c;
+
+// GLOBAL: STUNTGP_D3D 0x62e084
+int g_62e084;
+
+// GLOBAL: STUNTGP_D3D 0x62e088
+int g_62e088;
+
+// GLOBAL: STUNTGP_D3D 0x62e08c
+int g_62e08c;
+
+// GLOBAL: STUNTGP_D3D 0x62e090
+int g_62e090;
+
+// GLOBAL: STUNTGP_D3D 0x62e098
+int g_62e098;
+
+// GLOBAL: STUNTGP_D3D 0x62e09c
+int g_62e09c;
+
+// GLOBAL: STUNTGP_D3D 0x62e0a0
+int g_62e0a0;
+
 // GLOBAL: STUNTGP_D3D 0x62e0ac
 int g_62e0ac;
 
@@ -214,8 +295,26 @@ int g_62e0f0;
 // GLOBAL: STUNTGP_D3D 0x62e0f8
 int g_62e0f8;
 
+// GLOBAL: STUNTGP_D3D 0x62e0fc
+int g_62e0fc;
+
+// GLOBAL: STUNTGP_D3D 0x62e100
+int g_62e100;
+
+// GLOBAL: STUNTGP_D3D 0x62e104
+int g_62e104;
+
+// GLOBAL: STUNTGP_D3D 0x62e108
+int g_62e108;
+
+// GLOBAL: STUNTGP_D3D 0x62e10c
+int g_62e10c;
+
+// GLOBAL: STUNTGP_D3D 0x62e110
+int g_62e110;
+
 // GLOBAL: STUNTGP_D3D 0x62e114
-int g_62e114;
+LPDIRECTSOUNDBUFFER g_62e114;
 
 // GLOBAL: STUNTGP_D3D 0x62e118
 SoundChannel g_62e118[0x80];
@@ -224,7 +323,7 @@ SoundChannel g_62e118[0x80];
 SoundDriver *g_62f118;
 
 // GLOBAL: STUNTGP_D3D 0x62f11c
-int g_62f11c;
+LPDIRECTSOUND3DLISTENER g_62f11c;
 
 // GLOBAL: STUNTGP_D3D 0x62f120
 int g_62f120;
@@ -238,6 +337,8 @@ int g_62f5ac;
 // GLOBAL: STUNTGP_D3D 0x62f5b4
 int g_62f5b4;
 
+void FUN_45fac0();
+
 // FUNCTION: STUNTGP_D3D 0x45f9d0
 void FUN_45f9d0()
 {
@@ -248,9 +349,50 @@ void FUN_45f9d0()
     }
 }
 
-// STUB: STUNTGP_D3D 0x45fa60
+// FUNCTION: STUNTGP_D3D 0x45fa60
 void FUN_45fa60()
 {
+    if (g_62f5ac == 0 && g_62e0f8 != 0)
+    {
+        FUN_45fac0();
+        g_62e0f8 = 0x66;
+        g_62e10c = 0;
+        g_62e0fc = 0;
+        g_62e110 = 0;
+        g_62e100 = 0;
+        g_62e104 = 0;
+        g_62e108 = 0;
+        g_62f5ac = 0;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45fac0
+void FUN_45fac0()
+{
+    g_62df0c = 0;
+    g_62df18 = 0;
+    g_62df1c = 0;
+    g_62df20 = 0;
+    g_62df14 = 0;
+    g_62df24 = 0;
+    g_62df28 = 0;
+    g_62df2c = 0;
+    g_62df30 = 0;
+    g_62df34 = 0;
+    g_62e084 = 0;
+    g_62df38 = 0;
+    g_62e090 = 0;
+    g_62e098 = 0;
+    g_62e09c = 0;
+    g_62e0a0 = 0;
+    g_62df3c = 0;
+    g_62df40 = 0;
+    g_62df50 = 0;
+    g_62df54 = 0;
+    g_62e06c = 0;
+    g_62e088 = 0;
+    g_62e08c = 0;
+    g_62df08 = 0;
 }
 
 // STUB: STUNTGP_D3D 0x460330
@@ -293,22 +435,99 @@ void FUN_460dd0()
     }
 }
 
-// STUB: STUNTGP_D3D 0x461a80
+// FUNCTION: STUNTGP_D3D 0x461a80
 int FUN_461a80()
 {
-    return 0;
+    if (g_62e114 == NULL)
+    {
+        return 0;
+    }
+    if (g_62e114->QueryInterface(IID_IDirectSound3DListener, (LPVOID *)&g_62f11c) != DS_OK)
+    {
+        return 0;
+    }
+    g_62f11c->SetRolloffFactor(1.0f, DS3D_IMMEDIATE);
+    g_62f11c->SetDopplerFactor(6.0f, DS3D_IMMEDIATE);
+    g_62f11c->SetDistanceFactor(0.01f, DS3D_IMMEDIATE);
+    return 1;
 }
 
-// STUB: STUNTGP_D3D 0x461cf0
+// FUNCTION: STUNTGP_D3D 0x461cf0
 int FUN_461cf0()
 {
+    DSCAPS caps;
+    DSBUFFERDESC desc;
+    DWORD written;
+    WAVEFORMATEX format;
+
+    desc.dwSize = sizeof(DSBUFFERDESC);
+    desc.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_CTRL3D;
+    desc.dwReserved = 0;
+    desc.dwBufferBytes = 0;
+    desc.lpwfxFormat = NULL;
+    if (g_62e0b0->CreateSoundBuffer(&desc, &g_62e114, NULL) != DS_OK)
+    {
+        return 0;
+    }
+    caps.dwSize = sizeof(DSCAPS);
+    if (g_62e0b0->GetCaps(&caps) != DS_OK)
+    {
+        return 0;
+    }
+    if (caps.dwMaxHw3DAllBuffers < 8)
+    {
+        g_4897ac = 0;
+        g_4897b0 = 0;
+    }
+    if (g_62e114->GetFormat(&format, sizeof(WAVEFORMATEX), &written) != DS_OK)
+    {
+        return 0;
+    }
+    format.wFormatTag = WAVE_FORMAT_PCM;
+    format.nSamplesPerSec = g_489794;
+    WORD bits = (caps.dwFlags & DSCAPS_PRIMARY16BIT) ? 16 : 8;
+    format.wBitsPerSample = bits;
+    format.nBlockAlign = format.nChannels * bits / 8;
+    format.nAvgBytesPerSec = format.nBlockAlign * format.nSamplesPerSec;
+    return g_62e114->SetFormat(&format) == DS_OK;
+}
+
+// STUB: STUNTGP_D3D 0x461e00
+int FUN_461e00(SoundChannel *channel, char *path, DWORD flags)
+{
     return 0;
 }
 
-// STUB: STUNTGP_D3D 0x461f50
+// FUNCTION: STUNTGP_D3D 0x461f50
 int FUN_461f50()
 {
-    return 0;
+    char path[128];
+    int i;
+
+    memset(g_62e118, 0, sizeof(g_62e118));
+    for (i = 1; g_4899e0.defs[i].name; i++)
+    {
+        if (g_4897b0 == 0)
+        {
+            g_4899e0.defs[i].flags = 1;
+        }
+        else if (g_4899e0.defs[i].flags == 2)
+        {
+            // STRING: STUNTGP_D3D 0x48a568
+            sprintf(path, "%s\\Sfx\\%s.wav", g_SoundDirectory, g_4899e0.defs[i].name);
+            FUN_461e00(&g_62e118[i], path, DSBCAPS_MUTE3DATMAXDISTANCE | DSBCAPS_CTRL3D | DSBCAPS_STATIC);
+        }
+    }
+    for (i = 1; g_4899e0.defs[i].name; i++)
+    {
+        if (g_4899e0.defs[i].flags == 1)
+        {
+            // STRING: STUNTGP_D3D 0x48a578
+            sprintf(path, "%s\\Sfx\\%s.wav", g_SoundDirectory, g_4899e0.defs[i].name);
+            FUN_461e00(&g_62e118[i], path, DSBCAPS_STATIC);
+        }
+    }
+    return 1;
 }
 
 // The context is the address of the cursor itself, so the GUID overwrites the cursor.
@@ -335,8 +554,8 @@ int FUN_462090()
     g_4897ac = 1;
     g_62e0ac = 0;
     g_62e0b0 = NULL;
-    g_62e114 = 0;
-    g_62f11c = 0;
+    g_62e114 = NULL;
+    g_62f11c = NULL;
     g_489798 = 0x100;
     if (g_62e0f0 == 0)
     {
