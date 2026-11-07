@@ -24,6 +24,9 @@ struct MemManager
     MemSlot slots[0x180];
 };
 
+// GLOBAL: STUNTGP_D3D 0x589e10
+BOOL g_MemActive;
+
 // GLOBAL: STUNTGP_D3D 0x589e14
 MemManager g_Mem;
 
@@ -99,4 +102,43 @@ int Mem_Free(void *ptr)
         }
     }
     return 0;
+}
+
+// Frees every slot, newest id first, then marks the manager inactive.
+// FUNCTION: STUNTGP_D3D 0x42ea00
+void Mem_FreeAll()
+{
+    if (g_MemActive == TRUE)
+    {
+        int count = 0;
+        DWORD kept = 0;
+        DWORD freed = 0;
+        for (int id = 0x180; id > 0; id--)
+        {
+            MemSlot *slot = g_Mem.slots;
+            for (; slot < &g_Mem.slots[0x180]; slot++)
+            {
+                if (slot->data != NULL && slot->id == g_Mem.unk10 + id - 1)
+                {
+                    if (slot->type == 1 && g_Mem.freeType1 == FALSE)
+                    {
+                        kept += slot->total;
+                    }
+                    else
+                    {
+                        freed += Mem_Free(slot->data);
+                    }
+                    count++;
+                }
+            }
+        }
+        g_MemActive = FALSE;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42eaf0
+void Mem_Shutdown()
+{
+    g_Mem.freeType1 = TRUE;
+    Mem_FreeAll();
 }

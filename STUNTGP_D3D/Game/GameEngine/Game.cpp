@@ -1,5 +1,15 @@
 #include "Game.h"
 
+#include "../../input.h"
+#include "../../mem.h"
+#include "../../sound.h"
+#include "../../surface.h"
+#include "../../windowInit.h"
+#include "io_wad.h"
+
+// GLOBAL: STUNTGP_D3D 0x60d61c
+int g_60d61c;
+
 // TODO: update this based on currrent date and a compile-time define?
 
 #if !defined(REGP_FIXES)
@@ -45,9 +55,24 @@ void FUN_442120()
 {
 }
 
-// STUB: STUNTGP_D3D 0x442180
+// STUB: STUNTGP_D3D 0x43d180
+void FUN_43d180()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x442180
 void FUN_442180()
 {
+    if (g_60d61c == 1)
+    {
+        FUN_43d180();
+    }
+    FUN_431800();
+    WAD_FlushWadCache();
+    FUN_422a60();
+    Input_Shutdown();
+    Sound_Shutdown();
+    Mem_Shutdown();
 }
 
 // STUB: STUNTGP_D3D 0x4427b0

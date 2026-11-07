@@ -5,4 +5,6 @@
 
 void *Mem_Alloc(int size, int type);
 int Mem_Free(void *ptr);
+void Mem_FreeAll();
+void Mem_Shutdown();
 #endif /* MEM_H */

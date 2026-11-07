@@ -11,6 +11,7 @@
 #include "windowInit.h"
 
 #include "globals.h"
+#include "surface.h"
 
 #include "common.h"
 // #include "pure.h"
@@ -23,14 +24,31 @@ void FUN_44e490()
 
 void FUN_44ea10();
 
-// STUB: STUNTGP_D3D 0x4411c0
+// GLOBAL: STUNTGP_D3D 0x6087a8
+int g_6087a8[0x25];
+
+// GLOBAL: STUNTGP_D3D 0x60883c
+int g_60883c[0x12d];
+
+// GLOBAL: STUNTGP_D3D 0x608cf0
+int g_608cf0[0x25];
+
+// FUNCTION: STUNTGP_D3D 0x4411c0
 void FUN_4411c0()
 {
-}
-
-// STUB: STUNTGP_D3D 0x4320c0
-void FUN_4320c0(float value)
-{
+    int i;
+    for (i = 0; i < 0x25; i++)
+    {
+        g_6087a8[i] = -1;
+    }
+    for (i = 0; i < 0x12d; i++)
+    {
+        g_60883c[i] = -1;
+    }
+    for (i = 0; i < 0x25; i++)
+    {
+        g_608cf0[i] = 0x10000;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x44e4b0
