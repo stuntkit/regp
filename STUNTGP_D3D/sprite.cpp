@@ -49,6 +49,16 @@ int g_5df524 = 0;
 // GLOBAL: STUNTGP_D3D 0x4793d4
 int g_4793d4 = -1;
 
+// Frame texture layout used by FUN_439520: shadow inset, corner size, row end.
+// GLOBAL: STUNTGP_D3D 0x4793dc
+int g_4793dc = 12;
+
+// GLOBAL: STUNTGP_D3D 0x4793e0
+int g_4793e0 = 30;
+
+// GLOBAL: STUNTGP_D3D 0x4793e4
+int g_4793e4 = 62;
+
 // Scroll bar thickness.
 // GLOBAL: STUNTGP_D3D 0x4793e8
 float g_4793e8 = 13.0f;
@@ -474,9 +484,90 @@ void FUN_439450(float x0, float y0, float x1, float y1, int layer, int def, int 
     }
 }
 
-// STUB: STUNTGP_D3D 0x439520
-void FUN_439520(float x0, float y0, float x1, float y1, int layer, int sub, int def, int a, int blend)
+// Nine-slice frame: four 30-pixel corners and four stretched edges from row `row` of the frame texture.
+// FUNCTION: STUNTGP_D3D 0x439520
+void FUN_439520(float x0, float y0, float x1, float y1, int layer, int sub, int def, DWORD row, int blend)
 {
+    SpriteData s;
+
+    x0 -= g_4793dc;
+    y0 -= g_4793dc;
+    x1 = x1 - g_4793e0 + g_4793dc;
+    y1 = y1 - g_4793e0 + g_4793dc;
+    FUN_441320(&s, def);
+    s.flags = 2;
+    s.blendMode = blend;
+    s.alpha = 0xff;
+    s.width = g_4793e0;
+    s.height = g_4793e0;
+    float u = s.u0;
+    float v = (row << 6) * 4.0f + s.v0;
+
+    s.x = x0;
+    s.y = y0;
+    s.v0 = v;
+    s.u1 = g_4793e0 * 4.0f + u;
+    s.v1 = g_4793e0 * 4.0f + v;
+    FUN_438370(&s, layer, sub);
+
+    s.x = x1;
+    s.y = y0;
+    s.u0 = (g_4793e4 - g_4793e0) * 4.0f + u;
+    s.v0 = v;
+    s.u1 = g_4793e4 * 4.0f + u;
+    s.v1 = g_4793e0 * 4.0f + v;
+    FUN_438370(&s, layer, sub);
+
+    s.x = x0;
+    s.y = y1;
+    s.u0 = u;
+    s.v0 = (g_4793e4 - g_4793e0) * 4.0f + v;
+    s.u1 = g_4793e0 * 4.0f + u;
+    s.v1 = g_4793e4 * 4.0f + v;
+    FUN_438370(&s, layer, sub);
+
+    s.x = x1;
+    s.y = y1;
+    s.u0 = (g_4793e4 - g_4793e0) * 4.0f + u;
+    s.v0 = (g_4793e4 - g_4793e0) * 4.0f + v;
+    s.u1 = g_4793e4 * 4.0f + u;
+    s.v1 = g_4793e4 * 4.0f + v;
+    FUN_438370(&s, layer, sub);
+
+    s.x = x0 + g_4793e0;
+    s.y = y0;
+    s.u0 = g_4793e0 * 4.0f + u;
+    s.v0 = v;
+    s.u1 = (g_4793e4 - g_4793e0) * 4.0f + u;
+    s.v1 = g_4793e0 * 4.0f + v;
+    s.width = x1 - x0 - g_4793e0;
+    FUN_438370(&s, layer, sub);
+
+    s.x = x0 + g_4793e0;
+    s.y = y1;
+    s.u0 = g_4793e0 * 4.0f + u;
+    s.v0 = (g_4793e4 - g_4793e0) * 4.0f + v;
+    s.u1 = (g_4793e4 - g_4793e0) * 4.0f + u;
+    s.v1 = g_4793e4 * 4.0f + v;
+    FUN_438370(&s, layer, sub);
+
+    s.x = x0;
+    s.width = g_4793e0;
+    s.height = y1 - y0 - g_4793e0;
+    s.u0 = u;
+    s.y = y0 + g_4793e0;
+    s.v0 = g_4793e0 * 4.0f + v;
+    s.u1 = g_4793e0 * 4.0f + u;
+    s.v1 = (g_4793e4 - g_4793e0) * 4.0f + v;
+    FUN_438370(&s, layer, sub);
+
+    s.x = x1;
+    s.y = y0 + g_4793e0;
+    s.u0 = (g_4793e4 - g_4793e0) * 4.0f + u;
+    s.v0 = g_4793e0 * 4.0f + v;
+    s.u1 = g_4793e4 * 4.0f + u;
+    s.v1 = (g_4793e4 - g_4793e0) * 4.0f + v;
+    FUN_438370(&s, layer, sub);
 }
 
 // Panel with optional horizontal and vertical scroll bars.

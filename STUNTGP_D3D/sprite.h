@@ -147,7 +147,7 @@ void FUN_438990(float x, float y, int layer, int sub, int style, const char *tex
 void FUN_438be0(float x, float y, int layer, int style, int textId, float size, D3DCOLOR color, DWORD flags);
 void FUN_439380(float x0, float y0, float x1, float y1, int layer, int scroll, int flags, float fade);
 void FUN_439450(float x0, float y0, float x1, float y1, int layer, int def, int flags);
-void FUN_439520(float x0, float y0, float x1, float y1, int layer, int sub, int def, int a, int blend);
+void FUN_439520(float x0, float y0, float x1, float y1, int layer, int sub, int def, DWORD row, int blend);
 void FUN_4398a0(float x0, float y0, float x1, float y1, int layer, int def, int flags, float a0, float a1, float a2, float b0, float b1, float b2);
 void FUN_4399b0(int def, float x0, float x1, float y, float a0, float a1, float a2, int layer);
 void FUN_439b80(int def, float x, float y0, float y1, float b0, float b1, float b2, int layer);
