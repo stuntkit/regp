@@ -151,6 +151,21 @@ MenuItem g_486800[5] = {
 // GLOBAL: STUNTGP_D3D 0x4868a0
 MenuDef g_4868a0 = {0xb, 1.0f, 0, 510.0f, 240.0f, 1.0f, 2, 1.25f, 4, 0xaa, g_486800, 0};
 
+// GLOBAL: STUNTGP_D3D 0x488618
+MenuItem g_488618[8] = {
+    {0, 0xffc8c8ff, 0xffffffff, 0x18, 0, 1, 0, 0},
+    {1, 0xffc8c8ff, 0xffffffff, 0x293, 0, 2, 0, 0},
+    {2, 0xffc8c8ff, 0xffffffff, 0x295, 0, 2, 0, 0},
+    {3, 0xffc8c8ff, 0xffffffff, 0x297, 0, 2, 0, 0},
+    {4, 0xffc8c8ff, 0xffffffff, 0x29a, 0, 2, 0, 0},
+    {5, 0xffc8c8ff, 0xffffffff, 0x29d, 0, 2, 0, 0},
+    {6, 0xffc8c8ff, 0xffffffff, 0x2a1, 0, 2, 0, 0},
+    {0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x488718
+MenuDef g_488718 = {0xb, 0.0f, 0, 320.0f, 240.0f, 1.0f, 2, 1.25f, 1, 0xfa, g_488618, 0};
+
 // Character grid for name entry, eight per row.
 // GLOBAL: STUNTGP_D3D 0x4881b0
 char *g_4881b0[4] = {
@@ -2236,6 +2251,18 @@ void FUN_455d70(MenuHolder *object)
     child->destroy(child);
     Pool_Free(child);
     object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x455f60
+void FUN_455f60(Unk455fc0 *object)
+{
+    MenuItem *items = g_488718.items;
+    items[1].text = object->unk18 + 0x293;
+    items[2].text = object->unk1c + 0x295;
+    items[3].text = object->unk20 + 0x297;
+    items[4].text = object->unk24 + 0x29a;
+    items[5].text = object->unk28 + 0x29d;
+    items[6].text = object->unk2c + 0x2a1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x455fc0
