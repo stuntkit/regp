@@ -6,6 +6,12 @@
 // GLOBAL: STUNTGP_D3D 0x46ecb0
 // IID_IDirectDraw4
 
+// LIBRARY: STUNTGP_D3D 0x4627aa
+// _DirectDrawEnumerateExA@12
+
+// GLOBAL: STUNTGP_D3D 0x46ed90
+// IID_IDirectDrawGammaControl
+
 // TODO: should we set this as a struct???
 // GLOBAL: STUNTGP_D3D 0x4754d0
 errorMessage errorMessages[] = {
