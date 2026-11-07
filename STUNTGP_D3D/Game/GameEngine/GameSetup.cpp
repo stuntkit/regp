@@ -757,9 +757,25 @@ void FUN_431360()
 {
 }
 
-// STUB: STUNTGP_D3D 0x431420
+// FUNCTION: STUNTGP_D3D 0x431420
 void FUN_431420()
 {
+    if (g_d3dDevice)
+    {
+        D3DMATRIX projection;
+        float m[16];
+        D3DMATRIX identity;
+        memcpy(m, g_61c3e8, sizeof(m));
+        Matrix_Transpose(m, g_61c3e8);
+        memset(&identity, 0, sizeof(identity));
+        identity._11 = 1.0f;
+        identity._22 = 1.0f;
+        identity._33 = 1.0f;
+        identity._44 = 1.0f;
+        g_d3dDevice->SetTransform(D3DTRANSFORMSTATE_WORLD, &identity);
+        g_d3dDevice->SetTransform(D3DTRANSFORMSTATE_VIEW, &identity);
+        g_d3dDevice->SetTransform(D3DTRANSFORMSTATE_PROJECTION, &projection);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x4312c0
