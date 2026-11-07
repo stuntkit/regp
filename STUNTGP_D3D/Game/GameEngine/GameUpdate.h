@@ -52,11 +52,12 @@ struct Fader
     float x;          // 0x00
     float y;          // 0x04
     float unk08;      // 0x08
-    BYTE unk0c[0x4];  // 0x0c
+    float unk0c;      // 0x0c
     int active;       // 0x10
     float value;      // 0x14
     float target;     // 0x18
-    BYTE unk1c[0x8];  // 0x1c
+    int dx;           // 0x1c, offset at value 100, in 1/100 units
+    int dy;           // 0x20
 };
 
 struct SlotFx
@@ -85,13 +86,13 @@ struct CarRace
     BYTE unk04[0x14]; // 0x04
     int unk18;        // 0x18
     int unk1c;        // 0x1c
-    BYTE unk20[0x4];  // 0x20
+    int unk20;        // 0x20
     DWORD unk24;      // 0x24
     BYTE unk28[0x4];  // 0x28
     DWORD unk2c;      // 0x2c
     BYTE unk30[0x14]; // 0x30
     int unk44;        // 0x44
-    int unk48;        // 0x48
+    DWORD unk48;      // 0x48
     DWORD unk4c[12];   // 0x4c ([7] 0x68, [8] 0x6c)
     int unk7c;         // 0x7c
     DWORD unk80[7];    // 0x80 ([5] 0x94, [6] 0x98)

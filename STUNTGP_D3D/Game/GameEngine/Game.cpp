@@ -373,15 +373,8 @@ int g_61b754;
 
 void FUN_442c30();
 
-// STUB: STUNTGP_D3D 0x447a60
-void FUN_447a60()
-{
-}
-
-// STUB: STUNTGP_D3D 0x449e80
-void FUN_449e80()
-{
-}
+void FUN_447a60();
+void FUN_449e80();
 
 // FUNCTION: STUNTGP_D3D 0x448110
 void FUN_448110()
@@ -527,10 +520,7 @@ void FUN_40df90()
     FUN_4291f0(g_6127a0[104], 1, g_6244fc + 320.0f, g_624500, 0.99f, color, 2.0f, 6);
 }
 
-// STUB: STUNTGP_D3D 0x447fa0
-void FUN_447fa0()
-{
-}
+void FUN_447fa0();
 
 // STUB: STUNTGP_D3D 0x4487d0
 void FUN_4487d0(int index, float x, float y, float z)

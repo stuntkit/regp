@@ -386,3 +386,165 @@ void FUN_447100()
         g_61b748 = 0;
     }
 }
+
+extern int g_6244fc;
+extern int g_624500;
+void FUN_447b70(int delay);
+
+// FUNCTION: STUNTGP_D3D 0x4478c0
+void FUN_4478c0()
+{
+    g_61b740->unk000 = 1;
+    g_61b740->faders[0].active = 0;
+    g_61b740->faders[0].value = 100.0f;
+    g_61b740->faders[0].target = 100.0f;
+    g_61b740->faders[1].unk08 = 640.0f - (g_6244fc + 166.40001f);
+    g_61b740->faders[1].unk0c = 480.0f - (g_624500 + 106.4f);
+    g_61b740->faders[1].value = 0.0f;
+    g_61b740->faders[1].dx = 256;
+    g_61b740->faders[1].dy = 0;
+    g_61b740->faders[2].unk08 = 255.2f;
+    g_61b740->faders[2].unk0c = g_624500 + 6.0f;
+    g_61b740->faders[2].value = 0.0f;
+    g_61b740->faders[2].dx = 0;
+    g_61b740->faders[2].dy = -96;
+    g_61b740->faders[7].unk08 = g_6244fc + 35.2f;
+    g_61b740->faders[7].unk0c = 448.0f - g_624500;
+    g_61b740->faders[7].value = 0.0f;
+    g_61b740->faders[7].dx = -96;
+    g_61b740->faders[7].dy = 0;
+    g_61b740->faders[3].unk08 = 571.2f - g_6244fc;
+    g_61b740->faders[3].unk0c = g_624500 + 3.2f;
+    g_61b740->faders[3].value = 0.0f;
+    g_61b740->faders[3].dx = 160;
+    g_61b740->faders[3].dy = 0;
+    g_61b740->faders[4].unk08 = 571.2f - g_6244fc;
+    g_61b740->faders[4].unk0c = g_624500 + 3.2f;
+    g_61b740->faders[4].value = 0.0f;
+    g_61b740->faders[4].dx = 256;
+    g_61b740->faders[4].dy = 0;
+    g_61b740->faders[5].unk08 = 571.2f - g_6244fc;
+    g_61b740->faders[5].unk0c = g_624500 + 3.2f;
+    g_61b740->faders[5].value = 0.0f;
+    g_61b740->faders[5].dx = 352;
+    g_61b740->faders[5].dy = 0;
+    g_61b740->faders[6].unk08 = g_6244fc + 3.2f;
+    g_61b740->faders[6].unk0c = g_624500 + 19.2f;
+    g_61b740->faders[6].value = 0.0f;
+    g_61b740->faders[6].dx = -192;
+    g_61b740->faders[6].dy = 0;
+    FUN_447b70(60);
+    g_61b740->faders[4].active = 1;
+    g_61b740->faders[4].value = 100.0f;
+    g_61b740->faders[3].active = 1;
+    g_61b740->faders[3].value = 100.0f;
+    g_61b740->faders[5].active = 1;
+    g_61b740->faders[5].value = 100.0f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x447a60
+void FUN_447a60()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        g_61b740 = &g_498248[i].fx;
+        FUN_4478c0();
+    }
+    g_61b740 = &g_498248[0].fx;
+}
+
+// FUNCTION: STUNTGP_D3D 0x447a90
+void FUN_447a90(Fader *fader)
+{
+    fader->active = 1;
+    fader->target = 100.0f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x447aa0
+void FUN_447aa0(Fader *fader)
+{
+    fader->active = 1;
+    fader->target = 0.0f;
+}
+
+// Places the result-table faders between their base and their offset.
+// FUNCTION: STUNTGP_D3D 0x447fa0
+void FUN_447fa0()
+{
+    SlotFx *fx = g_61b740;
+    Fader *fader = &fx->faders[12];
+    float v;
+    for (int i = 0; i < 6; i++, fader++)
+    {
+        v = fader->value + fx->faders[8].value;
+        if (v > 100.0f)
+        {
+            v = 100.0f;
+        }
+        fader->x = fader->dx * v * 0.01f + fader->unk08;
+        fader->y = fader->dy * v * 0.01f + fader->unk0c;
+    }
+    v = g_61b740->faders[11].value;
+    v += g_61b740->faders[8].value;
+    if (v > 100.0f)
+    {
+        v = 100.0f;
+    }
+    g_61b740->faders[9].x = g_61b740->faders[9].dx * v * 0.01f + g_61b740->faders[9].unk08;
+    g_61b740->faders[9].y = g_61b740->faders[9].dy * v * 0.01f + g_61b740->faders[9].unk0c;
+    v = g_61b740->faders[11].value;
+    v += g_61b740->faders[8].value;
+    if (v > 100.0f)
+    {
+        v = 100.0f;
+    }
+    g_61b740->faders[11].x = g_61b740->faders[11].dx * v * 0.01f + g_61b740->faders[11].unk08;
+    g_61b740->faders[11].y = g_61b740->faders[11].dy * v * 0.01f + g_61b740->faders[11].unk0c;
+    v = g_61b740->faders[10].value + g_61b740->faders[8].value;
+    if (v > 100.0f)
+    {
+        v = 100.0f;
+    }
+    g_61b740->faders[10].x = g_61b740->faders[10].dx * v * 0.01f + g_61b740->faders[10].unk08;
+    g_61b740->faders[10].y = g_61b740->faders[10].dy * v * 0.01f + g_61b740->faders[10].unk0c;
+}
+
+// FUNCTION: STUNTGP_D3D 0x449e80
+void FUN_449e80()
+{
+    SlotFx *fx = g_61b740;
+    fx->faders[8].active = 0;
+    fx->faders[8].value = 0.0f;
+    Fader *fader = &fx->faders[12];
+    for (unsigned int i = 0; i < 6; i++, fader++)
+    {
+        fader->unk08 = 102.4f;
+        fader->unk0c = 102.4f;
+        fader->active = 0;
+        fader->target = 0.0f;
+        fader->value = 100.0f;
+        fader->dx = i * 80 * 0.8f + 640.0f;
+        fader->dy = 0;
+    }
+    fx->faders[9].unk08 = 12.8f;
+    fx->faders[9].unk0c = 25.6f;
+    fx->faders[9].active = 1;
+    fx->faders[9].target = 0.0f;
+    fx->faders[9].value = 100.0f;
+    fx->faders[9].dx = -288;
+    fx->faders[9].dy = 0;
+    fx->faders[10].unk08 = 624.0f;
+    fx->faders[10].unk0c = 32.0f;
+    fx->faders[10].active = 1;
+    fx->faders[10].target = 0.0f;
+    fx->faders[10].value = 100.0f;
+    fx->faders[10].dx = 230;
+    fx->faders[10].dy = 0;
+    fx->faders[11].unk08 = 320.0f;
+    fx->faders[11].unk0c = 440.0f;
+    fx->faders[11].active = 1;
+    fx->faders[11].target = 0.0f;
+    fx->faders[11].value = 100.0f;
+    fx->faders[11].dx = 0;
+    fx->faders[11].dy = 128;
+}

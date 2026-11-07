@@ -1270,9 +1270,26 @@ void FUN_444070()
 {
 }
 
-// STUB: STUNTGP_D3D 0x444300
+void FUN_447a90(Fader *fader);
+void FUN_447aa0(Fader *fader);
+
+// FUNCTION: STUNTGP_D3D 0x444300
 void FUN_444300()
 {
+    if (!g_4d5bb8->race.unk2c)
+    {
+        if (g_4d5bb8->race.unk20 == 480)
+        {
+            FUN_447a90(&g_61b740->faders[10]);
+            g_4d5bb8->race.unk44 = 240;
+        }
+        if (g_4d5bb8->race.unk44 && --g_4d5bb8->race.unk44 == 120)
+        {
+            FUN_447aa0(&g_61b740->faders[10]);
+            g_4d5bb8->race.unk48 = (g_4d5bb8->race.unk48 + 1) % 3;
+            g_4d5bb8->race.unk20 = 0;
+        }
+    }
 }
 
 // STUB: STUNTGP_D3D 0x4058f0
