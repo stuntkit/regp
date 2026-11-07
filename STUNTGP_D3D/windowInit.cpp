@@ -310,27 +310,29 @@ int ddGetMemory(LPDIRECTDRAW4 *lplpDD4, LPDWORD totalVideoMem, LPDWORD totalText
     return DD_OK;
 }
 
+// MSVC lays out this file's uninitialised globals in symbol hash order, not definition order.
+// These names keep g_trackedSurfaces directly after g_paletteEntries, which FUN_423070's loop bound relies on.
 // GLOBAL: STUNTGP_D3D 0x5723d4
-PALETTEENTRY g_5723d4[256];
+PALETTEENTRY g_paletteEntries[256];
 
 // Every surface created through FUN_422a80, released in bulk by FUN_422a20.
 // GLOBAL: STUNTGP_D3D 0x5727d4
-LPDIRECTDRAWSURFACE4 g_5727d4[64];
+LPDIRECTDRAWSURFACE4 g_trackedSurfaces[64];
 
 // GLOBAL: STUNTGP_D3D 0x5728d4
-DWORD g_5728d4;
+DWORD g_surfaceCount;
 
 // FUNCTION: STUNTGP_D3D 0x4229e0
 void FUN_4229e0()
 {
-    memset(g_5727d4, 0, sizeof(g_5727d4));
-    g_5728d4 = 0;
+    memset(g_trackedSurfaces, 0, sizeof(g_trackedSurfaces));
+    g_surfaceCount = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x422a00
 void FUN_422a00(LPDIRECTDRAWSURFACE4 *surface)
 {
-    g_5727d4[g_5728d4++] = *surface;
+    g_trackedSurfaces[g_surfaceCount++] = *surface;
 }
 
 // // STUB: STUNTGP_D3D 0x422a20
@@ -593,13 +595,13 @@ void FUN_423070(BYTE *src)
     for (int i = 0; i < 256; i++)
     {
         src++;
-        g_5723d4[i].peRed = *src++;
-        g_5723d4[i].peGreen = *src++;
-        g_5723d4[i].peBlue = *src++;
-        g_5723d4[i].peFlags = PC_RESERVED;
+        g_paletteEntries[i].peRed = *src++;
+        g_paletteEntries[i].peGreen = *src++;
+        g_paletteEntries[i].peBlue = *src++;
+        g_paletteEntries[i].peFlags = PC_RESERVED;
     }
-    g_5723d4[0].peFlags = D3DPAL_READONLY;
-    g_5723d4[255].peFlags = D3DPAL_READONLY;
+    g_paletteEntries[0].peFlags = D3DPAL_READONLY;
+    g_paletteEntries[255].peFlags = D3DPAL_READONLY;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4230b0
@@ -609,9 +611,9 @@ int FUN_4230b0(LPDIRECTDRAWPALETTE *palette, BYTE *src)
     HDC hDC = GetDC(NULL);
     if (GetDeviceCaps(hDC, RASTERCAPS) & RC_PALETTE)
     {
-        GetSystemPaletteEntries(hDC, 0, 256, g_5723d4);
+        GetSystemPaletteEntries(hDC, 0, 256, g_paletteEntries);
         FUN_423070(src);
-        res = g_dd->CreatePalette(DDPCAPS_8BIT | DDPCAPS_INITIALIZE, g_5723d4, palette, NULL) == DD_OK;
+        res = g_dd->CreatePalette(DDPCAPS_8BIT | DDPCAPS_INITIALIZE, g_paletteEntries, palette, NULL) == DD_OK;
         if (res)
         {
             LPDIRECTDRAWPALETTE pal = *palette;
