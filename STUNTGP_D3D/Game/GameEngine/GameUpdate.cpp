@@ -4,6 +4,8 @@
 #include <float.h>
 
 #include "../../globals.h"
+#include "../../sound.h"
+#include "io_wad.h"
 #include "../../surface.h"
 #include "../../timer.h"
 
@@ -640,9 +642,45 @@ void FUN_45e1d0()
 {
 }
 
-// STUB: STUNTGP_D3D 0x45f8f0
-void FUN_45f8f0(int a, int b)
+// FUNCTION: STUNTGP_D3D 0x45f8f0
+void FUN_45f8f0(int track, int loop)
 {
+    char path[256];
+    if (g_soundInitialised && g_musicVolume)
+    {
+        int t;
+        if (track == 0 && g_62f5a8 != 0)
+        {
+            t = g_62f5a8;
+        }
+        else
+        {
+            t = track;
+        }
+        g_62e10c = t;
+        if (t)
+        {
+            // STRING: STUNTGP_D3D 0x48a500
+            sprintf(path, "%s\\Music\\%s.wav", g_SoundDirectory, g_4898fc[t]);
+            if (!size_of_file(path))
+            {
+                g_62f5ac = 0;
+                return;
+            }
+            DWORD flags = 0x24;
+            if (loop == 1)
+            {
+                flags = 0x25;
+            }
+            FUN_45fb50(g_directSound, path, flags, 0, 0, 0, 0);
+            FUN_45f7d0(0, 0);
+            g_62e110 = 0;
+            g_62e0fc = 0;
+            g_62e104 = 0;
+            FUN_45f8e0(255, 255);
+            g_62f5ac = 1;
+        }
+    }
 }
 
 // --- sound ---

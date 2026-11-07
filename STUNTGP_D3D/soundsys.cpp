@@ -225,7 +225,7 @@ int g_62df3c;
 int g_62df40;
 
 // GLOBAL: STUNTGP_D3D 0x62df54
-char g_62df54;
+char g_62df54[MAX_PATH];
 
 // GLOBAL: STUNTGP_D3D 0x62e090
 int g_62e090;
@@ -323,7 +323,7 @@ void FUN_45fac0()
     g_62df3c = 0;
     g_62df40 = 0;
     g_musicTimer = 0;
-    g_62df54 = 0;
+    g_62df54[0] = 0;
     g_musicFile = 0;
     g_musicPlaying = 0;
     g_musicResult = 0;
