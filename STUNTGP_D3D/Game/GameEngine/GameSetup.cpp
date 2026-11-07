@@ -17,6 +17,8 @@
 #include "../../surface.h"
 #include "Engine_LevelScript.h"
 
+struct CameraPath;
+
 struct StuntKnot
 {
     float pathPosition; // 0x00
@@ -174,7 +176,7 @@ int g_612be4;
 extern int g_612bf0;
 
 // GLOBAL: STUNTGP_D3D 0x571328
-int g_571328;
+CameraPath *g_571328;
 
 // GLOBAL: STUNTGP_D3D 0x612d54
 int g_612d54[6];

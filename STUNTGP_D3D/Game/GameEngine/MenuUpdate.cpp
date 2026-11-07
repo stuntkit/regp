@@ -81,7 +81,7 @@ int g_5ff4ac;
 int g_5ff4b4;
 
 // GLOBAL: STUNTGP_D3D 0x61297c
-int g_61297c;
+DWORD g_61297c;
 
 void FUN_437eb0();
 void FUN_442ad0(int type, int duration, int delay, int end, int from, int to, float scale);
