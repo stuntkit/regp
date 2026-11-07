@@ -352,22 +352,12 @@ void FUN_401b00()
 
 void FUN_431830(D3DCOLOR color);
 
-// STUB: STUNTGP_D3D 0x447100
-void FUN_447100()
-{
-}
+void FUN_447100();
 
 void FUN_447280(float x, float y, float width, float height);
 
-// STUB: STUNTGP_D3D 0x446c20
-void FUN_446c20(float x, float y)
-{
-}
-
-// STUB: STUNTGP_D3D 0x446d90
-void FUN_446d90(int value, float x, float y, float width, float height)
-{
-}
+void FUN_446c20(float x, float y);
+void FUN_446d90(unsigned int value, float x, float y, float width, float height);
 
 // GLOBAL: STUNTGP_D3D 0x6244fc
 int g_6244fc;
@@ -380,9 +370,6 @@ int g_61b74c;
 
 // GLOBAL: STUNTGP_D3D 0x61b754
 int g_61b754;
-
-// GLOBAL: STUNTGP_D3D 0x485198
-int g_485198;
 
 // STUB: STUNTGP_D3D 0x442c30
 void FUN_442c30()
@@ -488,7 +475,7 @@ void FUN_4473f0()
     x = width - 64.0f - 12.0f - 12.8f + x + 12.8f;
     FUN_446d90(g_sfxSetting, x, 255.2f, 64.0f, 12.0f);
     FUN_446d90(g_musicSetting, x, 275.2f, 64.0f, 12.0f);
-    if (g_485198 == 1)
+    if (g_485120[5].active == 1)
     {
         FUN_446d90(g_61297c, x, 295.2f, 64.0f, 12.0f);
     }

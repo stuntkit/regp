@@ -700,6 +700,19 @@ extern InputSlot g_576618[10];
 extern Controller g_62d580[4];
 extern Controller *g_61b744;
 
+// Line of the in-race pause menu; the list ends at text 0.
+struct PauseItem
+{
+    int active;       // 0x00
+    int text;         // 0x04
+    int x;            // 0x08
+    int y;            // 0x0c
+    void (*action)(); // 0x10
+    int value;        // 0x14, text drawn to the right, 0 for none
+};
+
+extern PauseItem g_485120[8];
+
 extern GameSlot *g_4722d0;
 extern SlotFx *g_61b740;
 extern GameSlot g_498248[4];

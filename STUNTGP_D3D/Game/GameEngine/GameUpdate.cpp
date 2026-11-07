@@ -455,6 +455,33 @@ void FUN_40d280(Car *car)
     g_60f020 = 1;
 }
 
+// FUNCTION: STUNTGP_D3D 0x40d300
+void FUN_40d300(Car *car)
+{
+    car->unk22ec = 20.0f;
+    car->unk22f0 = 0.0f;
+    car->unk22f4 = 0.0f;
+    car->unk22fc = 1500.0f;
+    car->unk2300 = 0.125f;
+    car->unk22dc = 0.0f;
+    car->unk22e0 = 150.0f;
+    car->unk22e4 = 0.0f;
+    car->unk22c8 = 5;
+    car->unk2304 = 0;
+    FUN_4028d0(5);
+    FUN_403310(2.09f);
+    FUN_402ab0(2.09f);
+    g_60f020 = 3;
+}
+
+// FUNCTION: STUNTGP_D3D 0x40d380
+void FUN_40d380(Car *car)
+{
+    FUN_40d280(car);
+    car->unk2304 = 1;
+    g_60f020 = 4;
+}
+
 // FUNCTION: STUNTGP_D3D 0x4039b0
 void FUN_4039b0()
 {
