@@ -350,10 +350,7 @@ void FUN_401b00()
 {
 }
 
-// STUB: STUNTGP_D3D 0x431830
-void FUN_431830(int a)
-{
-}
+void FUN_431830(D3DCOLOR color);
 
 // STUB: STUNTGP_D3D 0x448110
 void FUN_448110()
