@@ -488,9 +488,22 @@ void FUN_42b7f0(Scene *scene, Camera *camera, int arg)
 {
 }
 
-// STUB: STUNTGP_D3D 0x42b6e0
+// Camera height for the race scene list.
+// GLOBAL: STUNTGP_D3D 0x60dfa8
+float g_60dfa8;
+
+// FUNCTION: STUNTGP_D3D 0x42b6e0
 void FUN_42b6e0()
 {
+    if (g_636418[2].scene)
+    {
+        Camera camera = g_4864e8;
+        camera.target.x += camera.pos.x;
+        camera.pos.y = g_60dfa8;
+        camera.target.y += camera.pos.y;
+        camera.target.z += camera.pos.z;
+        FUN_42b7f0(g_636418[2].scene, &camera, 0);
+    }
 }
 
 // STUB: STUNTGP_D3D 0x434030

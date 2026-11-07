@@ -12,6 +12,18 @@ struct MenuSlot
     int unk08;
 };
 
+struct ScoreEntry
+{
+    int time;
+    char name[4];
+};
+
+struct ScoreTable
+{
+    int unk00;
+    ScoreEntry entries[10];
+};
+
 struct MenuLanguage
 {
     char name[0x20];
@@ -41,7 +53,17 @@ struct MenuState
     int unk00e0; // 0x00e0
     int unk00e4; // 0x00e4
     int unk00e8; // 0x00e8
-    BYTE unk00ec[0x211c - 0xec];
+    BYTE unk00ec[0x114 - 0xec];
+    // High-score tables, reset by FUN_43c130.
+    ScoreEntry unk0114[19][4];  // 0x0114
+    ScoreEntry unk0374[100];    // 0x0374
+    ScoreTable unk0694[25];     // 0x0694
+    BYTE unk0ec8[0x1a1c - 0xec8];
+    ScoreEntry unk1a1c[25][4];  // 0x1a1c
+    BYTE unk1d3c[0x1d5c - 0x1d3c];
+    ScoreEntry unk1d5c[10];     // 0x1d5c
+    ScoreEntry unk1dac[10];     // 0x1dac
+    ScoreEntry unk1dfc[100];    // 0x1dfc
     BYTE saved[0x2114]; // 0x211c, copy of 0x0008..0x211c
     BYTE unk4230[0x10];
     int unk4240; // 0x4240
