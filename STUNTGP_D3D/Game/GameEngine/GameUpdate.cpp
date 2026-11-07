@@ -5,8 +5,10 @@
 #include <float.h>
 #include <math.h>
 
+#include "../../d3drender.h"
 #include "../../gametext.h"
 #include "../../globals.h"
+#include "../../sintable.h"
 #include "../../sound.h"
 #include "io_wad.h"
 #include "../../random.h"
@@ -1740,6 +1742,85 @@ void FUN_45e180(Unk62a078 *p)
     }
 }
 
+// Sprite draw request, filled from the template g_486538.
+struct SpriteDesc
+{
+    DWORD unk00;      // 0x00
+    short texture;    // 0x04
+    short alpha;      // 0x06
+    DWORD colors[4];  // 0x08
+    Vec4 pos;         // 0x18
+    float size[3];    // 0x28
+    int unk34;        // 0x34
+    Vec4 unk38;       // 0x38
+    Vec4 dir;         // 0x48
+    int unk58;        // 0x58
+    int unk5c;        // 0x5c
+    int unk60;        // 0x60
+    int unk64;        // 0x64
+};
+
+// GLOBAL: STUNTGP_D3D 0x486538
+SpriteDesc g_486538 = {0x20, 1, 0x80, {0xffffff, 0xffffff, 0xffffff, 0xffffff}, {0.0f, 0.0f, 0.0f, 0.0f},
+                       {1.0f, 1.0f, 1.0f}, 0, {0.0f, 0.0f, -1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.0f}, 1, 0, 0, 2};
+
+// FUNCTION: STUNTGP_D3D 0x45e4b0
+void FUN_45e4b0(SpriteDesc *sprite, float angle)
+{
+    int i = (int)(angle * (8192.0f / 360.0f));
+    sprite->dir.z = 0.0f;
+    sprite->dir.x = g_cosTable[i];
+    sprite->dir.y = g_sinTable[i];
+}
+
+// STUB: STUNTGP_D3D 0x434590
+void FUN_434590(SpriteDesc *sprite)
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e4f0
+void FUN_45e4f0()
+{
+    if (g_62d478)
+    {
+        SpriteDesc sprite = g_486538;
+        Unk62a078 *p = g_62a078;
+        for (int i = 0x40; i; i--, p++)
+        {
+            if (p->unk00 == 1 && p->unk7c == 1)
+            {
+                if (p->anim)
+                {
+                    sprite.texture = (short)(((TextureSlot *)p->anim[0] - g_6227d4) + p->frame / 4096);
+                }
+                else
+                {
+                    sprite.texture = (short)p->texture;
+                }
+                if (p->flags & 4)
+                {
+                    FUN_45e4b0(&sprite, p->angle);
+                }
+                else
+                {
+                    sprite.dir = g_486538.dir;
+                }
+                sprite.alpha = (short)(int)p->alphaNow;
+                sprite.unk00 = p->unk98;
+                sprite.colors[0] = p->color;
+                sprite.colors[1] = p->color;
+                sprite.colors[2] = p->color;
+                sprite.colors[3] = p->color;
+                sprite.pos = p->pos;
+                sprite.size[0] = p->sizeNow;
+                sprite.size[1] = p->sizeNow;
+                sprite.size[2] = p->sizeNow;
+                FUN_434590(&sprite);
+            }
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x45e1d0
 void FUN_45e1d0()
 {
@@ -1752,9 +1833,9 @@ void FUN_45e1d0()
             if (p->unk00 == 1)
             {
                 g_62d478 = 1;
-                p->pos[0] = p->vel[0] + p->pos[0];
-                p->pos[1] = p->vel[1] + p->pos[1];
-                p->pos[2] = p->vel[2] + p->pos[2];
+                p->pos.x = p->vel[0] + p->pos.x;
+                p->pos.y = p->vel[1] + p->pos.y;
+                p->pos.z = p->vel[2] + p->pos.z;
                 if (p->vel[1] < 166.66667f)
                 {
                     FUN_401d70(p->vel, p->gravity);

@@ -309,10 +309,7 @@ void FUN_418180()
 {
 }
 
-// STUB: STUNTGP_D3D 0x45e4f0
-void FUN_45e4f0()
-{
-}
+void FUN_45e4f0();
 
 // STUB: STUNTGP_D3D 0x416050
 void FUN_416050()

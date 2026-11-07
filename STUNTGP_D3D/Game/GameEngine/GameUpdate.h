@@ -567,20 +567,20 @@ struct Unk62a078
 {
     int unk00;          // 0x00 1 = live, 2 = dead
     DWORD flags;        // 0x04
-    float pos[3];       // 0x08
-    BYTE unk14[0x44];   // 0x14
+    Vec4 pos;           // 0x08
+    BYTE unk18[0x40];   // 0x18
     float vel[3];       // 0x58
     BYTE unk64[0x8];    // 0x64
     float gravity;      // 0x6c
     DWORD time;         // 0x70
     DWORD lifetime;     // 0x74
     int mode;           // 0x78
-    BYTE unk7c[0x4];    // 0x7c
+    int unk7c;          // 0x7c
     DWORD *anim;        // 0x80
     int frame;          // 0x84
-    BYTE unk88[0x4];    // 0x88
+    int texture;        // 0x88
     DWORD colors[3];    // 0x8c
-    BYTE unk98[0x4];    // 0x98
+    DWORD unk98;        // 0x98
     float size;         // 0x9c
     float sizeIn;       // 0xa0
     float sizeOut;      // 0xa4
