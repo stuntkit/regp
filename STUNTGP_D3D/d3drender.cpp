@@ -920,10 +920,68 @@ void FUN_4327c0(WORD *pixels, DWORD width, DWORD height)
     }
 }
 
-// STUB: STUNTGP_D3D 0x4325e0
+// Creates a video-memory texture from an image and returns its texture slot.
+// FUNCTION: STUNTGP_D3D 0x4325e0
 int FUN_4325e0(BYTE *image, DWORD width, DWORD height)
 {
-    return 0;
+    DDSURFACEDESC2 desc;
+    LPDIRECT3DTEXTURE2 stagingTexture;
+    LPDIRECTDRAWSURFACE4 surface;
+    LPDIRECT3DTEXTURE2 texture;
+    LPDIRECTDRAWSURFACE4 staging;
+    int res;
+    SurfaceSlot *slot = &g_surfaceSlots[g_surfaceSlotCount++];
+    memset(&desc, 0, sizeof(desc));
+    staging = NULL;
+    surface = NULL;
+    stagingTexture = NULL;
+    texture = NULL;
+    desc.dwWidth = width;
+    desc.dwHeight = height;
+    desc.dwSize = sizeof(desc);
+    desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
+    desc.ddpfPixelFormat = *g_5d91c0;
+    desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
+    res = g_dd4->CreateSurface(&desc, &staging, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    FUN_430100(staging, image, width, height, 16);
+    res = staging->QueryInterface(IID_IDirect3DTexture2, (void **)&stagingTexture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = staging->GetSurfaceDesc(&desc);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT | DDSD_CKSRCBLT;
+    desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_ALLOCONLOAD;
+    res = g_dd4->CreateSurface(&desc, &surface, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = surface->QueryInterface(IID_IDirect3DTexture2, (void **)&texture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = texture->Load(stagingTexture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    FUN_4300f0(stagingTexture);
+    ddReleaseSurface(&staging);
+    slot->unk04 = (DWORD)texture;
+    slot->surface = surface;
+    g_6243b8->texture = texture;
+    g_6243b8++;
+    return g_6243b8 - g_6227d4 - 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4327e0
