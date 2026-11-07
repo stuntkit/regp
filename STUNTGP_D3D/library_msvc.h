@@ -44,6 +44,7 @@
 // __FPinit
 
 // LIBRARY: LEGO1 0x1008b3dc
+// LIBRARY: STUNTGP_D3D 0x463d50
 // __CIacos
 
 // LIBRARY: LEGO1 0x1008b400
@@ -761,6 +762,7 @@
 // _assert
 
 // LIBRARY: BETA10 0x100fa2fa
+// LIBRARY: STUNTGP_D3D 0x463d64
 // _acos
 
 // LIBRARY: BETA10 0x100f9a50
@@ -1417,5 +1419,11 @@
 
 // LIBRARY: STUNTGP_D3D 0x46de46
 // __unlink
+
+// LIBRARY: STUNTGP_D3D 0x463b2b
+// _strtol
+
+// LIBRARY: STUNTGP_D3D 0x469a3e
+// _toupper
 
 #endif
