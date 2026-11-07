@@ -106,61 +106,42 @@ void FUN_44e6c0()
     g_61c390 = GetTickCount();
 }
 
+#pragma optimize("y", off)
 // FUNCTION: STUNTGP_D3D 0x44e6d0
 LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    // #define WM_NULL                         0x0000
-    // #define WM_CREATE                       0x0001
-    // #define WM_DESTROY                      0x0002
-    // #define WM_MOVE                         0x0003
-    // #define WM_SIZE                         0x0005
-    // #define WM_ACTIVATE                     0x0006
-    BOOL windowMessage;
-    if (uMsg < WM_ACTIVATE)
+    switch (uMsg)
     {
-        if (uMsg != WM_SIZE)
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return DefWindowProc(hWnd, uMsg, wParam, lParam);
+    case WM_MOVE:
+    case WM_SIZE:
+        if (IsIconic(hWnd))
         {
-            if (uMsg == WM_DESTROY)
-            {
-                PostQuitMessage(0);
-                return DefWindowProc(hWnd, WM_DESTROY, wParam, lParam);
-            }
-            if (uMsg != WM_MOVE)
-            {
-                return DefWindowProc(hWnd, uMsg, wParam, lParam);
-            }
+            FUN_44e4b0(1);
         }
-        // TODO: what produces goto?
-        if (!IsIconic(hWnd))
-        {
-            goto exit;
-        }
-        windowMessage = 1;
-    }
-    else
-    {
-        if (uMsg != WM_ACTIVATEAPP)
-        {
-            if ((uMsg == WM_CHAR) && (g_62ddfc == '\0'))
-            {
-                g_62ddfc = wParam;
-                // TODO: save wparam to static
-                return DefWindowProc(hWnd, WM_CHAR, wParam, lParam);
-            }
-            goto exit;
-        }
-        // TODO wparam blah
+        break;
+    case WM_ACTIVATEAPP:
         g_61c374 = wParam;
-        if ((wParam == 0) || (!g_WindowMessage))
+        if (wParam && g_WindowMessage == 1)
         {
-            goto exit;
+            FUN_44e4b0(0);
         }
-        windowMessage = 0;
+        break;
+    case WM_CHAR:
+        if (!g_62ddfc)
+        {
+            g_62ddfc = wParam;
+        }
+        break;
+    default:
+        return DefWindowProc(hWnd, uMsg, wParam, lParam);
     }
-    FUN_44e4b0(windowMessage);
-exit:
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
+
+#pragma optimize("", on)
 
 // unused: STUNTGP_D3D 0x44e7a0
 
