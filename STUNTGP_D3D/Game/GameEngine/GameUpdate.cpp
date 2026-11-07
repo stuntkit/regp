@@ -972,6 +972,24 @@ void FUN_41a430()
     }
 }
 
+void FUN_408640(Car *car, float *pos);
+
+// FUNCTION: STUNTGP_D3D 0x41a4c0
+void FUN_41a4c0()
+{
+    Car *car = g_4d5bb8;
+    Vec4 pos;
+    pos.x = g_570ac4->pos[0];
+    pos.y = g_570ac4->pos[1];
+    pos.z = g_570ac4->pos[2];
+    car->unk1c9c = car->unk1c8c;
+    car->unk1c8c.x = pos.x - car->posX;
+    car->unk1c8c.y = pos.y - car->posY;
+    car->unk1c8c.z = pos.z - car->posZ;
+    car->unk1cf0 = car->axisZ.y * car->unk1c8c.y + car->axisZ.x * car->unk1c8c.x + car->axisZ.z * car->unk1c8c.z;
+    FUN_408640(car, &pos.x);
+}
+
 void FUN_40c160();
 
 // FUNCTION: STUNTGP_D3D 0x41a780

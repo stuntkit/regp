@@ -167,6 +167,9 @@ float g_472b88[4] = {0.0f, 0.05f, 0.1f, 0.2f};
 // GLOBAL: STUNTGP_D3D 0x472b98
 float g_472b98 = 0.5f;
 
+// GLOBAL: STUNTGP_D3D 0x472c74
+int g_472c74 = 1;
+
 // Walks the knot index along the path until pos projects onto its segment, then returns the percentage covered.
 // FUNCTION: STUNTGP_D3D 0x405370
 void FUN_405370(float *pos, CameraPath *path, int *index, float *distance)
@@ -852,6 +855,23 @@ void FUN_40b990(char *text)
     Script_GetFloatArray(section, "AlignmentTorque", g_4d5bb8->unk258, 128);
 }
 
+// FUNCTION: STUNTGP_D3D 0x40ba10
+void FUN_40ba10(char *text)
+{
+    // STRING: STUNTGP_D3D 0x473700
+    char *section = strstr(text, "-CONTROL[] =");
+    // STRING: STUNTGP_D3D 0x473710
+    Script_GetFloatArray(section, "DigitalSteeringInputEnv", g_4d5bb8->unk1188[0], 128);
+    // STRING: STUNTGP_D3D 0x473728
+    Script_GetFloatArray(section, "DigitalBrakeInputEnv", g_4d5bb8->unk1188[1], 128);
+    // STRING: STUNTGP_D3D 0x473740
+    Script_GetFloatArray(section, "AnalogSteeringInputEnv", g_4d5bb8->unk1188[2], 128);
+    // STRING: STUNTGP_D3D 0x473758
+    Script_GetFloatArray(section, "AnalogBrakeInputEnv", g_4d5bb8->unk1188[3], 128);
+    // STRING: STUNTGP_D3D 0x47376c
+    Script_GetFloatArray(section, "AnalogVelocitySteeringInputEnv", g_4d5bb8->unk1188[4], 128);
+}
+
 // FUNCTION: STUNTGP_D3D 0x40bac0
 void FUN_40bac0(char *text)
 {
@@ -901,6 +921,37 @@ void FUN_40bcb0(char *text)
     Script_GetFloat(section, "MaxRotSpd_X", &g_4d5bb8->unk1ba0);
     // STRING: STUNTGP_D3D 0x4738b0
     Script_GetFloat(section, "MaxRotSpd_Y", &g_4d5bb8->unk1ba4);
+}
+
+extern char g_GameDirectory[128];
+void FUN_434890();
+
+// FUNCTION: STUNTGP_D3D 0x40bd40
+void FUN_40bd40()
+{
+    char path[128];
+    // STRING: STUNTGP_D3D 0x4738bc
+    sprintf(path, "%s\\Config\\Vehicles\\Vehicle%d.cfg", g_GameDirectory, g_472c74);
+    // STRING: STUNTGP_D3D 0x4738e0
+    g_5da2e4 = fopen(path, "wt");
+    if (g_5da2e4)
+    {
+        g_4d5bb8 = g_474630;
+        FUN_434890();
+        FUN_40ad50();
+        FUN_40a870();
+        FUN_40a990();
+        FUN_40b2b0();
+        FUN_40aae0();
+        FUN_40acc0();
+        FUN_40aef0();
+        FUN_40afb0();
+        FUN_40b0b0();
+        FUN_40b190();
+        FUN_40b320();
+        FUN_40b3c0();
+        fclose(g_5da2e4);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x40bf20
@@ -1839,6 +1890,36 @@ void FUN_40eca0(float v)
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x40ed30
+void FUN_40ed30()
+{
+    if (g_60f2b4 != 3 && g_4d5bb8->unk24e0 != 1)
+    {
+        FUN_40ec00(g_4d5bb8->unk1cfc);
+        FUN_40eca0(g_4d5bb8->unk2254);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x40edd0
+void FUN_40edd0()
+{
+    if (g_4d5bb8->unk1fd8 == 0)
+    {
+        float v = g_4d5bb8->unk1cf0 * 0.6f;
+        v *= v;
+        float f = v * g_4d5bb8->unk1fd0 * g_4d5bb8->unkcb4 * g_4d5bb8->unkcb0 * -0.615f;
+        g_4d5bb8->unk1f24 = f;
+        f /= g_4d5bb8->unk2618 * 4.0f;
+        Vec4 d;
+        d.x = f * g_4d5bb8->axisY.x;
+        d.y = f * g_4d5bb8->axisY.y;
+        d.z = f * g_4d5bb8->axisY.z;
+        g_4d5bb8->unk1c8c.x += d.x;
+        g_4d5bb8->unk1c8c.y += d.y;
+        g_4d5bb8->unk1c8c.z += d.z;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x40ee70
 void FUN_40ee70()
 {
@@ -2538,6 +2619,26 @@ void FUN_4166f0()
     }
 }
 
+// GLOBAL: STUNTGP_D3D 0x4d5b30
+float g_4d5b30[16];
+
+// FUNCTION: STUNTGP_D3D 0x413b60
+void FUN_413b60()
+{
+    Vec4 *m = g_4d5bb8->unk26b0->lods[0]->matrix;
+    Vec4 r0;
+    Vec4 r1;
+    r0.x = m[2].y * m[3].z - m[2].z * m[3].y;
+    r0.y = m[2].z * m[3].x - m[3].z * m[2].x;
+    r0.z = m[3].y * m[2].x - m[2].y * m[3].x;
+    r1.x = r0.y * m[2].z - r0.z * m[2].y;
+    r1.y = r0.z * m[2].x - r0.x * m[2].z;
+    r1.z = r0.x * m[2].y - r0.y * m[2].x;
+    Vec3_Normalize(&r0.x);
+    Vec3_Normalize(&r1.x);
+    Matrix_FromRows(&r0.x, &r1.x, &m[2].x, g_4d5b30);
+}
+
 // FUNCTION: STUNTGP_D3D 0x413da0
 void FUN_413da0()
 {
@@ -2907,6 +3008,29 @@ void FUN_4167a0(int index)
 // STUB: STUNTGP_D3D 0x416800
 void FUN_416800()
 {
+}
+
+// GLOBAL: STUNTGP_D3D 0x4d5bc0
+Unk62a078 g_4d5bc0;
+
+// FUNCTION: STUNTGP_D3D 0x4169e0
+void FUN_4169e0()
+{
+    g_4d5bc0.unk68 = 0.01f;
+    g_4d5bc0.flags = 7;
+    g_4d5bc0.mode = 2;
+    g_4d5bc0.unk7c = 1;
+    g_4d5bc0.anim = NULL;
+    g_4d5bc0.gravity = g_48266c * -0.3f;
+    g_4d5bc0.size = 0.5f;
+    g_4d5bc0.sizeIn = 3.0f;
+    g_4d5bc0.sizeOut = 12.0f;
+    g_4d5bc0.alpha = 96.0f;
+    g_4d5bc0.alphaIn = 0.0f;
+    g_4d5bc0.alphaOut = 18.0f;
+    g_4d5bc0.colors[0] = 0x406090;
+    g_4d5bc0.texture = 7;
+    g_4d5bc0.unk98 = 0x60;
 }
 
 // STUB: STUNTGP_D3D 0x416a80
@@ -3774,6 +3898,25 @@ void FUN_408920(Body *body)
     memcpy(g_4d5bb8->unk1c0c, body->mat1, sizeof(g_4d5bb8->unk1c0c));
     *(Vec4 *)&g_4d5bb8->posX = body->pos;
     g_4d5bb8->unk1c8c = *(Vec4 *)body->vel;
+}
+
+extern Vec4 g_498198;
+void FUN_413290(float *v);
+
+// FUNCTION: STUNTGP_D3D 0x408cb0
+void FUN_408cb0(float speed)
+{
+    float f = speed * 0.025f;
+    f = f * f;
+    if (f > 5.0f)
+    {
+        f = 5.0f;
+    }
+    Vec4 v;
+    v.x = g_498198.x * f;
+    v.y = g_498198.y * f;
+    v.z = g_498198.z * f;
+    FUN_413290(&v.x);
 }
 
 // FUNCTION: STUNTGP_D3D 0x408d10

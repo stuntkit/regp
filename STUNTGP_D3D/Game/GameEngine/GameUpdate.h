@@ -220,7 +220,8 @@ struct Body
 // One recorded frame of car state.
 struct ReplayFrame
 {
-    BYTE unk00[0x14];     // 0x00
+    int pos[3];           // 0x00
+    BYTE unk0c[0x8];      // 0x0c
     short unk14[4];       // 0x14
     char unk1c[4];        // 0x1c
     unsigned short unk20; // 0x20
@@ -375,7 +376,9 @@ struct Car
     float unk1f14;            // 0x1f14
     BYTE unk1f18[0x4];        // 0x1f18
     int unk1f1c;              // 0x1f1c
-    BYTE unk1f20[0xc];        // 0x1f20
+    BYTE unk1f20[0x4];        // 0x1f20
+    float unk1f24;            // 0x1f24
+    BYTE unk1f28[0x4];        // 0x1f28
     PosHistory unk1f2c;       // 0x1f2c
     float unk1fd0;            // 0x1fd0
     int unk1fd4;              // 0x1fd4
