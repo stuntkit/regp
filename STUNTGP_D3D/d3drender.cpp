@@ -8,6 +8,7 @@
 #include "surface.h"
 #include "Game/GameEngine/io_wad.h"
 #include "Game/GameEngine/GameSetup.h"
+#include "Game/GameEngine/GameUpdate.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -988,10 +989,17 @@ void FUN_432a60()
 // Queued primitives per render pass.
 struct RenderBucket
 {
-    void *data; // 0x00
-    int count;  // 0x04
-    int unk08;  // 0x08
-    int unk0c;  // 0x0c
+    void *data;   // 0x00
+    int count;    // 0x04
+    void *unk08;  // 0x08
+    int unk0c;    // 0x0c
+};
+
+// Queued primitive; type 0x3f marks one that needs no depth key.
+struct RenderItem
+{
+    DWORD unk00[4];
+    int type; // 0x10
 };
 
 // GLOBAL: STUNTGP_D3D 0x6243cc
@@ -1005,6 +1013,61 @@ RenderBucket g_6243e0[8];
 
 extern void *g_61c5f8;
 extern void *g_61c600;
+
+// STUB: STUNTGP_D3D 0x427530
+void FUN_427530(RenderItem *item)
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x4277b0
+void FUN_4277b0(RenderItem *item, DWORD count)
+{
+    for (DWORD i = 0; i < count; i++)
+    {
+        if (item->type != 0x3f)
+        {
+            FUN_427530(item);
+        }
+        item++;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x4277d0
+void FUN_4277d0()
+{
+    FUN_427240();
+    if (g_6243e0[0].count)
+    {
+        g_4722d0->unk19c = 5000000.0f;
+        FUN_4277b0((RenderItem *)g_6243e0[0].data, g_6243e0[0].count);
+    }
+    g_4722d0->unk19c = 500000.0f;
+    if (g_6243e0[2].count)
+    {
+        FUN_4277b0((RenderItem *)g_6243e0[2].data, g_6243e0[2].count);
+    }
+    if (g_6243e0[2].unk0c)
+    {
+        FUN_4277b0((RenderItem *)g_6243e0[2].unk08, g_6243e0[2].unk0c);
+    }
+    g_4722d0->unk19c = 500000.0f;
+    if (g_6243e0[4].count)
+    {
+        FUN_4277b0((RenderItem *)g_6243e0[4].data, g_6243e0[4].count);
+    }
+    if (g_6243e0[4].unk0c)
+    {
+        FUN_4277b0((RenderItem *)g_6243e0[4].unk08, g_6243e0[4].unk0c);
+    }
+    if (g_6243e0[6].count)
+    {
+        FUN_4277b0((RenderItem *)g_6243e0[6].data, g_6243e0[6].count);
+    }
+    if (g_6243e0[6].unk0c)
+    {
+        FUN_4277b0((RenderItem *)g_6243e0[6].unk08, g_6243e0[6].unk0c);
+    }
+}
 
 // STUB: STUNTGP_D3D 0x433290
 void FUN_433290(void *data, int count)
