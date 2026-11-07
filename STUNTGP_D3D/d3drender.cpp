@@ -110,7 +110,7 @@ void FUN_4328c0(int color)
 
     float width = (float)g_576bc4;
     float height = (float)g_576bc8;
-    D3DCOLOR c = RGBA_MAKE(GetRValue(color), GetGValue(color), GetBValue(color), 0xff);
+    D3DCOLOR c = RGBA_MAKE(color & 0xff, (color & 0xff00) >> 8, (color >> 16) & 0xff, 0xff);
 
     v[0].sx = 0.0f;
     v[0].sy = 0.0f;
@@ -144,7 +144,7 @@ void FUN_4328c0(int color)
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZFUNC, D3DCMP_ALWAYS);
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, FALSE);
     g_d3dDevice->SetTexture(0, NULL);
-    g_d3dDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, FVF_TLVERTEX2, v, 4, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTLIGHT);
+    g_d3dDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, FVF_TLVERTEX2, v, 4, D3DDP_DONOTCLIP | D3DDP_DONOTLIGHT);
     FUN_432a90();
     if (g_592054 == 1 || g_592058 == 1)
     {
@@ -220,7 +220,7 @@ void FUN_432f60()
             g_61c5e4 = tex;
         }
         g_d3dDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, FVF_TLVERTEX2, v, poly->numVerts,
-                                   D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTLIGHT);
+                                   D3DDP_DONOTCLIP | D3DDP_DONOTLIGHT);
         poly++;
     }
     if (poly->flags & 0x40)
