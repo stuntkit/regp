@@ -150,9 +150,22 @@ void Matrix_Set(float *m, float m00, float m01, float m02, float m03, float m10,
 }
 
 // Normalizes v in place and writes its original length.
-// STUB: STUNTGP_D3D 0x44eda0
+// FUNCTION: STUNTGP_D3D 0x44eda0
 void FUN_44eda0(float *v, float *len)
 {
+    float l = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+    if (l == 0.0f)
+    {
+        *len = 0.0f;
+        v[0] = v[1] = v[2] = 0.0f;
+        return;
+    }
+    l = (float)sqrt(l);
+    *len = l;
+    l = 1.0f / l;
+    v[0] *= l;
+    v[1] *= l;
+    v[2] *= l;
 }
 
 // FUNCTION: STUNTGP_D3D 0x44f790
