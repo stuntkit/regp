@@ -279,39 +279,32 @@ int ddGetDD4(LPDIRECTDRAW *lplpDD, LPDIRECTDRAW4 *lplpDD4, HWND hWnd)
 // }
 
 // FUNCTION: STUNTGP_D3D 0x422950
-int ddGetMemory(LPDIRECTDRAW4 lpDD4, LPDWORD totalVideoMem, LPDWORD totalTextureMem, LPDWORD freeMem)
+int ddGetMemory(LPDIRECTDRAW4 *lplpDD4, LPDWORD totalVideoMem, LPDWORD totalTextureMem, LPDWORD freeVideoMem)
 {
-    DWORD dwTotal = 0;
-    DWORD dwFree = 0;
+    DWORD dwTotal;
+    DWORD dwFree;
+    DDSCAPS2 caps;
 
-    DDSCAPS2 ddsCaps2;
-    ZeroMemory(&ddsCaps2, sizeof(ddsCaps2));
-    ddsCaps2.dwCaps = DDSCAPS_VIDEOMEMORY;
-    int res = lpDD4->GetAvailableVidMem(&ddsCaps2, &dwTotal, &dwFree);
-    if (res == DD_OK)
+    // The original ignores lplpDD4 and reads the global directly.
+    ZeroMemory(&caps, sizeof(caps));
+    caps.dwCaps = DDSCAPS_VIDEOMEMORY;
+    int res = g_dd4->GetAvailableVidMem(&caps, &dwTotal, &dwFree);
+    if (res != DD_OK)
     {
-        *totalVideoMem = dwTotal;
-        *freeMem = dwFree;
-#if defined(SGP_DEBUG)
-        char buffer[256];
-        sprintf(buffer, "Free/Total video mem: %lu/%lu MB", dwFree / 1024 / 1024, dwTotal / 1024 / 1024);
-        OutputDebugString(buffer);
-#endif
-        DDSCAPS2 textureCaps;
-        ZeroMemory(&textureCaps, sizeof(textureCaps));
-        textureCaps.dwCaps = DDSCAPS_TEXTURE;
-        res = lpDD4->GetAvailableVidMem(&textureCaps, &dwTotal, &dwFree);
-        if (res == DD_OK)
-        {
-            *totalTextureMem = dwTotal;
-            res = DD_OK;
-#if defined(SGP_DEBUG)
-            sprintf(buffer, "Free/total texture mem: %lu/%lu MB", dwFree / 1024 / 1024, dwTotal / 1024 / 1024);
-            OutputDebugString(buffer);
-#endif
-        }
+        return res;
     }
-    return res;
+    *totalVideoMem = dwTotal;
+    *freeVideoMem = dwFree;
+
+    ZeroMemory(&caps, sizeof(caps));
+    caps.dwCaps = DDSCAPS_TEXTURE;
+    res = g_dd4->GetAvailableVidMem(&caps, &dwTotal, &dwFree);
+    if (res != DD_OK)
+    {
+        return res;
+    }
+    *totalTextureMem = dwTotal;
+    return DD_OK;
 }
 
 // // STUB: STUNTGP_D3D 0x4229e0

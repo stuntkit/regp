@@ -27,7 +27,7 @@ void FUN_4228c0();
 void FUN_4228e0();
 void FUN_422910();
 void FUN_422930();
-int ddGetMemory(LPDIRECTDRAW4 lpDD4, LPDWORD totalVideoMem, LPDWORD totalTextureMem, LPDWORD freeMem);
+int ddGetMemory(LPDIRECTDRAW4 *lplpDD4, LPDWORD totalVideoMem, LPDWORD totalTextureMem, LPDWORD freeVideoMem);
 void FUN_4229e0();
 void FUN_422a00();
 void FUN_422a20();
@@ -56,4 +56,9 @@ extern int DAT_CAPS;
 inline int ddGetDD4(LPDIRECTDRAW &lpDD, LPDIRECTDRAW4 *lplpDD4, HWND hWnd)
 {
     return ddGetDD4(&lpDD, lplpDD4, hWnd);
+}
+
+inline int ddGetMemory(LPDIRECTDRAW4 &lpDD4, LPDWORD totalVideoMem, LPDWORD totalTextureMem, LPDWORD freeVideoMem)
+{
+    return ddGetMemory(&lpDD4, totalVideoMem, totalTextureMem, freeVideoMem);
 }
