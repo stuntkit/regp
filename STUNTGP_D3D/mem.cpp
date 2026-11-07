@@ -138,10 +138,33 @@ void Mem_FreeAll()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x42ea80
+void Mem_Reset()
+{
+    Mem_FreeAll();
+    g_MemActive = TRUE;
+    g_Mem.allocCount = 0;
+    g_Mem.unk10 = 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x42eaa0
 void FUN_42eaa0()
 {
     Mem_FreeAll();
+}
+
+// FUNCTION: STUNTGP_D3D 0x42eab0
+void Mem_Init()
+{
+    memset(g_Mem.slots, 0, sizeof(g_Mem.slots));
+    g_MemActive = FALSE;
+    g_Mem.type0Bytes = 0;
+    g_Mem.type1Bytes = 0;
+    g_Mem.peakBytes = 0;
+    g_Mem.allocCount = 0;
+    g_Mem.unk10 = 0;
+    g_Mem.freeType1 = FALSE;
+    Mem_Reset();
 }
 
 // FUNCTION: STUNTGP_D3D 0x42eaf0

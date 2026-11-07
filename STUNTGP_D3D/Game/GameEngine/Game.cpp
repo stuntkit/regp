@@ -45,6 +45,60 @@ const char g_VERSION_FORMAT[] = "Version: %s - %s";
 // GLOBAL: STUNTGP_D3D 0x612bf8
 static char g_VERSION_STRING[255];
 
+// GLOBAL: STUNTGP_D3D 0x482668
+float g_482668 = 1.0f;
+
+// GLOBAL: STUNTGP_D3D 0x48266c
+float g_48266c = 1.0f;
+
+// GLOBAL: STUNTGP_D3D 0x482670
+float g_482670 = 0.2725f;
+
+// GLOBAL: STUNTGP_D3D 0x482674
+float g_482674 = 1.0f / 0.2725f;
+
+// GLOBAL: STUNTGP_D3D 0x482678
+float g_482678 = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x48267c
+float g_48267c = -0.2725f;
+
+// GLOBAL: STUNTGP_D3D 0x482680
+float g_482680 = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x482688
+float g_482688 = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x48268c
+float g_48268c = -1.0f;
+
+// GLOBAL: STUNTGP_D3D 0x482690
+float g_482690 = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x612cf8
+int g_612cf8;
+
+extern int g_61297c;
+
+extern int g_60df9c;
+
+// GLOBAL: STUNTGP_D3D 0x4d5b20
+int g_4d5b20;
+
+// FUNCTION: STUNTGP_D3D 0x441f90
+void FUN_441f90()
+{
+    g_48266c = 1.0f / g_482668;
+    g_482688 = 0.0f;
+    g_48268c = -1.0f;
+    g_482690 = 0.0f;
+    g_482670 = g_482668 * 0.2725f;
+    g_482674 = 1.0f / g_482670;
+    g_482678 = 0.0f;
+    g_48267c = g_482670 * -1.0f;
+    g_482680 = 0.0f;
+}
+
 // FUNCTION: STUNTGP_D3D 0x442010
 void GetGameBuildVersion()
 {
@@ -66,9 +120,6 @@ int g_612bf0;
 
 // GLOBAL: STUNTGP_D3D 0x612bf4
 int g_612bf4;
-
-// GLOBAL: STUNTGP_D3D 0x612cf8
-int g_612cf8;
 
 // GLOBAL: STUNTGP_D3D 0x612cfc
 DWORD g_612cfc;
@@ -133,9 +184,74 @@ void FUN_441f00()
     FUN_441dc0();
 }
 
-// STUB: STUNTGP_D3D 0x442120
+// FUNCTION: STUNTGP_D3D 0x442030
+void FUN_442030()
+{
+    g_4d5b20 = 0;
+    FUN_45f9d0();
+    FUN_460dd0();
+    FUN_460c90();
+    FUN_445fa0();
+    Mem_Reset();
+    FUN_42e6e0();
+    Scores_LoadIfNeeded();
+    Gameplay_LoadIfNeeded();
+    if (g_612be8 == 1)
+    {
+        FUN_445f80();
+        FUN_4469f0();
+        FUN_40e050();
+        FUN_40a2f0();
+        FUN_401de0();
+        FUN_413670();
+        FUN_422420();
+        FUN_4199a0();
+        FUN_40d500();
+    }
+    if (g_612be8 == 2)
+    {
+        FUN_424c30(1);
+        if (g_60d61c == 0)
+        {
+            g_60d61c = 1;
+            FUN_43d0b0();
+        }
+        else
+        {
+            FUN_43d1d0();
+        }
+    }
+    if (g_612be8 == 1)
+    {
+        FUN_43d1b0();
+    }
+    Timer_Reset();
+}
+
+// FUNCTION: STUNTGP_D3D 0x442100
+void Timer_Reset()
+{
+    g_612d00 = Timer_GetCounter();
+    g_612d04 = Timer_GetCounter();
+}
+
+// FUNCTION: STUNTGP_D3D 0x442120
 void FUN_442120()
 {
+    g_612cf8 = 0;
+    g_61297c = 100;
+    FUN_429510();
+    Random_SeedFromTime();
+    Timer_Init();
+    Mem_Init();
+    FUN_4624b0();
+    Script_ParseGameConfig();
+    FUN_462090();
+    FUN_45ec30();
+    FUN_445f80();
+    FUN_4249b0();
+    g_60df9c = 0;
+    FUN_442030();
 }
 
 // FUNCTION: STUNTGP_D3D 0x442180
@@ -323,11 +439,6 @@ void FUN_445530()
 {
 }
 
-// STUB: STUNTGP_D3D 0x442030
-void FUN_442030()
-{
-}
-
 // FUNCTION: STUNTGP_D3D 0x4420e0
 void FUN_4420e0()
 {
@@ -412,7 +523,7 @@ void FUN_442490()
 {
     if (g_DisableFramerateCorrection != 1 && g_60df9c != 1)
     {
-        DWORD now = FUN_434820();
+        DWORD now = Timer_GetCounter();
         g_612d04 = now;
         if ((DWORD)abs((int)(now - g_612d00)) > g_612d08 * 30)
         {

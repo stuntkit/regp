@@ -38,6 +38,27 @@ struct SlotEvent
 };
 
 // One of the four per-player blocks at 0x498248 (0x74c bytes each).
+struct Car
+{
+    BYTE unk0000[0xf78];  // 0x0000
+    int unkf78;           // 0x0f78
+    BYTE unkf7c[0xc2c];   // 0x0f7c
+    int active;           // 0x1ba8
+    BYTE unk1bac[0x6c4];  // 0x1bac
+    int unk2270;          // 0x2270
+    BYTE unk2274[0x2f4];  // 0x2274
+    int unk2568;          // 0x2568
+    int unk256c;          // 0x256c
+    int unk2570;          // 0x2570
+    int unk2574;          // 0x2574
+    BYTE unk2578[0x138];  // 0x2578
+    int unk26b0;          // 0x26b0
+    int unk26b4;          // 0x26b4
+    BYTE unk26b8[0x4bb0]; // 0x26b8
+    short *unk7268;       // 0x7268
+    BYTE unk726c[0x4b8];  // 0x726c
+};
+
 struct GameSlot
 {
     int active;           // 0x000
@@ -163,7 +184,6 @@ void FUN_4294f0();
 void FUN_429510();
 
 // timer
-DWORD FUN_434820();
 
 // input
 void FUN_4243f0();
@@ -224,4 +244,5 @@ void FUN_431810();
 void FUN_42eaa0();
 void FUN_442030();
 
+extern Car g_49a1f8[6];
 #endif /* GAMEUPDATE_H */

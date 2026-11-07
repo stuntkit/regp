@@ -4,13 +4,6 @@
 #include <mmsystem.h>
 #include <dsound.h>
 
-struct SoundSlot
-{
-    LPDIRECTSOUNDBUFFER buffer;     // 0x00
-    LPDIRECTSOUND3DBUFFER buffer3d; // 0x04
-    BYTE unk08[0x18];               // 0x08
-};
-
 // GLOBAL: STUNTGP_D3D 0x4897b0
 int g_4897b0 = 1;
 
@@ -30,9 +23,6 @@ int g_62e108;
 int g_62e110;
 
 // The first 72 slots are fixed sounds, the remaining 32 are one-shot copies.
-// GLOBAL: STUNTGP_D3D 0x62e118
-SoundSlot g_62e118[128];
-
 // GLOBAL: STUNTGP_D3D 0x62f11c
 LPDIRECTSOUND3DLISTENER g_62f11c;
 
@@ -243,7 +233,7 @@ void FUN_460df0()
 {
     if (g_62f5b0 != 0)
     {
-        SoundSlot *slot = &g_62e118[72];
+        SoundChannel *slot = &g_62e118[72];
         for (int i = 0; i < 32; i++, slot++)
         {
             LPDIRECTSOUNDBUFFER buffer = slot->buffer;

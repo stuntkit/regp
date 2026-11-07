@@ -5,6 +5,7 @@
 
 #include "../../globals.h"
 #include "../../surface.h"
+#include "../../timer.h"
 
 // GLOBAL: STUNTGP_D3D 0x60d618
 int g_60d618;
@@ -105,15 +106,6 @@ AnimObject g_576cd0[32];
 Scene *g_636448;
 
 // 6 entries at 0x49a1f8, 0x7724 bytes each
-struct Car
-{
-    BYTE unk0000[0x1ba8]; // 0x0000
-    int active;           // 0x1ba8
-    BYTE unk1bac[0x56bc]; // 0x1bac
-    short *unk7268;       // 0x7268
-    BYTE unk726c[0x4b8];  // 0x726c
-};
-
 // GLOBAL: STUNTGP_D3D 0x49a1f8
 Car g_49a1f8[6];
 
@@ -455,14 +447,6 @@ void FUN_431810()
 }
 
 // --- timer ---
-
-// FUNCTION: STUNTGP_D3D 0x434820
-DWORD FUN_434820()
-{
-    LARGE_INTEGER count;
-    QueryPerformanceCounter(&count);
-    return count.LowPart;
-}
 
 // STUB: STUNTGP_D3D 0x443a80
 void FUN_443a80()

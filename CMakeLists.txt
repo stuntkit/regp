@@ -139,6 +139,13 @@ if(STUNTGP_BUILD_D3D)
     STUNTGP_D3D/Game/GameEngine/Input.cpp
     STUNTGP_D3D/Game/GameEngine/SoundUpdate.cpp
     STUNTGP_D3D/Game/GameEngine/MenuUpdate.cpp
+    STUNTGP_D3D/timer.cpp
+    STUNTGP_D3D/random.cpp
+    STUNTGP_D3D/Game/GameEngine/GameSetup.cpp
+    STUNTGP_D3D/vecmath.cpp
+    STUNTGP_D3D/tables.cpp
+    STUNTGP_D3D/soundsys.cpp
+    STUNTGP_D3D/gametext.cpp
   )
   reccmp_add_target(StuntGP_D3D ID STUNTGP_D3D)
 
