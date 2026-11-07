@@ -599,12 +599,12 @@ void FUN_4399b0(int def, float x0, float x1, float y, float total, float visible
     FUN_441320(&s, def);
     u = s.u0;
     s.flags = 2;
+    s.alpha = 0xff;
     s.x = x0;
     s.y = y;
     s.width = g_4793ec;
     s.u1 = g_4793ec * 4.0f + s.u0;
     s.blendMode = 0x70;
-    s.alpha = 0xff;
     FUN_438370(&s, layer, 1);
 
     s.x = s.width + s.x;
@@ -650,15 +650,15 @@ void FUN_439b80(int def, float x, float y0, float y1, float total, float visible
     float v;
 
     FUN_441320(&s, def);
-    v = s.v0;
     u = s.u0;
+    v = s.v0;
     s.flags = 2;
+    s.alpha = 0xff;
     s.x = x;
     s.y = y0;
     s.height = g_4793ec;
     s.v1 = g_4793ec * 4.0f + s.v0;
     s.blendMode = 0x70;
-    s.alpha = 0xff;
     FUN_438370(&s, layer, 1);
 
     s.y = s.height + s.y;
@@ -679,8 +679,8 @@ void FUN_439b80(int def, float x, float y0, float y1, float total, float visible
     s.y = y1 * pos / total + y0;
     s.u0 = u;
     s.u1 = g_4793e8 * 4.0f + u;
-    s.height = g_4793ec;
     s.v0 = v;
+    s.height = g_4793ec;
     s.v1 = g_4793ec * 4.0f + v;
     s.blendMode = 0x58;
     FUN_438370(&s, layer, 0);
