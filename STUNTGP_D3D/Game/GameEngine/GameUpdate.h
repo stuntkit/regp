@@ -283,7 +283,8 @@ struct Car
     float unk230;             // 0x0230
     float unk234;             // 0x0234
     float unk238;             // 0x0238
-    BYTE unk023c[0x8];        // 0x023c
+    float unk23c;             // 0x023c
+    float unk240;             // 0x0240
     float unk244;             // 0x0244
     float unk248;             // 0x0248
     float unk24c;             // 0x024c

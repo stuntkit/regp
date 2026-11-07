@@ -510,6 +510,190 @@ void FUN_40a2c0(float (*m)[16])
     }
 }
 
+extern FILE *g_5da2e4;
+void FUN_434900(float *values, DWORD count);
+
+// FUNCTION: STUNTGP_D3D 0x40acc0
+void FUN_40acc0()
+{
+    // STRING: STUNTGP_D3D 0x472f20
+    fprintf(g_5da2e4, "-AERODYNAMICS[] =\n");
+    // STRING: STUNTGP_D3D 0x472f34
+    fprintf(g_5da2e4, " Cd              = %f\n", g_4d5bb8->unkcac);
+    // STRING: STUNTGP_D3D 0x472f4c
+    fprintf(g_5da2e4, " Cl              = %f\n", g_4d5bb8->unkcb0);
+    // STRING: STUNTGP_D3D 0x472f64
+    fprintf(g_5da2e4, " FA              = %f\n", g_4d5bb8->unkcb4);
+    // STRING: STUNTGP_D3D 0x472f7c
+    fprintf(g_5da2e4, "-AERODYNAMICS_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40ad50
+void FUN_40ad50()
+{
+    // STRING: STUNTGP_D3D 0x472f90
+    fprintf(g_5da2e4, "-DIMENSIONS[] =\n");
+    // STRING: STUNTGP_D3D 0x472fa4
+    fprintf(g_5da2e4, " Mass            = %f\n", g_4d5bb8->unk220);
+    // STRING: STUNTGP_D3D 0x472fbc
+    fprintf(g_5da2e4, " Com_a           = %f\n", g_4d5bb8->unk224);
+    // STRING: STUNTGP_D3D 0x472fd4
+    fprintf(g_5da2e4, " Com_b           = %f\n", g_4d5bb8->unk228);
+    // STRING: STUNTGP_D3D 0x472fec
+    fprintf(g_5da2e4, " Com_h           = %f\n", g_4d5bb8->unk22c);
+    // STRING: STUNTGP_D3D 0x473004
+    fprintf(g_5da2e4, " WheelBase       = %f\n", g_4d5bb8->unk230);
+    // STRING: STUNTGP_D3D 0x47301c
+    fprintf(g_5da2e4, " TrackFront      = %f\n", g_4d5bb8->unk234);
+    // STRING: STUNTGP_D3D 0x473034
+    fprintf(g_5da2e4, " TrackRear       = %f\n", g_4d5bb8->unk238);
+    // STRING: STUNTGP_D3D 0x47304c
+    fprintf(g_5da2e4, " Length          = %f\n", g_4d5bb8->unk23c);
+    // STRING: STUNTGP_D3D 0x473064
+    fprintf(g_5da2e4, " Width           = %f\n", g_4d5bb8->unk240);
+    // STRING: STUNTGP_D3D 0x47307c
+    fprintf(g_5da2e4, " Height          = %f\n", g_4d5bb8->unk244);
+    // STRING: STUNTGP_D3D 0x473094
+    fprintf(g_5da2e4, " RideHeight      = %f\n", g_4d5bb8->unk248);
+    // STRING: STUNTGP_D3D 0x4730ac
+    fprintf(g_5da2e4, "-DIMENSIONS_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40aef0
+void FUN_40aef0()
+{
+    // STRING: STUNTGP_D3D 0x4730c0
+    fprintf(g_5da2e4, "-STEERING[] =\n");
+    // STRING: STUNTGP_D3D 0x4730d0
+    fprintf(g_5da2e4, " MaxAngle        = %f\n", g_4d5bb8->unk24c);
+    // STRING: STUNTGP_D3D 0x4730e8
+    fprintf(g_5da2e4, " Sensitivity     = %f\n", g_4d5bb8->unk254);
+    // STRING: STUNTGP_D3D 0x473100
+    fprintf(g_5da2e4, " Acceleration    = %f\n", g_4d5bb8->unk250);
+    // STRING: STUNTGP_D3D 0x473118
+    fprintf(g_5da2e4, " AlignmentTorque =\n");
+    FUN_434900(g_4d5bb8->unk258, 128);
+    // STRING: STUNTGP_D3D 0x47312c
+    fprintf(g_5da2e4, "-STEERING_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40afb0
+void FUN_40afb0()
+{
+    // STRING: STUNTGP_D3D 0x47313c
+    fprintf(g_5da2e4, "-CONTROL[] =\n");
+    // STRING: STUNTGP_D3D 0x47314c
+    fprintf(g_5da2e4, " DigitalSteeringInputEnv =\n");
+    FUN_434900(g_4d5bb8->unk1188[0], 128);
+    // STRING: STUNTGP_D3D 0x473168
+    fprintf(g_5da2e4, " DigitalBrakeInputEnv =\n");
+    FUN_434900(g_4d5bb8->unk1188[1], 128);
+    // STRING: STUNTGP_D3D 0x473184
+    fprintf(g_5da2e4, " AnalogSteeringInputEnv =\n");
+    FUN_434900(g_4d5bb8->unk1188[2], 128);
+    // STRING: STUNTGP_D3D 0x4731a0
+    fprintf(g_5da2e4, " AnalogBrakeInputEnv =\n");
+    FUN_434900(g_4d5bb8->unk1188[3], 128);
+    // STRING: STUNTGP_D3D 0x4731b8
+    fprintf(g_5da2e4, " AnalogVelocitySteeringInputEnv =\n");
+    FUN_434900(g_4d5bb8->unk1188[4], 128);
+    // STRING: STUNTGP_D3D 0x4731dc
+    fprintf(g_5da2e4, "-CONTROL_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40b0b0
+void FUN_40b0b0()
+{
+    // STRING: STUNTGP_D3D 0x4731ec
+    fprintf(g_5da2e4, "-FUEL[] =\n");
+    // STRING: STUNTGP_D3D 0x4731f8
+    fprintf(g_5da2e4, " MaxFuel         = %f\n", g_4d5bb8->unkf78);
+    // STRING: STUNTGP_D3D 0x473210
+    fprintf(g_5da2e4, " UnitMass        = %f\n", g_4d5bb8->unkf7c);
+    // STRING: STUNTGP_D3D 0x473228
+    fprintf(g_5da2e4, " MaxConsumption  = %f\n", g_4d5bb8->unkf80);
+    // STRING: STUNTGP_D3D 0x473240
+    fprintf(g_5da2e4, " RefuelRate      = %f\n", g_4d5bb8->unk1184);
+    // STRING: STUNTGP_D3D 0x473258
+    fprintf(g_5da2e4, " ConsumptionEnv =\n");
+    FUN_434900(g_4d5bb8->unkf84, 128);
+    // STRING: STUNTGP_D3D 0x47326c
+    fprintf(g_5da2e4, "-FUEL_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40b190
+void FUN_40b190()
+{
+    // STRING: STUNTGP_D3D 0x473278
+    fprintf(g_5da2e4, "-TURBO[] =\n");
+    // STRING: STUNTGP_D3D 0x473284
+    fprintf(g_5da2e4, " RpmAcc          = %f\n", g_4d5bb8->unkd60);
+    // STRING: STUNTGP_D3D 0x47329c
+    fprintf(g_5da2e4, " RpmMax          = %f\n", g_4d5bb8->unkd64);
+    // STRING: STUNTGP_D3D 0x4732b4
+    fprintf(g_5da2e4, " Cm              = %f\n", g_4d5bb8->unkd68);
+    // STRING: STUNTGP_D3D 0x4732cc
+    fprintf(g_5da2e4, " PowerMultiplier = %f\n", g_4d5bb8->unkd6c);
+    // STRING: STUNTGP_D3D 0x4732e4
+    fprintf(g_5da2e4, " MaxConsumption  = %f\n", g_4d5bb8->unkf70);
+    // STRING: STUNTGP_D3D 0x4732fc
+    fprintf(g_5da2e4, " FuelCutoffPoint = %f\n", g_4d5bb8->unkf74);
+    // STRING: STUNTGP_D3D 0x473314
+    fprintf(g_5da2e4, " PowerEnv =\n");
+    FUN_434900(g_4d5bb8->unkd70, 128);
+    // STRING: STUNTGP_D3D 0x473324
+    fprintf(g_5da2e4, "-TURBO_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40b2b0
+void FUN_40b2b0()
+{
+    // STRING: STUNTGP_D3D 0x473334
+    fprintf(g_5da2e4, "-BRAKE[] =\n");
+    // STRING: STUNTGP_D3D 0x473340
+    fprintf(g_5da2e4, " Bias            = %f\n", g_4d5bb8->unkd5c);
+    // STRING: STUNTGP_D3D 0x473358
+    fprintf(g_5da2e4, " Acceleration    = %f\n", g_4d5bb8->unkd58);
+    // STRING: STUNTGP_D3D 0x473370
+    fprintf(g_5da2e4, "-BRAKE_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40b320
+void FUN_40b320()
+{
+    // STRING: STUNTGP_D3D 0x473380
+    fprintf(g_5da2e4, "-SFX[] =\n");
+    // STRING: STUNTGP_D3D 0x47338c
+    fprintf(g_5da2e4, " Engine_Rev         = %d\n", g_4d5bb8->race.unk80[1]);
+    // STRING: STUNTGP_D3D 0x4733a8
+    fprintf(g_5da2e4, " Engine_Idle        = %d\n", g_4d5bb8->race.unk80[2]);
+    // STRING: STUNTGP_D3D 0x4733c4
+    fprintf(g_5da2e4, " Engine_Boost       = %d\n", g_4d5bb8->race.unk80[3]);
+    // STRING: STUNTGP_D3D 0x4733e0
+    fprintf(g_5da2e4, " Horn               = %d\n", g_4d5bb8->race.unk80[0]);
+    // STRING: STUNTGP_D3D 0x4733fc
+    fprintf(g_5da2e4, "-SFX_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40b3c0
+void FUN_40b3c0()
+{
+    // STRING: STUNTGP_D3D 0x473408
+    fprintf(g_5da2e4, "-STUNT[] =\n");
+    // STRING: STUNTGP_D3D 0x473414
+    fprintf(g_5da2e4, " LaunchTime         = %f\n", g_4d5bb8->unk1b94);
+    // STRING: STUNTGP_D3D 0x473430
+    fprintf(g_5da2e4, " LaunchTolerance    = %f\n", g_4d5bb8->unk1b98);
+    // STRING: STUNTGP_D3D 0x47344c
+    fprintf(g_5da2e4, " LaunchSpd          = %f\n", g_4d5bb8->unk1b9c);
+    // STRING: STUNTGP_D3D 0x473468
+    fprintf(g_5da2e4, " MaxRotSpd_X        = %f\n", g_4d5bb8->unk1ba0);
+    // STRING: STUNTGP_D3D 0x473484
+    fprintf(g_5da2e4, " MaxRotSpd_Y        = %f\n", g_4d5bb8->unk1ba4);
+    // STRING: STUNTGP_D3D 0x4734a0
+    fprintf(g_5da2e4, "-STUNT_END\n\n");
+}
+
 void Script_GetFloat(char *section, char *key, float *out);
 
 // FUNCTION: STUNTGP_D3D 0x40b750
