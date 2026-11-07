@@ -489,6 +489,35 @@ void FUN_40dad0()
 }
 
 int FUN_42f1f0(int range);
+void FUN_424310(int slot);
+void FUN_4240e0(int slot);
+extern int g_576b70;
+
+// FUNCTION: STUNTGP_D3D 0x4240c0
+void FUN_4240c0()
+{
+    if ((g_62d480['F'] & 0x80) && !(g_62dcf0['F'] & 0x80))
+    {
+        FUN_4240e0(1);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x4240e0
+void FUN_4240e0(int slot)
+{
+    if (g_576b70 != 1)
+    {
+        g_576b70 = 1;
+        FUN_424310(slot);
+        for (int i = 0; i < 12; i++)
+        {
+            if (g_inputDevices[0].effects[i].effect)
+            {
+                g_inputDevices[0].effects[i].effect->Start(1, 0);
+            }
+        }
+    }
+}
 
 // FUNCTION: STUNTGP_D3D 0x424120
 void FUN_424120(int slot)
@@ -503,6 +532,26 @@ void FUN_424120(int slot)
         periodic.dwPeriod = (int)g_4d5b24[4];
         dev->effects[6].desc.lpvTypeSpecificParams = &periodic;
         dev->effects[6].effect->SetParameters(&dev->effects[6].desc, DIEP_TYPESPECIFICPARAMS);
+    }
+}
+
+void FUN_423dd0(InputDevice *dev, DICONDITION *condition, int index);
+extern LONG g_477650;
+
+// FUNCTION: STUNTGP_D3D 0x4241a0
+void FUN_4241a0(int slot)
+{
+    DICONDITION condition;
+    InputDevice *dev = &g_inputDevices[slot - 1];
+    if (dev->effects[0].effect)
+    {
+        condition.lOffset = 0;
+        condition.lPositiveCoefficient = (int)g_4d5b24[0];
+        condition.lNegativeCoefficient = (int)g_4d5b24[0];
+        condition.dwPositiveSaturation = DI_FFNOMINALMAX;
+        condition.dwNegativeSaturation = DI_FFNOMINALMAX;
+        condition.lDeadBand = g_477650;
+        FUN_423dd0(dev, &condition, 0);
     }
 }
 
@@ -536,6 +585,21 @@ void FUN_424290(int slot)
         dev->effects[5].desc.lpvTypeSpecificParams = &periodic;
         dev->effects[5].effect->SetParameters(&dev->effects[5].desc, DIEP_TYPESPECIFICPARAMS | DIEP_START);
     }
+}
+
+int FUN_423e40(InputDevice *dev);
+void FUN_423ff0(InputDevice *dev);
+void FUN_424030(InputDevice *dev);
+void FUN_424070(InputDevice *dev);
+
+// FUNCTION: STUNTGP_D3D 0x424310
+void FUN_424310(int slot)
+{
+    InputDevice *dev = &g_inputDevices[slot - 1];
+    FUN_423e40(dev);
+    FUN_423ff0(dev);
+    FUN_424030(dev);
+    FUN_424070(dev);
 }
 
 // FUNCTION: STUNTGP_D3D 0x424340

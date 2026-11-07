@@ -377,6 +377,81 @@ void FUN_434b50()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x434e10
+int FUN_434e10(char *text, int *pos)
+{
+    char key[64];
+    int i;
+
+    FeCsv_SkipLine(text, pos);
+    for (i = 0; i < 6; i++)
+    {
+        // STRING: STUNTGP_D3D 0x478ca0
+        sprintf(key, "Position%d", i + 1);
+        FUN_43c600(key, text, pos);
+        FeCsv_ReadInt(&g_menuState.unk1da5c[i][0], text, pos);
+        FeCsv_ReadInt(&g_menuState.unk1da5c[i][1], text, pos);
+        FeCsv_SkipLine(text, pos);
+    }
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x434e90
+int FUN_434e90(char *text, int *pos)
+{
+    char key[64];
+    const char *names[3];
+    int d;
+    int j;
+
+    // STRING: STUNTGP_D3D 0x478cac
+    names[0] = "Easy";
+    // STRING: STUNTGP_D3D 0x478cb4
+    names[1] = "Medium";
+    // STRING: STUNTGP_D3D 0x478cbc
+    names[2] = "Hard";
+    FeCsv_SkipLine(text, pos);
+    for (d = 0; d < 3; d++)
+    {
+        for (j = 0; j < 4; j++)
+        {
+            // STRING: STUNTGP_D3D 0x478cc4
+            sprintf(key, "Car%02d%s", j + 1, names[d]);
+            FUN_43c600(key, text, pos);
+            FeCsv_ReadField(g_menuState.unk1d888[d][j].name, text, pos);
+            FeCsv_ReadInt(&g_menuState.unk1d888[d][j].unk08, text, pos);
+            FeCsv_ReadInt(&g_menuState.unk1d888[d][j].unk0c, text, pos);
+            FeCsv_ReadInt(&g_menuState.unk1d888[d][j].unk10, text, pos);
+            FeCsv_ReadInt(&g_menuState.unk1d888[d][j].unk14, text, pos);
+            FeCsv_SkipLine(text, pos);
+        }
+    }
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x434f60
+int FUN_434f60(char *text, int *pos)
+{
+    char key[64];
+    int i;
+
+    FeCsv_SkipLine(text, pos);
+    for (i = 1; i < 26; i++)
+    {
+        // STRING: STUNTGP_D3D 0x478cd0
+        sprintf(key, "%d", i);
+        FUN_43c600(key, text, pos);
+        FeCsv_ReadInt(&g_menuState.unk1d630[i - 1][0], text, pos);
+        FeCsv_ReadInt(&g_menuState.unk1d630[i - 1][1], text, pos);
+        FeCsv_ReadInt(&g_menuState.unk1d630[i - 1][2], text, pos);
+        FeCsv_ReadInt(&g_menuState.unk1d630[i - 1][3], text, pos);
+        FeCsv_ReadInt(&g_menuState.unk1d630[i - 1][4], text, pos);
+        FeCsv_ReadInt(&g_menuState.unk1d630[i - 1][5], text, pos);
+        FeCsv_SkipLine(text, pos);
+    }
+    return 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x4356f0
 int FUN_4356f0(char *text, int *pos)
 {

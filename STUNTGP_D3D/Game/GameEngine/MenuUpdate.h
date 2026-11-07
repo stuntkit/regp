@@ -346,8 +346,13 @@ struct MenuState
     MenuRace races[8];    // 0x1d0a8, read by FUN_435730
     int numberOfRaces;    // 0x1d548
     int car18UnlockScore; // 0x1d54c
-    int screenMusic[64];  // 0x1d550, music track per front-end screen
-    BYTE unk1d650[0x1dae4 - 0x1d650];
+    int screenMusic[50];  // 0x1d550, music track per front-end screen
+    BYTE unk1d618[0x1d630 - 0x1d618];
+    int unk1d630[25][6];          // 0x1d630, read by FUN_434f60
+    MenuCarEntry unk1d888[3][4];  // 0x1d888, Easy, Medium, Hard; read by FUN_434e90
+    BYTE unk1d9a8[0x1da5c - 0x1d9a8];
+    int unk1da5c[6][2];           // 0x1da5c, read by FUN_434e10
+    BYTE unk1da8c[0x1dae4 - 0x1da8c];
     int unk1dae4; // 0x1dae4
 };
 
