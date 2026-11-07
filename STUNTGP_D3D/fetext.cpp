@@ -1677,11 +1677,44 @@ struct MenuList
     int unkac;       // 0xac
     int unkb0;       // 0xb0
     int unkb4;       // 0xb4
-    int unkb8;       // 0xb8
-    int unkbc;       // 0xbc
+    float unkb8;     // 0xb8, MenuDef::x
+    float unkbc;     // 0xbc, MenuDef::y
     float unkc0;     // 0xc0
     int unkc4;       // 0xc4
 };
+
+int FUN_43c900(MenuDef *def);
+void FUN_43c930(MenuList *list, int index);
+
+// FUNCTION: STUNTGP_D3D 0x43c860
+int FUN_43c860(MenuList *list, MenuDef *def)
+{
+    int i;
+    list->unkb8 = def->x;
+    list->def = def;
+    list->unkbc = def->y;
+    list->unk1c = 1.0f;
+    list->unk20 = 1.0f;
+    list->selected = 0;
+    list->unka8 = -1;
+    list->unkac = 0;
+    list->unkb0 = 0;
+    list->unkb4 = 0;
+    for (i = 0; i < 32; i++)
+    {
+        if (!def->items[i].text)
+        {
+            break;
+        }
+    }
+    list->count = i;
+    for (i = 0; i < list->count; i++)
+    {
+        list->unk24[i] = 1.0f;
+    }
+    FUN_43c930(list, FUN_43c900(list->def));
+    return 1;
+}
 
 // FUNCTION: STUNTGP_D3D 0x43c900
 int FUN_43c900(MenuDef *def)
