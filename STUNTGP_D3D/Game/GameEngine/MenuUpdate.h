@@ -266,7 +266,8 @@ struct MenuState
     ScoreEntry unk1dac[10];     // 0x1dac
     ScoreEntry unk1dfc[100];    // 0x1dfc
     BYTE saved[0x2114]; // 0x211c, copy of 0x0008..0x211c
-    BYTE unk4230[0x8];
+    int unk4230; // 0x4230
+    BYTE unk4234[0x4];
     int unk4238; // 0x4238
     int unk423c; // 0x423c, entries used in unk46ac
     int unk4240; // 0x4240
