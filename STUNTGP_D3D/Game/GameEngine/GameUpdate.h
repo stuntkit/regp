@@ -3,12 +3,22 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+struct GameSlotData
+{
+    BYTE unk0000[0x23c4]; // 0x0000
+    int unk23c4;          // 0x23c4
+    BYTE unk23c8[0x118];  // 0x23c8
+    int unk24e0;          // 0x24e0
+    BYTE unk24e4[0x5164]; // 0x24e4
+    int unk7648;          // 0x7648
+};
+
 // One of the four per-player blocks at 0x498248 (0x74c bytes each).
 struct GameSlot
 {
     int active;           // 0x000
     BYTE unk004[0xa8];    // 0x004
-    BYTE *unk0ac;         // 0x0ac
+    GameSlotData *data;   // 0x0ac
     BYTE unk0b0[0x28];    // 0x0b0
     int unk0d8;           // 0x0d8
     int unk0dc;           // 0x0dc
@@ -30,6 +40,52 @@ struct GameSlot
     float fadeScale;      // 0x20c
     BYTE unk210[0x53c];   // 0x210
 };
+
+// Device-specific input snapshot, copied verbatim from InputDevice to Controller.
+struct InputState
+{
+    int unk00;          // 0x00
+    int unk04;          // 0x04
+    int range;          // 0x08
+    int x;              // 0x0c
+    int y;              // 0x10
+    BYTE unk14[0x28];   // 0x14
+    BYTE buttons[0x40]; // 0x3c
+};
+
+// 10 entries at 0x576618
+struct InputDevice
+{
+    int present;      // 0x00
+    int type;         // 0x04
+    int unk08;        // 0x08
+    InputState state; // 0x0c
+};
+
+// 4 entries at 0x62d580
+struct Controller
+{
+    int active;         // 0x000
+    int prevActive;     // 0x004
+    int unk008;         // 0x008
+    int type;           // 0x00c
+    int mode;           // 0x010
+    int keyMap;         // 0x014
+    int unk018;         // 0x018
+    int unk01c;         // 0x01c
+    int unk020;         // 0x020
+    int unk024;         // 0x024
+    int unk028;         // 0x028
+    InputState state;   // 0x02c
+    BYTE unk0a8[0x100]; // 0x0a8
+    BYTE keys[7];       // 0x1a8
+    BYTE prevKeys[7];   // 0x1af
+    BYTE unk1b6[0x26];  // 0x1b6
+};
+
+extern InputDevice g_576618[10];
+extern Controller g_62d580[4];
+extern Controller *g_61b744;
 
 extern GameSlot *g_4722d0;
 extern GameSlot g_498248[4];
@@ -53,6 +109,11 @@ extern DWORD g_612954;
 extern int g_612958;
 extern int g_612970;
 extern int g_612bf4;
+extern int g_612950;
+extern int g_61295c;
+extern int g_612964;
+extern int g_612968;
+extern int g_61296c;
 
 // fpu
 void FUN_4294f0();
@@ -62,6 +123,16 @@ void FUN_429510();
 DWORD FUN_434820();
 
 // input
+void FUN_4243f0();
+void FUN_4244c0();
+int FUN_424520(int index);
+void FUN_45ec00();
+void FUN_45ec20();
+void FUN_45ee60();
+void FUN_45ef00();
+void FUN_45ef30(Controller *c, BYTE *map);
+void FUN_45f020(Controller *c, BYTE *map);
+void FUN_45f110();
 void FUN_45f210();
 void FUN_40d860();
 void FUN_40dad0();
@@ -84,6 +155,17 @@ void FUN_446110();
 // sound
 void FUN_462280();
 void FUN_460af0(int a);
+
+// controller connect/disconnect
+void FUN_4422c0();
+void FUN_442350();
+void FUN_447c30(int a);
+void FUN_41bdd0();
+void FUN_460dd0();
+void FUN_45fa00();
+void FUN_447bd0(int a);
+void FUN_460cb0(int a);
+void FUN_45fa30();
 
 // mode switch
 void FUN_431810();

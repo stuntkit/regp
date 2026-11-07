@@ -62,6 +62,7 @@ void FUN_441f70();
 void FUN_4420e0();
 int FUN_4423d0();
 void FUN_442490();
+void FUN_442ad0(int type, int duration, int delay, int end, int from, int to, float scale);
 void FUN_442a40(int type, int duration, int delay, int end, int from, int to, float scale);
 void FUN_442b60();
 void FUN_442be0();
@@ -188,6 +189,48 @@ void FUN_4420e0()
     FUN_460af0(0);
 }
 
+// FUNCTION: STUNTGP_D3D 0x4422c0
+void FUN_4422c0()
+{
+    if (g_60f2c0 != 1)
+    {
+        g_61294c = 1;
+        g_612954 = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            g_4722d0 = &g_498248[i];
+            if (g_498248[i].active == 1 && g_498248[i].data->unk24e0 != 1)
+            {
+                FUN_442ad0(2, 60, 0, 0, 0, 60, 0.96f);
+            }
+        }
+        FUN_447c30(0);
+        FUN_41bdd0();
+        FUN_460dd0();
+        FUN_45fa00();
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x442350
+void FUN_442350()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        g_4722d0 = &g_498248[i];
+        if (g_498248[i].active == 1 && g_498248[i].data->unk24e0 != 1)
+        {
+            FUN_442ad0(2, 60, 0, 60, 60, 0, 0.96f);
+        }
+    }
+    FUN_447bd0(0);
+    FUN_460cb0(0);
+    FUN_45fa30();
+    g_61294c = 0;
+    g_61295c = 0;
+    g_612958 = 0;
+    g_61b744 = NULL;
+}
+
 // FUNCTION: STUNTGP_D3D 0x4423d0
 int FUN_4423d0()
 {
@@ -260,6 +303,29 @@ void FUN_442a40(int type, int duration, int delay, int end, int from, int to, fl
             }
             slot->fadeScale = scale;
         }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x442ad0
+void FUN_442ad0(int type, int duration, int delay, int end, int from, int to, float scale)
+{
+    GameSlot *slot = g_4722d0;
+    slot->fadeActive = 1;
+    slot->fadeType = type;
+    slot->fadeValue = from;
+    slot->fadeFrom = from;
+    slot->fadeTo = to;
+    slot->fadeTime = 0;
+    slot->fadeDuration = duration;
+    slot->fadeDelay = delay;
+    slot->fadeEnd = end;
+    if (scale < 1.0f)
+    {
+        slot->fadeScale = scale - 0.05f;
+    }
+    else
+    {
+        slot->fadeScale = scale;
     }
 }
 

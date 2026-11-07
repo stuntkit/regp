@@ -26,16 +26,6 @@ int g_61294c;
 // GLOBAL: STUNTGP_D3D 0x612954
 DWORD g_612954;
 
-// GLOBAL: STUNTGP_D3D 0x612958
-int g_612958;
-
-// GLOBAL: STUNTGP_D3D 0x612970
-int g_612970;
-
-// Previous frame's keyboard state, copied from g_62d480.
-// GLOBAL: STUNTGP_D3D 0x62dcf0
-BYTE g_62dcf0[256];
-
 // --- per-tick game logic ---
 
 // STUB: STUNTGP_D3D 0x401770
@@ -57,11 +47,6 @@ void FUN_4023f0()
 
 // STUB: STUNTGP_D3D 0x405210
 void FUN_405210()
-{
-}
-
-// STUB: STUNTGP_D3D 0x40d860
-void FUN_40d860()
 {
 }
 
@@ -150,51 +135,6 @@ void FUN_45e1d0()
 {
 }
 
-// --- input ---
-
-// STUB: STUNTGP_D3D 0x4243f0
-void FUN_4243f0()
-{
-}
-
-// STUB: STUNTGP_D3D 0x4244c0
-void FUN_4244c0()
-{
-}
-
-// FUNCTION: STUNTGP_D3D 0x45ec20
-void FUN_45ec20()
-{
-}
-
-// STUB: STUNTGP_D3D 0x45ee60
-void FUN_45ee60()
-{
-}
-
-// STUB: STUNTGP_D3D 0x45ef00
-void FUN_45ef00()
-{
-}
-
-// STUB: STUNTGP_D3D 0x45f110
-void FUN_45f110()
-{
-}
-
-// FUNCTION: STUNTGP_D3D 0x45f210
-void FUN_45f210()
-{
-    g_612958 = 0;
-    memcpy(g_62dcf0, g_62d480, sizeof(g_62dcf0));
-    FUN_4243f0();
-    FUN_4244c0();
-    FUN_45ef00();
-    FUN_45f110();
-    FUN_45ec20();
-    FUN_45ee60();
-}
-
 // STUB: STUNTGP_D3D 0x45f8f0
 void FUN_45f8f0(int a, int b)
 {
@@ -209,5 +149,40 @@ void FUN_460af0(int a)
 
 // STUB: STUNTGP_D3D 0x462280
 void FUN_462280()
+{
+}
+
+// STUB: STUNTGP_D3D 0x41bdd0
+void FUN_41bdd0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x447bd0
+void FUN_447bd0(int a)
+{
+}
+
+// STUB: STUNTGP_D3D 0x447c30
+void FUN_447c30(int a)
+{
+}
+
+// STUB: STUNTGP_D3D 0x45fa00
+void FUN_45fa00()
+{
+}
+
+// STUB: STUNTGP_D3D 0x45fa30
+void FUN_45fa30()
+{
+}
+
+// STUB: STUNTGP_D3D 0x460cb0
+void FUN_460cb0(int a)
+{
+}
+
+// STUB: STUNTGP_D3D 0x460dd0
+void FUN_460dd0()
 {
 }
