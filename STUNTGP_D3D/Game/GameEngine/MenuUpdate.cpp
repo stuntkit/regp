@@ -740,6 +740,25 @@ int FUN_43b3f0(BitReader *reader, int count)
     return value;
 }
 
+// FUNCTION: STUNTGP_D3D 0x43b5f0
+int FUN_43b5f0(int value, BitWriter *writer)
+{
+    if (value == 0)
+    {
+        FUN_43b300(writer, 0, 1);
+        return 0;
+    }
+    if (value < 0)
+    {
+        FUN_43b300(writer, 1, 1);
+        FUN_43b300(writer, 0, 1);
+        return -1;
+    }
+    FUN_43b300(writer, 1, 1);
+    FUN_43b300(writer, 1, 1);
+    return 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43bb90
 int FUN_43bb90(BitReader *reader)
 {

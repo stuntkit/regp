@@ -123,6 +123,14 @@ struct DisplayModeList
     DDSURFACEDESC2 modes[64];   // 0x364
 };
 
+// Texture formats collected by FUN_42f780.
+struct TextureFormatList
+{
+    BYTE unk000[0x170];
+    DWORD count;               // 0x170
+    DDPIXELFORMAT formats[16]; // 0x174
+};
+
 // Z-buffer formats collected by FUN_42fe40.
 struct ZBufferFormatList
 {
@@ -920,6 +928,32 @@ int FUN_42f6d0(DDPIXELFORMAT *format)
     }
     g_5d91c4 = 1;
     return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x42f780
+HRESULT WINAPI FUN_42f780(LPDDPIXELFORMAT format, LPVOID context)
+{
+    TextureFormatList *list = (TextureFormatList *)context;
+    DWORD count = list->count;
+    DDPIXELFORMAT *slot = &list->formats[count];
+    if (count >= 16)
+    {
+        return DDENUMRET_CANCEL;
+    }
+    if (g_58332c == 1)
+    {
+        if (FUN_42f6d0(format) == 1)
+        {
+            g_5d91c0 = slot;
+        }
+    }
+    else if (format->dwFlags & DDPF_PALETTEINDEXED8)
+    {
+        g_5d91c0 = slot;
+    }
+    *slot = *format;
+    list->count = count + 1;
+    return DDENUMRET_OK;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42f7f0
