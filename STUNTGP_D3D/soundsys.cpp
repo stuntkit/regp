@@ -4,6 +4,8 @@
 #include <string.h>
 
 #include "globals.h"
+#include "mem.h"
+#include "Game/GameEngine/io_wad.h"
 
 #include <mmsystem.h>
 #include <dsound.h>
@@ -18,6 +20,9 @@ extern char g_SoundDirectory[128];
 
 // GLOBAL: STUNTGP_D3D 0x46fe80
 // IID_IDirectSound3DListener
+
+// GLOBAL: STUNTGP_D3D 0x46fe90
+// IID_IDirectSound3DBuffer
 
 struct SoundDef
 {
@@ -34,7 +39,13 @@ struct SoundTable
 struct SoundChannel
 {
     LPDIRECTSOUNDBUFFER buffer;
-    BYTE unk04[0x20 - 4];
+    LPDIRECTSOUND3DBUFFER buffer3d;
+    int type;
+    int unk0c;
+    DWORD size;
+    DWORD rate;
+    DWORD bits;
+    DWORD channels;
 };
 
 struct SoundDriver
@@ -492,10 +503,120 @@ int FUN_461cf0()
     return g_62e114->SetFormat(&format) == DS_OK;
 }
 
-// STUB: STUNTGP_D3D 0x461e00
+// FUNCTION: STUNTGP_D3D 0x461b70
+int FUN_461b70(LPDIRECTSOUND sound, SoundChannel *channel, DWORD flags)
+{
+    PCMWAVEFORMAT format;
+    DSBUFFERDESC desc;
+    LPDIRECTSOUNDBUFFER buffer;
+    LPDIRECTSOUND3DBUFFER buffer3d;
+
+    memset(&format, 0, sizeof(format));
+    format.wBitsPerSample = channel->bits;
+    format.wf.nSamplesPerSec = channel->rate;
+    format.wf.nChannels = channel->channels;
+    format.wf.nBlockAlign = channel->channels * channel->bits / 8;
+    format.wf.nAvgBytesPerSec = format.wf.nBlockAlign * format.wf.nSamplesPerSec;
+    format.wf.wFormatTag = WAVE_FORMAT_PCM;
+    memset(&desc, 0, sizeof(desc));
+    desc.dwSize = sizeof(DSBUFFERDESC);
+    desc.dwBufferBytes = channel->size;
+    desc.lpwfxFormat = (LPWAVEFORMATEX)&format;
+    desc.dwFlags = flags | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME;
+    if (sound->CreateSoundBuffer(&desc, &buffer, NULL) != DS_OK)
+    {
+        return 0;
+    }
+    if (buffer->QueryInterface(IID_IDirectSound3DBuffer, (LPVOID *)&buffer3d) != DS_OK)
+    {
+        return 0;
+    }
+    channel->buffer = buffer;
+    channel->buffer3d = buffer3d;
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x461c40
+int FUN_461c40(LPDIRECTSOUND sound, SoundChannel *channel, DWORD flags)
+{
+    PCMWAVEFORMAT format;
+    DSBUFFERDESC desc;
+    LPDIRECTSOUNDBUFFER buffer;
+
+    memset(&format, 0, sizeof(format));
+    format.wBitsPerSample = channel->bits;
+    format.wf.nSamplesPerSec = channel->rate;
+    format.wf.nChannels = channel->channels;
+    format.wf.nBlockAlign = channel->channels * channel->bits / 8;
+    format.wf.nAvgBytesPerSec = format.wf.nBlockAlign * format.wf.nSamplesPerSec;
+    format.wf.wFormatTag = WAVE_FORMAT_PCM;
+    memset(&desc, 0, sizeof(desc));
+    desc.dwSize = sizeof(DSBUFFERDESC);
+    desc.dwFlags = DSBCAPS_STATIC | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME;
+    desc.dwBufferBytes = channel->size;
+    desc.lpwfxFormat = (LPWAVEFORMATEX)&format;
+    if (sound->CreateSoundBuffer(&desc, &buffer, NULL) != DS_OK)
+    {
+        return 0;
+    }
+    channel->buffer = buffer;
+    return 1;
+}
+
+// Loads a RIFF WAV file (canonical 44-byte header) into a new static buffer.
+// FUNCTION: STUNTGP_D3D 0x461e00
 int FUN_461e00(SoundChannel *channel, char *path, DWORD flags)
 {
-    return 0;
+    LPVOID ptr1;
+    DWORD bytes1;
+    LPVOID ptr2;
+    DWORD bytes2;
+
+    int size = size_of_file(path);
+    if (size == 0)
+    {
+        return 0;
+    }
+    BYTE *wav = (BYTE *)Mem_Alloc(size + 0x20, 0);
+    bload(path, (char *)wav, size);
+    if (flags & DSBCAPS_CTRL3D)
+    {
+        channel->type = 2;
+    }
+    else
+    {
+        channel->type = 1;
+    }
+    channel->rate = *(DWORD *)(wav + 0x18);
+    channel->size = *(DWORD *)(wav + 0x28);
+    channel->bits = *(short *)(wav + 0x22);
+    channel->channels = channel->bits / (*(short *)(wav + 0x20) * 8);
+    channel->buffer = NULL;
+    channel->unk0c = 1;
+    if (g_4897b0 == 1 && (flags & DSBCAPS_CTRL3D))
+    {
+        if (!FUN_461b70(g_62e0b0, channel, flags))
+        {
+            return 0;
+        }
+    }
+    else if (!FUN_461c40(g_62e0b0, channel, DSBCAPS_STATIC))
+    {
+        return 0;
+    }
+    LPDIRECTSOUNDBUFFER buffer = channel->buffer;
+    DWORD length = channel->size;
+    if (buffer->Lock(0, length, &ptr1, &bytes1, &ptr2, &bytes2, DSBLOCK_ENTIREBUFFER) != DS_OK)
+    {
+        return 0;
+    }
+    memcpy(ptr1, wav + 0x2c, length);
+    if (buffer->Unlock(ptr1, length, NULL, 0) != DS_OK)
+    {
+        return 0;
+    }
+    Mem_Free(wav);
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x461f50
