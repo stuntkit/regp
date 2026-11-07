@@ -45,7 +45,7 @@ extern BYTE g_62dcf0[256];
 extern int g_60d618;
 extern int g_60d620;
 extern int g_60df9c;
-extern int g_60f2ac;
+extern int g_DisableFramerateCorrection;
 extern int g_60f2c0;
 extern DWORD g_60f2c4;
 extern int g_61294c;

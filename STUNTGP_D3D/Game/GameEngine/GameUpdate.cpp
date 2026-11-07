@@ -14,9 +14,6 @@ int g_60d620;
 // GLOBAL: STUNTGP_D3D 0x60df9c
 int g_60df9c;
 
-// GLOBAL: STUNTGP_D3D 0x60f2ac
-int g_60f2ac;
-
 // GLOBAL: STUNTGP_D3D 0x60f2c0
 int g_60f2c0;
 
@@ -98,7 +95,7 @@ void FUN_427140()
 // FUNCTION: STUNTGP_D3D 0x4294f0
 void FUN_4294f0()
 {
-    _controlfp(_PC_24, _MCW_PC);
+    _controlfp(_PC_53, _MCW_PC);
     _controlfp(_RC_NEAR, _MCW_RC);
 }
 

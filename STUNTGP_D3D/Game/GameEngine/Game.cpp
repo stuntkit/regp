@@ -220,7 +220,7 @@ int FUN_4423d0()
 // FUNCTION: STUNTGP_D3D 0x442490
 void FUN_442490()
 {
-    if (g_60f2ac != 1 && g_60df9c != 1)
+    if (g_DisableFramerateCorrection != 1 && g_60df9c != 1)
     {
         DWORD now = FUN_434820();
         g_612d04 = now;
@@ -266,26 +266,21 @@ void FUN_442a40(int type, int duration, int delay, int end, int from, int to, fl
 // FUNCTION: STUNTGP_D3D 0x442b60
 void FUN_442b60()
 {
-    GameSlot *slot = g_4722d0;
-    if (slot->fadeActive)
+    if (g_4722d0->fadeActive)
     {
-        int t = slot->fadeTime;
-        if (t > slot->fadeDuration)
+        int t = g_4722d0->fadeTime > g_4722d0->fadeDuration ? g_4722d0->fadeDuration : g_4722d0->fadeTime;
+        g_4722d0->fadeValue = (g_4722d0->fadeTo - g_4722d0->fadeFrom) * t / g_4722d0->fadeDuration + g_4722d0->fadeFrom;
+        if (g_4722d0->fadeDelay)
         {
-            t = slot->fadeDuration;
-        }
-        slot->fadeValue = (slot->fadeTo - slot->fadeFrom) * t / slot->fadeDuration + slot->fadeFrom;
-        if (slot->fadeDelay)
-        {
-            slot->fadeDelay--;
+            g_4722d0->fadeDelay--;
         }
         else
         {
-            slot->fadeTime++;
+            g_4722d0->fadeTime++;
         }
-        if (slot->fadeEnd > 0 && slot->fadeTime >= slot->fadeEnd)
+        if (g_4722d0->fadeEnd > 0 && g_4722d0->fadeTime >= g_4722d0->fadeEnd)
         {
-            slot->fadeActive = 0;
+            g_4722d0->fadeActive = 0;
         }
     }
 }
