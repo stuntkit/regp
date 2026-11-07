@@ -103,9 +103,17 @@ void FUN_4243f0()
                 }
                 break;
             case 2:
+                FUN_424520(i);
+                break;
             case 3:
+                FUN_424520(i);
+                break;
             case 4:
+                FUN_424520(i);
+                break;
             case 5:
+                FUN_424520(i);
+                break;
             case 6:
                 FUN_424520(i);
                 break;
@@ -119,16 +127,14 @@ void FUN_4244c0()
 {
     for (int i = 0; i < 4; i++)
     {
-        Controller *c = &g_62d580[i];
-        InputDevice *d = &g_576618[i];
-        c->prevActive = c->active;
-        c->active = d->present;
-        c->type = d->type;
-        if (c->active == 1 && d->type >= 2 && d->type <= 6)
+        g_62d580[i].prevActive = g_62d580[i].active;
+        g_62d580[i].active = g_576618[i].present;
+        g_62d580[i].type = g_576618[i].type;
+        if (g_576618[i].present == 1 && g_576618[i].type >= 2 && g_576618[i].type <= 6)
         {
-            c->state = d->state;
-            c->unk028 = c->unk024;
-            c->unk024 = d->unk08;
+            g_62d580[i].state = g_576618[i].state;
+            g_62d580[i].unk028 = g_62d580[i].unk024;
+            g_62d580[i].unk024 = g_576618[i].unk08;
         }
     }
 }
@@ -191,9 +197,9 @@ void FUN_45ee60()
 // FUNCTION: STUNTGP_D3D 0x45ef00
 void FUN_45ef00()
 {
-    for (int i = 0; i < 4; i++)
+    Controller *c = g_62d580;
+    for (int i = 0; i < 4; i++, c++)
     {
-        Controller *c = &g_62d580[i];
         if (c->active == 1 && c->unk024 != c->unk028)
         {
             c->unk020 = c->unk024;
