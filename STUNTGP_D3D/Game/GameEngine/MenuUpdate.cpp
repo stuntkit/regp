@@ -195,6 +195,25 @@ MenuItem g_486800[5] = {
 // GLOBAL: STUNTGP_D3D 0x4868a0
 MenuDef g_4868a0 = {0xb, 1.0f, 0, 510.0f, 240.0f, 1.0f, 2, 1.25f, 4, 0xaa, g_486800, 0};
 
+// GLOBAL: STUNTGP_D3D 0x487938
+MenuItem g_487938[2] = {
+    {0, 0xffc8c8ff, 0xffffffff, 0x17, 0, 1, 0, 0},
+    {0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x487978
+MenuDef g_487978 = {0xb, 0.0f, 0, 320.0f, 415.0f, 1.0f, 2, 1.25f, 1, 0x64, g_487938, 0};
+
+// GLOBAL: STUNTGP_D3D 0x488108
+MenuItem g_488108[3] = {
+    {0, 0xffc8c8ff, 0xffffffff, 0xbd, 0xbe, 1, 0x15b, 0x168},
+    {1, 0xffc8c8ff, 0xffffffff, 0xbf, 0xc0, 1, 0x15d, 0x16a},
+    {0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x488168
+MenuDef g_488168 = {0xb, 1.0f, 0, 400.0f, 240.0f, 1.0f, 2, 1.25f, 4, 0xc8, g_488108, 0};
+
 // GLOBAL: STUNTGP_D3D 0x488588
 MenuItem g_488588[2] = {
     {1, 0xffc8c8ff, 0xffffffff, 0x88, 0x89, 1, 0, 0},
@@ -2700,6 +2719,32 @@ void FUN_452530(MenuHolder *object)
     object->child = NULL;
 }
 
+// FUNCTION: STUNTGP_D3D 0x452940
+int FUN_452940(MenuHolder *object)
+{
+    MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
+    memset(list, 0, sizeof(MenuList));
+    // The two handlers are copied as one block.
+    *(PoolClass *)&list->base.destroy = g_menuListClass;
+    list->base.type = 0x29;
+    // STRING: STUNTGP_D3D 0x4879b0
+    list->base.name = "MenuText";
+    list->base.unk08 = 0;
+    if (!FUN_43c860(list, &g_487978))
+    {
+        Pool_Free(list);
+        object->child = NULL;
+    }
+    else
+    {
+        object->child = &list->base;
+    }
+    PoolObject *child = object->child;
+    child->message(child, 0x18, 0);
+    child->message(child, 0x16, 0);
+    return 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x4529c0
 void FUN_4529c0(MenuHolder *object)
 {
@@ -2792,6 +2837,32 @@ void FUN_4536f0(MenuHolder *object)
     child->destroy(child);
     Pool_Free(child);
     object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x454220
+int FUN_454220(MenuHolder *object)
+{
+    MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
+    memset(list, 0, sizeof(MenuList));
+    // The two handlers are copied as one block.
+    *(PoolClass *)&list->base.destroy = g_menuListClass;
+    list->base.type = 0x29;
+    // STRING: STUNTGP_D3D 0x4881a0
+    list->base.name = "MenuText";
+    list->base.unk08 = 0;
+    if (!FUN_43c860(list, &g_488168))
+    {
+        Pool_Free(list);
+        object->child = NULL;
+    }
+    else
+    {
+        object->child = &list->base;
+    }
+    PoolObject *child = object->child;
+    child->message(child, 0x18, 0);
+    child->message(child, 0x16, 0);
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4542a0
