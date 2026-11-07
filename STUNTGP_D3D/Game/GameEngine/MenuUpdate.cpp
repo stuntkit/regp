@@ -89,6 +89,8 @@ int FUN_43efc0();
 void FUN_441210();
 int FUN_452d70(int id);
 void FUN_462270(int a);
+float FUN_43d9e0(float value);
+int FUN_4407a0(int id);
 
 // FUNCTION: STUNTGP_D3D 0x424bd0
 void FUN_424bd0(float x, float y)
@@ -335,10 +337,30 @@ int FUN_43d790(int value, int min, int max)
     return value;
 }
 
-// STUB: STUNTGP_D3D 0x43d810
+// FUNCTION: STUNTGP_D3D 0x43d810
 float FUN_43d810(float current, float target, float rate)
 {
+    float dist = FUN_43d9e0(target - current);
+    if (dist != 0.0f)
+    {
+        float step = dist * 0.1f + rate;
+        if (dist > step)
+        {
+            if (target < current)
+            {
+                step = -step;
+            }
+            return step + current;
+        }
+        return target;
+    }
     return current;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d9e0
+float FUN_43d9e0(float value)
+{
+    return value < 0.0f ? -value : value;
 }
 
 // STUB: STUNTGP_D3D 0x43d280
@@ -373,9 +395,21 @@ void FUN_43de40()
     g_5ff4ac = 0;
 }
 
-// STUB: STUNTGP_D3D 0x43dee0
+// FUNCTION: STUNTGP_D3D 0x43dee0
 void FUN_43dee0()
 {
+    g_5ff470[0] = 0.0f;
+    g_5ff470[1] = 0.0f;
+    g_5ff470[2] = 0.0f;
+    g_5ff470[3] = 0.0f;
+    g_5ff470[4] = 0.0f;
+    g_5ff470[5] = 0.0f;
+    g_5ff488[0] = 0.0f;
+    g_5ff488[1] = 0.0f;
+    g_5ff488[2] = 0.0f;
+    g_5ff488[3] = 0.0f;
+    g_5ff488[4] = 0.0f;
+    g_5ff488[5] = 0.0f;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43efc0
@@ -494,9 +528,47 @@ void FUN_43f310(PoolObject *screen)
 {
 }
 
-// STUB: STUNTGP_D3D 0x43f610
+// Idle timeouts: drop back to the title screen, and fade in the attract overlay.
+// FUNCTION: STUNTGP_D3D 0x43f610
 void FUN_43f610()
 {
+    if (g_5ff3f0)
+    {
+        switch (g_5ff3f0->unk00[1])
+        {
+        case 2:
+        case 3:
+        case 4:
+        case 6:
+        case 7:
+        case 11:
+        case 13:
+        case 14:
+        case 15:
+        case 16:
+        case 17:
+        case 18:
+        case 19:
+        case 20:
+        case 27:
+        case 29:
+            if (g_5ff460 > 3600)
+            {
+                FUN_440880(2);
+                FUN_43ef10(1, 1);
+                FUN_43dd70();
+            }
+        }
+    }
+    if (g_5ff460 > 18000)
+    {
+        g_5ff464++;
+    }
+    else
+    {
+        g_5ff464 = 0;
+    }
+    g_5ff464 = FUN_43d790(g_5ff464, 0, 70);
 }
 
 // STUB: STUNTGP_D3D 0x440c40
@@ -511,9 +583,64 @@ void FUN_4408e0()
     g_5ff8c0 = 1;
 }
 
-// STUB: STUNTGP_D3D 0x440770
+// FUNCTION: STUNTGP_D3D 0x440770
 void FUN_440770(int a, int b)
 {
+    if (g_5ff8c0 > 0)
+    {
+        int sound = FUN_4407a0(a);
+        if (sound)
+        {
+            FUN_461150(sound, 0, b, 0xff, 0, 0, 0);
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x4407a0
+int FUN_4407a0(int id)
+{
+    switch (id)
+    {
+    case 1:
+        return 0x33;
+    case 2:
+        return 0x34;
+    case 3:
+        return 0x35;
+    case 4:
+        return 0x36;
+    case 5:
+        return 0x37;
+    case 6:
+        return 0x38;
+    case 7:
+        return 0x39;
+    case 8:
+        return 0x3a;
+    case 9:
+        return 0x3b;
+    case 10:
+        return 0x3c;
+    case 11:
+        return 0x3d;
+    case 12:
+        return 0x3e;
+    case 13:
+        return 0x3f;
+    case 16:
+        return 0x42;
+    case 17:
+        return 0x43;
+    case 18:
+        return 0x44;
+    case 19:
+        return 0x45;
+    case 20:
+        return 0x46;
+    case 21:
+        return 0x47;
+    }
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x440880
