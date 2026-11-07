@@ -1,5 +1,7 @@
 #include "game_state.h"
 
+#include "camera_path.h"
+
 #include "../../sintable.h"
 #include "../../vecmath.h"
 
