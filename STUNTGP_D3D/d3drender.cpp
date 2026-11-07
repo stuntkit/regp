@@ -912,6 +912,78 @@ void FUN_432a60()
     }
 }
 
+// Queued primitives per render pass.
+struct RenderBucket
+{
+    void *data; // 0x00
+    int count;  // 0x04
+    int unk08;  // 0x08
+    int unk0c;  // 0x0c
+};
+
+// GLOBAL: STUNTGP_D3D 0x6243cc
+int g_6243cc;
+
+// GLOBAL: STUNTGP_D3D 0x6243dc
+int g_6243dc;
+
+// GLOBAL: STUNTGP_D3D 0x6243e0
+RenderBucket g_6243e0[8];
+
+extern void *g_61c5f8;
+extern void *g_61c600;
+
+// STUB: STUNTGP_D3D 0x433290
+void FUN_433290(void *data, int count)
+{
+}
+
+// STUB: STUNTGP_D3D 0x4334c0
+void FUN_4334c0(void *data, int count)
+{
+}
+
+// STUB: STUNTGP_D3D 0x4336c0
+void FUN_4336c0(void *data, int count)
+{
+}
+
+// STUB: STUNTGP_D3D 0x4338e0
+void FUN_4338e0(void *data, int count)
+{
+}
+
+// STUB: STUNTGP_D3D 0x433c50
+void FUN_433c50(void *data, int count)
+{
+}
+
+// Draws the queued world primitives pass by pass.
+// FUNCTION: STUNTGP_D3D 0x433f40
+void FUN_433f40()
+{
+    FUN_432a90();
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 0xa0);
+    FUN_433290(g_6243e0[0].data, g_6243e0[0].count);
+    FUN_4334c0(g_6243e0[2].data, g_6243e0[2].count);
+    FUN_4334c0(g_6243e0[3].data, g_6243e0[3].count);
+    if (g_624984 == 1)
+    {
+        FUN_4336c0(g_6243e0[4].data, g_6243e0[4].count);
+        FUN_4336c0(g_6243e0[5].data, g_6243e0[5].count);
+    }
+    else
+    {
+        FUN_4334c0(g_6243e0[4].data, g_6243e0[4].count);
+        FUN_4334c0(g_6243e0[5].data, g_6243e0[5].count);
+    }
+    FUN_433c50(g_6243e0[6].data, g_6243e0[6].count);
+    FUN_433c50(g_6243e0[7].data, g_6243e0[7].count);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 1);
+    FUN_4338e0(g_61c600, g_6243cc);
+    FUN_4338e0(g_61c5f8, g_6243dc);
+}
+
 // FUNCTION: STUNTGP_D3D 0x432a90
 void FUN_432a90()
 {

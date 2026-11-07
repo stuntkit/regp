@@ -343,11 +343,6 @@ void FUN_42e870()
     g_61c508 = (g_61c508 + 1) & 0xffff;
 }
 
-// STUB: STUNTGP_D3D 0x433f40
-void FUN_433f40()
-{
-}
-
 // STUB: STUNTGP_D3D 0x44ae40
 void FUN_44ae40()
 {
