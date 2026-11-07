@@ -1742,8 +1742,8 @@ void FUN_45e180(Unk62a078 *p)
     }
 }
 
-// Sprite draw request, filled from the template g_486538.
-struct SpriteDesc
+// 3D billboard draw request, filled from the template g_486538.
+struct Billboard
 {
     DWORD unk00;      // 0x00
     short texture;    // 0x04
@@ -1761,20 +1761,20 @@ struct SpriteDesc
 };
 
 // GLOBAL: STUNTGP_D3D 0x486538
-SpriteDesc g_486538 = {0x20, 1, 0x80, {0xffffff, 0xffffff, 0xffffff, 0xffffff}, {0.0f, 0.0f, 0.0f, 0.0f},
+Billboard g_486538 = {0x20, 1, 0x80, {0xffffff, 0xffffff, 0xffffff, 0xffffff}, {0.0f, 0.0f, 0.0f, 0.0f},
                        {1.0f, 1.0f, 1.0f}, 0, {0.0f, 0.0f, -1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.0f}, 1, 0, 0, 2};
 
 // FUNCTION: STUNTGP_D3D 0x45e4b0
-void FUN_45e4b0(SpriteDesc *sprite, float angle)
+void FUN_45e4b0(Billboard *billboard, float angle)
 {
     int i = (int)(angle * (8192.0f / 360.0f));
-    sprite->dir.z = 0.0f;
-    sprite->dir.x = g_cosTable[i];
-    sprite->dir.y = g_sinTable[i];
+    billboard->dir.z = 0.0f;
+    billboard->dir.x = g_cosTable[i];
+    billboard->dir.y = g_sinTable[i];
 }
 
 // STUB: STUNTGP_D3D 0x434590
-void FUN_434590(SpriteDesc *sprite)
+void FUN_434590(Billboard *billboard)
 {
 }
 
@@ -1783,7 +1783,7 @@ void FUN_45e4f0()
 {
     if (g_62d478)
     {
-        SpriteDesc sprite = g_486538;
+        Billboard billboard = g_486538;
         Unk62a078 *p = g_62a078;
         for (int i = 0x40; i; i--, p++)
         {
@@ -1791,31 +1791,31 @@ void FUN_45e4f0()
             {
                 if (p->anim)
                 {
-                    sprite.texture = (short)(((TextureSlot *)p->anim[0] - g_6227d4) + p->frame / 4096);
+                    billboard.texture = (short)(((TextureSlot *)p->anim[0] - g_6227d4) + p->frame / 4096);
                 }
                 else
                 {
-                    sprite.texture = (short)p->texture;
+                    billboard.texture = (short)p->texture;
                 }
                 if (p->flags & 4)
                 {
-                    FUN_45e4b0(&sprite, p->angle);
+                    FUN_45e4b0(&billboard, p->angle);
                 }
                 else
                 {
-                    sprite.dir = g_486538.dir;
+                    billboard.dir = g_486538.dir;
                 }
-                sprite.alpha = (short)(int)p->alphaNow;
-                sprite.unk00 = p->unk98;
-                sprite.colors[0] = p->color;
-                sprite.colors[1] = p->color;
-                sprite.colors[2] = p->color;
-                sprite.colors[3] = p->color;
-                sprite.pos = p->pos;
-                sprite.size[0] = p->sizeNow;
-                sprite.size[1] = p->sizeNow;
-                sprite.size[2] = p->sizeNow;
-                FUN_434590(&sprite);
+                billboard.alpha = (short)(int)p->alphaNow;
+                billboard.unk00 = p->unk98;
+                billboard.colors[0] = p->color;
+                billboard.colors[1] = p->color;
+                billboard.colors[2] = p->color;
+                billboard.colors[3] = p->color;
+                billboard.pos = p->pos;
+                billboard.size[0] = p->sizeNow;
+                billboard.size[1] = p->sizeNow;
+                billboard.size[2] = p->sizeNow;
+                FUN_434590(&billboard);
             }
         }
     }
