@@ -292,6 +292,22 @@ struct Suspension
     float maxStiffnessOut; // 0x14
 };
 
+// One of the 32 effect slots in g_612da4.
+struct Unk612da4
+{
+    int life;           // 0x000
+    int unk04;          // 0x004
+    Vec4 pos;           // 0x008
+    Vec4 vel;           // 0x018
+    float unk28;        // 0x028
+    float unk2c;        // 0x02c
+    BYTE unk030[0x400]; // 0x030
+    int unk430;         // 0x430
+    int unk434;         // 0x434
+    float unk438;       // 0x438
+    int unk43c;         // 0x43c
+};
+
 // Stunt marker along the track path (CarAI_StuntKnotList).
 struct StuntKnot
 {

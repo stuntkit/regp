@@ -663,6 +663,18 @@ void FUN_419a60(Car *car, Replay *replay)
     replay->unk24 = g_60f02c[index].unk14;
 }
 
+int FUN_44aff0(char *name, void *data, int size);
+
+// FUNCTION: STUNTGP_D3D 0x419b30
+void FUN_419b30(char *name, Car *car, Replay *replay)
+{
+    char path[128];
+    FUN_419a60(car, replay);
+    // STRING: STUNTGP_D3D 0x4746ac
+    sprintf(path, "%s\\Replays\\%s.RPL", g_GameDirectory, name);
+    FUN_44aff0(path, replay, replay->size);
+}
+
 void FUN_40fb30();
 
 // FUNCTION: STUNTGP_D3D 0x419e30

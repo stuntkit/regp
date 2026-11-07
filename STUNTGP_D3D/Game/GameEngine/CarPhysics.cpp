@@ -877,6 +877,30 @@ void Script_GetFloat(char *section, char *key, float *out);
 void Script_GetInt(char *section, char *key, int *out);
 void Script_GetFloatArray(char *section, char *key, float *out, DWORD count);
 
+// FUNCTION: STUNTGP_D3D 0x40b5b0
+void FUN_40b5b0(char *text)
+{
+    char key[16];
+    // STRING: STUNTGP_D3D 0x473528
+    char *section = strstr(text, "-ENGINE[] =");
+    // STRING: STUNTGP_D3D 0x473534
+    Script_GetFloat(section, "RpmIdle", &g_4d5bb8->unk460);
+    // STRING: STUNTGP_D3D 0x47353c
+    Script_GetFloat(section, "RpmLimit", &g_4d5bb8->unk464);
+    // STRING: STUNTGP_D3D 0x473548
+    Script_GetFloat(section, "RpmMax", &g_4d5bb8->unk045c);
+    // STRING: STUNTGP_D3D 0x473550
+    Script_GetFloat(section, "Cm", &g_4d5bb8->unk468);
+    // STRING: STUNTGP_D3D 0x473554
+    Script_GetFloat(section, "Torque", &g_4d5bb8->unk46c);
+    for (int i = 0; i < 4; i++)
+    {
+        // STRING: STUNTGP_D3D 0x47355c
+        sprintf(key, "TorqueEnv[%d]", i);
+        Script_GetFloatArray(section, key, g_4d5bb8->unk470[i], 128);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x40b690
 void FUN_40b690(char *text)
 {
@@ -2765,24 +2789,9 @@ void FUN_4137b0()
     }
 }
 
-// One of the 32 entries of g_612da4.
-struct Unk612da4
-{
-    int life;            // 0x000
-    int unk04;           // 0x004
-    Vec4 pos;            // 0x008
-    Vec4 vel;            // 0x018
-    float unk28;         // 0x028
-    float unk2c;         // 0x02c
-    BYTE unk030[0x400];  // 0x030
-    int unk430;          // 0x430
-    int unk434;          // 0x434
-    float unk438;        // 0x438
-    int unk43c;          // 0x43c
-};
-
 extern int g_612d98;
 extern int g_612d9c;
+extern int g_612da0;
 extern int g_612da4[0x2200];
 
 // FUNCTION: STUNTGP_D3D 0x416590
@@ -2839,6 +2848,50 @@ void FUN_4166f0()
     }
 }
 
+// GLOBAL: STUNTGP_D3D 0x4d5b30
+float g_4d5b30[16];
+
+// FUNCTION: STUNTGP_D3D 0x413b60
+void FUN_413b60()
+{
+    Vec4 *m = g_4d5bb8->unk26b0->lods[0]->matrix;
+    Vec4 r0;
+    Vec4 r1;
+    r0.x = m[2].y * m[3].z - m[2].z * m[3].y;
+    r0.y = m[2].z * m[3].x - m[3].z * m[2].x;
+    r0.z = m[3].y * m[2].x - m[2].y * m[3].x;
+    r1.x = r0.y * m[2].z - r0.z * m[2].y;
+    r1.y = r0.z * m[2].x - r0.x * m[2].z;
+    r1.z = r0.x * m[2].y - r0.y * m[2].x;
+    Vec3_Normalize(&r0.x);
+    Vec3_Normalize(&r1.x);
+    Matrix_FromRows(&r0.x, &r1.x, &m[2].x, g_4d5b30);
+}
+
+void FUN_44efd0(float *out, float *a, float *b);
+
+// FUNCTION: STUNTGP_D3D 0x413c10
+void FUN_413c10()
+{
+    Vec4 *m = g_4d5bb8->unk26b0->lods[0]->matrix;
+    Vec4 r0;
+    Vec4 r1;
+    float flip[16];
+    float rot[16];
+    r0.x = m[2].y * m[3].z - m[2].z * m[3].y;
+    r0.y = m[2].z * m[3].x - m[3].z * m[2].x;
+    r0.z = m[3].y * m[2].x - m[2].y * m[3].x;
+    r1.x = r0.z * m[2].y - r0.y * m[2].z;
+    r1.y = r0.x * m[2].z - r0.z * m[2].x;
+    r1.z = r0.y * m[2].x - r0.x * m[2].y;
+    Vec3_Normalize(&r0.x);
+    Vec3_Normalize(&r1.x);
+    Matrix_FromRows(&r0.x, &r1.x, &m[2].x, rot);
+    Matrix_Identity(flip);
+    flip[0] *= -1.0f;
+    FUN_44efd0(g_4d5b30, flip, rot);
+}
+
 // FUNCTION: STUNTGP_D3D 0x413ce0
 void FUN_413ce0()
 {
@@ -2873,26 +2926,6 @@ void FUN_413ce0()
     car->unk3928 = 0;
     car->unk328c.unk13c = 0;
     car->unk33cc.unk13c = 0;
-}
-
-// GLOBAL: STUNTGP_D3D 0x4d5b30
-float g_4d5b30[16];
-
-// FUNCTION: STUNTGP_D3D 0x413b60
-void FUN_413b60()
-{
-    Vec4 *m = g_4d5bb8->unk26b0->lods[0]->matrix;
-    Vec4 r0;
-    Vec4 r1;
-    r0.x = m[2].y * m[3].z - m[2].z * m[3].y;
-    r0.y = m[2].z * m[3].x - m[3].z * m[2].x;
-    r0.z = m[3].y * m[2].x - m[2].y * m[3].x;
-    r1.x = r0.y * m[2].z - r0.z * m[2].y;
-    r1.y = r0.z * m[2].x - r0.x * m[2].z;
-    r1.z = r0.x * m[2].y - r0.y * m[2].x;
-    Vec3_Normalize(&r0.x);
-    Vec3_Normalize(&r1.x);
-    Matrix_FromRows(&r0.x, &r1.x, &m[2].x, g_4d5b30);
 }
 
 // FUNCTION: STUNTGP_D3D 0x413da0
@@ -3242,6 +3275,32 @@ void FUN_4157f0(Unk62a078 *p)
 // STUB: STUNTGP_D3D 0x415880
 void FUN_415880()
 {
+}
+
+// FUNCTION: STUNTGP_D3D 0x415d20
+void FUN_415d20(Vec4 *pos, Vec4 *vel, int unused)
+{
+    if (g_612da0 == 2)
+    {
+        g_612da0 = g_61297c < 80 ? 4 : 2;
+        if ((DWORD)g_612d9c >= 32)
+        {
+            g_612d9c = 0;
+        }
+        Unk612da4 *p = &((Unk612da4 *)g_612da4)[g_612d9c];
+        p->vel = *vel;
+        p->life = 60;
+        p->pos = *pos;
+        p->unk28 = 0.9f;
+        p->unk438 = 0;
+        p->unk43c = 0;
+        p->unk2c = 1.0f;
+        p->unk430 = 0;
+        p->unk434 = 0;
+        p->unk04 = 5;
+        g_612d9c++;
+        g_612d98++;
+    }
 }
 
 // Scrolls the second float of every unk2c entry of one mesh, wrapping at 1.
