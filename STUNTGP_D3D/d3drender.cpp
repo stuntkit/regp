@@ -196,11 +196,12 @@ void FUN_432f60()
         DWORD alpha = poly->alpha << 24;
         OverlayVertex *src = poly->verts;
         D3DTLVERTEX2 *dst = v;
-        for (DWORD j = 0; j < poly->numVerts; j++)
+        for (DWORD j = poly->numVerts; j > 0; j--)
         {
             dst->sx = src->x;
             dst->sy = src->y;
-            dst->sz = dst->rhw = src->z;
+            dst->sz = src->z;
+            dst->rhw = src->z;
             dst->tu1 = src->u;
             dst->tv1 = src->v;
             dst->color = src->color | alpha;
@@ -208,10 +209,11 @@ void FUN_432f60()
             src++;
             dst++;
         }
-        if (mode != (poly->flags & 0x78))
+        DWORD newMode = poly->flags & 0x78;
+        if (mode != newMode)
         {
-            mode = poly->flags & 0x78;
-            FUN_432190(mode);
+            mode = newMode;
+            FUN_432190(newMode);
         }
         int tex = poly->texture;
         if (g_61c5e4 != tex)
