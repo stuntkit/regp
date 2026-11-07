@@ -367,6 +367,197 @@ int FUN_4316f0(int slot, char *path)
     return 1;
 }
 
+// GLOBAL: STUNTGP_D3D 0x576bdc
+int g_576bdc;
+
+// Screen-space clip rectangle, and the same grown by 100 pixels.
+// GLOBAL: STUNTGP_D3D 0x576c14
+float g_576c14;
+
+// GLOBAL: STUNTGP_D3D 0x576c18
+float g_576c18;
+
+// GLOBAL: STUNTGP_D3D 0x576c1c
+float g_576c1c;
+
+// GLOBAL: STUNTGP_D3D 0x576c20
+float g_576c20;
+
+// GLOBAL: STUNTGP_D3D 0x576c24
+float g_576c24;
+
+// GLOBAL: STUNTGP_D3D 0x576c28
+float g_576c28;
+
+// GLOBAL: STUNTGP_D3D 0x576c2c
+float g_576c2c;
+
+// GLOBAL: STUNTGP_D3D 0x576c30
+float g_576c30;
+
+// Viewport layout for the split-screen modes (1 = full screen).
+// FUNCTION: STUNTGP_D3D 0x424c30
+void FUN_424c30(int mode)
+{
+    float x;
+    float y;
+    float w;
+    float h;
+    if (mode >= 17)
+    {
+        mode = 1;
+    }
+    switch (mode)
+    {
+    case 1:
+        w = g_576bc4;
+        x = 0.0f;
+        y = 0.0f;
+        g_576bd8 = 0;
+        h = g_576bc8;
+        break;
+    case 2:
+        w = g_576bc4;
+        h = g_576bc8 * 0.5625f;
+        x = (g_576bc4 - w) * 0.5f;
+        y = (g_576bc8 - h) * 0.5f;
+        g_576bd8 = 1;
+        break;
+    case 3:
+        w = g_576bc4 * 0.75f;
+        h = g_576bc8 * 0.75f;
+        x = (g_576bc4 - w) * 0.5f;
+        y = (g_576bc8 - h) * 0.5f;
+        g_576bd8 = 1;
+        break;
+    case 4:
+        w = g_576bc4 * 0.5f;
+        h = g_576bc8 * 0.5f;
+        x = (g_576bc4 - w) * 0.5f;
+        y = (g_576bc8 - h) * 0.5f;
+        g_576bd8 = 1;
+        break;
+    case 5:
+        w = g_576bc4 * 0.25f;
+        h = g_576bc8 * 0.25f;
+        x = (g_576bc4 - w) * 0.5f;
+        y = (g_576bc8 - h) * 0.5f;
+        g_576bd8 = 1;
+        break;
+    case 6:
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = (g_576bc4 - w) * 0.5f;
+        y = 0.0f;
+        g_576bd8 = 1;
+        break;
+    case 7:
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = (g_576bc4 - w) * 0.5f;
+        y = h;
+        g_576bd8 = 1;
+        break;
+    case 8:
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = 0.0f;
+        y = (g_576bc8 - h) * 0.5f;
+        g_576bd8 = 1;
+        break;
+    case 9:
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = w;
+        y = (g_576bc8 - h) * 0.5f;
+        g_576bd8 = 1;
+        break;
+    case 10:
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = (g_576bc4 - w) * 0.5f;
+        y = 0.0f;
+        g_576bd8 = 1;
+        break;
+    case 11:
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = 0.0f;
+        y = g_576bc8 - h;
+        g_576bd8 = 1;
+        break;
+    case 12:
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = w;
+        y = g_576bc8 - h;
+        g_576bd8 = 1;
+        break;
+    case 13:
+        y = 0.0f;
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = 0.0f;
+        g_576bd8 = 1;
+        break;
+    case 14:
+        y = 0.0f;
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = w;
+        g_576bd8 = 1;
+        break;
+    case 15:
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = 0.0f;
+        y = g_576bc8 - h;
+        g_576bd8 = 1;
+        break;
+    case 16:
+        w = g_576bc4 / 2;
+        h = g_576bc8 / 2;
+        x = w;
+        y = g_576bc8 - h;
+        g_576bd8 = 1;
+        break;
+    }
+    g_DD_DISPLAYRESWIDTH = (int)w;
+    g_DD_DISPLAYRESHEIGHT = (int)h;
+    FUN_425070();
+    w *= 0.5f;
+    h *= 0.5f;
+    g_576b9c = w;
+    g_576ba0 = h;
+    x = g_576be4 + x + w;
+    y = g_576be8 + y + h;
+    g_576b8c = (int)x;
+    g_576b90 = (int)y;
+    g_576b94 = x;
+    g_576b98 = y;
+    g_576bdc = mode;
+    g_624988 = mode;
+    g_62498c = mode;
+    FUN_4250a0(0.0f, 0.0f, 640.0f, 480.0f);
+}
+
+// FUNCTION: STUNTGP_D3D 0x4250a0
+void FUN_4250a0(float left, float top, float right, float bottom)
+{
+    g_clipLeft = left;
+    g_clipTop = top;
+    g_clipRight = right;
+    g_clipBottom = bottom;
+    g_576c14 = (left - 320.0f) * g_576b9c * (1.0f / 320.0f) + g_576b94;
+    g_576c18 = (right - 320.0f) * g_576b9c * (1.0f / 320.0f) + g_576b94;
+    g_576c1c = (top - 240.0f) * g_576ba0 * (1.0f / 240.0f) + g_576b98;
+    g_576c20 = (bottom - 240.0f) * g_576ba0 * (1.0f / 240.0f) + g_576b98;
+    g_576c24 = g_576c14 - 100.0f;
+    g_576c28 = g_576c18 + 100.0f;
+    g_576c2c = g_576c1c - 100.0f;
+    g_576c30 = g_576c20 + 100.0f;
+}
+
 // FUNCTION: STUNTGP_D3D 0x425070
 void FUN_425070()
 {

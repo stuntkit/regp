@@ -138,6 +138,8 @@ void FUN_433f20();
 void FUN_44fd60();
 void FUN_425870();
 void FUN_425070();
+void FUN_424c30(int mode);
+void FUN_4250a0(float left, float top, float right, float bottom);
 void FUN_427240();
 void FUN_427270();
 void FUN_42e420();

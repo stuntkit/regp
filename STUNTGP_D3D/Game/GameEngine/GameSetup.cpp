@@ -435,11 +435,6 @@ void FUN_4199a0()
     }
 }
 
-// STUB: STUNTGP_D3D 0x424c30
-void FUN_424c30(int param)
-{
-}
-
 void FUN_429510();
 
 // FUNCTION: STUNTGP_D3D 0x401d40
