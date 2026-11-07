@@ -1715,7 +1715,7 @@ void FUN_405b50()
 {
     Car *car = g_4d5bb8;
     unsigned int ticks = ++car->unk2664;
-    if (fabs(car->unk1cf0) > 8.333333f)
+    if ((float)fabs(car->unk1cf0) > 8.333333f)
     {
         if (ticks >= 120)
         {
