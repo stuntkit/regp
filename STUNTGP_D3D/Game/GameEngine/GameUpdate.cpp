@@ -259,49 +259,53 @@ void FUN_427050(AnimObject *obj, ObjectDef *def)
 // FUNCTION: STUNTGP_D3D 0x427140
 void FUN_427140()
 {
-    Scene *scene = g_636448;
-    if (scene && scene->objectCount > 1)
+    if (g_636448 && g_636448->objectCount > 1)
     {
-        for (DWORD i = 1; i < scene->objectCount; i++)
+        ObjectDef *def = g_636448->objects;
+        AnimObject *obj = g_576cd0;
+        DWORD count = g_636448->objectCount;
+        for (DWORD i = 1; i < count; i++)
         {
-            switch (g_576cd0[i].type)
+            obj++;
+            def++;
+            switch (obj->type)
             {
             case 1:
-                FUN_427010(&g_576cd0[i]);
+                FUN_427010(obj);
                 break;
             case 3:
-                FUN_427030(&g_576cd0[i], -0x100);
+                FUN_427030(obj, -0x100);
                 break;
             case 4:
-                FUN_427050(&g_576cd0[i], &scene->objects[i]);
+                FUN_427050(obj, def);
                 break;
             case 16:
-                FUN_427050(&g_576cd0[i], &scene->objects[i]);
-                FUN_427030(&g_576cd0[i], 0x80);
-                FUN_427040(&g_576cd0[i], 0x2a);
+                FUN_427050(obj, def);
+                FUN_427030(obj, 0x80);
+                FUN_427040(obj, 0x2a);
                 break;
             case 2:
             case 8:
             case 9:
-                FUN_427030(&g_576cd0[i], 0x100);
+                FUN_427030(obj, 0x100);
                 break;
             case 5:
             case 6:
             case 10:
-                FUN_427030(&g_576cd0[i], 0x40);
+                FUN_427030(obj, 0x40);
                 break;
             case 11:
-                FUN_427030(&g_576cd0[i], 0x80);
+                FUN_427030(obj, 0x80);
                 break;
             case 12:
-                FUN_427030(&g_576cd0[i], 8);
+                FUN_427030(obj, 8);
                 break;
             case 13:
-                FUN_427030(&g_576cd0[i], 0x10);
+                FUN_427030(obj, 0x10);
                 break;
             case 7:
             case 14:
-                FUN_427030(&g_576cd0[i], 0x20);
+                FUN_427030(obj, 0x20);
                 break;
             }
         }
