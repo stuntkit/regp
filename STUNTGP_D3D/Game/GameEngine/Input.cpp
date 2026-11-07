@@ -4,6 +4,7 @@
 #include <cstring>
 
 #include "../../globals.h"
+#include "../../input.h"
 
 // Rows are indexed by Controller::keyMap. Columns 0-3 are up/down/left/right,
 // 10 and 12 are the menu keys (return/escape on the keyboard map).
@@ -139,10 +140,56 @@ void FUN_4244c0()
     }
 }
 
-// STUB: STUNTGP_D3D 0x424520
+// FUNCTION: STUNTGP_D3D 0x424520
 int FUN_424520(int index)
 {
-    return 0;
+    DIJOYSTATE js;
+    DWORD device_index = index - 1;
+    if (g_inputDeviceCount == 0 || device_index >= g_inputDeviceCount)
+    {
+        return 0;
+    }
+    LPDIRECTINPUTDEVICE2 device = g_inputDevices[device_index].device;
+    device->Poll();
+    if (device->GetDeviceState(sizeof(js), &js) != DI_OK)
+    {
+        device->Acquire();
+        return 0;
+    }
+    InputState *s = &g_576618[index].state;
+    s->unk00 = 2;
+    s->range = 5000;
+    s->x = js.lX;
+    s->y = js.lY;
+    s->z = js.lZ;
+    s->rx = js.lRx;
+    s->ry = js.lRy;
+    s->rz = js.lRz;
+    s->sliders[0] = js.rglSlider[0];
+    s->sliders[1] = js.rglSlider[1];
+    s->pov[0] = js.rgdwPOV[0];
+    s->pov[1] = js.rgdwPOV[1];
+    s->x = (int)(s->x * 1.02f);
+    if (abs(s->x) > s->range)
+    {
+        s->x = s->x > 0 ? s->range : -s->range;
+    }
+    s->y = (int)(s->y * 1.02f);
+    if (abs(s->y) > s->range)
+    {
+        s->y = s->y > 0 ? s->range : -s->range;
+    }
+    if (abs(s->x) < 1250.0f)
+    {
+        s->x = 0;
+    }
+    if (abs(s->y) < 1250.0f)
+    {
+        s->y = 0;
+    }
+    memcpy(s->prevButtons, s->buttons, sizeof(s->buttons));
+    memcpy(s->buttons, js.rgbButtons, sizeof(s->buttons));
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x45ec00

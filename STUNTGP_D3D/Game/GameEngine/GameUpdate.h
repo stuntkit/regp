@@ -104,9 +104,18 @@ struct Car
     float unk22fc;        // 0x22fc
     float unk2300;        // 0x2300
     float unk2304;        // 0x2304
-    BYTE unk2308[0xbc];   // 0x2308
+    BYTE unk2308[0xa8];   // 0x2308
+    float unk23b0;        // 0x23b0
+    BYTE unk23b4[0x8];    // 0x23b4
+    int unk23bc;          // 0x23bc
+    BYTE unk23c0[0x4];    // 0x23c0
     int unk23c4;          // 0x23c4
-    BYTE unk23c8[0x118];  // 0x23c8
+    BYTE unk23c8[0x4];    // 0x23c8
+    int unk23cc;          // 0x23cc
+    int unk23d0;          // 0x23d0
+    int unk23d4;          // 0x23d4
+    int unk23d8;          // 0x23d8
+    BYTE unk23dc[0x104];  // 0x23dc
     int unk24e0;          // 0x24e0
     int unk24e4;          // 0x24e4
     BYTE unk24e8[0x80];   // 0x24e8
@@ -194,16 +203,70 @@ struct GameSlot
     SlotEvent events[8];  // 0x4ac
 };
 
+// 64 entries at 0x62a078
+struct Unk62a078
+{
+    int unk00;          // 0x00 1 = live, 2 = dead
+    DWORD flags;        // 0x04
+    float pos[3];       // 0x08
+    BYTE unk14[0x44];   // 0x14
+    float vel[3];       // 0x58
+    BYTE unk64[0x8];    // 0x64
+    float gravity;      // 0x6c
+    DWORD time;         // 0x70
+    DWORD lifetime;     // 0x74
+    int mode;           // 0x78
+    BYTE unk7c[0x4];    // 0x7c
+    DWORD *anim;        // 0x80
+    int frame;          // 0x84
+    BYTE unk88[0x4];    // 0x88
+    DWORD colors[3];    // 0x8c
+    BYTE unk98[0x4];    // 0x98
+    float size;         // 0x9c
+    float sizeIn;       // 0xa0
+    float sizeOut;      // 0xa4
+    float sizeNow;      // 0xa8
+    float alpha;        // 0xac
+    float alphaIn;      // 0xb0
+    float alphaOut;     // 0xb4
+    float alphaNow;     // 0xb8
+    float angle;        // 0xbc
+    float spin;         // 0xc0
+    float colorIn;      // 0xc4
+    float colorOut;     // 0xc8
+    DWORD color;        // 0xcc
+};
+
+extern Unk62a078 g_62a078[0x40];
+extern int g_62d478;
+
+// Level box: an axis frame (position, scale, V, N) with a sound/EAX zone id.
+struct SoundZone
+{
+    int id;           // 0x00
+    int unk04;        // 0x04
+    float bounds[16]; // 0x08
+};
+
+extern SoundZone g_483f98[32];
+
 // Device-specific input snapshot, copied verbatim from InputDevice to Controller.
 struct InputState
 {
     int unk00;          // 0x00
     int unk04;          // 0x04
     int range;          // 0x08
-    int x;              // 0x0c
-    int y;              // 0x10
-    BYTE unk14[0x28];   // 0x14
-    BYTE buttons[0x40]; // 0x3c
+    int x;                  // 0x0c
+    int y;                  // 0x10
+    int z;                  // 0x14
+    int rx;                 // 0x18
+    int ry;                 // 0x1c
+    int rz;                 // 0x20
+    int sliders[2];         // 0x24
+    DWORD pov[2];           // 0x2c
+    BYTE unk34[0x8];        // 0x34
+    BYTE buttons[0x20];     // 0x3c
+    BYTE prevButtons[0x20]; // 0x5c
 };
 
 struct ObjectDef

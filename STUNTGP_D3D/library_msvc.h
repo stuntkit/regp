@@ -909,4 +909,7 @@
 // LIBRARY: STUNTGP_D3D 0x4632a7
 // _time
 
+// LIBRARY: STUNTGP_D3D 0x463f7b
+// __fullpath
+
 #endif

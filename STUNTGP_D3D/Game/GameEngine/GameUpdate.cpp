@@ -5,6 +5,8 @@
 #include <math.h>
 
 #include "../../globals.h"
+#include "../../sound.h"
+#include "io_wad.h"
 #include "../../surface.h"
 #include "../../timer.h"
 #include "../../vecmath.h"
@@ -30,16 +32,9 @@ int g_61294c;
 // GLOBAL: STUNTGP_D3D 0x612954
 DWORD g_612954;
 
-struct SoundZone
-{
-    int id;           // 0x00
-    int unk04;        // 0x04
-    float bounds[16]; // 0x08
-};
-
 // Entry 0 is the fallback zone; the list ends at id -1.
 // GLOBAL: STUNTGP_D3D 0x483f98
-SoundZone g_483f98[2] = {
+SoundZone g_483f98[32] = {
     {0, 0, {1000.0f, 1000.0f, 1000.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f}},
     {-1},
 };
@@ -797,9 +792,192 @@ void FUN_431810()
 
 // --- timer ---
 
-// STUB: STUNTGP_D3D 0x443a80
+void FUN_443100();
+void FUN_443630();
+void FUN_443780();
+void FUN_443890();
+void FUN_443950();
+void FUN_443980();
+void FUN_443e20();
+void FUN_444390();
+void FUN_444410();
+void FUN_4446d0();
+void FUN_444ae0();
+void FUN_444c00();
+void FUN_444c50();
+void FUN_40e360(Car *sub);
+void FUN_40e380(Car *sub);
+
+// GLOBAL: STUNTGP_D3D 0x474630
+Car *g_474630;
+
+// GLOBAL: STUNTGP_D3D 0x60df98
+int g_60df98;
+
+// GLOBAL: STUNTGP_D3D 0x60f010
+float g_60f010;
+
+// GLOBAL: STUNTGP_D3D 0x60f2b0
+DWORD g_60f2b0;
+
+// GLOBAL: STUNTGP_D3D 0x60f2c8
+int g_60f2c8;
+
+// GLOBAL: STUNTGP_D3D 0x60f2cc
+int g_60f2cc;
+
+// STUB: STUNTGP_D3D 0x443100
+void FUN_443100()
+{
+}
+
+// STUB: STUNTGP_D3D 0x443630
+void FUN_443630()
+{
+}
+
+// STUB: STUNTGP_D3D 0x443780
+void FUN_443780()
+{
+}
+
+// STUB: STUNTGP_D3D 0x443890
+void FUN_443890()
+{
+}
+
+// STUB: STUNTGP_D3D 0x443950
+void FUN_443950()
+{
+}
+
+// STUB: STUNTGP_D3D 0x443980
+void FUN_443980()
+{
+}
+
+// STUB: STUNTGP_D3D 0x443e20
+void FUN_443e20()
+{
+}
+
+// STUB: STUNTGP_D3D 0x444390
+void FUN_444390()
+{
+}
+
+// STUB: STUNTGP_D3D 0x444410
+void FUN_444410()
+{
+}
+
+// STUB: STUNTGP_D3D 0x4446d0
+void FUN_4446d0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x444ae0
+void FUN_444ae0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x444c00
+void FUN_444c00()
+{
+}
+
+// STUB: STUNTGP_D3D 0x444c50
+void FUN_444c50()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x4439f0
+void FUN_4439f0()
+{
+    g_60f2c4 = 0;
+    switch (g_60df98)
+    {
+    case 2:
+    case 5:
+        FUN_443950();
+        break;
+    case 4:
+        FUN_443100();
+        break;
+    case 3:
+        FUN_443980();
+        break;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x443a30
+void FUN_443a30()
+{
+    if (g_60f2cc != 480)
+    {
+        if (g_60f010 * g_4d5bb8->unk23b0 * 0.01f > g_60f010 - 30000.0f)
+        {
+            g_60f2cc = 480;
+            FUN_444c00();
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x443a80
 void FUN_443a80()
 {
+    if (g_60f2c8)
+    {
+        if (--g_60f2c8 <= 0)
+        {
+            FUN_4439f0();
+            g_60f2c8 = 0;
+        }
+    }
+    FUN_443780();
+    switch (g_60f2b0)
+    {
+    case 2:
+    case 5:
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            GameSlot *slot = &g_498248[i];
+            if (slot->active == 1)
+            {
+                g_4722d0 = slot;
+                g_4d5bb8 = (Car *)slot->data;
+                g_61b740 = &slot->fx;
+                FUN_443e20();
+                FUN_4446d0();
+                FUN_444c50();
+                FUN_444ae0();
+                FUN_444410();
+                FUN_444390();
+            }
+        }
+        g_4722d0 = g_498248;
+        break;
+    }
+    case 3:
+        g_4d5bb8 = g_474630 = (Car *)g_4722d0->data;
+        FUN_443890();
+        FUN_444c50();
+        FUN_444ae0();
+        FUN_4446d0();
+        FUN_40e360((Car *)g_4722d0->data);
+        FUN_40e380((Car *)g_4722d0->data);
+        break;
+    case 4:
+        g_4d5bb8 = g_474630 = (Car *)g_4722d0->data;
+        FUN_443630();
+        FUN_443e20();
+        FUN_444c50();
+        FUN_443a30();
+        FUN_40e360((Car *)g_4722d0->data);
+        FUN_40e380((Car *)g_4722d0->data);
+        break;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x442de0
@@ -984,14 +1162,205 @@ void FUN_447c90()
     FUN_442de0();
 }
 
-// STUB: STUNTGP_D3D 0x45e1d0
-void FUN_45e1d0()
+extern float g_482678;
+extern float g_48267c;
+extern float g_482680;
+
+// FUNCTION: STUNTGP_D3D 0x401d70
+void FUN_401d70(float *v, float scale)
 {
+    if (v[0] * v[0] + v[1] * v[1] + v[2] * v[2] <= 27777.777f)
+    {
+        float g[4];
+        g[0] = g_482678 * scale;
+        g[1] = g_48267c * scale;
+        g[2] = g_482680 * scale;
+        v[0] += g[0];
+        v[1] += g[1];
+        v[2] += g[2];
+    }
 }
 
-// STUB: STUNTGP_D3D 0x45f8f0
-void FUN_45f8f0(int a, int b)
+// FUNCTION: STUNTGP_D3D 0x422620
+DWORD Color_Lerp(DWORD from, DWORD to, int t)
 {
+    int fromG = (BYTE)(from >> 8);
+    int fromR = (BYTE)(from >> 16);
+    int toR = (BYTE)(to >> 16);
+    int fromB = (BYTE)from;
+    return ((fromR + ((toR - fromR) * t >> 8)) << 16) |
+           ((fromG + (((BYTE)(to >> 8) - fromG) * t >> 8)) << 8) | (fromB + (((BYTE)to - fromB) * t >> 8));
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e170
+void FUN_45e170(Unk62a078 *p)
+{
+    p->unk00 = 2;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e180
+void FUN_45e180(Unk62a078 *p)
+{
+    DWORD *anim = p->anim;
+    if (anim)
+    {
+        int frame = p->frame;
+        p->frame += 0x6aa;
+        if ((DWORD)(frame / 4096) >= anim[2] - 1)
+        {
+            p->frame = 0;
+            if (p->mode == 1)
+            {
+                FUN_45e170(p);
+            }
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e1d0
+void FUN_45e1d0()
+{
+    if (g_62d478)
+    {
+        g_62d478 = 0;
+        Unk62a078 *p = g_62a078;
+        for (int i = 0; i < 0x40; i++, p++)
+        {
+            if (p->unk00 == 1)
+            {
+                g_62d478 = 1;
+                p->pos[0] = p->vel[0] + p->pos[0];
+                p->pos[1] = p->vel[1] + p->pos[1];
+                p->pos[2] = p->vel[2] + p->pos[2];
+                if (p->vel[1] < 166.66667f)
+                {
+                    FUN_401d70(p->vel, p->gravity);
+                }
+                if (p->flags & 2)
+                {
+                    if ((float)p->time < p->alphaIn)
+                    {
+                        p->alphaNow = (float)p->time * p->alpha / p->alphaIn;
+                    }
+                    else if ((float)p->time > (float)p->lifetime - p->alphaOut)
+                    {
+                        p->alphaNow = (float)(p->lifetime - p->time) * p->alpha / p->alphaOut;
+                    }
+                    else
+                    {
+                        p->alphaNow = p->alpha;
+                    }
+                }
+                else
+                {
+                    p->alphaNow = p->alpha;
+                }
+                if (p->flags & 1)
+                {
+                    if ((float)p->time < p->sizeIn)
+                    {
+                        p->sizeNow = (float)p->time * p->size / p->sizeIn;
+                    }
+                    else if ((float)p->time > (float)p->lifetime - p->sizeOut)
+                    {
+                        p->sizeNow = (float)(p->lifetime - p->time) * p->size / p->sizeOut;
+                    }
+                    else
+                    {
+                        p->sizeNow = p->size;
+                    }
+                }
+                else
+                {
+                    p->sizeNow = p->size;
+                }
+                if (p->flags & 4)
+                {
+                    float angle = p->spin + p->angle;
+                    p->angle = angle;
+                    if (angle >= 360.0f)
+                    {
+                        p->angle = angle - 360.0f;
+                    }
+                    else if (angle < 0.0f)
+                    {
+                        p->angle = angle + 360.0f;
+                    }
+                }
+                if (p->flags & 8)
+                {
+                    if ((float)p->time < p->colorIn)
+                    {
+                        p->color = Color_Lerp(p->colors[0], p->colors[1], (int)((float)p->time * 255.0f / p->colorIn));
+                    }
+                    else if ((float)p->time > (float)p->lifetime - p->colorOut)
+                    {
+                        p->color = Color_Lerp(
+                            p->colors[1], p->colors[2],
+                            (int)(255.0f - (float)(p->lifetime - p->time) * 255.0f / p->colorOut)
+                        );
+                    }
+                    else
+                    {
+                        p->color = p->colors[1];
+                    }
+                }
+                else
+                {
+                    p->color = p->colors[0];
+                }
+                if (p->mode == 2)
+                {
+                    if (++p->time >= p->lifetime)
+                    {
+                        FUN_45e170(p);
+                    }
+                }
+                FUN_45e180(p);
+            }
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45f8f0
+void FUN_45f8f0(int track, int loop)
+{
+    char path[256];
+    if (g_soundInitialised && g_musicVolume)
+    {
+        int t;
+        if (track == 0 && g_62f5a8 != 0)
+        {
+            t = g_62f5a8;
+        }
+        else
+        {
+            t = track;
+        }
+        g_62e10c = t;
+        if (t)
+        {
+            // STRING: STUNTGP_D3D 0x48a500
+            sprintf(path, "%s\\Music\\%s.wav", g_SoundDirectory, g_4898fc[t]);
+            if (!size_of_file(path))
+            {
+                g_62f5ac = 0;
+                return;
+            }
+            DWORD flags = 0x24;
+            if (loop == 1)
+            {
+                flags = 0x25;
+            }
+            FUN_45fb50(g_directSound, path, flags, 0, 0, 0, 0);
+            FUN_45f7d0(0, 0);
+            g_62e110 = 0;
+            g_62e0fc = 0;
+            g_62e104 = 0;
+            FUN_45f8e0(255, 255);
+            g_62f5ac = 1;
+        }
+    }
 }
 
 // --- sound ---

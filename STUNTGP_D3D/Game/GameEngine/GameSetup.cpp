@@ -15,6 +15,14 @@
 #include "../../sprite.h"
 #include "../../d3drender.h"
 #include "../../surface.h"
+#include "Engine_LevelScript.h"
+
+struct StuntKnot
+{
+    float pathPosition; // 0x00
+    float width;        // 0x04
+    int grade;          // 0x08
+};
 
 void FUN_4411c0();
 void FUN_401d40();
@@ -116,12 +124,6 @@ struct Unk496990
 
 // GLOBAL: STUNTGP_D3D 0x496990
 Unk496990 g_496990[16];
-
-struct Unk62a078
-{
-    int unk00;
-    BYTE unk04[0xd0 - 4];
-};
 
 // GLOBAL: STUNTGP_D3D 0x62a078
 Unk62a078 g_62a078[0x40];
@@ -610,9 +612,158 @@ void FUN_445fa0()
     FUN_4192d0();
 }
 
-// STUB: STUNTGP_D3D 0x446840
+// GLOBAL: STUNTGP_D3D 0x497d20
+float g_497d20[0x80];
+
+// GLOBAL: STUNTGP_D3D 0x499fb8
+StuntKnot g_499fb8[33];
+
+// GLOBAL: STUNTGP_D3D 0x577688
+float g_577688[0x100];
+
+// GLOBAL: STUNTGP_D3D 0x5896b8
+int g_5896b8;
+
+// GLOBAL: STUNTGP_D3D 0x5896bc
+int g_5896bc;
+
+// GLOBAL: STUNTGP_D3D 0x5896c0
+int g_5896c0;
+
+// GLOBAL: STUNTGP_D3D 0x5896c8
+float g_5896c8[0x80];
+
+// GLOBAL: STUNTGP_D3D 0x60dff0
+float g_60dff0[0x80];
+
+// GLOBAL: STUNTGP_D3D 0x60e1f0
+float g_60e1f0[0x80];
+
+// GLOBAL: STUNTGP_D3D 0x60e3f0
+float g_60e3f0[0x80];
+
+// GLOBAL: STUNTGP_D3D 0x60e7f0
+float g_60e7f0[0x100];
+
+// GLOBAL: STUNTGP_D3D 0x60ebf0
+float g_60ebf0[0x100];
+
+// GLOBAL: STUNTGP_D3D 0x61b63c
+int g_61b63c;
+
+// FUNCTION: STUNTGP_D3D 0x4460e0
+void FUN_4460e0()
+{
+    int count = 0;
+    while (g_483f98[count].id != -1)
+    {
+        count++;
+    }
+    g_61b63c = count;
+    if (count)
+    {
+        FUN_460af0(g_483f98[0].id);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x446700
+void FUN_446700(char *script)
+{
+    // STRING: STUNTGP_D3D 0x484f38
+    char *p = strstr(script, "-LevelBoxList[] =");
+    int count = 0;
+    // STRING: STUNTGP_D3D 0x484f4c
+    while ((p = strstr(p + 0x10, "-Type")) != NULL)
+    {
+        // STRING: STUNTGP_D3D 0x484f54
+        Script_GetInt(p, "-Type", &g_483f98[count].id);
+        // STRING: STUNTGP_D3D 0x484f5c
+        Script_GetVector3(p, "-Position", &g_483f98[count].bounds[0]);
+        // STRING: STUNTGP_D3D 0x484f68
+        Script_GetVector3(p, "-Scale", &g_483f98[count].bounds[4]);
+        // STRING: STUNTGP_D3D 0x484f70
+        Script_GetVector3(p, "-V", &g_483f98[count].bounds[8]);
+        // STRING: STUNTGP_D3D 0x484f74
+        Script_GetVector3(p, "-N", &g_483f98[count].bounds[12]);
+        count++;
+    }
+    g_483f98[count].id = -1;
+    FUN_4460e0();
+}
+
+// FUNCTION: STUNTGP_D3D 0x4467b0
+void FUN_4467b0(char *script)
+{
+    // STRING: STUNTGP_D3D 0x484f78
+    char *p = strstr(script, "-CarAI_StuntKnotList[] =");
+    memset(g_499fb8, 0, sizeof(g_499fb8));
+    int i = 0;
+    // STRING: STUNTGP_D3D 0x484f94
+    while ((p = strstr(p + 0x10, "-PathPosition")) != NULL)
+    {
+        // STRING: STUNTGP_D3D 0x484fa4
+        Script_GetFloat(p, "-PathPosition", &g_499fb8[i].pathPosition);
+        // STRING: STUNTGP_D3D 0x484fb4
+        Script_GetFloat(p, "-Width", &g_499fb8[i].width);
+        // STRING: STUNTGP_D3D 0x484fbc
+        Script_GetInt(p, "-Grade", &g_499fb8[i].grade);
+        i++;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x446840
 void FUN_446840(char *script)
 {
+    int intensity;
+    int red;
+    int green;
+    int blue;
+
+    // STRING: STUNTGP_D3D 0x484fc4
+    strstr(script, "-VERSION =");
+    // STRING: STUNTGP_D3D 0x484fd0
+    Script_GetWord(script, "-VERSION =");
+    // STRING: STUNTGP_D3D 0x484fdc
+    char *p = strstr(script, "-Ambience[] =");
+    // STRING: STUNTGP_D3D 0x484fec
+    Script_GetInt(p, "I", &intensity);
+    // STRING: STUNTGP_D3D 0x484ff0
+    Script_GetInt(p, "R", &red);
+    // STRING: STUNTGP_D3D 0x484ff4
+    Script_GetInt(p, "G", &green);
+    // STRING: STUNTGP_D3D 0x484ff8
+    Script_GetInt(p, "B", &blue);
+    g_624504 = intensity * (1.0f / 255.0f);
+    g_624508 = red;
+    g_62450c = green;
+    g_624510 = blue;
+    FUN_42d7e0();
+    // STRING: STUNTGP_D3D 0x484ffc
+    p = strstr(script, "-FogColour[] =");
+    // STRING: STUNTGP_D3D 0x48500c
+    Script_GetInt(p, "R", &g_5896b8);
+    // STRING: STUNTGP_D3D 0x485010
+    Script_GetInt(p, "G", &g_5896bc);
+    // STRING: STUNTGP_D3D 0x485014
+    Script_GetInt(p, "B", &g_5896c0);
+    // STRING: STUNTGP_D3D 0x485018
+    Script_GetFloatArray(p, "-FogEnvelope[]", g_5896c8, 0x80);
+    // STRING: STUNTGP_D3D 0x485028
+    Script_GetFloatArray(p, "-ColRestitutionTab[]", g_497d20, 0x80);
+    // STRING: STUNTGP_D3D 0x485040
+    Script_GetFloatArray(p, "-FarPlaneClipDistanceTab[]", g_577688, 0x100);
+    // STRING: STUNTGP_D3D 0x48505c
+    Script_GetFloatArray(p, "-CarReplacementSplineMask[]", g_60dff0, 0x80);
+    // STRING: STUNTGP_D3D 0x485078
+    Script_GetFloatArray(p, "-CarLightsMask[]", g_60e1f0, 0x80);
+    // STRING: STUNTGP_D3D 0x48508c
+    Script_GetFloatArray(p, "-AmbienceEnvelope[]", g_60e3f0, 0x80);
+    // STRING: STUNTGP_D3D 0x4850a0
+    Script_GetFloatArray(p, "-TrackWidthEnvelope_Left[]", g_60e7f0, 0x100);
+    // STRING: STUNTGP_D3D 0x4850bc
+    Script_GetFloatArray(p, "-TrackWidthEnvelope_Right[]", g_60ebf0, 0x100);
+    FUN_446700(script);
+    FUN_4467b0(script);
 }
 
 // FUNCTION: STUNTGP_D3D 0x4469f0

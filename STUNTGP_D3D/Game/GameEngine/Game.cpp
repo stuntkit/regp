@@ -989,9 +989,96 @@ void FUN_441f70()
     }
 }
 
-// STUB: STUNTGP_D3D 0x445530
+struct RaceResult
+{
+    int unk00;              // 0x00
+    int unk04;              // 0x04
+    int unk08;              // 0x08
+    int unk0c;              // 0x0c
+    int unk10;              // 0x10
+    int unk14;              // 0x14
+    BYTE unk18[0x150 - 0x18];
+};
+
+// GLOBAL: STUNTGP_D3D 0x60d76c
+int g_60d76c[4];
+
+// GLOBAL: STUNTGP_D3D 0x60d8c4
+RaceResult g_60d8c4[6];
+
+// GLOBAL: STUNTGP_D3D 0x60df74
+int g_60df74;
+
+// GLOBAL: STUNTGP_D3D 0x60df84
+int g_60df84;
+
+// GLOBAL: STUNTGP_D3D 0x60df88
+int g_60df88;
+
+// GLOBAL: STUNTGP_D3D 0x60df8c
+int g_60df8c;
+
+// GLOBAL: STUNTGP_D3D 0x60df94
+int g_60df94;
+
+// GLOBAL: STUNTGP_D3D 0x60f000
+int g_60f000[4];
+
+extern int g_60f020;
+
+// GLOBAL: STUNTGP_D3D 0x60f284
+int g_60f284;
+
+// GLOBAL: STUNTGP_D3D 0x60f294
+int g_60f294;
+
+// GLOBAL: STUNTGP_D3D 0x60f298
+int g_60f298;
+
+// GLOBAL: STUNTGP_D3D 0x60f29c
+int g_60f29c;
+
+extern int g_60df98;
+
+int FUN_442fd0();
+
+// FUNCTION: STUNTGP_D3D 0x445530
 void FUN_445530()
 {
+    g_60df94 = g_60f020;
+    if (g_60df98 == 4)
+    {
+        g_60df74 = g_60f284;
+        if (FUN_442fd0() == 1)
+        {
+            g_60df84 = g_60f294;
+            g_60df8c = g_60f29c;
+            g_60df88 = g_60f298;
+        }
+    }
+    g_60d76c[0] = g_60f000[0];
+    g_60d76c[1] = g_60f000[1];
+    g_60d76c[2] = g_60f000[2];
+    g_60d76c[3] = g_60f000[3];
+    for (int i = 0; i < 6; i++)
+    {
+        RaceResult *result = &g_60d8c4[i];
+        if (g_49a1f8[i].active == 1)
+        {
+            result->unk04 = g_49a1f8[i].unk24e4 + 1;
+            result->unk00 = g_49a1f8[i].unk23bc;
+            result->unk08 = g_49a1f8[i].unk23d4;
+            result->unk0c = g_49a1f8[i].unk23cc;
+            result->unk10 = g_49a1f8[i].unk23d8;
+            result->unk14 = g_49a1f8[i].unk23d0;
+        }
+    }
+}
+
+// STUB: STUNTGP_D3D 0x442fd0
+int FUN_442fd0()
+{
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4420e0

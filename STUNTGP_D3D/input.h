@@ -8,8 +8,12 @@
 
 struct InputEffect
 {
-    LPDIRECTINPUTEFFECT effect;
-    BYTE unk04[0x74];
+    LPDIRECTINPUTEFFECT effect; // 0x00
+    DICONDITION condition;      // 0x04
+    DICONSTANTFORCE constant;   // 0x1c
+    DIPERIODIC periodic;        // 0x20
+    DIENVELOPE envelope;        // 0x30
+    DIEFFECT desc;              // 0x44
 };
 
 struct InputDevice
@@ -17,6 +21,9 @@ struct InputDevice
     LPDIRECTINPUTDEVICE2 device;
     InputEffect effects[12];
 };
+
+extern InputDevice g_inputDevices[10];
+extern DWORD g_inputDeviceCount;
 
 void FUN_4239b0();
 int FUN_4249b0();

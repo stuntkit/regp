@@ -1,5 +1,10 @@
 #include "sound.h"
 
+#include <stdlib.h>
+#include <string.h>
+
+DWORD WINAPI FUN_45fda0(LPVOID param);
+
 // GLOBAL: STUNTGP_D3D 0x489790
 DWORD g_masterVolume = 255;
 
@@ -64,7 +69,7 @@ LPDIRECTSOUND g_directSound;
 DWORD g_sfxSetting;
 
 // GLOBAL: STUNTGP_D3D 0x62e0f8
-DWORD g_musicVolume;
+int g_musicVolume;
 
 // GLOBAL: STUNTGP_D3D 0x62f5ac
 DWORD g_62f5ac;
@@ -88,6 +93,61 @@ void FUN_45fab0()
 void FUN_45fb40()
 {
     Music_Stop();
+}
+
+// FUNCTION: STUNTGP_D3D 0x45fb50
+HRESULT FUN_45fb50(LPDIRECTSOUND ds, char *file, DWORD flags, int a, int b, int c, int d)
+{
+    char path[MAX_PATH];
+    if (g_musicPlaying)
+    {
+        Music_Stop();
+    }
+    _fullpath(path, file, MAX_PATH);
+    strncpy(g_62df54, path, MAX_PATH);
+    switch (flags & 0x78)
+    {
+    case 0x08:
+        g_62df1c = 2000;
+        g_62df14 = 24;
+        break;
+    case 0x10:
+        g_62df1c = 600;
+        g_62df14 = 5;
+        break;
+    case 0x20:
+        g_62df1c = 400;
+        g_62df14 = 4;
+        break;
+    case 0x40:
+        g_62df1c = 100;
+        g_62df14 = 3;
+        break;
+    default:
+        if (!a || !b)
+        {
+            return E_INVALIDARG;
+        }
+        g_62df1c = a;
+        g_62df14 = b;
+        break;
+    }
+    g_musicFlags = flags;
+    g_62df3c = c;
+    g_62df40 = d;
+    if (flags & 2)
+    {
+        CreateThread(NULL, 0, FUN_45fda0, &g_musicBuffer, 0, &flags);
+        g_musicResult = DS_OK;
+        return DS_OK;
+    }
+    return FUN_45fda0(&g_musicBuffer);
+}
+
+// STUB: STUNTGP_D3D 0x45fda0
+DWORD WINAPI FUN_45fda0(LPVOID param)
+{
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x45fce0

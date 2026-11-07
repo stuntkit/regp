@@ -2,6 +2,9 @@
 
 #include "../../sound.h"
 
+#include <stdlib.h>
+#include <string.h>
+
 // GLOBAL: STUNTGP_D3D 0x48491c
 char g_GraphicsDirectory[128] = "D:\\Game\\Graphics24\\";
 
@@ -263,4 +266,148 @@ void Script_ParseGameConfig()
     FUN_42d060(script, "ClogMeister");
     Script_ParseGameSettings(script);
     Mem_Free(script);
+}
+
+// GLOBAL: STUNTGP_D3D 0x624504
+float g_624504;
+
+// GLOBAL: STUNTGP_D3D 0x624508
+float g_624508;
+
+// GLOBAL: STUNTGP_D3D 0x62450c
+float g_62450c;
+
+// GLOBAL: STUNTGP_D3D 0x624510
+float g_624510;
+
+// GLOBAL: STUNTGP_D3D 0x624514
+float g_624514;
+
+// GLOBAL: STUNTGP_D3D 0x624518
+float g_624518;
+
+// GLOBAL: STUNTGP_D3D 0x62451c
+float g_62451c;
+
+// GLOBAL: STUNTGP_D3D 0x624520
+int g_624520;
+
+// GLOBAL: STUNTGP_D3D 0x624524
+int g_624524;
+
+// GLOBAL: STUNTGP_D3D 0x624528
+int g_624528;
+
+// GLOBAL: STUNTGP_D3D 0x5da264
+char g_5da264[0x100];
+
+// FUNCTION: STUNTGP_D3D 0x42d7e0
+void FUN_42d7e0()
+{
+    float r = g_624508 * g_624504;
+    float g = g_62450c * g_624504;
+    float b = g_624510 * g_624504;
+    g_624514 = r;
+    g_624518 = g;
+    g_62451c = b;
+    int ir = (int)r;
+    int ig = (int)g;
+    int ib = (int)b;
+    g_624520 = ir << 8;
+    g_624524 = ig << 8;
+    g_624528 = ib << 8;
+}
+
+// FUNCTION: STUNTGP_D3D 0x434980
+void Script_GetFloat(char *section, char *key, float *out)
+{
+    char *p = strstr(section, key);
+    // STRING: STUNTGP_D3D 0x478b5c
+    p = strstr(p, "=");
+    *out = atof(p + 1);
+}
+
+// FUNCTION: STUNTGP_D3D 0x4349b0
+void Script_GetVector3(char *section, char *key, float *out)
+{
+    char *p = strstr(section, key);
+    // STRING: STUNTGP_D3D 0x478b60
+    p = strstr(p, "=") + 1;
+    out[0] = atof(p);
+    char *q = p;
+    while (*q == ' ')
+    {
+        q++;
+    }
+    while (*q != ' ')
+    {
+        q++;
+    }
+    p = q + 1;
+    out[1] = atof(p);
+    q = p;
+    while (*q == ' ')
+    {
+        q++;
+    }
+    while (*q != ' ')
+    {
+        q++;
+    }
+    out[2] = atof(q + 1);
+}
+
+// FUNCTION: STUNTGP_D3D 0x434a40
+void Script_GetInt(char *section, char *key, int *out)
+{
+    char *p = strstr(section, key);
+    // STRING: STUNTGP_D3D 0x478b64
+    p = strstr(p, "=");
+    *out = atol(p + 1);
+}
+
+// FUNCTION: STUNTGP_D3D 0x434a70
+void Script_GetFloatArray(char *section, char *key, float *out, DWORD count)
+{
+    char *p = strstr(section, key);
+    // STRING: STUNTGP_D3D 0x478b68
+    p = strstr(p, "=");
+    while (*p != ' ')
+    {
+        p++;
+    }
+    while (*p == ' ' || *p == '\r' || *p == '\n')
+    {
+        p++;
+    }
+    for (DWORD i = 0; i < count; i++)
+    {
+        *out = atof(p);
+        while (*p != ' ')
+        {
+            p++;
+        }
+        while (*p == ' ' || *p == '\r' || *p == '\n')
+        {
+            p++;
+        }
+        out++;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x434af0
+char *Script_GetWord(char *section, char *key)
+{
+    char *p = strstr(section, key);
+    // STRING: STUNTGP_D3D 0x478b6c
+    p = strstr(p, "=") + 2;
+    int i = 0;
+    while (*p != '\n' && *p != '\r' && *p != ' ')
+    {
+        g_5da264[i] = *p;
+        i++;
+        p++;
+    }
+    g_5da264[i] = 0;
+    return g_5da264;
 }
