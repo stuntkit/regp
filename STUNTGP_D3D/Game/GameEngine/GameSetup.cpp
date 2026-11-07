@@ -67,21 +67,8 @@ extern int g_6244d0;
 extern int g_61c5ec;
 extern DWORD g_61297c;
 
-// Scene render list entry; a list runs until a NULL scene.
-struct SceneSlot
-{
-    Scene *scene; // 0x00
-    int unk04;    // 0x04
-    int unk08;    // 0x08
-    int unk0c;    // 0x0c
-};
-
-// The in-race list at 0x636438 continues into g_636448.
 // GLOBAL: STUNTGP_D3D 0x636418
-SceneSlot g_636418[2];
-
-// GLOBAL: STUNTGP_D3D 0x636438
-SceneSlot g_636438;
+SceneSlot g_636418[16];
 
 struct RenderMaterial
 {
@@ -444,7 +431,7 @@ void FUN_401d40()
 {
     if (g_612be8 != 2)
     {
-        SceneView *view = g_636448->view;
+        SceneView *view = g_636418[3].scene->view;
         g_498238 = view->unk34;
         g_498230 = view->unk2c;
         g_498234 = view->unk30;
@@ -480,9 +467,9 @@ void FUN_42b740()
     g_62f5d8 = 0;
     if (g_612be8 != 2)
     {
-        if (g_636448)
+        if (g_636418[3].scene)
         {
-            FUN_42b7f0(g_636448, &g_4864e8, 0);
+            FUN_42b7f0(g_636418[3].scene, &g_4864e8, 0);
         }
         FUN_42b6e0();
         FUN_434030();
@@ -531,7 +518,7 @@ void FUN_42e240(Scene *scene)
 // FUNCTION: STUNTGP_D3D 0x42e380
 void FUN_42e380()
 {
-    SceneSlot *slot = g_6244f8 == 1 ? &g_636438 : g_636418;
+    SceneSlot *slot = g_6244f8 == 1 ? &g_636418[2] : g_636418;
     while (slot->scene)
     {
         FUN_42e240(slot->scene);
@@ -720,9 +707,9 @@ void FUN_42e6e0()
     FUN_44fd60();
     g_6244f4 = 0;
     FUN_4320c0(1.0f);
-    if (g_636448)
+    if (g_636418[3].scene)
     {
-        g_636448->camera = &g_4864e8;
+        g_636418[3].scene->camera = &g_4864e8;
     }
     g_6244f8 = 0;
     FUN_431420();
@@ -780,7 +767,7 @@ void FUN_4312c0()
 {
     if (g_D3DUVFix)
     {
-        SceneSlot *slot = g_6244f8 == 1 ? &g_636438 : g_636418;
+        SceneSlot *slot = g_6244f8 == 1 ? &g_636418[2] : g_636418;
         while (slot->scene)
         {
             FUN_4311c0(slot->scene);

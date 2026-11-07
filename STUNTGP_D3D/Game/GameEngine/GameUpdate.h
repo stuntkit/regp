@@ -648,7 +648,17 @@ struct Scene
     ObjectDef *objects; // 0x48
 };
 
-extern Scene *g_636448;
+// Scene render list entry; a list runs until a NULL scene.
+struct SceneSlot
+{
+    Scene *scene; // 0x00
+    int unk04;    // 0x04
+    int unk08;    // 0x08
+    int unk0c;    // 0x0c
+};
+
+// Two NULL-terminated lists share this array: the menu list from [0], the race list from [2].
+extern SceneSlot g_636418[16];
 
 // 10 entries at 0x576618
 struct InputSlot

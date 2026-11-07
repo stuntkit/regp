@@ -89,9 +89,6 @@ struct AnimObject
 // GLOBAL: STUNTGP_D3D 0x576cd0
 AnimObject g_576cd0[32];
 
-// GLOBAL: STUNTGP_D3D 0x636448
-Scene *g_636448;
-
 // 6 entries at 0x49a1f8, 0x7724 bytes each
 // GLOBAL: STUNTGP_D3D 0x49a1f8
 Car g_49a1f8[6];
@@ -959,11 +956,11 @@ void FUN_427050(AnimObject *obj, ObjectDef *def)
 // FUNCTION: STUNTGP_D3D 0x427140
 void FUN_427140()
 {
-    if (g_636448 && g_636448->objectCount > 1)
+    if (g_636418[3].scene && g_636418[3].scene->objectCount > 1)
     {
-        ObjectDef *def = g_636448->objects;
+        ObjectDef *def = g_636418[3].scene->objects;
         AnimObject *obj = g_576cd0;
-        DWORD count = g_636448->objectCount;
+        DWORD count = g_636418[3].scene->objectCount;
         for (DWORD i = 1; i < count; i++)
         {
             obj++;
