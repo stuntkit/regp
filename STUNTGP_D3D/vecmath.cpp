@@ -108,9 +108,102 @@ void FUN_44f4c0()
     Matrix_Identity(g_61c468);
 }
 
-// STUB: STUNTGP_D3D 0x450190
+// Multiplies the 3x3 part of a in place by b.
+// FUNCTION: STUNTGP_D3D 0x44ef40
+void Matrix_Multiply3(float *a, float *b)
+{
+    float t[16];
+    for (int i = 0; i < 3; i++)
+    {
+        t[i * 4 + 0] = a[i * 4 + 0] * b[0] + a[i * 4 + 1] * b[4] + a[i * 4 + 2] * b[8];
+        t[i * 4 + 1] = a[i * 4 + 0] * b[1] + a[i * 4 + 1] * b[5] + a[i * 4 + 2] * b[9];
+        t[i * 4 + 2] = a[i * 4 + 0] * b[2] + a[i * 4 + 1] * b[6] + a[i * 4 + 2] * b[10];
+        a[i * 4 + 0] = t[i * 4 + 0];
+        a[i * 4 + 1] = t[i * 4 + 1];
+        a[i * 4 + 2] = t[i * 4 + 2];
+    }
+}
+
+extern BYTE *g_6227cc;
+extern int g_6227d0;
+
+// Builds the camera's view matrix and its transpose from pos, target, up and the view roll.
+// FUNCTION: STUNTGP_D3D 0x450190
 void FUN_450190(Camera *cam)
 {
+    Vec4 up = cam->up;
+    up.x = -up.x;
+    up.y = -up.y;
+    up.z = -up.z;
+    Vec4 dir;
+    dir.x = cam->target.x - cam->pos.x;
+    dir.y = cam->target.y - cam->pos.y;
+    dir.z = cam->target.z - cam->pos.z;
+    Vec3_Normalize(&dir.x);
+    if ((float)fabs(dir.x + up.x) + (float)fabs(dir.y + up.y) + (float)fabs(dir.z + up.z) < 1e-05f)
+    {
+        up.z += 1.0f;
+        Vec3_Normalize(&up.x);
+    }
+    float d = dir.x * up.x + dir.y * up.y + dir.z * up.z;
+    up.x -= d * dir.x;
+    up.y -= d * dir.y;
+    up.z -= d * dir.z;
+    Vec3_Normalize(&up.x);
+    Vec4 side;
+    side.x = dir.y * up.z - dir.z * up.y;
+    side.y = dir.z * up.x - dir.x * up.z;
+    side.z = dir.x * up.y - dir.y * up.x;
+    Vec3_Normalize(&side.x);
+    float rows[16];
+    Matrix_FromRows(&side.x, &up.x, &dir.x, rows);
+    float rot[16];
+    Matrix_RotationZ(rot, g_4722d0->roll);
+    Matrix_Multiply3(rot, rows);
+    side = *(Vec4 *)&rot[0];
+    up = *(Vec4 *)&rot[4];
+    dir = *(Vec4 *)&rot[8];
+
+    float *m = (float *)g_6227cc;
+    cam->matrix = (Vec4 *)m;
+    m[0] = side.x;
+    m[1] = side.y;
+    m[2] = side.z;
+    m[3] = 0.0f;
+    m[4] = up.x;
+    m[5] = up.y;
+    m[6] = up.z;
+    m[7] = 0.0f;
+    m[8] = dir.x;
+    m[9] = dir.y;
+    m[10] = dir.z;
+    m[11] = 0.0f;
+    m[12] = 0.0f;
+    m[13] = 0.0f;
+    m[14] = 0.0f;
+    m[15] = 1.0f;
+    m += 16;
+    g_6227d0++;
+    cam->unk44 = (Vec4 *)m;
+    m[0] = side.x;
+    m[1] = up.x;
+    m[2] = dir.x;
+    m[3] = 0.0f;
+    m[4] = side.y;
+    m[5] = up.y;
+    m[6] = dir.y;
+    m[7] = 0.0f;
+    m[8] = side.z;
+    m[9] = up.z;
+    m[10] = dir.z;
+    m[11] = 0.0f;
+    m[12] = 0.0f;
+    m[13] = 0.0f;
+    m[14] = 0.0f;
+    m[15] = 1.0f;
+    m += 16;
+    g_6227d0++;
+    g_6227cc = (BYTE *)m;
 }
 
 // GLOBAL: STUNTGP_D3D 0x61c3a4
