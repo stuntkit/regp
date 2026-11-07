@@ -336,9 +336,21 @@ void FUN_430690()
     g_592028 = g_59207c;
 }
 
-// STUB: STUNTGP_D3D 0x430330
+// GLOBAL: STUNTGP_D3D 0x583330
+int g_583330;
+
+// Loads an RLE packed image; the header holds the size at offsets 6 and 8.
+// FUNCTION: STUNTGP_D3D 0x430330
 void FUN_430330(char *path, BYTE *dst)
 {
+    int size = size_of_file(path);
+    BYTE *data = (BYTE *)malloc(size);
+    bload(path, (char *)data, size);
+    FUN_4234e0(dst, data + 10);
+    g_489714 = *(WORD *)(data + 6);
+    g_489718 = *(WORD *)(data + 8);
+    free(data);
+    g_583330 = 0;
 }
 
 // GLOBAL: STUNTGP_D3D 0x46f080
