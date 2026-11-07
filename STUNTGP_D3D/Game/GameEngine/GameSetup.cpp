@@ -239,9 +239,62 @@ void FUN_4192d0()
     g_4d5ca0 = 0;
 }
 
-// STUB: STUNTGP_D3D 0x413670
+void FUN_40bde0();
+void FUN_41d300();
+void FUN_413450();
+void FUN_4085e0();
+void FUN_408710();
+void FUN_41d180();
+void FUN_408640(Car *car, float *pos);
+void FUN_413500();
+void FUN_417e10();
+void FUN_4162c0();
+void FUN_414f00();
+void FUN_4150d0();
+void FUN_419900();
+void FUN_4130d0(int mode);
+
+// Sets up car 0 from defaults and clones it into the other five.
+// FUNCTION: STUNTGP_D3D 0x413670
 void FUN_413670()
 {
+    g_4d5bb8 = g_49a1f8;
+    g_474630 = g_49a1f8;
+    FUN_40bde0();
+    g_4d5bb8->unk1bac = 0.0f;
+    g_4d5bb8->unk1bb0 = 0.0f;
+    g_4d5bb8->unk1bb4 = -12200.0f;
+    g_4d5bb8->unkcb8[0].x = 34.5f;
+    g_4d5bb8->unkcb8[1].x = 34.5f;
+    g_4d5bb8->unkcb8[2].x = 24.5f;
+    g_4d5bb8->unkcb8[3].x = 24.5f;
+    g_4d5bb8->unk230 = 250.0f;
+    g_4d5bb8->unk234 = 126.600006f;
+    g_4d5bb8->unk238 = 180.0f;
+    g_4d5bb8->unk220 = 1000.0f;
+    g_4d5bb8->unk224 = 0.5f;
+    g_4d5bb8->unk228 = 0.5f;
+    g_4d5bb8->unk22c = 30.000002f;
+    FUN_41d300();
+    FUN_413450();
+    FUN_4085e0();
+    FUN_408710();
+    FUN_41d180();
+    for (int i = 1; i < 6; i++)
+    {
+        g_49a1f8[i] = g_49a1f8[0];
+        g_49a1f8[i].unk1bac += 500.0f;
+        FUN_408640(&g_49a1f8[i], &g_49a1f8[i].unk1bac);
+        g_49a1f8[i].unk26b0 = g_60f050[i - 1].unk40;
+        g_49a1f8[i].unk26b4 = g_60f050[i - 1].unk44;
+    }
+    FUN_413500();
+    FUN_417e10();
+    FUN_4162c0();
+    FUN_414f00();
+    FUN_4150d0();
+    FUN_419900();
+    FUN_4130d0(1);
 }
 
 // FUNCTION: STUNTGP_D3D 0x4199a0

@@ -45,20 +45,21 @@ struct Vector4
     float w;
 };
 
-// 4 per car, from Car+0x1fe4
+// 4 per car, from Car+0x1fe0
 struct Wheel
 {
-    float unk00;        // 0x0000
-    BYTE unk0004[0x4];  // 0x0004
-    float unk08;        // 0x0008
+    int unk00;          // 0x0000
+    float unk04;        // 0x0004
+    BYTE unk0008[0x4];  // 0x0008
     float unk0c;        // 0x000c
-    BYTE unk0010[0x1c]; // 0x0010
-    int unk2c;          // 0x002c
-    float unk30;        // 0x0030
+    float unk10;        // 0x0010
+    BYTE unk0014[0x1c]; // 0x0014
+    int unk30;          // 0x0030
     float unk34;        // 0x0034
-    BYTE unk0038[0x3c]; // 0x0038
-    int unk74;          // 0x0074
-    BYTE unk0078[0x20]; // 0x0078
+    float unk38;        // 0x0038
+    BYTE unk003c[0x3c]; // 0x003c
+    int unk78;          // 0x0078
+    BYTE unk007c[0x1c]; // 0x007c
 };
 
 // 6 entries at 0x49a1f8
@@ -66,20 +67,25 @@ struct Car
 {
     BYTE unk0000[0x220];     // 0x0000
     float unk220;            // 0x0220
-    BYTE unk0224[0x8];       // 0x0224
+    float unk224;            // 0x0224
+    float unk228;            // 0x0228
     float unk22c;            // 0x022c
-    BYTE unk0230[0x24];      // 0x0230
+    float unk230;            // 0x0230
+    float unk234;            // 0x0234
+    float unk238;            // 0x0238
+    BYTE unk023c[0x18];      // 0x023c
     float unk254;            // 0x0254
-    BYTE unk0258[0xa68];     // 0x0258
-    Vector4 unkcc0[4];       // 0x0cc0
-    BYTE unk0d00[0x278];     // 0x0d00
+    BYTE unk0258[0xa60];     // 0x0258
+    Vector4 unkcb8[4];       // 0x0cb8
+    BYTE unk0cf8[0x280];     // 0x0cf8
     float unkf78;            // 0x0f78
     float unkf7c;            // 0x0f7c
     BYTE unk0f80[0xc28];     // 0x0f80
     int active;              // 0x1ba8
-    BYTE unk1bac[0x4];       // 0x1bac
+    float unk1bac;           // 0x1bac
     float unk1bb0;           // 0x1bb0
-    BYTE unk1bb4[0xd8];      // 0x1bb4
+    float unk1bb4;           // 0x1bb4
+    BYTE unk1bb8[0xd4];      // 0x1bb8
     float unk1c8c[3];        // 0x1c8c
     BYTE unk1c98[0x58];      // 0x1c98
     float unk1cf0;           // 0x1cf0
@@ -93,9 +99,9 @@ struct Car
     float unk1fd0;           // 0x1fd0
     BYTE unk1fd4[0x4];       // 0x1fd4
     int unk1fd8;             // 0x1fd8
-    BYTE unk1fdc[0x8];       // 0x1fdc
-    Wheel wheels[4];         // 0x1fe4
-    BYTE unk2244[0x2c];      // 0x2244
+    BYTE unk1fdc[0x4];       // 0x1fdc
+    Wheel wheels[4];         // 0x1fe0
+    BYTE unk2240[0x30];      // 0x2240
     float unk2270;           // 0x2270
     BYTE unk2274[0x4];       // 0x2274
     int unk2278;             // 0x2278
@@ -173,6 +179,15 @@ struct Car
     BYTE unk764c[0x34];      // 0x764c
     DWORD unk7680;           // 0x7680
     BYTE unk7684[0xa0];      // 0x7684
+};
+
+// 6 entries at 0x60f050, one per car
+struct Driver
+{
+    char name[0x40];  // 0x00
+    int unk40;        // 0x40
+    int unk44;        // 0x44
+    BYTE unk48[0x1c]; // 0x48
 };
 
 struct GameSlot
@@ -364,4 +379,7 @@ void FUN_442030();
 
 extern Car g_49a1f8[6];
 extern Car *g_4d5bb8;
+extern Car *g_474630;
+extern Driver g_60f050[6];
+extern DWORD g_60f2b0;
 #endif /* GAMEUPDATE_H */
