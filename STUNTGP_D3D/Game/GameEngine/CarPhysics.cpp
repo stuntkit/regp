@@ -155,6 +155,9 @@ CameraPath *g_49a158;
 // GLOBAL: STUNTGP_D3D 0x49a15c
 CameraPath *g_49a15c;
 
+// GLOBAL: STUNTGP_D3D 0x49a160
+CameraPath *g_49a160;
+
 // GLOBAL: STUNTGP_D3D 0x49a16c
 float g_49a16c;
 
@@ -1987,6 +1990,49 @@ void FUN_40f3c0()
         g_482670 * g_4d5bb8->unk2618 * 0.25f;
 }
 
+// FUNCTION: STUNTGP_D3D 0x40f3f0
+void FUN_40f3f0(Vector4 *a, Wheel *wheel, float v, float *out, int index)
+{
+    v = (float)fabs(v);
+    float s = v * 1.3424487f;
+    float f = -(((s * s * 3.5000001e-05f + 0.15f) * (1.0f / a->y) + 0.005f) * wheel->unk0c /
+                (g_4d5bb8->unk2618 * 0.25f));
+    f = (f * g_4d5bb8->wheels[index].unk8c * 100.0f) * 0.00027777778f;
+    if ((float)fabs(f) > v)
+    {
+        f = -v;
+    }
+    if (wheel->unk04 < 0.0f)
+    {
+        f = -f;
+    }
+    wheel->unk1c = f;
+    wheel->unk04 += f;
+    *out += f * 0.5f;
+}
+
+void FUN_405860(Car *car, float *v);
+
+// FUNCTION: STUNTGP_D3D 0x40f4a0
+void FUN_40f4a0(float *a, float *b, int unused)
+{
+    float s = g_4d5bb8->unk1cf0 * 0.6f;
+    float f = (s * s) * g_4d5bb8->unk1fd0 * g_4d5bb8->unkcb4 * g_4d5bb8->unkcac * 0.61283678f;
+    if (g_4d5bb8->unk2640 == 1)
+    {
+        FUN_405860(g_4d5bb8, &f);
+    }
+    g_4d5bb8->unk1f20 = f;
+    float d = (f / g_4d5bb8->unk2618 * 100.0f) * 0.00027777778f;
+    g_4d5bb8->unk1f28 -= d;
+    *a -= d;
+    *b -= d;
+    g_4d5bb8->wheels[0].unk04 -= d;
+    g_4d5bb8->wheels[1].unk04 -= d;
+    g_4d5bb8->wheels[2].unk04 -= d;
+    g_4d5bb8->wheels[3].unk04 -= d;
+}
+
 // FUNCTION: STUNTGP_D3D 0x40f570
 void FUN_40f570()
 {
@@ -2617,6 +2663,42 @@ void FUN_4166f0()
             meshes[20].matrix[1].z = car->unk33cc.unk024.z;
         }
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x413ce0
+void FUN_413ce0()
+{
+    Car *car = g_4d5bb8;
+    Scene *scene = car->unk26b0;
+    car->unk28a8 = 0;
+    car->unk2cf4[0] = 0.0f;
+    car->unk2cf4[1] = 0.0f;
+    car->unk2cf4[2] = 0.0f;
+    car->unk2cf4[3] = 0.0f;
+    ObjectDef *meshes = scene->lods[scene->lod];
+    meshes[5].visible = 0;
+    meshes[6].visible = 0;
+    meshes[7].visible = 0;
+    meshes[8].visible = 0;
+    meshes[9].visible = 0;
+    meshes[11].visible = 0;
+    meshes[12].visible = 0;
+    meshes[13].visible = 0;
+    meshes[14].visible = 0;
+    meshes[15].visible = 0;
+    meshes[16].visible = 0;
+    if (scene->objectCount > 19)
+    {
+        meshes[19].visible = 0;
+    }
+    if (scene->objectCount > 20)
+    {
+        meshes[20].visible = 0;
+    }
+    car->unk7628 = 0;
+    car->unk3928 = 0;
+    car->unk328c.unk13c = 0;
+    car->unk33cc.unk13c = 0;
 }
 
 // GLOBAL: STUNTGP_D3D 0x4d5b30
@@ -3404,6 +3486,24 @@ void FUN_407000()
     g_4d5bb8->unk2674 = 0;
 }
 
+extern StuntKnot g_499fb8[33];
+
+// FUNCTION: STUNTGP_D3D 0x4077b0
+int FUN_4077b0()
+{
+    StuntKnot *knot = &g_499fb8[g_4d5bb8->unk2674];
+    if (knot->pathPosition != 0.0f &&
+        knot->pathPosition * g_49a160->unk18 * 0.01f -
+                g_4d5bb8->unk2658 * g_49a160->unk18 * 0.01f <
+            10000.0f &&
+        g_4d5bb8->unk2574 * 0.5f < g_4d5bb8->unk2570 && g_4d5bb8->unk1cf8 > 0.5f &&
+        g_4d5bb8->unk045c * 0.75f > g_4d5bb8->unk1cfc)
+    {
+        return 1;
+    }
+    return 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x407860
 int FUN_407860()
 {
@@ -3414,6 +3514,43 @@ int FUN_407860()
         return 1;
     }
     return 0;
+}
+
+// Nearest active car ahead within the 100-unit lap fraction, else the nearest behind.
+// FUNCTION: STUNTGP_D3D 0x407a70
+Car *FUN_407a70(Car *self)
+{
+    float mine = fmod(self->unk23b0, 100.0);
+    Car *car = g_49a1f8;
+    Car *ahead = NULL;
+    float aheadDist = 1000.0f;
+    Car *behind = NULL;
+    float behindDist = 1000.0f;
+    for (int i = 0; i < 6; i++, car++)
+    {
+        if (car != self && car->active == 1)
+        {
+            float d = fmod(car->unk23b0, 100.0) - mine;
+            if (d < 0.0f)
+            {
+                if (d < behindDist)
+                {
+                    behindDist = d;
+                    behind = car;
+                }
+            }
+            else if (d < aheadDist)
+            {
+                aheadDist = d;
+                ahead = car;
+            }
+        }
+    }
+    if (!ahead)
+    {
+        ahead = behind;
+    }
+    return ahead;
 }
 
 // FUNCTION: STUNTGP_D3D 0x407dd0

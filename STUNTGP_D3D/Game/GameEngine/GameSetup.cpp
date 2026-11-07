@@ -39,13 +39,6 @@ struct Unk45c670
 
 void FUN_45c670(Unk45c670 *object);
 
-struct StuntKnot
-{
-    float pathPosition; // 0x00
-    float width;        // 0x04
-    int grade;          // 0x08
-};
-
 void FUN_4411c0();
 void FUN_401d40();
 void FUN_402420();
@@ -427,6 +420,44 @@ void FUN_401de0()
     Matrix_Identity(g_472210);
     Matrix_Identity(g_472250);
     Matrix_Identity(g_472290);
+}
+
+// Camera preset record in the level data (g_624478), 0x60 bytes each.
+struct CameraRecord
+{
+    int unk00;       // 0x00
+    float fov;       // 0x04
+    BYTE unk08[0x8]; // 0x08
+    Vec4 pos;        // 0x10
+    BYTE unk20[0x10]; // 0x20
+    Vec4 target;     // 0x30
+    Vec4 up;         // 0x40
+    BYTE unk50[0x10]; // 0x50
+};
+
+extern CameraPreset g_4722d8[32];
+extern int g_499f90;
+
+// GLOBAL: STUNTGP_D3D 0x499f94
+int g_499f94;
+
+// FUNCTION: STUNTGP_D3D 0x401e50
+void FUN_401e50()
+{
+    if (g_6244a4 != 0)
+    {
+        for (DWORD i = 0; i < g_6244a4; i++)
+        {
+            g_4722d8[i].pos = ((CameraRecord *)g_624478)[i].pos;
+            g_4722d8[i].target = ((CameraRecord *)g_624478)[i].target;
+            g_4722d8[i].up = ((CameraRecord *)g_624478)[i].up;
+            g_4722d8[i].fov = ((CameraRecord *)g_624478)[i].fov;
+            g_4722d8[i].unk34 = 0;
+            g_4722d8[i].roll = 0.0f;
+        }
+        g_499f90 = g_6244a4;
+        g_499f94 = 0;
+    }
 }
 
 // STUB: STUNTGP_D3D 0x40a2f0

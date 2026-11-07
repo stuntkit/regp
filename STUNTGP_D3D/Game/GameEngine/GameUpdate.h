@@ -118,7 +118,9 @@ struct Wheel
     BYTE unk0008[0x4];  // 0x0008
     float unk0c;        // 0x000c
     float unk10;        // 0x0010
-    BYTE unk0014[0x1c]; // 0x0014
+    BYTE unk0014[0x8];  // 0x0014
+    float unk1c;        // 0x001c
+    BYTE unk0020[0x10]; // 0x0020
     float unk30;        // 0x0030
     float unk34;        // 0x0034
     float unk38;        // 0x0038
@@ -129,7 +131,8 @@ struct Wheel
     int unk78;          // 0x0078
     BYTE unk007c[0x4];  // 0x007c
     float unk80;        // 0x0080
-    BYTE unk0084[0xc];  // 0x0084
+    BYTE unk0084[0x8];  // 0x0084
+    float unk8c;        // 0x008c
     float unk90;        // 0x0090
     float unk94;        // 0x0094
 };
@@ -288,6 +291,14 @@ struct Suspension
     float maxStiffnessOut; // 0x14
 };
 
+// Stunt marker along the track path (CarAI_StuntKnotList).
+struct StuntKnot
+{
+    float pathPosition; // 0x00
+    float width;        // 0x04
+    int grade;          // 0x08
+};
+
 struct Car
 {
     BYTE unk0000[0x20];       // 0x0000
@@ -376,9 +387,9 @@ struct Car
     float unk1f14;            // 0x1f14
     BYTE unk1f18[0x4];        // 0x1f18
     int unk1f1c;              // 0x1f1c
-    BYTE unk1f20[0x4];        // 0x1f20
+    float unk1f20;            // 0x1f20
     float unk1f24;            // 0x1f24
-    BYTE unk1f28[0x4];        // 0x1f28
+    float unk1f28;            // 0x1f28
     PosHistory unk1f2c;       // 0x1f2c
     float unk1fd0;            // 0x1fd0
     int unk1fd4;              // 0x1fd4
@@ -513,7 +524,9 @@ struct Car
     float unk2648;            // 0x2648
     int unk264c;              // 0x264c path knot
     float unk2650;            // 0x2650
-    BYTE unk2654[0xc];        // 0x2654
+    int unk2654;              // 0x2654
+    float unk2658;            // 0x2658
+    BYTE unk265c[0x4];        // 0x265c
     float unk2660;            // 0x2660
     unsigned int unk2664;     // 0x2664
     BYTE unk2668[0xc];        // 0x2668
@@ -608,7 +621,8 @@ struct Car
     Body body;                // 0x7270
     int unk7614;              // 0x7614
     int unk7618;              // 0x7618
-    BYTE unk761c[0x10];       // 0x761c
+    BYTE unk761c[0xc];        // 0x761c
+    int unk7628;              // 0x7628
     int unk762c;              // 0x762c
     int unk7630;              // 0x7630
     unsigned int unk7634;     // 0x7634
