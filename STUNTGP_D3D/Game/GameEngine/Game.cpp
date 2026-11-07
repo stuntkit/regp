@@ -29,3 +29,33 @@ void GetGameBuildVersion()
 #endif
     return;
 }
+
+// STUB: STUNTGP_D3D 0x441d70
+void FUN_441d70()
+{
+}
+
+// STUB: STUNTGP_D3D 0x441f00
+void FUN_441f00()
+{
+}
+
+// STUB: STUNTGP_D3D 0x442120
+void FUN_442120()
+{
+}
+
+// STUB: STUNTGP_D3D 0x442180
+void FUN_442180()
+{
+}
+
+// STUB: STUNTGP_D3D 0x4427b0
+void FUN_4427b0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x442810
+void FUN_442810()
+{
+}

@@ -97,3 +97,14 @@ DWORD g_surfaceSlotCount = 0;
 // size inferred: next referenced address is 0x5da1c0
 // GLOBAL: STUNTGP_D3D 0x5d91d0
 SurfaceSlot g_surfaceSlots[255];
+
+// --- WinMain main loop state ---
+
+// GLOBAL: STUNTGP_D3D 0x612be8
+int g_612be8 = 0;
+
+// GLOBAL: STUNTGP_D3D 0x612bec
+int g_612bec = 0;
+
+// GLOBAL: STUNTGP_D3D 0x612948
+int g_612948 = 0;

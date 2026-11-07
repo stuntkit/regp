@@ -296,60 +296,27 @@ void FUN_44ea50()
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nCmdShow)
 {
     MSG uMsg;
-    static BOOL SHOULD_STOP = false;
 
     g_DISPLAYRESWIDTH = 640;
     g_DISPLAYRESHEIGHT = 480;
     g_DISPLAYRESDEPTH = 8;
-    BOOL windowCreated = windowCreate(hInstance, hPrevInstance);
-    if (!windowCreated)
-    {
-        return 0;
-    }
-
-#if defined(SGP_DEBUG)
-    OutputDebugString("Woo, window created!");
-#endif
-
 #if !defined(SGP_DEBUG)
-    ShowCursor(false);
+    ShowCursor(FALSE);
 #endif
-
     Script_ParseGameConfig();
     GetGameBuildVersion();
+    if (!windowCreate(hInstance, hPrevInstance))
+    {
+        return FALSE;
+    }
 
-    // srand(time(NULL));
-
-    static HINSTANCE uwu = hInstance;
-    static HINSTANCE owo = hPrevInstance;
-
-    static int mode_current = 2;
-
-    // FUN_442120();  // bigger setup
-    // FUN_44e5d0(); // some variables setup?
+    g_612be8 = 2;
+    g_612bec = 2;
+    FUN_442120();
+    FUN_44e5d0();
     do
     {
-        BOOL availableMessage = PeekMessageA(&uMsg, NULL, WM_NULL, WM_NULL, PM_REMOVE);
-        if (!availableMessage)
-        {
-            FUN_44e9d0();
-            // if ((false) && (false))
-            // {
-            //     // TODO: replace with switch?
-            //     if (mode_current == 1)
-            //     {
-            //         OutputDebugString("Game logic");
-            //         printf("game logic");
-            //     }
-            //     else if (mode_current == 2)
-            //     {
-            //         OutputDebugString("Frontend logic");
-            //         printf("Frontend logic");
-            //     }
-            //     // thunk
-            // }
-        }
-        else
+        if (PeekMessage(&uMsg, NULL, 0, 0, PM_REMOVE))
         {
             if (uMsg.message == WM_QUIT)
             {
@@ -358,13 +325,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
             TranslateMessage(&uMsg);
             DispatchMessage(&uMsg);
         }
+        else
+        {
+            FUN_44e9d0();
+            if (g_61c374 && !g_WindowMessage)
+            {
+                if (g_612be8 == 1)
+                {
+                    FUN_442810();
+                    FUN_4427b0();
+                }
+                else if (g_612be8 == 2)
+                {
+                    FUN_441f00();
+                    FUN_441d70();
+                }
+                thunk_FUN_44e6b0();
+            }
+        }
+    } while (g_612948 != 1);
 
-    } while (!SHOULD_STOP);
-
-    DestroyWindow(NULL);
-    // shutdowny();
-    // fuckery();
-
+    FUN_44e6c0();
+    FUN_442180();
     FUN_44ea50();
     return uMsg.wParam;
 }

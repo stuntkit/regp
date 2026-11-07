@@ -60,4 +60,9 @@ struct SurfaceSlot
 
 extern DWORD g_surfaceSlotCount;
 extern SurfaceSlot g_surfaceSlots[255];
+
+// --- WinMain main loop state ---
+extern int g_612be8;
+extern int g_612bec;
+extern int g_612948;
 #endif /* GLOBALS_H */
