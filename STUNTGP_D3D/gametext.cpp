@@ -6,6 +6,7 @@
 
 #include "globals.h"
 #include "Game/GameEngine/io_wad.h"
+#include "Game/GameEngine/GameUpdate.h"
 
 extern int g_612964;
 extern DWORD g_612d00;
@@ -495,6 +496,25 @@ void FUN_443d80()
 {
     g_612964 = 1;
     g_612968 = 1;
+}
+
+// GLOBAL: STUNTGP_D3D 0x60d71c
+int g_60d71c;
+
+void FUN_449c60();
+
+// FUNCTION: STUNTGP_D3D 0x443d90
+void FUN_443d90()
+{
+    Car *car = g_4d5bb8;
+    g_60d71c = 0;
+    memset(&car->race, 0, 0x70);
+    car->race.unk1c = 0;
+    car->race.unk30 = 0;
+    car->race.unk4c[0] = 0;
+    car->race.unk04 = 0;
+    car->race.unk4c[7] = 0;
+    FUN_449c60();
 }
 
 // FUNCTION: STUNTGP_D3D 0x445610

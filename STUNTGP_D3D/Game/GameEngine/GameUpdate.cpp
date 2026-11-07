@@ -1759,6 +1759,34 @@ void FUN_443100()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x4434f0
+void FUN_4434f0()
+{
+    GhostRecord *rec = g_60d628;
+    for (int i = 0; i < 4; i++, rec++)
+    {
+        if (rec->unk00 == 1 && rec->ghost->unk00 == 0)
+        {
+            FUN_41ab00((Car *)rec->unk04, (Replay *)rec->ghost);
+        }
+        ((Car *)rec->unk04)->active = rec->unk00;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x443530
+void FUN_443530()
+{
+    GhostRecord *rec = g_60d628;
+    for (int i = 0; i < 4; i++, rec++)
+    {
+        if (rec->unk00 == 1)
+        {
+            FUN_41ab00((Car *)rec->unk04, (Replay *)rec->ghost);
+        }
+        ((Car *)rec->unk04)->active = rec->unk00;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x443560
 void FUN_443560()
 {
@@ -2886,6 +2914,87 @@ void FUN_45e1d0()
             }
         }
     }
+}
+
+// Expands a PCX's trailing 256-colour palette into four-byte entries.
+// FUNCTION: STUNTGP_D3D 0x45e620
+void FUN_45e620(BYTE *pcx, BYTE *out, int size)
+{
+    BYTE *pal = pcx + size - 0x300;
+    if (pal[-1] == 12)
+    {
+        for (int i = 0; i < 0x300; i += 3)
+        {
+            out[1] = pal[i];
+            out[2] = pal[i + 1];
+            out[3] = pal[i + 2];
+            out[0] = 0;
+            out += 4;
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e670
+void FUN_45e670(BYTE *pcx, BYTE *out)
+{
+    BYTE *src = pcx + 0x80;
+    for (int y = 0; y < g_489720; y++)
+    {
+        for (int x = 0; x < g_48971c;)
+        {
+            BYTE c = *src;
+            if (c > 0xc0)
+            {
+                BYTE v = src[1];
+                int n = c - 0xc0;
+                x += n;
+                for (int i = 0; i < n; i++)
+                {
+                    *out++ = v;
+                }
+                src += 2;
+            }
+            else
+            {
+                *out++ = c;
+                src++;
+                x++;
+            }
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e720
+int FUN_45e720(BYTE *src, BYTE *out, int size)
+{
+    BYTE *start = out;
+    BYTE *end = src + size;
+    int x = -1;
+    while (src < end)
+    {
+        BYTE c = *src;
+        x = (x + 1) % g_48971c;
+        src++;
+        if (c <= 0xc0)
+        {
+            int n = 1;
+            while (c == *src && n < 0x3f && x < g_48971c - 1)
+            {
+                x++;
+                src++;
+                n++;
+            }
+            *out = n + 0xc0;
+        }
+        else
+        {
+            *out = 0xc1;
+        }
+        out++;
+        *out++ = c;
+    }
+    *out = 12;
+    return out - start + 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x45e7b0

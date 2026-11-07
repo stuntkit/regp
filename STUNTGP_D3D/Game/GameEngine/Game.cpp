@@ -1179,6 +1179,35 @@ GhostRecord *FUN_443330()
     return best;
 }
 
+// GLOBAL: STUNTGP_D3D 0x60df78
+int g_60df78;
+
+// GLOBAL: STUNTGP_D3D 0x60df7c
+int g_60df7c;
+
+// GLOBAL: STUNTGP_D3D 0x60df80
+Unk4d5cc0 *g_60df80;
+
+extern char g_LevelScript[32];
+int FUN_4199f0(char *name, char *buffer);
+
+// FUNCTION: STUNTGP_D3D 0x442ef0
+void FUN_442ef0()
+{
+    char name[16];
+    g_60df80 = NULL;
+    g_60df7c = 0;
+    g_60df78 = 0;
+    // STRING: STUNTGP_D3D 0x482714
+    sprintf(name, "%s", g_LevelScript);
+    if (FUN_4199f0(name, (char *)g_4d5cc0))
+    {
+        g_60df80 = g_4d5cc0;
+        g_60df78 = g_4d5cc0[0].unk3c;
+        g_60df7c = 0;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x442f60
 void FUN_442f60(Unk4d5cc0 *ghost)
 {

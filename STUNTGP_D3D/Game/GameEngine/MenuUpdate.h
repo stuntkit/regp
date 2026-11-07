@@ -298,7 +298,9 @@ struct MenuState
     BYTE unk46e0[0x13148 - 0x46e0];
     Unk4d5cc0 *unk13148; // 0x13148
     ShopCar cars[21];    // 0x1314c, [1..20] used
-    BYTE unk144a8[0x19d78 - 0x144a8];
+    BYTE unk144a8[0x14594 - 0x144a8];
+    // Shop catalogue: [1..20] cars, then the part groups returned by FUN_43db20.
+    ShopItem items[75];    // 0x14594
     int unk19d78;          // 0x19d78, index into unk0f1c
     MenuSlot160 unk19d7c;  // 0x19d7c
     // Championship settings, read by FUN_435b60; names are the csv keys.

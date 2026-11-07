@@ -83,7 +83,8 @@ struct SlotEvent
 struct CarRace
 {
     DWORD unk00;      // 0x00
-    BYTE unk04[0x14]; // 0x04
+    int unk04;        // 0x04
+    BYTE unk08[0x10]; // 0x08
     int unk18;        // 0x18
     int unk1c;        // 0x1c
     int unk20;        // 0x20

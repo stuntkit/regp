@@ -396,6 +396,18 @@ int FUN_44ccf0()
     return 0;
 }
 
+int FUN_437d20(ScoreEntry *entry, Initials *name, int score);
+int FUN_437d60(ScoreEntry *entry, Initials *name, int time);
+
+// FUNCTION: STUNTGP_D3D 0x44cd10
+void FUN_44cd10(int track, Initials *name, int time0, int time1, int score2, int score3)
+{
+    FUN_437d60(&g_menuState.unk1a1c[track][0], name, time0);
+    FUN_437d60(&g_menuState.unk1a1c[track][1], name, time1);
+    FUN_437d20(&g_menuState.unk1a1c[track][2], name, score2);
+    FUN_437d20(&g_menuState.unk1a1c[track][3], name, score3);
+}
+
 // Decodes an uncompressed 24-bit TGA into top-down RGB.
 // FUNCTION: STUNTGP_D3D 0x4622c0
 void FUN_4622c0(BYTE *tga, BYTE *dst, void *palette, int size)
