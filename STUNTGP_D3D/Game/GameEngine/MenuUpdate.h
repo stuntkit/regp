@@ -24,11 +24,35 @@ struct ScoreTable
     ScoreEntry entries[10];
 };
 
+// High-score initials, copied as one 3-byte block.
+struct Initials
+{
+    char c[3];
+};
+
+// Car%02d row of the front-end csv, read by FUN_435e30.
+struct ShopCar
+{
+    int unk00;        // 0x00, set for a used car
+    int unk04;        // 0x04
+    int unk08;        // 0x08
+    int parts[14][4]; // 0x0c, indexed by part id, 3..13 read from the csv
+};
+
 struct MenuSlot160
 {
-    BYTE unk000[8];
-    int unk008; // 0x008
-    BYTE unk00c[0x160 - 0xc];
+    int unk000;       // 0x000
+    Initials name;    // 0x004
+    BYTE unk007;      // 0x007
+    int unk008;       // 0x008
+    int money;        // 0x00c, spent in the shop
+    int car;          // 0x010, index into MenuState::cars
+    ShopCar carSetup; // 0x014
+    int unk100;       // 0x100
+    int unk104;       // 0x104
+    int sponsor;      // 0x108, index into MenuState::sponsors
+    int unk10c;       // 0x10c
+    int unk110[5][4]; // 0x110
 };
 
 struct MenuSlot20
@@ -143,15 +167,6 @@ struct ShopItem
     float unk128; // 0x128
 };
 
-// Car%02d row of the front-end csv, read by FUN_435e30.
-struct ShopCar
-{
-    int unk00;        // 0x00
-    int unk04;        // 0x04
-    int unk08;        // 0x08
-    int parts[14][4]; // 0x0c, indexed by part id, 3..13 read from the csv
-};
-
 struct ShopEntry
 {
     ShopCar car;   // 0x000
@@ -259,7 +274,8 @@ struct MenuState
     int unk46dc; // 0x46dc
     BYTE unk46e0[0x13148 - 0x46e0];
     Unk4d5cc0 *unk13148; // 0x13148
-    BYTE unk1314c[0x19d78 - 0x1314c];
+    ShopCar cars[21];    // 0x1314c, [1..20] used
+    BYTE unk144a8[0x19d78 - 0x144a8];
     int unk19d78;          // 0x19d78, index into unk0f1c
     MenuSlot160 unk19d7c;  // 0x19d7c
     // Championship settings, read by FUN_435b60; names are the csv keys.

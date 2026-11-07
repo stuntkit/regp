@@ -200,12 +200,6 @@ FrontEnd g_frontEnd;
 // GLOBAL: STUNTGP_D3D 0x61297c
 DWORD g_61297c;
 
-// High-score initials, copied as one 3-byte block.
-struct Initials
-{
-    char c[3];
-};
-
 // GLOBAL: STUNTGP_D3D 0x47966c
 Initials g_47966c = {'!', '!', '!'};
 
