@@ -148,9 +148,9 @@ int FUN_43ee40(PoolObject *object)
     {
         return 0;
     }
-    if (object->unk00[2])
+    if (object->unk08)
     {
-        int track = FUN_43eee0(object->unk00[2]);
+        int track = FUN_43eee0(object->unk08);
         if (track != g_frontEnd.musicTrack)
         {
             FUN_43dc30(track);

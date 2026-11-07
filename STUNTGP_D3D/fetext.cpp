@@ -1664,27 +1664,22 @@ char *FeCsv_Load(char *name)
     return text;
 }
 
-struct MenuList
-{
-    BYTE unk00[0x14];
-    int count;       // 0x14
-    MenuDef *def;    // 0x18
-    float unk1c;     // 0x1c
-    float unk20;     // 0x20
-    float unk24[32]; // 0x24
-    int selected;    // 0xa4
-    int unka8;       // 0xa8
-    int unkac;       // 0xac
-    int unkb0;       // 0xb0
-    int unkb4;       // 0xb4
-    float unkb8;     // 0xb8, MenuDef::x
-    float unkbc;     // 0xbc, MenuDef::y
-    float unkc0;     // 0xc0
-    int unkc4;       // 0xc4
-};
-
 int FUN_43c900(MenuDef *def);
 void FUN_43c930(MenuList *list, int index);
+
+// FUNCTION: STUNTGP_D3D 0x43c970
+void FUN_43c970(PoolObject *object)
+{
+}
+
+// STUB: STUNTGP_D3D 0x43c980
+int FUN_43c980(PoolObject *object, int msg, int arg)
+{
+    return 0;
+}
+
+// GLOBAL: STUNTGP_D3D 0x4794e8
+PoolClass g_menuListClass = {FUN_43c970, FUN_43c980};
 
 // FUNCTION: STUNTGP_D3D 0x43c860
 int FUN_43c860(MenuList *list, MenuDef *def)

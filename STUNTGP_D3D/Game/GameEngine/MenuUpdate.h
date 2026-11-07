@@ -3,6 +3,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+#include "../../objects.h"
+
 struct Unk4d5cc0;
 
 struct MenuSlot
@@ -202,6 +204,26 @@ struct MenuDef
     int unk2c;       // 0x2c
 };
 
+// Front-end list of MenuDef items; FUN_43c860 sets it up.
+struct MenuList
+{
+    PoolObject base; // 0x00
+    int count;       // 0x14
+    MenuDef *def;    // 0x18
+    float unk1c;     // 0x1c
+    float unk20;     // 0x20
+    float unk24[32]; // 0x24
+    int selected;    // 0xa4
+    int unka8;       // 0xa8
+    int unkac;       // 0xac
+    int unkb0;       // 0xb0
+    int unkb4;       // 0xb4
+    float unkb8;     // 0xb8, MenuDef::x
+    float unkbc;     // 0xbc, MenuDef::y
+    float unkc0;     // 0xc0
+    int unkc4;       // 0xc4
+};
+
 struct MenuLanguage
 {
     char name[0x20];
@@ -294,7 +316,8 @@ struct MenuState
     int unk1a6a8; // 0x1a6a8
     BYTE unk1a6ac[0x1a6b0 - 0x1a6ac];
     MenuRecord unk1a6b0[64]; // 0x1a6b0, count unknown
-    BYTE unk1c7b0[0x1dae8 - 0x1c7b0];
+    BYTE unk1c7b0[0x1dae4 - 0x1c7b0];
+    int unk1dae4; // 0x1dae4
 };
 
 extern MenuState g_menuState;
@@ -329,6 +352,9 @@ struct MenuHolder
     PoolObject *child; // 0x14
 };
 
+extern PoolClass g_menuListClass;
+
+int FUN_43c860(MenuList *list, MenuDef *def);
 void FUN_424bd0(float x, float y);
 int FUN_43d790(int value, int min, int max);
 float FUN_43d810(float current, float target, float rate);

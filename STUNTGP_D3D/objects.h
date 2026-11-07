@@ -21,7 +21,16 @@ struct Pool
 
 struct PoolObject
 {
-    DWORD unk00[3];
+    const char *name; // 0x00
+    DWORD type;       // 0x04
+    DWORD unk08;      // 0x08
+    void (*destroy)(PoolObject *object);
+    int (*message)(PoolObject *object, int msg, int arg);
+};
+
+// Handlers copied into a PoolObject when it is created.
+struct PoolClass
+{
     void (*destroy)(PoolObject *object);
     int (*message)(PoolObject *object, int msg, int arg);
 };

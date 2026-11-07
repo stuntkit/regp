@@ -84,7 +84,8 @@ struct Unk454b40
 
 struct Unk455fc0
 {
-    BYTE unk00[0x18]; // 0x00
+    DWORD unk00[5];    // 0x00
+    PoolObject *child; // 0x14
     int unk18;        // 0x18
     int unk1c;        // 0x1c
     int unk20;        // 0x20
@@ -2232,7 +2233,7 @@ void FUN_43f610()
 {
     if (g_frontEnd.screen)
     {
-        switch (g_frontEnd.screen->unk00[1])
+        switch (g_frontEnd.screen->type)
         {
         case 2:
         case 3:
@@ -2742,6 +2743,39 @@ void FUN_455d70(MenuHolder *object)
     child->destroy(child);
     Pool_Free(child);
     object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x455c70
+int FUN_455c70(Unk455fc0 *object)
+{
+    MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
+    memset(list, 0, sizeof(MenuList));
+    // The two handlers are copied as one block.
+    *(PoolClass *)&list->base.destroy = g_menuListClass;
+    list->base.type = 0x29;
+    // STRING: STUNTGP_D3D 0x488750
+    list->base.name = "MenuText";
+    list->base.unk08 = 0;
+    if (!FUN_43c860(list, &g_488718))
+    {
+        Pool_Free(list);
+        object->child = NULL;
+    }
+    else
+    {
+        object->child = &list->base;
+    }
+    PoolObject *child = object->child;
+    child->message(child, 0x18, 0);
+    child->message(child, 0x16, 0);
+    object->unk18 = g_menuState.unk00d4 % 2;
+    object->unk1c = g_menuState.unk00d8 % 2;
+    object->unk20 = g_menuState.unk00dc % 3;
+    object->unk24 = g_menuState.unk00e0 % 3;
+    object->unk28 = g_menuState.unk00e4 % 4;
+    object->unk2c = g_menuState.unk00e8 % 4;
+    g_menuState.unk1dae4 = 0;
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x455f60
