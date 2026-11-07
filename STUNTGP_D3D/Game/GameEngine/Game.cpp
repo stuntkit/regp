@@ -20,6 +20,36 @@ const char g_VERSION_FORMAT[] = "Version: %s - %s";
 // GLOBAL: STUNTGP_D3D 0x612bf8
 static char g_VERSION_STRING[255];
 
+// GLOBAL: STUNTGP_D3D 0x482668
+float g_482668 = 1.0f;
+
+// GLOBAL: STUNTGP_D3D 0x48266c
+float g_48266c = 1.0f;
+
+// GLOBAL: STUNTGP_D3D 0x482670
+float g_482670 = 0.2725f;
+
+// GLOBAL: STUNTGP_D3D 0x482674
+float g_482674 = 1.0f / 0.2725f;
+
+// GLOBAL: STUNTGP_D3D 0x482678
+float g_482678 = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x48267c
+float g_48267c = -0.2725f;
+
+// GLOBAL: STUNTGP_D3D 0x482680
+float g_482680 = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x482688
+float g_482688 = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x48268c
+float g_48268c = -1.0f;
+
+// GLOBAL: STUNTGP_D3D 0x482690
+float g_482690 = 0.0f;
+
 // GLOBAL: STUNTGP_D3D 0x612cf8
 int g_612cf8;
 
@@ -34,6 +64,20 @@ int g_4d5b20;
 
 // GLOBAL: STUNTGP_D3D 0x60d61c
 int g_60d61c;
+
+// FUNCTION: STUNTGP_D3D 0x441f90
+void FUN_441f90()
+{
+    g_48266c = 1.0f / g_482668;
+    g_482688 = 0.0f;
+    g_48268c = -1.0f;
+    g_482690 = 0.0f;
+    g_482670 = g_482668 * 0.2725f;
+    g_482674 = 1.0f / g_482670;
+    g_482678 = 0.0f;
+    g_48267c = g_482670 * -1.0f;
+    g_482680 = 0.0f;
+}
 
 // FUNCTION: STUNTGP_D3D 0x442010
 void GetGameBuildVersion()
