@@ -1,6 +1,7 @@
 #include "GameUpdate.h"
 
 #include <math.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -15,6 +16,7 @@ extern float g_482680;
 extern float g_482688;
 extern float g_48268c;
 extern float g_482690;
+extern int g_60eff0;
 extern DWORD g_60eff8;
 extern DWORD g_60effc;
 extern DWORD g_60f000[4];
@@ -23,6 +25,8 @@ extern int g_576be0;
 
 int FUN_442fb0();
 void FUN_443de0();
+void FUN_40e360(Car *sub);
+void FUN_40e380(Car *sub);
 
 void FUN_442cf0(int a, char *text, Car *car, int b, int c);
 void FUN_401d70(float *v, float scale);
@@ -126,9 +130,59 @@ void FUN_405c80()
 {
 }
 
-// STUB: STUNTGP_D3D 0x406190
+// GLOBAL: STUNTGP_D3D 0x49a158
+CameraPath *g_49a158;
+
+// GLOBAL: STUNTGP_D3D 0x49a15c
+CameraPath *g_49a15c;
+
+// GLOBAL: STUNTGP_D3D 0x49a16c
+float g_49a16c;
+
+// GLOBAL: STUNTGP_D3D 0x49a170
+float g_49a170;
+
+// GLOBAL: STUNTGP_D3D 0x472b88
+float g_472b88[4] = {0.0f, 0.05f, 0.1f, 0.2f};
+
+// GLOBAL: STUNTGP_D3D 0x472b98
+float g_472b98 = 0.5f;
+
+// STUB: STUNTGP_D3D 0x405370
+void FUN_405370(float *pos, CameraPath *path, float *index, float *distance)
+{
+}
+
+// STUB: STUNTGP_D3D 0x405610
+void FUN_405610(float amount)
+{
+}
+
+// STUB: STUNTGP_D3D 0x406140
+void FUN_406140(float amount)
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x406190
 void FUN_406190()
 {
+    if (g_4d5bb8->unk2640 == 1)
+    {
+        return;
+    }
+    FUN_405370(&g_4d5bb8->posX, g_49a15c, &g_4d5bb8->unk264c, &g_4d5bb8->unk2650);
+    FUN_405370(&g_4d5bb8->posX, g_49a158, &g_4d5bb8->unk2644, &g_4d5bb8->unk2648);
+    g_49a16c = g_4d5bb8->unk2648 * g_49a158->unk18 * 0.01f;
+    g_49a170 = g_4d5bb8->unk2650 * g_49a15c->unk18 * 0.01f;
+    if (g_4d5bb8->unk762c == 1)
+    {
+        FUN_406140(g_472b98);
+        return;
+    }
+    if (g_4d5bb8->race.unk80[6] && g_4d5bb8->unk2250 != 1 && g_4d5bb8->unk7648 != 1)
+    {
+        FUN_405610(g_472b88[g_4d5bb8->race.unk80[6]]);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x406270
@@ -1309,9 +1363,30 @@ void FUN_411420()
     FUN_411410(g_4d5bb8);
 }
 
-// STUB: STUNTGP_D3D 0x412670
+// FUNCTION: STUNTGP_D3D 0x412670
 void FUN_412670()
 {
+    if (g_60eff0 == 3)
+    {
+        return;
+    }
+    if (g_4d5bb8->race.unk4c[10])
+    {
+        g_4d5bb8->race.unk4c[10]--;
+        g_4d5bb8->unk2634 = (float)g_4d5bb8->race.unk4c[10] * 0.0055555556f + 1.0f;
+        g_4d5bb8->unk2250 = 1;
+        FUN_40e360(g_4d5bb8);
+        FUN_40e380(g_4d5bb8);
+        return;
+    }
+    if (g_4d5bb8->race.unk00 && !g_4d5bb8->unk22b4 && g_4d5bb8->unk22bc == 1 &&
+        g_4d5bb8->unk045c * 0.2f < g_4d5bb8->unk1cfc && abs((int)g_4d5bb8->race.unk00 - 60) < 10)
+    {
+        g_4d5bb8->race.unk4c[10] = 180;
+        g_4d5bb8->unk1cfc = g_4d5bb8->unk045c;
+        FUN_442cf0(180, g_6127a0[55], g_4d5bb8, 2, 90);
+        g_4d5bb8->unk260c += (float)(DWORD)g_60d688[25];
+    }
 }
 
 // Damped spring, stepped four times per tick.
