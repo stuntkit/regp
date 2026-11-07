@@ -59,8 +59,13 @@ struct MenuSlot160
 
 struct MenuSlot20
 {
-    int unk00;
-    BYTE unk04[0x1c];
+    int unk00;   // 0x00
+    int unk04;   // 0x04
+    int unk08;   // 0x08
+    int unk0c;   // 0x0c
+    int unk10;   // 0x10
+    char name[8]; // 0x14
+    int unk1c;   // 0x1c
 };
 
 // One "<name>, a, b, c, d" row of the front-end csv car tables.
@@ -302,7 +307,9 @@ struct MenuState
     BYTE unk4380[0x4398 - 0x4380];
     int unk4398;     // 0x4398, entries used in unk439c
     int unk439c[20]; // 0x439c
-    BYTE unk43ec[0x4408 - 0x43ec];
+    BYTE unk43ec[0x43f4 - 0x43ec];
+    int unk43f4[4];  // 0x43f4, random car per entry of unk46ac
+    BYTE unk4404[0x4408 - 0x4404];
     int unk4408;     // 0x4408, entries used in unk440c
     int unk440c[26]; // 0x440c
     int unk4474;     // 0x4474
@@ -321,7 +328,9 @@ struct MenuState
     BYTE unk46e0[0x13148 - 0x46e0];
     Unk4d5cc0 *unk13148; // 0x13148
     ShopCar cars[21];    // 0x1314c, [1..20] used
-    BYTE unk144a8[0x19d78 - 0x144a8];
+    BYTE unk144a8[0x14594 - 0x144a8];
+    // Shop catalogue: [1..20] cars, then the part groups returned by FUN_43db20.
+    ShopItem items[75];    // 0x14594
     int unk19d78;          // 0x19d78, index into unk0f1c
     MenuSlot160 unk19d7c;  // 0x19d7c
     // Championship settings, read by FUN_435b60; names are the csv keys.
@@ -352,7 +361,10 @@ struct MenuState
     MenuCarEntry unk1d888[3][4];  // 0x1d888, Easy, Medium, Hard; read by FUN_434e90
     BYTE unk1d9a8[0x1da5c - 0x1d9a8];
     int unk1da5c[6][2];           // 0x1da5c, read by FUN_434e10
-    BYTE unk1da8c[0x1dae4 - 0x1da8c];
+    BYTE unk1da8c[0x1da90 - 0x1da8c];
+    int unk1da90[4][2];           // 0x1da90
+    MenuSlot unk1dab0[4];         // 0x1dab0, sorted by FUN_44d070
+    BYTE unk1dae0[0x1dae4 - 0x1dae0];
     int unk1dae4; // 0x1dae4
 };
 

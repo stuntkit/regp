@@ -24,6 +24,10 @@ void Matrix_Set(float *m, float m00, float m01, float m02, float m03, float m10,
 void FUN_44eda0(float *v, float *len);
 void Matrix_RotationX(float *m, float degrees);
 void Matrix_RotationZ(float *m, float degrees);
+void Matrix_RotationY(float *m, float degrees);
+void Matrix_RotateX(float *m, float degrees);
+void Matrix_RotateY(float *m, float degrees);
+void Matrix_RotateZ(float *m, float degrees);
 
 void Matrix_Transpose(float *out, float *m);
 void Matrix_FromRows(float *r0, float *r1, float *r2, float *m);

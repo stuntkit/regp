@@ -6,6 +6,8 @@
 
 #include "globals.h"
 #include "Game/GameEngine/io_wad.h"
+#include "Game/GameEngine/GameUpdate.h"
+#include "sprite.h"
 
 extern int g_612964;
 extern DWORD g_612d00;
@@ -497,6 +499,25 @@ void FUN_443d80()
     g_612968 = 1;
 }
 
+// GLOBAL: STUNTGP_D3D 0x60d71c
+int g_60d71c;
+
+void FUN_449c60();
+
+// FUNCTION: STUNTGP_D3D 0x443d90
+void FUN_443d90()
+{
+    Car *car = g_4d5bb8;
+    memset(&car->race, 0, 0x70);
+    car->race.unk1c = 0;
+    car->race.unk30 = 0;
+    car->race.unk4c[0] = 0;
+    car->race.unk04 = 0;
+    car->race.unk4c[7] = 0;
+    g_60d71c = 0;
+    FUN_449c60();
+}
+
 // FUNCTION: STUNTGP_D3D 0x445610
 void FUN_445610()
 {
@@ -573,6 +594,75 @@ void Gameplay_LoadIfNeeded()
         Gameplay_Load();
         FUN_445610();
     }
+}
+
+struct ScreenTile
+{
+    float x;
+    float y;
+    float width;
+    float height;
+};
+
+// GLOBAL: STUNTGP_D3D 0x4834e0
+ScreenTile g_4834e0[4] = {
+    {0.0f, 0.0f, 256.0f, 256.0f},
+    {256.0f, 0.0f, 256.0f, 256.0f},
+    {0.0f, 256.0f, 256.0f, 224.0f},
+    {256.0f, 256.0f, 256.0f, 224.0f},
+};
+
+extern int g_61b628;
+
+// Draws a full-screen picture from four consecutive 256x256 textures.
+// FUNCTION: STUNTGP_D3D 0x445800
+void FUN_445800()
+{
+    int texture = g_61b628;
+    memset(&g_spriteDesc, 0, sizeof(g_spriteDesc));
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.z = 0.94f;
+    g_spriteDesc.u0 = 1.0f;
+    g_spriteDesc.v0 = 1.0f;
+    g_spriteDesc.u1 = 1020.0f;
+    g_spriteDesc.v1 = 1020.0f;
+    g_spriteDesc.blendMode = 0x20;
+    ScreenTile *tile = g_4834e0;
+    for (int i = 0; i < 4; i++, tile++)
+    {
+        g_spriteDesc.x = tile->x + 64.0f;
+        g_spriteDesc.y = tile->y;
+        g_spriteDesc.width = tile->width;
+        g_spriteDesc.height = tile->height;
+        g_spriteDesc.texture = texture;
+        FUN_432e00(&g_spriteDesc);
+        texture++;
+    }
+}
+
+extern int g_frameCount;
+void FUN_432a60();
+void FUN_433ee0();
+void FUN_4328c0(int color);
+void FUN_42e420();
+void FUN_442a00();
+void FUN_442a20();
+void FUN_431a80();
+void FUN_433f20();
+
+// FUNCTION: STUNTGP_D3D 0x4458b0
+void FUN_4458b0()
+{
+    g_frameCount++;
+    FUN_432a60();
+    FUN_433ee0();
+    FUN_4328c0(0);
+    FUN_42e420();
+    FUN_442a00();
+    FUN_445800();
+    FUN_442a20();
+    FUN_431a80();
+    FUN_433f20();
 }
 
 // FUNCTION: STUNTGP_D3D 0x4458f0

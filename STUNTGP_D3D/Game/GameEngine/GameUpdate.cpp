@@ -1759,6 +1759,34 @@ void FUN_443100()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x4434f0
+void FUN_4434f0()
+{
+    GhostRecord *rec = g_60d628;
+    for (int i = 0; i < 4; i++, rec++)
+    {
+        if (rec->unk00 == 1 && rec->ghost->unk00 == 0)
+        {
+            FUN_41ab00((Car *)rec->unk04, (Replay *)rec->ghost);
+        }
+        ((Car *)rec->unk04)->active = rec->unk00;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x443530
+void FUN_443530()
+{
+    GhostRecord *rec = g_60d628;
+    for (int i = 0; i < 4; i++, rec++)
+    {
+        if (rec->unk00 == 1)
+        {
+            FUN_41ab00((Car *)rec->unk04, (Replay *)rec->ghost);
+        }
+        ((Car *)rec->unk04)->active = rec->unk00;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x443560
 void FUN_443560()
 {
@@ -1768,6 +1796,49 @@ void FUN_443560()
         if (rec->unk00 == 1)
         {
             ((Car *)rec->unk04)->unk7640 = 60;
+        }
+    }
+}
+
+extern int g_60f284;
+
+// FUNCTION: STUNTGP_D3D 0x443590
+void FUN_443590()
+{
+    if (g_60d628[0].unk00 == 1)
+    {
+        if (g_60f284 == 1)
+        {
+            g_60d628[0].unk00 = 0;
+            return;
+        }
+        g_60d628[1].unk00 = 0;
+        g_60d628[2].unk00 = 0;
+        g_60d628[3].unk00 = 0;
+        return;
+    }
+    if (g_60d628[1].unk00 == 1)
+    {
+        GhostRecord *best = NULL;
+        DWORD bestTime = 0;
+        DWORD count = 0;
+        for (int i = 1; i < 4; i++)
+        {
+            GhostRecord *rec = &g_60d628[i];
+            if (rec->time && rec->time < 7200)
+            {
+                rec->unk00 = 1;
+                if (rec->time > bestTime)
+                {
+                    best = rec;
+                    bestTime = best->time;
+                }
+                count++;
+            }
+        }
+        if (best && count > 2)
+        {
+            best->unk00 = 0;
         }
     }
 }
@@ -2888,6 +2959,87 @@ void FUN_45e1d0()
     }
 }
 
+// Expands a PCX's trailing 256-colour palette into four-byte entries.
+// FUNCTION: STUNTGP_D3D 0x45e620
+void FUN_45e620(BYTE *pcx, BYTE *out, int size)
+{
+    BYTE *pal = pcx + size - 0x300;
+    if (pal[-1] == 12)
+    {
+        for (int i = 0; i < 0x300; i += 3)
+        {
+            out[1] = pal[i];
+            out[2] = pal[i + 1];
+            out[3] = pal[i + 2];
+            out[0] = 0;
+            out += 4;
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e670
+void FUN_45e670(BYTE *pcx, BYTE *out)
+{
+    BYTE *src = pcx + 0x80;
+    int y = g_489720;
+    while (y-- > 0)
+    {
+        int x = 0;
+        while (x < g_48971c)
+        {
+            if (*src > 0xc0)
+            {
+                int n = *src - 0xc0;
+                BYTE v = src[1];
+                x += n;
+                while (n-- > 0)
+                {
+                    *out++ = v;
+                }
+                src += 2;
+            }
+            else
+            {
+                *out++ = *src++;
+                x++;
+            }
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e720
+int FUN_45e720(BYTE *src, BYTE *out, int size)
+{
+    BYTE *start = out;
+    BYTE *end = src + size;
+    int x = -1;
+    while (src < end)
+    {
+        BYTE c = *src;
+        x = (x + 1) % g_48971c;
+        src++;
+        if (c <= 0xc0)
+        {
+            int n = 1;
+            while (c == *src && n < 0x3f && x < g_48971c - 1)
+            {
+                x++;
+                src++;
+                n++;
+            }
+            *out = n + 0xc0;
+        }
+        else
+        {
+            *out = 0xc1;
+        }
+        out++;
+        *out++ = c;
+    }
+    *out = 12;
+    return out - start + 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x45e7b0
 void FUN_45e7b0(PcxHeader *header)
 {
@@ -2926,6 +3078,85 @@ void FUN_45e850(BYTE *dst, BYTE *src)
         *dst++ = *++src;
         *dst++ = *++src;
         src++;
+    }
+}
+
+// Encodes an 8-bit image as a PCX file; returns the file size.
+// FUNCTION: STUNTGP_D3D 0x45e880
+int FUN_45e880(BYTE *pixels, PcxHeader *header, BYTE *palette, int width, int height)
+{
+    g_48971c = width;
+    g_489720 = height;
+    FUN_45e7b0(header);
+    int size = FUN_45e720(pixels, (BYTE *)header + 0x80, width * height);
+    FUN_45e850((BYTE *)header + size + 0x80, palette);
+    return size + 0x380;
+}
+
+// GLOBAL: STUNTGP_D3D 0x62d47c
+BYTE *g_62d47c;
+
+void *Mem_Alloc(int size, int type);
+int Mem_Free(void *ptr);
+void FUN_4234d0(char *msg);
+int FUN_44aff0(char *name, void *data, int size);
+
+// FUNCTION: STUNTGP_D3D 0x45e8e0
+void FUN_45e8e0(char *path, BYTE *pixels, BYTE *palette, int width, int height)
+{
+    g_62d47c = (BYTE *)Mem_Alloc(0x100000, 0);
+    if (!g_62d47c)
+    {
+        // STRING: STUNTGP_D3D 0x489724
+        FUN_4234d0("Could not allocate enought memory...\n");
+    }
+    int size = FUN_45e880(pixels, (PcxHeader *)g_62d47c, palette, width, height);
+    FUN_44aff0(path, g_62d47c, size);
+    Mem_Free(g_62d47c);
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e950
+int FUN_45e950(BYTE *pcx, BYTE *out, BYTE *palette, int size)
+{
+    if (!palette)
+    {
+        palette = out;
+    }
+    g_48971c = (pcx[0x43] << 8) | pcx[0x42];
+    g_489720 = ((pcx[0xb] << 8) | pcx[0xa]) + 1;
+    if (pcx[0] == 10 && pcx[1] == 5)
+    {
+        if (palette)
+        {
+            FUN_45e620(pcx, palette, size);
+        }
+        FUN_45e670(pcx, out);
+    }
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e9b0
+void FUN_45e9b0(char *path, BYTE *out, BYTE *palette)
+{
+    char msg[0x80];
+    int size = size_of_file(path);
+    if (!size)
+    {
+        // STRING: STUNTGP_D3D 0x48974c
+        sprintf(msg, "File: %s not found...", path);
+        FUN_4234d0(msg);
+    }
+    g_62d47c = (BYTE *)Mem_Alloc(size, 0);
+    if (g_62d47c)
+    {
+        bload(path, (char *)g_62d47c, size);
+        if (size)
+        {
+            FUN_45e950(g_62d47c, out, palette, size);
+            g_489714 = g_48971c;
+            g_489718 = g_489720;
+        }
+        Mem_Free(g_62d47c);
     }
 }
 

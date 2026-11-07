@@ -144,6 +144,14 @@ struct Unk457e70
 
 typedef Unk457e70 Unk458860;
 
+struct Unk486b88
+{
+    int text;      // 0x00
+    int id;        // 0x04
+    int unk08[32]; // 0x08
+    int unk88[32]; // 0x88
+};
+
 // GLOBAL: STUNTGP_D3D 0x4865a0
 MenuItem g_4865a0[2] = {
     {0, 0xffc8c8ff, 0xffffffff, 0x17, 0, 1, 0, 0},
@@ -194,6 +202,24 @@ MenuItem g_486800[5] = {
 
 // GLOBAL: STUNTGP_D3D 0x4868a0
 MenuDef g_4868a0 = {0xb, 1.0f, 0, 510.0f, 240.0f, 1.0f, 2, 1.25f, 4, 0xaa, g_486800, 0};
+
+// Shop categories: text id and the FUN_437a90 id, then per-entry state.
+// GLOBAL: STUNTGP_D3D 0x486b88
+Unk486b88 g_486b88[13] = {
+    {0x154, 1},
+    {0x169, 2},
+    {0x13d, 3},
+    {0x142, 7},
+    {0x11f, 4},
+    {0x12e, 5},
+    {0x129, 6},
+    {0x124, 8},
+    {0x133, 10},
+    {0x14c, 11},
+    {0x147, 12},
+    {0x151, 13},
+    {0},
+};
 
 // GLOBAL: STUNTGP_D3D 0x487a58
 MenuItem g_487a58[4] = {
@@ -341,6 +367,7 @@ int FUN_462260();
 int FUN_424a80();
 void FUN_424a90(int mode);
 extern Unk4d5cc0 *g_60df90;
+extern int g_60d744;
 float FUN_43d9e0(float value);
 int FUN_436fc0(int player, int button);
 int FUN_436fd0(int player, int button);
@@ -777,9 +804,34 @@ void FUN_436490(int a, ShopEntry *out, ShopCar *car, ShopItem *item, int unused)
     FUN_4365d0(a, "UpgradeGears     ", &out->item, car, 10, 0);
 }
 
-// STUB: STUNTGP_D3D 0x43db20
+// FUNCTION: STUNTGP_D3D 0x43db20
 ShopItem *FUN_43db20(int part, int index)
 {
+    switch (part)
+    {
+    case 3:
+        return &g_menuState.items[41 + index];
+    case 4:
+        return &g_menuState.items[26 + index];
+    case 5:
+        return &g_menuState.items[21 + index];
+    case 6:
+        return &g_menuState.items[46 + index];
+    case 7:
+        return &g_menuState.items[64 + index];
+    case 8:
+        return &g_menuState.items[36 + index];
+    case 9:
+        return &g_menuState.items[54 + index];
+    case 10:
+        return &g_menuState.items[69 + index];
+    case 11:
+        return &g_menuState.items[59 + index];
+    case 12:
+        return &g_menuState.items[31 + index];
+    case 13:
+        return &g_menuState.items[51 + index];
+    }
     return NULL;
 }
 
@@ -1179,8 +1231,29 @@ int FUN_436fd0(int player, int button)
     return 0;
 }
 
+void FUN_45ecc0(int index, int a, int b);
+void FUN_45ecf0(int index, int keyMap);
+int FUN_45ed60(int index);
+
+// FUNCTION: STUNTGP_D3D 0x437010
+int FUN_437010(int player)
+{
+    if (!FUN_437090(player))
+    {
+        return 0;
+    }
+    switch (FUN_45ed60(player - 1))
+    {
+    case 1:
+        return 1;
+    case 2:
+        return 2;
+    }
+    return 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x437040
-int FUN_437040()
+int FUN_437040(int player, int value)
 {
     return 1;
 }
@@ -1189,6 +1262,17 @@ int FUN_437040()
 int FUN_437050(int player)
 {
     FUN_437090(player);
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437060
+int FUN_437060(int player, int keyMap)
+{
+    if (FUN_437090(player) && keyMap)
+    {
+        FUN_45ecf0(player - 1, keyMap - 1);
+        return 1;
+    }
     return 0;
 }
 
@@ -1249,6 +1333,38 @@ int FUN_437100()
         }
     }
     return count;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4371c0
+int FUN_4371c0(int track, int mode)
+{
+    int n = FUN_437360(track);
+    switch (mode)
+    {
+    case 3:
+        switch (n)
+        {
+        case 1:
+        case 3:
+        case 5:
+            return 0;
+        case 2:
+        case 4:
+            return g_menuState.unlocked[track + 0x18];
+        }
+        break;
+    case 2:
+    case 6:
+    case 7:
+        if (n > 0 && n <= 4)
+        {
+            return g_menuState.unlocked[track + 0x18];
+        }
+        break;
+    case 1:
+        return g_menuState.unlocked[track + 0x18];
+    }
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x437360
@@ -1344,6 +1460,158 @@ int FUN_437400(int track)
         return 5;
     }
     return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437490
+int FUN_437490(int track)
+{
+    switch (track)
+    {
+    case 2:
+        return 1;
+    case 20:
+        return 2;
+    case 23:
+        return 3;
+    case 24:
+        return 4;
+    case 12:
+        return 5;
+    case 13:
+        return 6;
+    case 4:
+        return 7;
+    case 8:
+        return 8;
+    case 18:
+        return 9;
+    case 19:
+        return 10;
+    case 22:
+        return 11;
+    case 9:
+        return 12;
+    case 10:
+        return 13;
+    case 11:
+        return 14;
+    case 16:
+        return 15;
+    case 3:
+        return 16;
+    case 6:
+        return 17;
+    case 5:
+        return 18;
+    case 1:
+        return 19;
+    case 15:
+        return 20;
+    case 7:
+        return 21;
+    case 21:
+        return 22;
+    case 17:
+        return 23;
+    case 14:
+        return 24;
+    }
+    return 0;
+}
+
+// Sorts tracks by FUN_437490 rank.
+// FUNCTION: STUNTGP_D3D 0x4375a0
+int FUN_4375a0(int *tracks, int count)
+{
+    for (int i = count - 1; i >= 0; i--)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            int b = tracks[j + 1];
+            int a = tracks[j];
+            int rb = FUN_437490(b);
+            int ra = FUN_437490(a);
+            if (ra > rb)
+            {
+                tracks[j] = b;
+                tracks[j + 1] = a;
+            }
+        }
+    }
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437620
+int FUN_437620(int track)
+{
+    switch (track)
+    {
+    case 7:
+        return 1;
+    case 11:
+        return 2;
+    case 10:
+        return 3;
+    case 2:
+        return 4;
+    case 6:
+        return 5;
+    case 13:
+        return 6;
+    case 3:
+        return 7;
+    case 4:
+        return 8;
+    case 15:
+        return 9;
+    case 14:
+        return 10;
+    case 12:
+        return 11;
+    case 1:
+        return 12;
+    case 9:
+        return 13;
+    case 8:
+        return 14;
+    case 5:
+        return 15;
+    case 16:
+        return 16;
+    case 17:
+        return 17;
+    case 18:
+        return 18;
+    case 19:
+        return 19;
+    case 20:
+        return 20;
+    case 21:
+        return 21;
+    }
+    return 0;
+}
+
+// Sorts tracks by FUN_437620 rank.
+// FUNCTION: STUNTGP_D3D 0x437710
+int FUN_437710(int *tracks, int count)
+{
+    for (int i = count - 1; i >= 0; i--)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            int b = tracks[j + 1];
+            int a = tracks[j];
+            int rb = FUN_437620(b);
+            int ra = FUN_437620(a);
+            if (ra > rb)
+            {
+                tracks[j] = b;
+                tracks[j + 1] = a;
+            }
+        }
+    }
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x437790
@@ -1603,6 +1871,42 @@ void FUN_439e30()
     memset(g_5df528, 0, sizeof(g_5df528));
 }
 
+// Start of the race state cleared by FUN_43a720; its fields are declared one by one elsewhere.
+// GLOBAL: STUNTGP_D3D 0x60d730
+int g_60d730;
+
+// FUNCTION: STUNTGP_D3D 0x43a720
+void FUN_43a720()
+{
+    memset(&g_60d730, 0, 0x868);
+    g_60df90 = g_menuState.unk13148;
+    for (int i = 0; i < 4; i++)
+    {
+        FUN_45ecc0(i, 0xffff, i + 1);
+    }
+    g_60d744 = g_menuState.unk0090;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43a760
+void FUN_43a760(int player, int a, int b)
+{
+    FUN_45ecc0(player - 1, a, b);
+}
+
+extern DWORD g_60d73c;
+extern int g_60df94;
+void FUN_43dc40();
+
+// FUNCTION: STUNTGP_D3D 0x439e50
+void FUN_439e50()
+{
+    g_60d738 = g_menuState.sfx;
+    g_60d734 = g_menuState.music;
+    g_60d73c = g_menuState.unk0084;
+    g_60df94 = g_menuState.unk0070;
+    FUN_43dc40();
+}
+
 // FUNCTION: STUNTGP_D3D 0x43b210
 short FUN_43b210(short a, short b)
 {
@@ -1704,6 +2008,84 @@ int FUN_43b3f0(BitReader *reader, int count)
     return value;
 }
 
+// Scales a signed byte vector to length 127.
+// FUNCTION: STUNTGP_D3D 0x43b470
+void FUN_43b470(char *x, char *y, char *z)
+{
+    float fx = *x;
+    float fy = *y;
+    float fz = *z;
+    float scale = 127.0 / sqrt(fx * fx + fy * fy + fz * fz);
+    *x = (char)(fx * scale);
+    *y = (char)(fy * scale);
+    *z = (char)(fz * scale);
+}
+
+int FUN_43d9b0(int value);
+
+// FUNCTION: STUNTGP_D3D 0x43b4f0
+int FUN_43b4f0(int bits, int delta, BitWriter *writer, int flag)
+{
+    int range = 1 << bits;
+    int value = 0;
+    int code;
+    int a = FUN_43d9b0(delta);
+    if (a)
+    {
+        code = 0;
+        do
+        {
+            code++;
+            a >>= 1;
+        } while (a);
+        if (delta < 0)
+        {
+            code = -code;
+        }
+        code += range / 2;
+        if (code < 0)
+        {
+            code = 0;
+        }
+        if (code > range - 1)
+        {
+            code = range - 1;
+        }
+        int e = code - range / 2;
+        if (e < 0)
+        {
+            value = (-1 << FUN_43d9b0(e)) / 2;
+        }
+        else
+        {
+            value = (1 << FUN_43d9b0(e)) / 2;
+        }
+    }
+    else
+    {
+        code = range / 2;
+    }
+    FUN_43d9b0(value);
+    FUN_43d9b0(delta);
+    if (flag)
+    {
+        if (value)
+        {
+            FUN_43b300(writer, 1, 1);
+            FUN_43b300(writer, code, bits);
+        }
+        else
+        {
+            FUN_43b300(writer, 0, 1);
+        }
+    }
+    else
+    {
+        FUN_43b300(writer, code, bits);
+    }
+    return value;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43b5f0
 int FUN_43b5f0(int value, BitWriter *writer)
 {
@@ -1723,6 +2105,26 @@ int FUN_43b5f0(int value, BitWriter *writer)
     return 1;
 }
 
+// FUNCTION: STUNTGP_D3D 0x43bb00
+int FUN_43bb00(int bits, BitReader *reader, int flag)
+{
+    int range = 1 << bits;
+    if (flag && !FUN_43b3b0(reader))
+    {
+        return 0;
+    }
+    int e = FUN_43b3f0(reader, bits) - range / 2;
+    if (e == 0)
+    {
+        return 0;
+    }
+    if (e < 0)
+    {
+        return (-1 << FUN_43d9b0(e)) / 2;
+    }
+    return (1 << FUN_43d9b0(e)) / 2;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43bb90
 int FUN_43bb90(BitReader *reader)
 {
@@ -1731,6 +2133,52 @@ int FUN_43bb90(BitReader *reader)
         return 0;
     }
     return FUN_43b3b0(reader) ? 1 : -1;
+}
+
+// Clears the new-entry flag of every high score.
+// FUNCTION: STUNTGP_D3D 0x43bf30
+void FUN_43bf30()
+{
+    int i;
+    int j;
+
+    for (i = 0; i < 19; i++)
+    {
+        g_menuState.unk0114[i][0].name[3] = 0;
+        g_menuState.unk0114[i][1].name[3] = 0;
+        g_menuState.unk0114[i][2].name[3] = 0;
+        g_menuState.unk0114[i][3].name[3] = 0;
+    }
+    for (i = 0; i < 100; i++)
+    {
+        g_menuState.unk0374[i].name[3] = 0;
+    }
+    for (i = 0; i < 100; i++)
+    {
+        g_menuState.unk1dfc[i].name[3] = 0;
+    }
+    for (i = 0; i < 25; i++)
+    {
+        for (j = 0; j < 10; j++)
+        {
+            g_menuState.unk0694[i].entries[j].name[3] = 0;
+        }
+    }
+    for (i = 0; i < 25; i++)
+    {
+        g_menuState.unk1a1c[i][0].name[3] = 0;
+        g_menuState.unk1a1c[i][1].name[3] = 0;
+        g_menuState.unk1a1c[i][2].name[3] = 0;
+        g_menuState.unk1a1c[i][3].name[3] = 0;
+    }
+    for (i = 0; i < 10; i++)
+    {
+        g_menuState.unk1d5c[i].name[3] = 0;
+    }
+    for (i = 0; i < 10; i++)
+    {
+        g_menuState.unk1dac[i].name[3] = 0;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x43bfd0
@@ -2096,6 +2544,33 @@ void FUN_43d280()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x43d370
+void FUN_43d370()
+{
+    char path[256];
+    FILE *file;
+    // STRING: STUNTGP_D3D 0x479624
+    sprintf(path, "%s\\detail.cfg", g_GameDirectory);
+    // STRING: STUNTGP_D3D 0x479634
+    file = fopen(path, "w");
+    if (file)
+    {
+        // STRING: STUNTGP_D3D 0x479638
+        fprintf(file, "%d\n", g_menuState.unk0084);
+        fclose(file);
+    }
+    // STRING: STUNTGP_D3D 0x47963c
+    sprintf(path, "%s\\language.cfg", g_GameDirectory);
+    // STRING: STUNTGP_D3D 0x47964c
+    file = fopen(path, "w");
+    if (file)
+    {
+        // STRING: STUNTGP_D3D 0x479650
+        fprintf(file, "%d\n", g_menuState.unk0090);
+        fclose(file);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x43d690
 Initials *FUN_43d690(Initials *name)
 {
@@ -2155,6 +2630,31 @@ int FUN_43d760(int id)
         return 1;
     }
     return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43dc40
+void FUN_43dc40()
+{
+    for (int player = 1; player < 5; player++)
+    {
+        int mode = FUN_437090(player);
+        if (mode == g_menuState.unk0098[player].unk00)
+        {
+            FUN_437060(player, g_menuState.unk0098[player].unk04);
+            FUN_437040(player, g_menuState.unk0098[player].unk08);
+        }
+        else
+        {
+            if (g_menuState.unk0098[player].unk00)
+            {
+                FUN_437060(player, 1);
+                FUN_437040(player, 1);
+            }
+            g_menuState.unk0098[player].unk00 = mode;
+            g_menuState.unk0098[player].unk04 = FUN_437050(player);
+            g_menuState.unk0098[player].unk08 = FUN_437010(player);
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x43dcc0
@@ -2750,6 +3250,19 @@ void FUN_450510(Unk4516c0 *object)
     object->unk18 = NULL;
 }
 
+// GLOBAL: STUNTGP_D3D 0x6249d4
+char g_6249d4[0x20];
+
+// FUNCTION: STUNTGP_D3D 0x4507e0
+void FUN_4507e0(Unk4516c0 *object)
+{
+    // STRING: STUNTGP_D3D 0x4866c0
+    sprintf(g_6249d4, "%d", object->unk20 / 60);
+    FUN_439450(512.0f, 220.0f, 576.0f, 260.0f, 10, 0x6f, 0x40);
+    FUN_439380(512.0f, 220.0f, 576.0f, 260.0f, 13, 2, 0, 0.0f);
+    FUN_438960(544.0f, 240.0f, 12, 0, 2, g_6249d4, 2.0f, 0xffffffff, 3);
+}
+
 // FUNCTION: STUNTGP_D3D 0x450880
 int FUN_450880(Unk450930 *object)
 {
@@ -2796,15 +3309,100 @@ void FUN_450ac0(MenuObject *object)
     object->unk20 = FUN_43d7b0(object->unk20, -31.0f, 31.0f);
 }
 
-// STUB: STUNTGP_D3D 0x437de0
+// FUNCTION: STUNTGP_D3D 0x437de0
 int FUN_437de0(int sponsor, int car, ShopCar *setup)
 {
-    return 0;
+    ShopEntry entry;
+    FUN_436490(sponsor, &entry, setup, &g_menuState.items[car], 0);
+    return entry.item.price;
 }
 
-// STUB: STUNTGP_D3D 0x437230
-int FUN_437230(int car, int arg)
+// FUNCTION: STUNTGP_D3D 0x437230
+int FUN_437230(int car, int mode)
 {
+    int n = FUN_437400(car);
+    switch (mode)
+    {
+    case 1:
+        switch (n)
+        {
+        case 1:
+        case 2:
+            return g_menuState.unlocked[car];
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+            return 0;
+        }
+        break;
+    case 2:
+        switch (n)
+        {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 6:
+            return g_menuState.unlocked[car];
+        case 5:
+            return 0;
+        }
+        break;
+    case 3:
+        switch (n)
+        {
+        case 2:
+        case 3:
+            return g_menuState.unlocked[car];
+        case 1:
+        case 4:
+        case 5:
+        case 6:
+            return 0;
+        }
+        break;
+    case 4:
+        switch (n)
+        {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 6:
+            return 1;
+        case 5:
+            return g_menuState.unlocked[car];
+        }
+        break;
+    case 5:
+        switch (n)
+        {
+        case 1:
+        case 2:
+        case 3:
+        case 6:
+            return g_menuState.unlocked[car];
+        case 4:
+        case 5:
+            return 0;
+        }
+        break;
+    case 6:
+    case 7:
+        switch (n)
+        {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 6:
+            return g_menuState.unlocked[car];
+        case 5:
+            return 0;
+        }
+        break;
+    }
     return 0;
 }
 
@@ -2961,6 +3559,12 @@ void FUN_452530(MenuHolder *object)
     child->destroy(child);
     Pool_Free(child);
     object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4527d0
+int FUN_4527d0(int index)
+{
+    return FUN_437a90(g_486b88[index].id);
 }
 
 // FUNCTION: STUNTGP_D3D 0x452940
@@ -3353,6 +3957,25 @@ void FUN_455690(MenuHolder *object)
     object->child = NULL;
 }
 
+// FUNCTION: STUNTGP_D3D 0x4557e0
+int FUN_4557e0()
+{
+    FUN_43dc40();
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4558c0
+void FUN_4558c0()
+{
+    for (int i = 1; i < 5; i++)
+    {
+        g_menuState.unk0098[i].unk00 = 0;
+        g_menuState.unk0098[i].unk04 = 0;
+        g_menuState.unk0098[i].unk08 = 0;
+    }
+    FUN_43dc40();
+}
+
 // FUNCTION: STUNTGP_D3D 0x455b90
 int FUN_455b90(int player)
 {
@@ -3361,6 +3984,30 @@ int FUN_455b90(int player)
         return 1;
     }
     return 0;
+}
+
+int FUN_437060(int player, int keyMap);
+
+// FUNCTION: STUNTGP_D3D 0x455be0
+void FUN_455be0(int player, int delta)
+{
+    int mode = FUN_437050(player);
+    if (mode)
+    {
+        mode += delta;
+        if (mode <= 0)
+        {
+            mode = 3;
+        }
+        else if (mode >= 4)
+        {
+            mode = 1;
+        }
+        if (FUN_437060(player, mode))
+        {
+            FUN_440880(1);
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x455d70
@@ -3527,6 +4174,25 @@ int FUN_456670(Unk456070 *object)
     }
     g_menuState.unk423c = count;
     return count >= 2;
+}
+
+// GLOBAL: STUNTGP_D3D 0x6250b8
+char g_6250b8[0x20];
+
+// FUNCTION: STUNTGP_D3D 0x4566b0
+void FUN_4566b0(Unk456070 *object)
+{
+    int time = object->unk1c;
+    D3DCOLOR color = 0xffffffff;
+    // STRING: STUNTGP_D3D 0x488768
+    sprintf(g_6250b8, "%d", time / 60);
+    if (time < 240)
+    {
+        color = 0xffff8080;
+    }
+    FUN_439450(288.0f, 320.0f, 352.0f, 360.0f, 10, 0x6f, 0x40);
+    FUN_439380(288.0f, 320.0f, 352.0f, 360.0f, 13, 2, 0, 0.0f);
+    FUN_438960(320.0f, 340.0f, 12, 0, 2, g_6250b8, 2.0f, color, 3);
 }
 
 // FUNCTION: STUNTGP_D3D 0x456760
@@ -3838,6 +4504,15 @@ void FUN_458d00(Unk457e70 *object)
         g_menuState.unk46dc = object->entries[object->unk20].id;
         break;
     }
+}
+
+void FUN_43bf30();
+
+// FUNCTION: STUNTGP_D3D 0x458ea0
+void FUN_458ea0()
+{
+    FUN_43bf30();
+    FUN_43c400();
 }
 
 // FUNCTION: STUNTGP_D3D 0x459300

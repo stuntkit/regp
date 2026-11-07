@@ -1507,6 +1507,30 @@ char g_5fd048[0x100];
 // GLOBAL: STUNTGP_D3D 0x5fd148
 char g_5fd148[0x100];
 
+int FUN_43c4e0(const char *name, BYTE *a, BYTE *b, int size);
+
+// Returns 1 when the save data differs from the copy taken at the last save.
+// FUNCTION: STUNTGP_D3D 0x43c430
+int FUN_43c430()
+{
+    // STRING: STUNTGP_D3D 0x479454
+    if (!FUN_43c4e0("G.Save.Data", g_menuState.unlocked, g_menuState.saved, 0x2114))
+    {
+        // STRING: STUNTGP_D3D 0x479460
+        FUN_43c4e0("G.Save.Data.Options   ", (BYTE *)&g_menuState.unk0070, g_menuState.saved + 0x68, 0x7c);
+        // STRING: STUNTGP_D3D 0x479478
+        FUN_43c4e0("G.Save.Data.Arcade    ", g_menuState.unk00ec, g_menuState.saved + 0xe4, 0x5a8);
+        // STRING: STUNTGP_D3D 0x479490
+        FUN_43c4e0("G.Save.Data.TimeTrial ", (BYTE *)g_menuState.unk0694, g_menuState.saved + 0x68c, 0x888);
+        // STRING: STUNTGP_D3D 0x4794a8
+        FUN_43c4e0("G.Save.Data.Campaign  ", (BYTE *)g_menuState.unk0f1c, g_menuState.saved + 0xf14, 0xee0);
+        // STRING: STUNTGP_D3D 0x4794c0
+        FUN_43c4e0("G.Save.Data.StuntTrial", (BYTE *)g_menuState.unk1dfc, g_menuState.saved + 0x1df4, 0x320);
+        return 1;
+    }
+    return 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43c4e0
 int FUN_43c4e0(const char *name, BYTE *a, BYTE *b, int size)
 {
@@ -1766,6 +1790,31 @@ int FUN_43cf20(MenuDef *def, int index)
         }
     }
     return -1;
+}
+
+// Counts the lines of wrapped text, leaving the last one in g_5ff8c4.
+// FUNCTION: STUNTGP_D3D 0x440920
+int FUN_440920(char *text)
+{
+    int lines = 1;
+    int start = 0;
+    int end = 0;
+    while (text[start] != 0)
+    {
+        if (text[end] == (char)0xff || text[end] == '|' || text[end] == 0)
+        {
+            memcpy(g_5ff8c4, &text[start], end - start);
+            g_5ff8c4[end - start] = 0;
+            if (text[end] == 0)
+            {
+                break;
+            }
+            lines++;
+            start = end + 1;
+        }
+        end++;
+    }
+    return lines;
 }
 
 // Word-wraps text in place by turning spaces into 0xff; returns the line count, or 0 if it does not fit.

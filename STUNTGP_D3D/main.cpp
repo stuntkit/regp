@@ -55,10 +55,48 @@ Unk61c208 g_61c208[6];
 // GLOBAL: STUNTGP_D3D 0x61c2c8
 int g_61c2c8;
 
+int FUN_437230(int car, int mode);
+
+// FUNCTION: STUNTGP_D3D 0x44d420
+void FUN_44d420()
+{
+    int cars[64];
+    int count = 0;
+    for (int i = 1; i < 21; i++)
+    {
+        if (FUN_437230(i, g_menuState.unk4230) || g_menuState.unk0074)
+        {
+            cars[count++] = i;
+        }
+    }
+    for (int j = 0; j < g_menuState.unk423c; j++)
+    {
+        g_menuState.unk43f4[j] = cars[(rand() & 0xff) % count];
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x44d4a0
 void FUN_44d4a0()
 {
     g_menuState.unk4474 = g_menuState.unk440c[(rand() & 0xff) % g_menuState.unk4408];
+}
+
+// FUNCTION: STUNTGP_D3D 0x44e2b0
+void FUN_44e2b0()
+{
+    int cars[64];
+    int count = 0;
+    for (int i = 1; i < 21; i++)
+    {
+        if (FUN_437230(i, g_menuState.unk4230) || g_menuState.unk0074)
+        {
+            cars[count++] = i;
+        }
+    }
+    for (int j = 0; j < g_menuState.unk423c; j++)
+    {
+        g_menuState.unk43f4[j] = cars[(rand() & 0xff) % count];
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x44e330
@@ -235,6 +273,28 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 // unused: STUNTGP_D3D 0x44e7a0
+
+// Parses "-m<width>x<height>x<depth>" from the command line.
+// FUNCTION: STUNTGP_D3D 0x44e7a0
+void FUN_44e7a0(char *cmdLine)
+{
+    char *p = cmdLine;
+    g_DISPLAYRESWIDTH = 640;
+    g_DISPLAYRESHEIGHT = 480;
+    g_DISPLAYRESDEPTH = 8;
+    for (DWORD i = 0; i < strlen(cmdLine); i++)
+    {
+        if (*p++ == '-' && (*p == 'm' || *p == 'M'))
+        {
+            p++;
+            g_DISPLAYRESWIDTH = strtol(p, &p, 10);
+            p++;
+            g_DISPLAYRESHEIGHT = strtol(p, &p, 10);
+            p++;
+            g_DISPLAYRESDEPTH = strtol(p, &p, 10);
+        }
+    }
+}
 
 // FUNCTION: STUNTGP_D3D 0x44e870
 void m_keyboard()
