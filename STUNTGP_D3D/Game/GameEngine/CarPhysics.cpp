@@ -1513,9 +1513,85 @@ void FUN_414370()
     }
 }
 
-// STUB: STUNTGP_D3D 0x414460
+// FUNCTION: STUNTGP_D3D 0x414460
 void FUN_414460()
 {
+    Vec4 base;
+    Vec4 side;
+    Vec4 p;
+    float s;
+    base.x = g_4d5bb8->axisY.x;
+    base.y = g_4d5bb8->axisY.y;
+    base.z = g_4d5bb8->axisY.z;
+    base.x += g_4d5bb8->posX;
+    base.y += g_4d5bb8->posY;
+    base.z += g_4d5bb8->posZ;
+
+    s = -(g_4d5bb8->unk230 * g_4d5bb8->unk228);
+    p.x = s * g_4d5bb8->axisZ.x;
+    p.y = s * g_4d5bb8->axisZ.y;
+    p.z = s * g_4d5bb8->axisZ.z;
+    s = g_4d5bb8->unk238 * 0.5f;
+    side.x = s * g_4d5bb8->axisX.x;
+    side.y = s * g_4d5bb8->axisX.y;
+    side.z = s * g_4d5bb8->axisX.z;
+    p.x += side.x;
+    p.y += side.y;
+    p.z += side.z;
+    p.x += base.x;
+    p.y += base.y;
+    p.z += base.z;
+    g_4d5bb8->wheels[0].pos = p;
+
+    s = -(g_4d5bb8->unk230 * g_4d5bb8->unk228);
+    p.x = s * g_4d5bb8->axisZ.x;
+    p.y = s * g_4d5bb8->axisZ.y;
+    p.z = s * g_4d5bb8->axisZ.z;
+    s = g_4d5bb8->unk238 * -0.5f;
+    side.x = s * g_4d5bb8->axisX.x;
+    side.y = s * g_4d5bb8->axisX.y;
+    side.z = s * g_4d5bb8->axisX.z;
+    p.x += side.x;
+    p.y += side.y;
+    p.z += side.z;
+    p.x += base.x;
+    p.y += base.y;
+    p.z += base.z;
+    g_4d5bb8->wheels[1].pos = p;
+
+    s = g_4d5bb8->unk224;
+    s *= g_4d5bb8->unk230;
+    p.x = s * g_4d5bb8->axisZ.x;
+    p.y = s * g_4d5bb8->axisZ.y;
+    p.z = s * g_4d5bb8->axisZ.z;
+    s = g_4d5bb8->unk234 * 0.5f;
+    side.x = s * g_4d5bb8->axisX.x;
+    side.y = s * g_4d5bb8->axisX.y;
+    side.z = s * g_4d5bb8->axisX.z;
+    p.x += side.x;
+    p.y += side.y;
+    p.z += side.z;
+    p.x += base.x;
+    p.y += base.y;
+    p.z += base.z;
+    g_4d5bb8->wheels[2].pos = p;
+
+    s = g_4d5bb8->unk224;
+    s *= g_4d5bb8->unk230;
+    p.x = s * g_4d5bb8->axisZ.x;
+    p.y = s * g_4d5bb8->axisZ.y;
+    p.z = s * g_4d5bb8->axisZ.z;
+    s = g_4d5bb8->unk234 * -0.5f;
+    side.x = s * g_4d5bb8->axisX.x;
+    side.y = s * g_4d5bb8->axisX.y;
+    side.z = s * g_4d5bb8->axisX.z;
+    p.x += side.x;
+    p.y += side.y;
+    p.z += side.z;
+    p.x += base.x;
+    p.y += base.y;
+    p.z += base.z;
+    g_4d5bb8->wheels[3].pos = p;
 }
 
 // STUB: STUNTGP_D3D 0x414710
@@ -1523,9 +1599,42 @@ void FUN_414710()
 {
 }
 
-// STUB: STUNTGP_D3D 0x414b30
+// Fades the four tyre smoke meshes, which follow the wheel meshes.
+// FUNCTION: STUNTGP_D3D 0x414b30
 void FUN_414b30()
 {
+    CarModel *model = g_4d5bb8->unk26b0;
+    int i;
+    for (i = 0; i < 3; i++)
+    {
+        model->parts[i]->meshes[6].visible = 0;
+    }
+    ModelPart *part = model->parts[model->current];
+    ModelMesh *mesh = &part->meshes[6];
+    ModelMesh *wheel = &part->meshes[1];
+    for (i = 0; i < 4; i++, mesh++, wheel++)
+    {
+        if (g_4d5bb8->unk2cf4[i] != 0.0f)
+        {
+            mesh->matrix[2] = wheel->matrix[2];
+            mesh->matrix[3] = wheel->matrix[3];
+            g_4d5bb8->unk2cf4[i] -= 2.0f;
+            if (g_4d5bb8->unk2cf4[i] <= 0.0f)
+            {
+                g_4d5bb8->unk2cf4[i] = 0.0f;
+                mesh->visible = 0;
+            }
+            else
+            {
+                mesh->visible = 1;
+            }
+            for (unsigned int j = 0; j < mesh->vertCount; j++)
+            {
+                mesh->verts[j * 8 + 2] = (BYTE)g_4d5bb8->unk2cf4[i];
+                mesh->verts[j * 8 + 3] = 0x60;
+            }
+        }
+    }
 }
 
 // Static description of a trail's look; the ring length is size.

@@ -112,7 +112,8 @@ struct Wheel
     int unk30;          // 0x0030
     float unk34;        // 0x0034
     float unk38;        // 0x0038
-    BYTE unk003c[0x34]; // 0x003c
+    Vec4 pos;           // 0x003c world position
+    BYTE unk004c[0x24]; // 0x004c
     int unk70;          // 0x0070
     BYTE unk0074[0x4];  // 0x0074
     int unk78;          // 0x0078
