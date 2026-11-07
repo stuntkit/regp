@@ -78,7 +78,9 @@ struct RenderMaterial
     DWORD unk00;      // 0x00
     DWORD unk04;      // 0x04
     float alpha;      // 0x08
-    BYTE unk0c[0x5c]; // 0x0c
+    BYTE unk0c[0x44]; // 0x0c
+    int unk50;        // 0x50
+    BYTE unk54[0x14]; // 0x54
     float unk68;      // 0x68
     float unk6c;      // 0x6c
     float unk70;      // 0x70
@@ -95,11 +97,16 @@ RenderMaterial *g_62447c;
 // Loaded track file; the offsets are relative to data.
 struct TrackHeader
 {
-    BYTE unk000[0x58];
+    BYTE unk000[0x38];
+    int unk038;               // 0x038
+    int unk03c;               // 0x03c
+    BYTE unk040[0x58 - 0x40];
     int unk058;               // 0x058
     int unk05c;               // 0x05c
     int unk060;               // 0x060
-    BYTE unk064[0xe4 - 0x64];
+    BYTE unk064[0xd4 - 0x64];
+    DWORD unk0d4;             // 0x0d4
+    BYTE unk0d8[0xe4 - 0xd8];
     int unk0e4;               // 0x0e4
     int unk0e8;               // 0x0e8
     BYTE unk0ec[0x148 - 0xec];
@@ -123,6 +130,14 @@ SceneEntry *g_624490;
 
 // GLOBAL: STUNTGP_D3D 0x6244a4
 int g_6244a4;
+
+// GLOBAL: STUNTGP_D3D 0x62497c
+int g_62497c;
+
+extern int g_6243c0;
+extern int g_6243c8;
+extern int g_6243d0;
+extern int g_6243d8;
 
 struct AnimDef;
 extern AnimDef *g_624484;
@@ -591,6 +606,23 @@ void FUN_42b740()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x42b7b0
+void FUN_42b7b0(Scene *scene, int value)
+{
+    scene->flags |= 8;
+    // One object list per level of detail, starting at scene->objects.
+    ObjectDef *object = (&scene->objects)[scene->lod];
+    value = (value << 8) | 0x80;
+    for (DWORD i = 0; i < scene->objectCount; i++)
+    {
+        if (object->type == 1)
+        {
+            object->flags |= value;
+        }
+        object++;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x42b7e0
 void FUN_42b7e0(WORD *flags)
 {
@@ -655,7 +687,7 @@ Ambience g_5898d0;
 Unk624488 g_5898f8[64];
 
 // GLOBAL: STUNTGP_D3D 0x589e04
-int g_589e04;
+RenderMaterial *g_589e04;
 
 // GLOBAL: STUNTGP_D3D 0x624488
 Unk624488 *g_624488;
@@ -666,9 +698,20 @@ Ambience *g_624494;
 // GLOBAL: STUNTGP_D3D 0x62452c
 int g_62452c;
 
-// STUB: STUNTGP_D3D 0x42d970
+// FUNCTION: STUNTGP_D3D 0x42d970
 void FUN_42d970()
 {
+    RenderMaterial *material = g_62447c;
+    for (DWORD i = 0; i < g_62449c; i++)
+    {
+        if (material->unk50 == 3)
+        {
+            g_589e04 = material;
+            return;
+        }
+        material++;
+    }
+    g_589e04 = g_62447c;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42d700
@@ -831,6 +874,28 @@ void FUN_42e820()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x42eb70
+void FUN_42eb70()
+{
+    TrackHeader *header = g_58d810;
+    int *offsets = (int *)&header->data[header->unk038];
+    for (int i = 0; offsets[i]; i++)
+    {
+        offsets[i] = (int)&header->data[offsets[i]];
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42ebb0
+void FUN_42ebb0()
+{
+    BYTE *base = &g_58d810->data[g_58d810->unk03c];
+    DWORD *p = g_58c800->unk40;
+    for (DWORD i = 0; i < g_58d810->unk0d4 / 4; i++)
+    {
+        p[i] = (DWORD)&base[p[i] * 16];
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x42ef20
 void FUN_42ef20()
 {
@@ -867,9 +932,33 @@ void FUN_42b040()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x42b140
+void FUN_42b140(int *out)
+{
+    out[6] = g_6243d8;
+    out[4] = g_6243d0;
+    out[0] = g_6243c0;
+    out[5] = 0;
+    out[7] = 0;
+    out[1] = 0;
+    out[2] = g_6243c8;
+    out[3] = 0;
+}
+
 // STUB: STUNTGP_D3D 0x429a40
 void FUN_429a40()
 {
+}
+
+// FUNCTION: STUNTGP_D3D 0x42a840
+void FUN_42a840(Scene *scene)
+{
+    if (g_576be0)
+    {
+        g_62497c = 1;
+        return;
+    }
+    g_62497c = scene->lod != scene->unk64 ? 1 : 4;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42e6d0

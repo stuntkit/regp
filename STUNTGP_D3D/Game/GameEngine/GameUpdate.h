@@ -660,7 +660,9 @@ struct InputState
 
 struct ObjectDef
 {
-    BYTE unk00[0x8];  // 0x00
+    WORD type;        // 0x00
+    WORD flags;       // 0x02
+    BYTE unk04[0x4];  // 0x04
     Vec4 *matrix;     // 0x08
     BYTE unk0c[0x34]; // 0x0c
 };
@@ -680,14 +682,21 @@ struct SceneEntry
 
 struct Scene
 {
-    BYTE unk00[0xc];    // 0x00
-    Camera *camera;     // 0x0c
-    BYTE unk10[0x14];   // 0x10
-    DWORD objectCount;  // 0x24
-    SceneEntry *unk28;  // 0x28
-    BYTE unk2c[0x18];   // 0x2c
-    SceneView *view;    // 0x44
-    ObjectDef *objects; // 0x48
+    BYTE unk00[0x2];     // 0x00
+    WORD flags;          // 0x02
+    BYTE unk04[0x8];     // 0x04
+    Camera *camera;      // 0x0c
+    BYTE unk10[0x14];    // 0x10
+    DWORD objectCount;   // 0x24
+    SceneEntry *unk28;   // 0x28
+    BYTE unk2c[0x14];    // 0x2c
+    DWORD *unk40;        // 0x40
+    SceneView *view;     // 0x44
+    ObjectDef *objects;  // 0x48, level of detail 0
+    ObjectDef *unk4c[4]; // 0x4c, further levels of detail
+    int lod;             // 0x5c
+    int unk60;           // 0x60
+    int unk64;           // 0x64
 };
 
 // Scene render list entry; a list runs until a NULL scene.

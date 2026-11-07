@@ -1500,6 +1500,22 @@ TextKey g_606860[1000];
 // GLOBAL: STUNTGP_D3D 0x6087a4
 char g_6087a4[4];
 
+// FUNCTION: STUNTGP_D3D 0x43c4e0
+int FUN_43c4e0(const char *name, BYTE *a, BYTE *b, int size)
+{
+    while (size > 0)
+    {
+        if (*a != *b)
+        {
+            return 0;
+        }
+        size--;
+        a++;
+        b++;
+    }
+    return 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43c520
 int FeCsv_SkipBlankLines(char *text, int *pos)
 {

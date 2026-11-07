@@ -42,18 +42,27 @@ FrontEnd g_frontEnd;
 // GLOBAL: STUNTGP_D3D 0x61297c
 DWORD g_61297c;
 
-struct Rgb
+// High-score initials, copied as one 3-byte block.
+struct Initials
 {
-    BYTE r;
-    BYTE g;
-    BYTE b;
+    char c[3];
 };
 
 // GLOBAL: STUNTGP_D3D 0x47966c
-Rgb g_47966c = {0x21, 0x21, 0x21};
+Initials g_47966c = {'!', '!', '!'};
 
 // GLOBAL: STUNTGP_D3D 0x479668
-Rgb *g_479668 = &g_47966c;
+Initials *g_479668 = &g_47966c;
+
+// Byte-oriented decompressor input; bits holds the current flag byte with a sentinel bit.
+struct BitReader
+{
+    int size;    // 0x00
+    BYTE *start; // 0x04
+    BYTE *cur;   // 0x08
+    BYTE bits;   // 0x0c
+    BYTE carry;  // 0x0d
+};
 
 // Byte-oriented compressor output; flags points at the current flag byte.
 struct BitWriter
@@ -68,6 +77,8 @@ struct BitWriter
 
 void FUN_437eb0();
 void FUN_441e20();
+int FUN_43d730(int id);
+int FUN_43d760(int id);
 void FUN_442ad0(int type, int duration, int delay, int end, int from, int to, float scale);
 int FUN_43efc0();
 void FUN_441210();
@@ -324,6 +335,42 @@ int FUN_437360(int track)
     return 0;
 }
 
+// FUNCTION: STUNTGP_D3D 0x437400
+int FUN_437400(int track)
+{
+    switch (track)
+    {
+    case 1:
+    case 7:
+        return 2;
+    case 2:
+    case 3:
+    case 5:
+    case 6:
+    case 12:
+    case 13:
+    case 14:
+    case 20:
+        return 6;
+    case 4:
+    case 9:
+    case 10:
+    case 11:
+    case 15:
+        return 1;
+    case 17:
+    case 18:
+        return 4;
+    case 8:
+    case 16:
+    case 19:
+        return 3;
+    case 21:
+        return 5;
+    }
+    return 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x437870
 void FUN_437870()
 {
@@ -351,6 +398,92 @@ void FUN_4378a0(int index)
 int FUN_437920(int index)
 {
     return g_menuState.unk1a6b0[index].unk00;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437a90
+int FUN_437a90(int id)
+{
+    switch (id)
+    {
+    case 1:
+        return 0x14;
+    case 2:
+        return 0x18;
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+        return 5;
+    case 13:
+        return 3;
+    }
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437cc0
+int FUN_437cc0(int track)
+{
+    switch (track)
+    {
+    case 2:
+    case 6:
+    case 7:
+    case 10:
+    case 11:
+    case 13:
+        return 1;
+    case 1:
+    case 5:
+    case 8:
+    case 9:
+    case 16:
+        return 3;
+    case 3:
+    case 4:
+    case 12:
+    case 14:
+    case 15:
+        return 2;
+    case 17:
+    case 18:
+    case 19:
+    case 20:
+    case 21:
+        return 4;
+    }
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437d20
+int FUN_437d20(ScoreEntry *entry, Initials *name, int score)
+{
+    if (score > entry->time)
+    {
+        entry->name[3] = 1;
+        entry->time = score;
+        *(Initials *)entry->name = *name;
+        return 1;
+    }
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x437d60
+int FUN_437d60(ScoreEntry *entry, Initials *name, int time)
+{
+    if (time < entry->time)
+    {
+        entry->name[3] = 1;
+        entry->time = time;
+        *(Initials *)entry->name = *name;
+        return 1;
+    }
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x437da0
@@ -417,9 +550,35 @@ void FUN_43b2a0(BitWriter *writer, BYTE value)
 }
 
 // FUNCTION: STUNTGP_D3D 0x43b370
-BYTE FUN_43b370(BYTE **reader)
+BYTE FUN_43b370(BitReader *reader)
 {
-    return *reader[2]++;
+    return *reader->cur++;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43b380
+void FUN_43b380(BitReader *reader, BYTE *data, int size)
+{
+    reader->start = data;
+    reader->size = size;
+    reader->cur = data;
+    BYTE b = FUN_43b370(reader);
+    reader->carry = b >> 7;
+    reader->bits = (b << 1) | 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43b3b0
+int FUN_43b3b0(BitReader *reader)
+{
+    int bit = reader->carry;
+    reader->carry = reader->bits >> 7;
+    reader->bits <<= 1;
+    if (!reader->bits)
+    {
+        BYTE b = FUN_43b370(reader);
+        reader->carry = b >> 7;
+        reader->bits = (b << 1) | 1;
+    }
+    return bit;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43bfd0
@@ -748,10 +907,32 @@ void FUN_43d280()
 }
 
 // FUNCTION: STUNTGP_D3D 0x43d690
-Rgb *FUN_43d690(Rgb *color)
+Initials *FUN_43d690(Initials *name)
 {
-    *g_479668 = *color;
+    *g_479668 = *name;
     return g_479668;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d6d0
+void FUN_43d6d0(BYTE *bits, int index, BYTE value)
+{
+    int i = index >> 3;
+    BYTE mask = 1 << (index & 7);
+    bits[i] &= ~mask;
+    if (value)
+    {
+        bits[i] |= mask;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d710
+int FUN_43d710(int id)
+{
+    if (FUN_43d730(id) || FUN_43d760(id))
+    {
+        return 1;
+    }
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43d730

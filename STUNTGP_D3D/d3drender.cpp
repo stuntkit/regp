@@ -58,6 +58,15 @@ OverlayPoly *g_61c5f0 = NULL;
 // GLOBAL: STUNTGP_D3D 0x61c604
 DWORD g_61c604 = 0;
 
+// GLOBAL: STUNTGP_D3D 0x592070
+int g_592070;
+
+// GLOBAL: STUNTGP_D3D 0x592074
+int g_592074;
+
+// GLOBAL: STUNTGP_D3D 0x6244f0
+int g_6244f0;
+
 // GLOBAL: STUNTGP_D3D 0x577660
 int g_577660[10];
 
@@ -830,6 +839,30 @@ void FUN_42fa00()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x42fa10
+void FUN_42fa10()
+{
+    int caps = g_5d91b4[58];
+    if (!(caps & 0x5000))
+    {
+        if (caps & 0xa000)
+        {
+            g_d3dDevice->SetRenderState(D3DRENDERSTATE_STIPPLEDALPHA, TRUE);
+        }
+        g_592070 = 1;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42fa40
+void FUN_42fa40()
+{
+    g_6244f0 = 0;
+    if (((WORD *)g_5d91b4)[0xb0] >= 2 && ((WORD *)g_5d91b4)[0xb1] >= 2)
+    {
+        g_592074 = g_6244f0 = 1;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x432190
 void FUN_432190(int mode)
 {
@@ -1064,8 +1097,20 @@ struct RenderItem
     int type; // 0x10
 };
 
+// GLOBAL: STUNTGP_D3D 0x6243c0
+int g_6243c0;
+
+// GLOBAL: STUNTGP_D3D 0x6243c8
+int g_6243c8;
+
 // GLOBAL: STUNTGP_D3D 0x6243cc
 int g_6243cc;
+
+// GLOBAL: STUNTGP_D3D 0x6243d0
+int g_6243d0;
+
+// GLOBAL: STUNTGP_D3D 0x6243d8
+int g_6243d8;
 
 // GLOBAL: STUNTGP_D3D 0x6243dc
 int g_6243dc;

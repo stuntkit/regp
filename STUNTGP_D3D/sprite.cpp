@@ -15,6 +15,10 @@
 extern int g_61b634;
 
 void FUN_436400(const char *name, int *value);
+void FUN_439da0(int type, int layer, float x0, float y0, float x1, float y1);
+
+// GLOBAL: STUNTGP_D3D 0x4793f0
+char g_4793f0[] = "!";
 
 // GLOBAL: STUNTGP_D3D 0x576c38
 SpriteDesc g_spriteDesc;
@@ -441,6 +445,13 @@ void FUN_438be0(float x, float y, int layer, int style, int textId, float size, 
     FUN_438990(x, y, layer, 1, style, FUN_441170(textId), size, color, flags, 0.0f);
 }
 
+// FUNCTION: STUNTGP_D3D 0x438c20
+void FUN_438c20(float x, float y, int layer, int style, char c, float size, D3DCOLOR color, DWORD flags)
+{
+    g_4793f0[0] = c;
+    FUN_438990(x, y, layer, 1, style, g_4793f0, size, color, flags, 0.0f);
+}
+
 // FUNCTION: STUNTGP_D3D 0x439380
 void FUN_439380(float x0, float y0, float x1, float y1, int layer, int scroll, int flags, float fade)
 {
@@ -698,6 +709,31 @@ void FUN_439b80(int def, float x, float y0, float y1, float total, float visible
     s.height = g_4793ec;
     s.v1 = g_4793e8 * 4.0f + v;
     FUN_438370(&s, layer, 0);
+}
+
+// FUNCTION: STUNTGP_D3D 0x439d70
+void FUN_439d70(int layer, float x0, float y0, float x1, float y1)
+{
+    FUN_439da0(2, layer, x0, y0, x1, y1);
+}
+
+// FUNCTION: STUNTGP_D3D 0x439da0
+void FUN_439da0(int type, int layer, float x0, float y0, float x1, float y1)
+{
+    SpriteNode *node = (SpriteNode *)FUN_438550(0x38);
+    if (node)
+    {
+        node->command.x = x0;
+        node->command.y = y0;
+        node->type = type;
+        FUN_438590(layer, 0, node);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x439de0
+void FUN_439de0(int layer, float x0, float y0, float x1, float y1)
+{
+    FUN_439da0(3, layer, x0, y0, x1, y1);
 }
 
 // FUNCTION: STUNTGP_D3D 0x43d7b0
