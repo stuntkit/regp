@@ -59,6 +59,7 @@ extern char g_GraphicsDirectory[128];
 extern char g_GameLocation[256];
 extern int g_D3DUVFix;
 extern int g_61c50c;
+extern DWORD g_61297c;
 
 // Scene render list entry; a list runs until a NULL scene.
 struct SceneSlot
@@ -572,6 +573,78 @@ void FUN_42e430()
 
 // STUB: STUNTGP_D3D 0x42e510
 void FUN_42e510()
+{
+}
+
+// GLOBAL: STUNTGP_D3D 0x624988
+int g_624988;
+
+// GLOBAL: STUNTGP_D3D 0x62498c
+int g_62498c;
+
+// GLOBAL: STUNTGP_D3D 0x61c508
+DWORD g_61c508;
+
+// GLOBAL: STUNTGP_D3D 0x61c510
+int g_61c510;
+
+// GLOBAL: STUNTGP_D3D 0x61c520
+int g_61c520;
+
+// GLOBAL: STUNTGP_D3D 0x61c5ec
+int g_61c5ec;
+
+// FUNCTION: STUNTGP_D3D 0x42e800
+void FUN_42e800()
+{
+    g_61c510 = g_61c50c;
+    g_61c520 = g_61c5ec;
+}
+
+// Detail level from the menu setting; g_589e08 forces specular off.
+// FUNCTION: STUNTGP_D3D 0x42e820
+void FUN_42e820()
+{
+    g_624980 = 0;
+    g_624984 = 0;
+    if (g_61297c > 80)
+    {
+        g_624980 = 1;
+        g_624984 = 1;
+    }
+    else if (g_61297c > 50)
+    {
+        g_624980 = 1;
+        g_624984 = 0;
+    }
+    if (g_589e08 == 1)
+    {
+        g_624984 = 0;
+    }
+}
+
+// STUB: STUNTGP_D3D 0x425ad0
+void FUN_425ad0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x42dcf0
+void FUN_42dcf0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x42b040
+void FUN_42b040()
+{
+}
+
+// STUB: STUNTGP_D3D 0x4277d0
+void FUN_4277d0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x429a40
+void FUN_429a40()
 {
 }
 

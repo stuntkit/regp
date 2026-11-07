@@ -25,6 +25,7 @@ int g_60d61c;
 #include <cstring>
 
 #include "GameUpdate.h"
+#include "GameSetup.h"
 
 // TODO: update this based on currrent date and a compile-time define?
 
@@ -79,7 +80,7 @@ float g_482690 = 0.0f;
 // GLOBAL: STUNTGP_D3D 0x612cf8
 int g_612cf8;
 
-extern int g_61297c;
+extern DWORD g_61297c;
 
 extern int g_60df9c;
 
@@ -323,9 +324,23 @@ void FUN_449d60()
 {
 }
 
-// STUB: STUNTGP_D3D 0x42e870
+// FUNCTION: STUNTGP_D3D 0x42e870
 void FUN_42e870()
 {
+    if (g_62498c != g_624988)
+    {
+        FUN_424c30(g_62498c);
+    }
+    FUN_42e820();
+    FUN_44fd60();
+    FUN_425ad0();
+    FUN_402e90();
+    FUN_42dcf0();
+    FUN_42e800();
+    FUN_42b040();
+    FUN_4277d0();
+    FUN_429a40();
+    g_61c508 = (g_61c508 + 1) & 0xffff;
 }
 
 // STUB: STUNTGP_D3D 0x433f40
