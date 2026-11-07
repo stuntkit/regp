@@ -480,7 +480,7 @@ void FUN_40a160()
     float step = 0.02226562425494194f;
     for (unsigned int i = 0; i < 128; i++)
     {
-        g_4d5bb8->unk470[i] = (float)sqrt(sum);
+        g_4d5bb8->unk470[0][i] = (float)sqrt(sum);
         sum += step;
         if (i > 32)
         {
@@ -512,6 +512,98 @@ void FUN_40a2c0(float (*m)[16])
 
 extern FILE *g_5da2e4;
 void FUN_434900(float *values, DWORD count);
+
+// FUNCTION: STUNTGP_D3D 0x40a870
+void FUN_40a870()
+{
+    // STRING: STUNTGP_D3D 0x472c78
+    fprintf(g_5da2e4, "-ENGINE[] =\n");
+    // STRING: STUNTGP_D3D 0x472c88
+    fprintf(g_5da2e4, " RpmIdle         = %f\n", g_4d5bb8->unk460);
+    // STRING: STUNTGP_D3D 0x472ca0
+    fprintf(g_5da2e4, " RpmLimit        = %f\n", g_4d5bb8->unk464);
+    // STRING: STUNTGP_D3D 0x472cb8
+    fprintf(g_5da2e4, " RpmMax          = %f\n", g_4d5bb8->unk045c);
+    // STRING: STUNTGP_D3D 0x472cd0
+    fprintf(g_5da2e4, " Cm              = %f\n", g_4d5bb8->unk468);
+    // STRING: STUNTGP_D3D 0x472ce8
+    fprintf(g_5da2e4, " MaxTorque       = %f\n", g_4d5bb8->unk46c);
+    for (int i = 0; i < 4; i++)
+    {
+        // STRING: STUNTGP_D3D 0x472d00
+        fprintf(g_5da2e4, " TorqueEnv[%d] =\n", i);
+        FUN_434900(g_4d5bb8->unk470[i], 128);
+    }
+    // STRING: STUNTGP_D3D 0x472d14
+    fprintf(g_5da2e4, "-ENGINE_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40a990
+void FUN_40a990()
+{
+    // STRING: STUNTGP_D3D 0x472d24
+    fprintf(g_5da2e4, "-GEARBOX[] =\n");
+    // STRING: STUNTGP_D3D 0x472d34
+    fprintf(g_5da2e4, " DriveMode       = %d\n", g_4d5bb8->unkc70);
+    // STRING: STUNTGP_D3D 0x472d4c
+    fprintf(g_5da2e4, " FinalDrive      = %f\n", g_4d5bb8->unkc7c[0]);
+    // STRING: STUNTGP_D3D 0x472d64
+    fprintf(g_5da2e4, " NrOfGears       = %d\n", g_4d5bb8->unkc74);
+    // STRING: STUNTGP_D3D 0x472d7c
+    fprintf(g_5da2e4, " ShiftTime       = %f\n", g_4d5bb8->unkca0);
+    // STRING: STUNTGP_D3D 0x472d94
+    fprintf(g_5da2e4, " Efficiency      = %f\n", g_4d5bb8->unkca4);
+    // STRING: STUNTGP_D3D 0x472dac
+    fprintf(g_5da2e4, " 4WDPowerSplit   = %f\n", g_4d5bb8->unkca8);
+    // STRING: STUNTGP_D3D 0x472dc4
+    fprintf(g_5da2e4, " Ratios[]        =");
+    for (int i = 1; i < 9; i++)
+    {
+        // STRING: STUNTGP_D3D 0x472dd8
+        fprintf(g_5da2e4, "%12f, ", g_4d5bb8->unkc7c[i]);
+    }
+    // STRING: STUNTGP_D3D 0x472de0
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x472de4
+    fprintf(g_5da2e4, "-GEARBOX_END\n\n");
+}
+
+// FUNCTION: STUNTGP_D3D 0x40aae0
+void FUN_40aae0()
+{
+    // STRING: STUNTGP_D3D 0x472df4
+    fprintf(g_5da2e4, "-TYRES[] =\n");
+    // STRING: STUNTGP_D3D 0x472e00
+    fprintf(g_5da2e4, " TyreFrictionEnv =\n");
+    FUN_434900(g_4d5bb8->tyreFrictionEnv, 128);
+    for (int i = 0; i < 4; i++)
+    {
+        // STRING: STUNTGP_D3D 0x472e14
+        fprintf(g_5da2e4, "-TYRE %d\n", i);
+        // STRING: STUNTGP_D3D 0x472e20
+        fprintf(g_5da2e4, " Radius          = %f\n", g_4d5bb8->unkcb8[i].x);
+        // STRING: STUNTGP_D3D 0x472e38
+        fprintf(g_5da2e4, " Pressure        = %f\n", g_4d5bb8->unkcb8[i].y);
+        // STRING: STUNTGP_D3D 0x472e50
+        fprintf(g_5da2e4, " Cs              = %f\n", g_4d5bb8->unkcb8[i].z);
+        // STRING: STUNTGP_D3D 0x472e68
+        fprintf(g_5da2e4, " Ck              = %f\n", g_4d5bb8->unkcb8[i].w);
+        // STRING: STUNTGP_D3D 0x472e80
+        fprintf(g_5da2e4, " MaxTravelIn     = %f\n", g_4d5bb8->suspension[i].maxTravelIn);
+        // STRING: STUNTGP_D3D 0x472e98
+        fprintf(g_5da2e4, " MaxDampingIn    = %f\n", g_4d5bb8->suspension[i].maxDampingIn);
+        // STRING: STUNTGP_D3D 0x472eb0
+        fprintf(g_5da2e4, " MaxStiffnessIn  = %f\n", g_4d5bb8->suspension[i].maxStiffnessIn);
+        // STRING: STUNTGP_D3D 0x472ec8
+        fprintf(g_5da2e4, " MaxTravelOut    = %f\n", g_4d5bb8->suspension[i].maxTravelOut);
+        // STRING: STUNTGP_D3D 0x472ee0
+        fprintf(g_5da2e4, " MaxDampingOut   = %f\n", g_4d5bb8->suspension[i].maxDampingOut);
+        // STRING: STUNTGP_D3D 0x472ef8
+        fprintf(g_5da2e4, " MaxStiffnessOut = %f\n", g_4d5bb8->suspension[i].maxStiffnessOut);
+    }
+    // STRING: STUNTGP_D3D 0x472f10
+    fprintf(g_5da2e4, "-TYRES_END\n\n");
+}
 
 // FUNCTION: STUNTGP_D3D 0x40acc0
 void FUN_40acc0()

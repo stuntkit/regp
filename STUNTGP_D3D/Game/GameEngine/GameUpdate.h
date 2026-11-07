@@ -273,9 +273,21 @@ struct PosHistory
 };
 
 // 6 entries at 0x49a1f8
+// Per-wheel suspension settings; names are the car config keys.
+struct Suspension
+{
+    float maxTravelIn;     // 0x00
+    float maxDampingIn;    // 0x04
+    float maxStiffnessIn;  // 0x08
+    float maxTravelOut;    // 0x0c
+    float maxDampingOut;   // 0x10
+    float maxStiffnessOut; // 0x14
+};
+
 struct Car
 {
-    BYTE unk0000[0x220];      // 0x0000
+    BYTE unk0000[0x20];       // 0x0000
+    float tyreFrictionEnv[128]; // 0x0020
     float unk220;             // 0x0220
     float unk224;             // 0x0224
     float unk228;             // 0x0228
@@ -293,21 +305,23 @@ struct Car
     float unk258[128];        // 0x0258
     BYTE unk0458[0x4];        // 0x0458
     float unk045c;            // 0x045c
-    BYTE unk0460[0x4];        // 0x0460
+    float unk460;             // 0x0460
     float unk464;             // 0x0464
-    BYTE unk0468[0x8];        // 0x0468
-    float unk470[128];        // 0x0470
-    BYTE unk0670[0x604];      // 0x0670
+    float unk468;             // 0x0468
+    float unk46c;             // 0x046c
+    float unk470[4][128];     // 0x0470, torque curves
+    int unkc70;               // 0x0c70
     unsigned int unkc74;      // 0x0c74
     int unkc78;               // 0x0c78
     float unkc7c[9];          // 0x0c7c
     float unkca0;             // 0x0ca0
-    BYTE unk0ca4[0x8];        // 0x0ca4
+    float unkca4;             // 0x0ca4
+    float unkca8;             // 0x0ca8
     float unkcac;             // 0x0cac
     float unkcb0;             // 0x0cb0
     float unkcb4;             // 0x0cb4
     Vector4 unkcb8[4];        // 0x0cb8
-    BYTE unk0cf8[0x60];       // 0x0cf8
+    Suspension suspension[4]; // 0x0cf8
     float unkd58;             // 0x0d58
     float unkd5c;             // 0x0d5c
     float unkd60;             // 0x0d60
