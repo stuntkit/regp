@@ -6,14 +6,19 @@
 // Front-end state, cleared as a whole by FUN_43d0b0.
 struct MenuState
 {
-    BYTE unk0000[0x7c];
+    BYTE unk0000[8];
+    BYTE unlocked[0x34];      // 0x0008
+    BYTE unlockedSaved[0x34]; // 0x003c
+    BYTE unk0070[0xc];        // 0x0070
     int music;   // 0x007c
     int sfx;     // 0x0080
     int unk0084; // 0x0084
     int offsetX; // 0x0088
     int offsetY; // 0x008c
     int unk0090; // 0x0090
-    BYTE unk0094[0x4240 - 0x94];
+    BYTE unk0094[0x211c - 0x94];
+    BYTE saved[0x2114]; // 0x211c, copy of 0x0008..0x211c
+    BYTE unk4230[0x10];
     int unk4240; // 0x4240
     BYTE unk4244[0x4258 - 0x4244];
     int unk4258; // 0x4258
@@ -43,6 +48,7 @@ void FUN_439e30();
 void FUN_43c060();
 void FUN_43c130();
 void FUN_43c370();
+void FUN_43c400();
 void FUN_43d280();
 void FUN_43dd10(DWORD color);
 void FUN_43dda0();

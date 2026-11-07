@@ -307,9 +307,42 @@ void FUN_43c130()
 {
 }
 
-// STUB: STUNTGP_D3D 0x43c370
+// FUNCTION: STUNTGP_D3D 0x43c370
 void FUN_43c370()
 {
+    memset(g_menuState.unlocked, 0, sizeof(g_menuState.unlocked));
+    g_menuState.unlocked[1] = 1;
+    g_menuState.unlocked[4] = 1;
+    g_menuState.unlocked[7] = 1;
+    g_menuState.unlocked[8] = 1;
+    g_menuState.unlocked[9] = 1;
+    g_menuState.unlocked[10] = 1;
+    g_menuState.unlocked[11] = 1;
+    g_menuState.unlocked[15] = 1;
+    g_menuState.unlocked[21] = 1;
+    for (int i = 1; i < 25; i++)
+    {
+        int type = FUN_437360(i);
+        if (type > 0 && type <= 2)
+        {
+            g_menuState.unlocked[24 + i] = 0;
+        }
+        else
+        {
+            g_menuState.unlocked[24 + i] = 1;
+        }
+    }
+    g_menuState.unlocked[30] = 1;
+    g_menuState.unlocked[35] = 1;
+    g_menuState.unlocked[47] = 1;
+    FUN_43c400();
+}
+
+// FUNCTION: STUNTGP_D3D 0x43c400
+void FUN_43c400()
+{
+    memcpy(g_menuState.unlockedSaved, g_menuState.unlocked, sizeof(g_menuState.unlockedSaved));
+    memcpy(g_menuState.saved, g_menuState.unlocked, sizeof(g_menuState.saved));
 }
 
 // FUNCTION: STUNTGP_D3D 0x43d200
