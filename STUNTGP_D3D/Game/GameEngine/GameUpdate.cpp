@@ -214,9 +214,32 @@ void FUN_443a80()
 {
 }
 
-// STUB: STUNTGP_D3D 0x442de0
+// FUNCTION: STUNTGP_D3D 0x442de0
 void FUN_442de0()
 {
+    GameSlot *slot = g_498248;
+    for (int i = 0; i < 4; i++, slot++)
+    {
+        if (slot->active == 1)
+        {
+            SlotEvent *oldest = NULL;
+            SlotEvent *event = slot->events;
+            for (int j = 0; j < 8; j++, event++)
+            {
+                if (event->count != 0)
+                {
+                    if (oldest == NULL || oldest->order > event->order)
+                    {
+                        oldest = event;
+                    }
+                }
+            }
+            if (oldest != NULL)
+            {
+                oldest->count--;
+            }
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x446110

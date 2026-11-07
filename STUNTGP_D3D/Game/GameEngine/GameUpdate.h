@@ -29,6 +29,14 @@ struct SlotFx
     Fader faders[9];  // 0x008
 };
 
+struct SlotEvent
+{
+    int count;        // 0x00
+    int unk04;        // 0x04
+    DWORD order;      // 0x08
+    BYTE unk0c[0x48]; // 0x0c
+};
+
 // One of the four per-player blocks at 0x498248 (0x74c bytes each).
 struct GameSlot
 {
@@ -71,7 +79,8 @@ struct GameSlot
     int fadeTo;           // 0x208
     float fadeScale;      // 0x20c
     SlotFx fx;            // 0x210
-    BYTE unk35c[0x3f0];   // 0x35c
+    BYTE unk35c[0x150];   // 0x35c
+    SlotEvent events[8];  // 0x4ac
 };
 
 // Device-specific input snapshot, copied verbatim from InputDevice to Controller.
