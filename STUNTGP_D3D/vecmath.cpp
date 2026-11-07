@@ -52,6 +52,14 @@ float g_61c3e8[16];
 // GLOBAL: STUNTGP_D3D 0x61c468
 float g_61c468[16];
 
+// FUNCTION: STUNTGP_D3D 0x44f150
+void FUN_44f150(float *m, float x, float y, float z)
+{
+    m[12] += x;
+    m[13] += y;
+    m[14] += z;
+}
+
 // Multiplies m in place by the matrix given row by row.
 // FUNCTION: STUNTGP_D3D 0x44f1a0
 void Matrix_Multiply(float *m, float b00, float b01, float b02, float b03, float b10, float b11, float b12, float b13,
@@ -106,6 +114,27 @@ void FUN_44f4c0()
     Matrix_Identity(g_61c3e8);
     FUN_44f4e0(g_61c3e8);
     Matrix_Identity(g_61c468);
+}
+
+struct Mat4
+{
+    float m[16];
+};
+
+// Matrix_Multiply3 with b passed by value.
+// FUNCTION: STUNTGP_D3D 0x44eeb0
+void FUN_44eeb0(float *a, Mat4 b)
+{
+    float t[16];
+    for (int i = 0; i < 3; i++)
+    {
+        t[i * 4 + 0] = a[i * 4 + 0] * b.m[0] + a[i * 4 + 1] * b.m[4] + a[i * 4 + 2] * b.m[8];
+        t[i * 4 + 1] = a[i * 4 + 0] * b.m[1] + a[i * 4 + 1] * b.m[5] + a[i * 4 + 2] * b.m[9];
+        t[i * 4 + 2] = a[i * 4 + 0] * b.m[2] + a[i * 4 + 1] * b.m[6] + a[i * 4 + 2] * b.m[10];
+        a[i * 4 + 0] = t[i * 4 + 0];
+        a[i * 4 + 1] = t[i * 4 + 1];
+        a[i * 4 + 2] = t[i * 4 + 2];
+    }
 }
 
 // Multiplies the 3x3 part of a in place by b.
@@ -208,6 +237,14 @@ void FUN_450190(Camera *cam)
 
 // GLOBAL: STUNTGP_D3D 0x61c3a4
 float g_61c3a4[16];
+
+// FUNCTION: STUNTGP_D3D 0x44fa00
+void FUN_44fa00(float *m)
+{
+    Vec3_Normalize(m);
+    Vec3_Normalize(m + 4);
+    Vec3_Normalize(m + 8);
+}
 
 // FUNCTION: STUNTGP_D3D 0x44fb00
 void FUN_44fb00(float *m, DWORD yaw, DWORD pitch, DWORD roll)
@@ -345,6 +382,23 @@ void Matrix_Transpose(float *out, float *m)
     out[15] = m[15];
 }
 
+// 3x3 product a * b into out. When out aliases an input the result goes to a scratch matrix and is lost.
+// FUNCTION: STUNTGP_D3D 0x44efd0
+void FUN_44efd0(float *out, float *a, float *b)
+{
+    float t[16];
+    if (out == a || out == b)
+    {
+        out = t;
+    }
+    for (int i = 0; i < 3; i++)
+    {
+        out[i * 4 + 0] = a[i * 4 + 0] * b[0] + a[i * 4 + 1] * b[4] + a[i * 4 + 2] * b[8];
+        out[i * 4 + 1] = a[i * 4 + 0] * b[1] + a[i * 4 + 1] * b[5] + a[i * 4 + 2] * b[9];
+        out[i * 4 + 2] = a[i * 4 + 0] * b[2] + a[i * 4 + 1] * b[6] + a[i * 4 + 2] * b[10];
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x44f050
 void Matrix_FromRows(float *r0, float *r1, float *r2, float *m)
 {
@@ -373,4 +427,9 @@ void Matrix_FromRows(float *r0, float *r1, float *r2, float *m)
     m[9] = r2[1];
     m[10] = r2[2];
     m[11] = r2[3];
+}
+
+// FUNCTION: STUNTGP_D3D 0x4516f0
+void FUN_4516f0()
+{
 }

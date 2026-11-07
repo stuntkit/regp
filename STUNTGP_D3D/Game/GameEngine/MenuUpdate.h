@@ -24,6 +24,17 @@ struct ScoreTable
     ScoreEntry entries[10];
 };
 
+struct MenuSlot160
+{
+    BYTE data[0x160];
+};
+
+struct MenuSlot20
+{
+    int unk00;
+    BYTE unk04[0x1c];
+};
+
 struct MenuLanguage
 {
     char name[0x20];
@@ -58,32 +69,91 @@ struct MenuState
     ScoreEntry unk0114[19][4];  // 0x0114
     ScoreEntry unk0374[100];    // 0x0374
     ScoreTable unk0694[25];     // 0x0694
-    BYTE unk0ec8[0x1a1c - 0xec8];
+    BYTE unk0ec8[0xf1c - 0xec8];
+    MenuSlot160 unk0f1c[8];     // 0x0f1c
     ScoreEntry unk1a1c[25][4];  // 0x1a1c
     BYTE unk1d3c[0x1d5c - 0x1d3c];
     ScoreEntry unk1d5c[10];     // 0x1d5c
     ScoreEntry unk1dac[10];     // 0x1dac
     ScoreEntry unk1dfc[100];    // 0x1dfc
     BYTE saved[0x2114]; // 0x211c, copy of 0x0008..0x211c
-    BYTE unk4230[0x10];
+    BYTE unk4230[0x8];
+    int unk4238; // 0x4238
+    int unk423c; // 0x423c, entries used in unk46ac
     int unk4240; // 0x4240
-    BYTE unk4244[0x4258 - 0x4244];
+    int unk4244; // 0x4244
+    BYTE unk4248[0x4258 - 0x4248];
     int language;               // 0x4258, id of the loaded front-end language
     MenuLanguage languages[8];  // 0x425c, from Setup\languagePC.csv
     int languageCount;          // 0x437c
-    BYTE unk4380[0x13148 - 0x4380];
+    BYTE unk4380[0x4408 - 0x4380];
+    int unk4408;     // 0x4408, entries used in unk440c
+    int unk440c[26]; // 0x440c
+    int unk4474;     // 0x4474
+    int unk4478; // 0x4478
+    BYTE unk447c[0x44d0 - 0x447c];
+    int unk44d0; // 0x44d0
+    BYTE unk44d4[0x46a8 - 0x44d4];
+    int unk46a8; // 0x46a8
+    int unk46ac[4]; // 0x46ac
+    BYTE unk46bc[0x46c4 - 0x46bc];
+    int unk46c4; // 0x46c4
+    int unk46c8; // 0x46c8
+    BYTE unk46cc[0x46d8 - 0x46cc];
+    int unk46d8; // 0x46d8
+    int unk46dc; // 0x46dc
+    BYTE unk46e0[0x13148 - 0x46e0];
     Unk4d5cc0 *unk13148; // 0x13148
-    BYTE unk1314c[0x1dae8 - 0x1314c];
+    BYTE unk1314c[0x19d78 - 0x1314c];
+    int unk19d78;          // 0x19d78, index into unk0f1c
+    MenuSlot160 unk19d7c;  // 0x19d7c
+    BYTE unk19edc[4];
+    int unk19ee0[4]; // 0x19ee0
+    BYTE unk19ef0[0x1a544 - 0x19ef0];
+    MenuSlot20 unk1a544[6]; // 0x1a544
+    BYTE unk1a604[0x1a6a4 - 0x1a604];
+    int unk1a6a4; // 0x1a6a4
+    int unk1a6a8; // 0x1a6a8
+    BYTE unk1a6ac[0x1dae8 - 0x1a6ac];
 };
 
 extern MenuState g_menuState;
 
 struct PoolObject;
 
+// Front-end object; the first 0x14 bytes are the pool object header.
+struct MenuObject
+{
+    DWORD unk00[5]; // 0x00
+    int unk14;      // 0x14
+    int unk18;      // 0x18
+    float unk1c;    // 0x1c
+    float unk20;    // 0x20
+};
+
+struct Unk4516c0
+{
+    DWORD unk00[5];    // 0x00
+    PoolObject *unk14; // 0x14
+    PoolObject *unk18; // 0x18
+    int unk1c;         // 0x1c
+    int unk20;         // 0x20
+    int unk24;         // 0x24
+    int unk28;         // 0x28
+};
+
+// Front-end object owning one child object at 0x14.
+struct MenuHolder
+{
+    DWORD unk00[5];    // 0x00
+    PoolObject *child; // 0x14
+};
+
 void FUN_424bd0(float x, float y);
 int FUN_43d790(int value, int min, int max);
 float FUN_43d810(float current, float target, float rate);
 int FUN_43dd70();
+void FUN_43dd90(int player);
 void FUN_43de40();
 void FUN_43dee0();
 void FUN_43f310(PoolObject *screen);

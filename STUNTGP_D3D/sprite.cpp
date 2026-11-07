@@ -2,6 +2,8 @@
 #include "d3drender.h"
 #include "font.h"
 
+#include <direct.h>
+#include <io.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -30,6 +32,18 @@ int g_5da360[4];
 
 // GLOBAL: STUNTGP_D3D 0x47f318
 SpriteFile g_47f318[1];
+
+// GLOBAL: STUNTGP_D3D 0x480134
+SpriteFile g_480134[1];
+
+// GLOBAL: STUNTGP_D3D 0x4798bc
+int g_4798bc = -1;
+
+// GLOBAL: STUNTGP_D3D 0x5ff4bc
+char g_5ff4bc[0x400];
+
+// GLOBAL: STUNTGP_D3D 0x5ff8bc
+int g_5ff8bc;
 
 // GLOBAL: STUNTGP_D3D 0x608d88
 SpriteDef g_spriteDefs[0x183];
@@ -721,6 +735,14 @@ void FUN_43d960(ScreenRect *dst, ScreenRect *from, ScreenRect *to, float t)
     dst->bottom = (to->bottom - from->bottom) * t + from->bottom;
 }
 
+// FUNCTION: STUNTGP_D3D 0x43dd40
+void FUN_43dd40(int a, float b, float c)
+{
+    g_frontEnd.unk60 = a;
+    g_frontEnd.unk64 = b;
+    g_frontEnd.unk68 = c;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43dd60
 int FUN_43dd60()
 {
@@ -765,6 +787,203 @@ void FUN_43ff90(int arg)
     FUN_439450(40.0f, 220.0f, 600.0f, 260.0f, 3, (FUN_43dd60() & 0x20) ? 0x6f : 0x70, 0x40);
     FUN_439380(40.0f, 220.0f, 600.0f, 260.0f, 6, 2, 0, 0.0f);
     FUN_438960(320.0f, 240.0f, 5, 0, 4, buf, 1.5f, 0xffffffff, 0x803);
+}
+
+// FUNCTION: STUNTGP_D3D 0x4400a0
+void FUN_4400a0(int value)
+{
+    g_frontEnd.unk84 = value;
+}
+
+// FUNCTION: STUNTGP_D3D 0x440160
+int FUN_440160()
+{
+    return 8;
+}
+
+// FUNCTION: STUNTGP_D3D 0x440170
+int FUN_440170()
+{
+    int value = g_5ff8bc;
+    g_5ff8bc = 0;
+    return value;
+}
+
+// Makes sure the save directory exists: 7 if it already did, 0 if created, 8 on failure.
+// FUNCTION: STUNTGP_D3D 0x440180
+int FUN_440180()
+{
+    char *path = FUN_4401e0(g_4798bc);
+    if (FUN_4401c0(path))
+    {
+        return 7;
+    }
+    return _mkdir(path) < 0 ? 8 : 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4401c0
+BOOL FUN_4401c0(char *path)
+{
+    DWORD attributes = GetFileAttributesA(path);
+    if (attributes != 0xffffffff && (attributes & FILE_ATTRIBUTE_DIRECTORY))
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4401e0
+char *FUN_4401e0(int card)
+{
+    // STRING: STUNTGP_D3D 0x479a18
+    sprintf(g_5ff4bc, "%s\\save\\card%02d", g_GameDirectory, card);
+    return g_5ff4bc;
+}
+
+// Free space left in the 256K save area.
+// FUNCTION: STUNTGP_D3D 0x440200
+int FUN_440200(int *freeSpace)
+{
+    char *dir = FUN_4401e0(g_4798bc);
+    *freeSpace = 0;
+    if (!FUN_4401c0(dir))
+    {
+        return 1;
+    }
+    int used = FUN_440250(dir);
+    if (used < 0)
+    {
+        return 9;
+    }
+    *freeSpace = 0x40000 - used;
+    return 0;
+}
+
+// Total size of the files in a directory, or -1 if it does not exist.
+// FUNCTION: STUNTGP_D3D 0x440250
+int FUN_440250(char *dir)
+{
+    char pattern[0x400];
+    struct _finddatai64_t data;
+    int total = 0;
+    if (!FUN_4401c0(dir))
+    {
+        return -1;
+    }
+    // STRING: STUNTGP_D3D 0x479a2c
+    sprintf(pattern, "%s\\*.*", dir);
+    long handle = _findfirsti64(pattern, &data);
+    if (handle >= 0)
+    {
+        do
+        {
+            if (!(data.attrib & _A_SUBDIR))
+            {
+                total += (int)data.size;
+            }
+        } while (_findnexti64(handle, &data) >= 0);
+        _findclose(handle);
+    }
+    return total;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4402e0
+int FUN_4402e0()
+{
+    return 0x200;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4402f0
+void FUN_4402f0(int value)
+{
+    g_4798bc = value;
+}
+
+// FUNCTION: STUNTGP_D3D 0x440300
+int FUN_440300(int value)
+{
+    return value <= 8;
+}
+
+// FUNCTION: STUNTGP_D3D 0x440310
+int FUN_440310(int value)
+{
+    return value;
+}
+
+// FUNCTION: STUNTGP_D3D 0x440320
+int FUN_440320()
+{
+    char path[0x400];
+    char *dir = FUN_4401e0(g_4798bc);
+    if (!FUN_4401c0(dir))
+    {
+        return 1;
+    }
+    // STRING: STUNTGP_D3D 0x479a34
+    sprintf(path, "%s\\setup.bin", dir);
+    return FUN_440380(path) ? 4 : 6;
+}
+
+// FUNCTION: STUNTGP_D3D 0x440380
+BOOL FUN_440380(char *path)
+{
+    DWORD attributes = GetFileAttributesA(path);
+    if (attributes != 0xffffffff && !(attributes & FILE_ATTRIBUTE_DIRECTORY))
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+// Size of a file, or -1 if it is missing or a directory.
+// FUNCTION: STUNTGP_D3D 0x440480
+int FUN_440480(char *path)
+{
+    struct _finddatai64_t data;
+    long handle = _findfirsti64(path, &data);
+    if (handle < 0)
+    {
+        return -1;
+    }
+    _findclose(handle);
+    if (data.attrib & _A_SUBDIR)
+    {
+        return -1;
+    }
+    return (int)data.size;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4405c0
+int FUN_4405c0(int ghost)
+{
+    char path[0x400];
+    char *dir = FUN_4401e0(g_4798bc);
+    if (!FUN_4401c0(dir))
+    {
+        return 1;
+    }
+    // STRING: STUNTGP_D3D 0x479a74
+    sprintf(path, "%s\\ghost%02d.bin", dir, ghost);
+    return FUN_440380(path) ? 4 : 6;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4406e0
+int FUN_4406e0(int ghost)
+{
+    char path[0x400];
+    char *dir = FUN_4401e0(g_4798bc);
+    if (!FUN_4401c0(dir))
+    {
+        return 1;
+    }
+    // STRING: STUNTGP_D3D 0x479aa8
+    sprintf(path, "%s\\ghost%02d.bin", dir, ghost);
+    if (!FUN_440380(path))
+    {
+        return 6;
+    }
+    return remove(path) < 0 ? 6 : 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x441170
@@ -921,6 +1140,12 @@ void FUN_43d250()
 {
     FUN_43f6b0();
     FUN_437ec0();
+}
+
+// FUNCTION: STUNTGP_D3D 0x441180
+SpriteFile *FUN_441180()
+{
+    return g_480134;
 }
 
 // FUNCTION: STUNTGP_D3D 0x441190

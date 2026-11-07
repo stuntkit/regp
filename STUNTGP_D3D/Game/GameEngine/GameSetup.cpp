@@ -21,6 +21,23 @@
 
 struct CameraPath;
 
+struct Unk45ab70
+{
+    BYTE unk00[0x34];  // 0x00
+    PoolObject *unk34; // 0x34
+    PoolObject *unk38; // 0x38
+};
+
+struct Unk45c670
+{
+    BYTE unk00[0x14];  // 0x00
+    PoolObject *unk14; // 0x14
+    BYTE unk18[0x18];  // 0x18
+    int unk30;         // 0x30
+};
+
+void FUN_45c670(Unk45c670 *object);
+
 struct StuntKnot
 {
     float pathPosition; // 0x00
@@ -77,7 +94,11 @@ struct RenderMaterial
     DWORD unk00;      // 0x00
     DWORD unk04;      // 0x04
     float alpha;      // 0x08
-    BYTE unk0c[0x5c]; // 0x0c
+    BYTE unk0c[0x48]; // 0x0c
+    DWORD unk54;      // 0x54
+    DWORD unk58;      // 0x58
+    DWORD unk5c;      // 0x5c
+    BYTE unk60[0x8];  // 0x60
     float unk68;      // 0x68
     float unk6c;      // 0x6c
     float unk70;      // 0x70
@@ -1308,6 +1329,171 @@ void FUN_4469f0()
     Mem_Free(script);
 }
 
+// FUNCTION: STUNTGP_D3D 0x459a00
+int FUN_459a00(int which)
+{
+    if (which == 2)
+    {
+        return g_menuState.unk1a6a4;
+    }
+    return which == 1 ? g_menuState.unk1a6a8 : 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x459a20
+void FUN_459a20(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45a350
+void FUN_45a350()
+{
+    FUN_440880(12);
+}
+
+// FUNCTION: STUNTGP_D3D 0x45a3f0
+void FUN_45a3f0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45a610
+int FUN_45a610(MenuObject *object)
+{
+    object->unk14 = 0;
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45a7f0
+void FUN_45a7f0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45ab70
+void FUN_45ab70(Unk45ab70 *object)
+{
+    PoolObject *child = object->unk34;
+    child->destroy(child);
+    Pool_Free(child);
+    object->unk34 = NULL;
+    child = object->unk38;
+    child->destroy(child);
+    Pool_Free(child);
+    object->unk38 = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45b5b0
+void FUN_45b5b0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45b850
+void FUN_45b850(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45bba0
+int FUN_45bba0(MenuObject *object)
+{
+    object->unk14 = 1;
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45be00
+void FUN_45be00(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45c050
+void FUN_45c050(MenuObject *object)
+{
+    object->unk18 = 0;
+    object->unk1c = 1.0f;
+    object->unk20 = 1.0f;
+    object->unk14 = 0;
+    g_menuState.unk4244 = 0;
+    FUN_43dd90(0);
+}
+
+// FUNCTION: STUNTGP_D3D 0x45c640
+void FUN_45c640(Unk45c670 *object)
+{
+    PoolObject *child = object->unk14;
+    child->destroy(child);
+    Pool_Free(child);
+    object->unk14 = NULL;
+    FUN_45c670(object);
+}
+
+// FUNCTION: STUNTGP_D3D 0x45c670
+void FUN_45c670(Unk45c670 *object)
+{
+    switch (object->unk30)
+    {
+    case 1:
+        g_menuState.unk4478 = 5;
+        break;
+    case 2:
+        g_menuState.unk4478 = 9;
+        break;
+    case 0:
+        g_menuState.unk4478 = 3;
+        break;
+    default:
+        g_menuState.unk4478 = 5;
+        break;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45db10
+void FUN_45db10(Unk4516c0 *object)
+{
+    object->unk14->message(object->unk14, 0x14, 0);
+    PoolObject *child = object->unk18;
+    child->message(child, 0x13, 0);
+    child->message(child, 0x1c, 2);
+    object->unk1c = 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45db50
+void FUN_45db50(Unk4516c0 *object)
+{
+    object->unk14->message(object->unk14, 0x13, 0);
+    object->unk18->message(object->unk18, 0x14, 0);
+    object->unk1c = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45dde0
+void FUN_45dde0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
 // FUNCTION: STUNTGP_D3D 0x45e0e0
 void FUN_45e0e0()
 {
@@ -1317,6 +1503,45 @@ void FUN_45e0e0()
         p->unk00 = 2;
     }
     g_62d478 = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e110
+void FUN_45e110(Unk62a078 *particle)
+{
+    particle->sizeNow = 0.0f;
+    particle->alphaNow = 0.0f;
+    particle->frame = 0;
+    Unk62a078 *slot = g_62a078;
+    unsigned int i = 0;
+    while (slot->unk00 == 1)
+    {
+        i++;
+        slot++;
+        if (i >= 0x40)
+        {
+            return;
+        }
+    }
+    *slot = *particle;
+    slot->unk00 = 1;
+    slot->time = 0;
+    g_62d478 = 1;
+    slot->angle = 0.0f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45eb90
+void FUN_45eb90(int x, int y, int z)
+{
+    RenderMaterial *material = g_62447c;
+    x <<= 2;
+    y <<= 2;
+    z <<= 2;
+    for (int i = 0; i < g_62449c; i++, material++)
+    {
+        material->unk54 = (material->unk54 + x) & 0x1ffffff;
+        material->unk58 = (material->unk58 + y) & 0x1ffffff;
+        material->unk5c = (material->unk5c + z) & 0x1ffffff;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x45ec30

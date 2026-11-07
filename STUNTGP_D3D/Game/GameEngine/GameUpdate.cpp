@@ -1,6 +1,33 @@
 #include "GameUpdate.h"
 #include "Game.h"
 
+// 128-byte PCX file header.
+struct PcxHeader
+{
+    BYTE manufacturer;  // 0x00
+    BYTE version;       // 0x01
+    BYTE encoding;      // 0x02
+    BYTE bitsPerPixel;  // 0x03
+    short xMin;         // 0x04
+    short yMin;         // 0x06
+    short xMax;         // 0x08
+    short yMax;         // 0x0a
+    short hDpi;         // 0x0c
+    short vDpi;         // 0x0e
+    BYTE palette[48];   // 0x10
+    BYTE reserved;      // 0x40
+    BYTE planes;        // 0x41
+    short bytesPerLine; // 0x42
+    short paletteInfo;  // 0x44
+    BYTE filler[58];    // 0x46
+};
+
+extern int g_48971c;
+
+// GLOBAL: STUNTGP_D3D 0x5da2e4
+FILE *g_5da2e4;
+extern int g_489720;
+
 #include <cstring>
 #include <stdio.h>
 #include <float.h>
@@ -1244,6 +1271,19 @@ void FUN_443100()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x443560
+void FUN_443560()
+{
+    GhostRecord *rec = g_60d628;
+    for (int i = 0; i < 4; i++, rec++)
+    {
+        if (rec->unk00 == 1)
+        {
+            ((Car *)rec->unk04)->unk7640 = 60;
+        }
+    }
+}
+
 // STUB: STUNTGP_D3D 0x443630
 void FUN_443630()
 {
@@ -1399,6 +1439,12 @@ int FUN_442fb0()
         return 0;
     }
     return g_60f000[0] < g_60d628[0].ghost->unk1c;
+}
+
+// FUNCTION: STUNTGP_D3D 0x443dd0
+void FUN_443dd0()
+{
+    FUN_4028d0(10);
 }
 
 // FUNCTION: STUNTGP_D3D 0x443de0
@@ -1561,6 +1607,13 @@ void FUN_443980()
     FUN_403310(2.55f);
 }
 
+// FUNCTION: STUNTGP_D3D 0x443e10
+void FUN_443e10(Car *car)
+{
+    car->race.unk4c[7] = 0;
+    car->race.unk4c[8] = 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x443e20
 void FUN_443e20()
 {
@@ -1597,9 +1650,68 @@ void FUN_444410()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x444550
+int FUN_444550()
+{
+    Car *car = g_49a1f8;
+    for (unsigned int i = 0; i < 6; i++, car++)
+    {
+        if (car->active == 1 && car->unk2640 == 0 && car->unk24e0 != 1)
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x444670
+int FUN_444670()
+{
+    int total = 0;
+    int finished = 0;
+    Car *car = g_49a1f8;
+    for (int i = 0; i < 6; i++, car++)
+    {
+        if (car->active == 1)
+        {
+            total++;
+            if ((car->unk24e0 == 1 && car->race.unk4c[0] == 0 && car->race.unk30 == 0) || car->unk2640 == 1 ||
+                car->unk24e8 == 1)
+            {
+                finished++;
+            }
+        }
+    }
+    return finished == total;
+}
+
 // STUB: STUNTGP_D3D 0x4446d0
 void FUN_4446d0()
 {
+}
+
+// FUNCTION: STUNTGP_D3D 0x444a90
+int FUN_444a90()
+{
+    if (g_61299c == 1)
+    {
+        return 0;
+    }
+    int total = 0;
+    int finished = 0;
+    Car *car = g_49a1f8;
+    for (int i = 0; i < 6; i++, car++)
+    {
+        if (car->active == 1)
+        {
+            total++;
+            if (car->unk2640 == 1 || car->race.unk18 == 1)
+            {
+                finished++;
+            }
+        }
+    }
+    return finished == total;
 }
 
 // STUB: STUNTGP_D3D 0x444ae0
@@ -1622,6 +1734,12 @@ void FUN_444c20()
     FUN_4058f0();
     g_60f2b4 = 2;
     FUN_41de40();
+}
+
+// FUNCTION: STUNTGP_D3D 0x444c40
+void FUN_444c40(Car *car)
+{
+    car->race.unk00 = 0;
 }
 
 // Start-of-race countdown: plays a beep and shows the next digit every second.
@@ -1822,6 +1940,23 @@ void FUN_446110()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x446340
+void FUN_446340()
+{
+    // STRING: STUNTGP_D3D 0x484bbc
+    fprintf(g_5da2e4, "***********************************************************************\n");
+    // STRING: STUNTGP_D3D 0x484c08
+    fprintf(g_5da2e4, "*                                                                     *\n");
+    // STRING: STUNTGP_D3D 0x484c54
+    fprintf(g_5da2e4, "*               SGP Level Config File (Text Version)                  *\n");
+    // STRING: STUNTGP_D3D 0x484ca0
+    fprintf(g_5da2e4, "*                    (C) Pete Opdam                                   *\n");
+    // STRING: STUNTGP_D3D 0x484cec
+    fprintf(g_5da2e4, "*                                                                     *\n");
+    // STRING: STUNTGP_D3D 0x484d38
+    fprintf(g_5da2e4, "***********************************************************************\n");
+}
+
 // FUNCTION: STUNTGP_D3D 0x447ab0
 void FUN_447ab0(Fader *fader)
 {
@@ -1856,6 +1991,12 @@ void FUN_447ab0(Fader *fader)
             }
         }
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x447b50
+void FUN_447b50()
+{
+    g_61b740->unk000 = 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x447b60
@@ -2192,6 +2333,58 @@ void FUN_45e1d0()
                 FUN_45e180(p);
             }
         }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e7b0
+void FUN_45e7b0(PcxHeader *header)
+{
+    header->manufacturer = 10;
+    header->version = 5;
+    header->encoding = 1;
+    header->bitsPerPixel = 8;
+    header->xMin = 0;
+    header->yMin = 0;
+    header->xMax = g_48971c - 1;
+    header->yMax = g_489720 - 1;
+    header->hDpi = 200;
+    header->vDpi = 200;
+    memset(header->palette, 0, sizeof(header->palette));
+    header->reserved = 0;
+    header->planes = 1;
+    header->bytesPerLine = g_48971c;
+    header->paletteInfo = 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e820
+void FUN_45e820(DWORD *src, DWORD *dst, int size)
+{
+    for (int i = 0; i < size * size; i += 4)
+    {
+        *dst++ = *src++;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45e850
+void FUN_45e850(BYTE *dst, BYTE *src)
+{
+    for (int i = 0; i < 0x300; i++)
+    {
+        *dst++ = *++src;
+        *dst++ = *++src;
+        *dst++ = *++src;
+        src++;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45ea50
+void FUN_45ea50(char *path)
+{
+    char header[0xc0];
+    if (bload(path, header, 0x80))
+    {
+        g_489714 = g_48971c = (header[0x43] << 8) | (BYTE)header[0x42];
+        g_489718 = g_489720 = ((header[0xb] << 8) | (BYTE)header[0xa]) + 1;
     }
 }
 

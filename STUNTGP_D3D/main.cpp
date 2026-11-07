@@ -2,12 +2,14 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <ctime>
 #include <ddraw.h>
 #include <windows.h>
 
 #include "Game/GameEngine/Engine_LevelScript.h"
 #include "Game/GameEngine/Game.h"
+#include "Game/GameEngine/MenuUpdate.h"
 #include "windowInit.h"
 
 #include "globals.h"
@@ -17,6 +19,54 @@
 
 #include "common.h"
 // #include "pure.h"
+
+struct Unk61c208
+{
+    int unk00;
+    int unk04;
+    BYTE unk08[0x18];
+};
+
+// GLOBAL: STUNTGP_D3D 0x61c208
+Unk61c208 g_61c208[6];
+
+// GLOBAL: STUNTGP_D3D 0x61c2c8
+int g_61c2c8;
+
+// FUNCTION: STUNTGP_D3D 0x44d4a0
+void FUN_44d4a0()
+{
+    g_menuState.unk4474 = g_menuState.unk440c[(rand() & 0xff) % g_menuState.unk4408];
+}
+
+// FUNCTION: STUNTGP_D3D 0x44e330
+void FUN_44e330()
+{
+    g_menuState.unk4474 = g_menuState.unk440c[(rand() & 0xff) % g_menuState.unk4408];
+}
+
+// FUNCTION: STUNTGP_D3D 0x44e430
+int FUN_44e430()
+{
+    int used[7];
+    memset(used, 0, sizeof(used));
+    for (int i = 0; i < g_61c2c8; i++)
+    {
+        int slot = g_61c208[i].unk04;
+        if (slot > 0 && slot < 7)
+        {
+            used[slot] = 1;
+        }
+    }
+    for (int j = 1; j < 7; j++)
+    {
+        if (!used[j])
+        {
+            return j;
+        }
+    }
+    return 0;
+}
 
 // FUNCTION: STUNTGP_D3D 0x44e490
 void FUN_44e490()

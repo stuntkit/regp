@@ -19,6 +19,136 @@ struct MenuInput
     int unk14;    // 0x14
 };
 
+struct Unk450930
+{
+    BYTE unk00[0x24];  // 0x00
+    PoolObject *child; // 0x24
+};
+
+struct Unk453460
+{
+    DWORD unk00[6];    // 0x00
+    PoolObject *unk18; // 0x18
+    int unk1c;         // 0x1c
+    int unk20;         // 0x20
+};
+
+struct Unk451a50
+{
+    BYTE unk00[0x50];   // 0x00
+    // Each group is a count, an unused word and up to ten items.
+    int groups[1];      // 0x50, group count unknown
+};
+
+// Name entry: three characters plus the terminator.
+struct Unk454b20
+{
+    BYTE unk00[0x14]; // 0x00
+    int unk14;        // 0x14
+    int unk18;        // 0x18
+    int unk1c;        // 0x1c
+    int unk20;        // 0x20
+    int unk24;        // 0x24
+    int unk28;        // 0x28
+    int unk2c;        // 0x2c
+    int unk30;        // 0x30
+    int unk34;        // 0x34
+    int unk38;        // 0x38
+    int unk3c;        // 0x3c
+    int unk40;        // 0x40
+    int unk44;        // 0x44
+    char text[4];     // 0x48
+    int unk4c;        // 0x4c
+};
+
+struct Unk457770
+{
+    DWORD unk00[5];    // 0x00
+    PoolObject *unk14; // 0x14
+    int unk18;         // 0x18
+};
+
+struct Unk454b40
+{
+    BYTE unk00[0x1c]; // 0x00
+    int unk1c;        // 0x1c
+    int unk20;        // 0x20
+    float unk24;      // 0x24
+    float unk28;      // 0x28
+    float unk2c;      // 0x2c
+    float unk30;      // 0x30
+};
+
+struct Unk455fc0
+{
+    BYTE unk00[0x18]; // 0x00
+    int unk18;        // 0x18
+    int unk1c;        // 0x1c
+    int unk20;        // 0x20
+    int unk24;        // 0x24
+    int unk28;        // 0x28
+    int unk2c;        // 0x2c
+};
+
+// Per-player front-end panel; the arrays are indexed by player, 1 to 4.
+struct Unk456070
+{
+    BYTE unk00[0x14]; // 0x00
+    int unk14;        // 0x14
+    int unk18;        // 0x18
+    int unk1c;        // 0x1c
+    int unk20[5];     // 0x20
+    int unk34[5];     // 0x34
+    int unk48[5];     // 0x48
+};
+
+void FUN_456070(Unk456070 *object);
+
+struct Unk457ea0
+{
+    BYTE unk00[0x40];  // 0x00
+    PoolObject *child; // 0x40
+};
+
+struct Unk457e70Entry
+{
+    int id;
+    int unk04;
+    int unk08;
+    BYTE unk0c[0x24];
+};
+
+struct Unk457e70
+{
+    BYTE unk000[0x20];         // 0x000
+    int unk20;                 // 0x020, selected entry
+    BYTE unk024[0x1c];         // 0x024
+    PoolObject *unk40;         // 0x040
+    BYTE unk044[0x20];         // 0x044
+    Unk457e70Entry entries[8]; // 0x064
+    int count;                 // 0x1e4
+    int unk1e8;                // 0x1e8
+    int unk1ec;                // 0x1ec
+    int unk1f0;                // 0x1f0
+    int unk1f4;                // 0x1f4
+    int unk1f8;                // 0x1f8
+};
+
+typedef Unk457e70 Unk458860;
+
+// Character grid for name entry, eight per row.
+// GLOBAL: STUNTGP_D3D 0x4881b0
+char *g_4881b0[4] = {
+    // STRING: STUNTGP_D3D 0x4881c8
+    "ABCDEFGH",
+    // STRING: STUNTGP_D3D 0x4881d4
+    "IJKLMNOP",
+    // STRING: STUNTGP_D3D 0x4881e0
+    "QRSTUVWX",
+    // STRING: STUNTGP_D3D 0x4881ec
+    "YZ=:()de",
+};
+
 // GLOBAL: STUNTGP_D3D 0x5da2e8
 MenuInput g_menuInput[5];
 
@@ -547,6 +677,25 @@ void FUN_43d280()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x43dcc0
+int FUN_43dcc0(int index, int base)
+{
+    switch (index)
+    {
+    case 1:
+        return base + 0x171;
+    case 2:
+        return base + 0x174;
+    case 3:
+        return base + 0x177;
+    case 4:
+        return base + 0x17a;
+    case 5:
+        return base + 0x17d;
+    }
+    return 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43dd10
 void FUN_43dd10(DWORD color)
 {
@@ -561,6 +710,12 @@ int FUN_43dd70()
 {
     g_frontEnd.unk78 = 0;
     return g_frontEnd.unk7c != 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43dd90
+void FUN_43dd90(int player)
+{
+    g_frontEnd.lockedPlayer = player;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43dda0
@@ -614,6 +769,17 @@ void FUN_43dee0()
     g_frontEnd.unka0[3] = 0.0f;
     g_frontEnd.unka0[4] = 0.0f;
     g_frontEnd.unka0[5] = 0.0f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43df60
+void FUN_43df60(float a, float b, float c, float d, float e, float f)
+{
+    g_frontEnd.unka0[0] = a;
+    g_frontEnd.unka0[1] = b;
+    g_frontEnd.unka0[2] = c;
+    g_frontEnd.unka0[3] = d;
+    g_frontEnd.unka0[4] = e;
+    g_frontEnd.unka0[5] = f;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43efc0
@@ -939,10 +1105,37 @@ void FUN_43f610()
     g_frontEnd.unk7c = FUN_43d790(g_frontEnd.unk7c, 0, 70);
 }
 
+// FUNCTION: STUNTGP_D3D 0x440890
+void FUN_440890(int id)
+{
+    switch (id)
+    {
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+        FUN_440880(1);
+        break;
+    case 15:
+    case 16:
+        FUN_440880(3);
+        break;
+    case 17:
+        FUN_440880(2);
+        break;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x4408e0
 void FUN_4408e0()
 {
     g_5ff8c0 = 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4405b0
+int FUN_4405b0(int value)
+{
+    return value;
 }
 
 // FUNCTION: STUNTGP_D3D 0x440770
@@ -1016,6 +1209,142 @@ void FUN_441210()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x450510
+void FUN_450510(Unk4516c0 *object)
+{
+    PoolObject *child = object->unk14;
+    child->destroy(child);
+    Pool_Free(child);
+    object->unk14 = NULL;
+    child = object->unk18;
+    child->destroy(child);
+    Pool_Free(child);
+    object->unk18 = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x450930
+void FUN_450930(Unk450930 *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x450ac0
+void FUN_450ac0(MenuObject *object)
+{
+    object->unk1c = FUN_43d7b0(object->unk1c, -31.0f, 31.0f);
+    object->unk20 = FUN_43d7b0(object->unk20, -31.0f, 31.0f);
+}
+
+// FUNCTION: STUNTGP_D3D 0x450e10
+void FUN_450e10(Unk4516c0 *object)
+{
+    PoolObject *child = object->unk14;
+    child->destroy(child);
+    Pool_Free(child);
+    object->unk14 = NULL;
+    child = object->unk18;
+    child->destroy(child);
+    Pool_Free(child);
+    object->unk18 = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x451680
+void FUN_451680(Unk4516c0 *object)
+{
+    object->unk14->message(object->unk14, 0x19, 0);
+    PoolObject *child = object->unk18;
+    child->message(child, 0x13, 0);
+    child->message(child, 0x1c, 2);
+    object->unk28 = 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4516c0
+void FUN_4516c0(Unk4516c0 *object)
+{
+    object->unk14->message(object->unk14, 0x18, 0);
+    object->unk18->message(object->unk18, 0x14, 0);
+    object->unk28 = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x451a50
+void FUN_451a50(Unk451a50 *object, int value, int group)
+{
+    object->groups[(group - 1) * 12 + object->groups[(group - 1) * 12] + 2] = value;
+    object->groups[(group - 1) * 12]++;
+}
+
+// FUNCTION: STUNTGP_D3D 0x451a80
+void FUN_451a80(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x451e80
+int FUN_451e80(Unk451a50 *object, float x, float y)
+{
+    int row = (int)(y + 0.5f);
+    int column = (int)(x + 0.5f);
+    if (column >= object->groups[row * 12])
+    {
+        return 0;
+    }
+    return object->groups[row * 12 + column + 2];
+}
+
+// FUNCTION: STUNTGP_D3D 0x452530
+void FUN_452530(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4529c0
+void FUN_4529c0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x452ac0
+void FUN_452ac0()
+{
+    float height = FUN_438950(1.25f);
+    float y = (480.0f - height * 16.0f) * 0.5f;
+    for (int id = 0x2b6; id < 0x2c6; id++)
+    {
+        FUN_438be0(320.0f, y, 12, 4, id, 1.25f, 0xffffffff, 3);
+        y += height;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x452b30
+int FUN_452b30(MenuObject *object)
+{
+    object->unk14 = 0;
+    object->unk18 = 0;
+    FUN_440880(16);
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x452d50
+void FUN_452d50(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
 // FUNCTION: STUNTGP_D3D 0x452d70
 int FUN_452d70(int id)
 {
@@ -1024,4 +1353,648 @@ int FUN_452d70(int id)
         g_menuState.unk0090 = id;
     }
     return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x452fc0
+int FUN_452fc0(MenuObject *object)
+{
+    object->unk14 = 0;
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4531d0
+void FUN_4531d0(Unk4516c0 *object)
+{
+    PoolObject *child = object->unk14;
+    child->destroy(child);
+    Pool_Free(child);
+    object->unk14 = NULL;
+    child = object->unk18;
+    child->destroy(child);
+    Pool_Free(child);
+    object->unk18 = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x453430
+void FUN_453430(Unk453460 *object)
+{
+    PoolObject *child = object->unk18;
+    child->message(child, 0x13, 0);
+    child->message(child, 0x1c, 2);
+    object->unk1c = 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x453460
+void FUN_453460(Unk453460 *object)
+{
+    object->unk18->message(object->unk18, 0x14, 0);
+    object->unk1c = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4536f0
+void FUN_4536f0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4542a0
+void FUN_4542a0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x454410
+int FUN_454410(Unk454b20 *object)
+{
+    object->unk1c = 0;
+    object->unk20 = 0;
+    object->unk24 = 0;
+    object->unk28 = 0;
+    object->unk2c = 0;
+    object->unk30 = 0;
+    object->unk3c = 0;
+    object->unk40 = 0;
+    object->unk44 = 0;
+    object->unk34 = 0;
+    object->unk38 = 0;
+    object->unk14 = 0;
+    object->unk4c = 0;
+    object->text[0] = g_menuState.unk44d0 = 0;
+    object->unk18 = g_menuState.unk4238;
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4547e0
+int FUN_4547e0(char c, int *column, int *row)
+{
+    for (int r = 0; r < 4; r++)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            if (g_4881b0[r][i] == c)
+            {
+                *column = i;
+                *row = r;
+                return i + r * 8;
+            }
+        }
+    }
+    return -1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x454af0
+void FUN_454af0(Unk454b20 *object, char c)
+{
+    int len = strlen(object->text);
+    if (len < 3)
+    {
+        object->text[len] = c;
+        object->text[len + 1] = '\0';
+        object->unk14 = 0;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x454b20
+void FUN_454b20(Unk454b20 *object)
+{
+    int len = strlen(object->text);
+    if (len > 0)
+    {
+        object->text[len - 1] = '\0';
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x454b40
+void FUN_454b40(Unk454b40 *object, int x, int y)
+{
+    float fx = x;
+    object->unk1c = x;
+    object->unk20 = y;
+    object->unk24 = fx;
+    float fy = y;
+    object->unk28 = fy;
+    object->unk2c = fx;
+    object->unk30 = fy;
+}
+
+// FUNCTION: STUNTGP_D3D 0x454c80
+int FUN_454c80(Unk454b20 *object, int column, int row)
+{
+    if (column < 0 || row < 0 || column >= 8 || row >= 4)
+    {
+        return 0;
+    }
+    int len = strlen(object->text);
+    if (len < 3)
+    {
+        return column != 7 || row != 3;
+    }
+    return column >= 6 && row == 3;
+}
+
+// FUNCTION: STUNTGP_D3D 0x454d80
+void FUN_454d80(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x455090
+void FUN_455090(Unk4516c0 *object)
+{
+    PoolObject *child = object->unk18;
+    child->destroy(child);
+    Pool_Free(child);
+    object->unk18 = NULL;
+    child = object->unk14;
+    child->destroy(child);
+    Pool_Free(child);
+    object->unk14 = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4552f0
+void FUN_4552f0(Unk453460 *object)
+{
+    PoolObject *child = object->unk18;
+    child->message(child, 0x13, 0);
+    child->message(child, 0x1c, 2);
+    object->unk1c = 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x455320
+void FUN_455320(Unk453460 *object)
+{
+    object->unk18->message(object->unk18, 0x14, 0);
+    object->unk1c = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x455410
+void FUN_455410(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x455690
+void FUN_455690(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x455b90
+int FUN_455b90(int player)
+{
+    if (FUN_436fd0(player, 3) || FUN_436fd0(player, 4) || FUN_436fd0(player, 1) || FUN_436fd0(player, 2))
+    {
+        return 1;
+    }
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x455d70
+void FUN_455d70(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x455fc0
+void FUN_455fc0(Unk455fc0 *object)
+{
+    g_menuState.unk00d4 = object->unk18;
+    g_menuState.unk00d8 = object->unk1c;
+    g_menuState.unk00dc = object->unk20;
+    g_menuState.unk00e0 = object->unk24;
+    g_menuState.unk00e4 = object->unk28;
+    g_menuState.unk00e8 = object->unk2c;
+}
+
+// FUNCTION: STUNTGP_D3D 0x456010
+int FUN_456010(Unk456070 *object)
+{
+    object->unk1c = 0x293;
+    object->unk14 = 15;
+    object->unk18 = 0;
+    for (int i = 0; i < 5; i++)
+    {
+        object->unk34[i] = 0;
+        object->unk48[i] = 0;
+    }
+    g_menuState.unk423c = 0;
+    g_menuState.unk46ac[0] = 0;
+    g_menuState.unk46a8 = 0;
+    g_menuState.unk46ac[1] = 0;
+    g_menuState.unk46ac[2] = 0;
+    g_menuState.unk46ac[3] = 0;
+    FUN_456070(object);
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x456070
+void FUN_456070(Unk456070 *object)
+{
+    for (int i = 1; i < 5; i++)
+    {
+        int a;
+        int b;
+        a = b = 1;
+        if (!FUN_437090(i))
+        {
+            a = b = 0;
+        }
+        object->unk20[i] = a;
+        object->unk34[i] = b;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x4565a0
+void FUN_4565a0(Unk456070 *object, int player)
+{
+    FUN_440880(3);
+    object->unk48[player] = 1;
+    FUN_456070(object);
+}
+
+// FUNCTION: STUNTGP_D3D 0x4565d0
+void FUN_4565d0(Unk456070 *object, int player)
+{
+    FUN_440880(2);
+    object->unk48[player] = 0;
+    FUN_456070(object);
+}
+
+// FUNCTION: STUNTGP_D3D 0x456600
+int FUN_456600(int player)
+{
+    if (FUN_436fd0(player, 3) || FUN_436fd0(player, 4) || FUN_436fd0(player, 1) || FUN_436fd0(player, 2))
+    {
+        return 1;
+    }
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x456650
+int FUN_456650(Unk456070 *object)
+{
+    int count = 0;
+    for (int i = 0; i < 4; i++)
+    {
+        if (object->unk48[i + 1])
+        {
+            count++;
+        }
+    }
+    return count;
+}
+
+// FUNCTION: STUNTGP_D3D 0x456670
+int FUN_456670(Unk456070 *object)
+{
+    int count = 0;
+    int *out = g_menuState.unk46ac;
+    for (int i = 1; i < 5; i++)
+    {
+        if (object->unk48[i])
+        {
+            *out++ = i;
+            count++;
+        }
+    }
+    g_menuState.unk423c = count;
+    return count >= 2;
+}
+
+// FUNCTION: STUNTGP_D3D 0x456760
+void FUN_456760(Unk456070 *object)
+{
+    int seconds = object->unk1c / 60;
+    if (FUN_456650(object) < 2)
+    {
+        object->unk1c = 0x293;
+        return;
+    }
+    if (object->unk1c)
+    {
+        object->unk1c--;
+    }
+    if (seconds != object->unk1c / 60)
+    {
+        FUN_440880(10);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x456910
+void FUN_456910(Unk4516c0 *object)
+{
+    PoolObject *child = object->unk14;
+    child->destroy(child);
+    Pool_Free(child);
+    object->unk14 = NULL;
+    child = object->unk18;
+    child->destroy(child);
+    Pool_Free(child);
+    object->unk18 = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x456f70
+void FUN_456f70(Unk453460 *object)
+{
+    PoolObject *child = object->unk18;
+    child->message(child, 0x13, 0);
+    child->message(child, 0x1c, 2);
+    object->unk20 = 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x456fa0
+void FUN_456fa0(Unk453460 *object)
+{
+    object->unk18->message(object->unk18, 0x14, 0);
+    object->unk20 = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4570f0
+void FUN_4570f0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4572e0
+void FUN_4572e0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x457500
+void FUN_457500(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x457770
+void FUN_457770(Unk457770 *object)
+{
+    if (object->unk18)
+    {
+        switch (g_menuState.unk0094)
+        {
+        case 2:
+            object->unk14->message(object->unk14, 0x1c, 1);
+            break;
+        case 1:
+            object->unk14->message(object->unk14, 0x1c, 0);
+            break;
+        }
+        object->unk18 = 0;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x4577c0
+void FUN_4577c0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x457a20
+int FUN_457a20(int value)
+{
+    return value > 0 && value <= 3;
+}
+
+// FUNCTION: STUNTGP_D3D 0x457e70
+int FUN_457e70(Unk457e70 *object, int id)
+{
+    for (int i = 0; i < object->count; i++)
+    {
+        if (object->entries[i].id == id)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x457ea0
+void FUN_457ea0(Unk457ea0 *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// Integer division rounding up.
+// FUNCTION: STUNTGP_D3D 0x4586e0
+int FUN_4586e0(int value, int divisor)
+{
+    return (value + divisor - 1) / divisor;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4586f0
+int FUN_4586f0(Unk457e70 *object)
+{
+    for (int i = 0; i < object->count; i++)
+    {
+        int type = object->entries[i].unk08;
+        if (type == 1 || (type > 3 && type <= 5))
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x458800
+int FUN_458800()
+{
+    int screen = g_menuState.unk46c4;
+    if (screen)
+    {
+        return FUN_43ef10(0, screen);
+    }
+    return FUN_43eef0();
+}
+
+// FUNCTION: STUNTGP_D3D 0x458860
+void FUN_458860(Unk458860 *object)
+{
+    object->unk1ec = 0;
+    object->unk1e8 = 0;
+    object->unk1f0 = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x458a60
+void FUN_458a60(Unk458860 *object, int a, int b, int c)
+{
+    object->unk1f4 = a;
+    object->unk1e8 = c;
+    object->unk1ec = b;
+    object->unk1f0 = 0;
+    object->unk1f8 = 10;
+    FUN_440880(3);
+    if (b == 1)
+    {
+        object->unk40->message(object->unk40, 0x1c, 1);
+    }
+    else
+    {
+        object->unk40->message(object->unk40, 0x1c, 0);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x458ad0
+void FUN_458ad0(Unk457e70 *object, int a)
+{
+    switch (object->entries[object->unk20].unk08)
+    {
+    case 1:
+    case 3:
+        FUN_440880(9);
+        break;
+    case 2:
+        FUN_458a60(object, a, 1, 1);
+        break;
+    case 4:
+        FUN_458a60(object, a, 2, 0);
+        break;
+    case 5:
+        FUN_458a60(object, a, 3, 0);
+        break;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x458b30
+void FUN_458b30(Unk457e70 *object, int a)
+{
+    int type = object->entries[object->unk20].unk08;
+    if (type <= 0)
+    {
+        return;
+    }
+    if (type > 4)
+    {
+        if (type == 5)
+        {
+            FUN_458a60(object, a, 3, 0);
+        }
+    }
+    else
+    {
+        FUN_440880(9);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x458b60
+void FUN_458b60(Unk457e70 *object, int a)
+{
+    switch (object->entries[object->unk20].unk08)
+    {
+    case 1:
+    case 3:
+        FUN_440880(9);
+        break;
+    case 2:
+        FUN_458a60(object, a, 1, 1);
+        break;
+    case 5:
+        FUN_458a60(object, a, 2, 1);
+        break;
+    case 4:
+        FUN_458a60(object, a, 2, 0);
+        break;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x458bc0
+void FUN_458bc0(Unk457e70 *object, int a)
+{
+    int type = object->entries[object->unk20].unk08;
+    if (type <= 0)
+    {
+        return;
+    }
+    if (type > 4)
+    {
+        if (type == 5)
+        {
+            FUN_458a60(object, a, type, 0);
+        }
+    }
+    else
+    {
+        FUN_440880(9);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x458bf0
+void FUN_458bf0(Unk457e70 *object, int a)
+{
+    switch (object->entries[object->unk20].unk08)
+    {
+    case 1:
+    case 3:
+        FUN_440880(9);
+        break;
+    case 2:
+        FUN_458a60(object, a, 1, 1);
+        break;
+    case 5:
+        FUN_458a60(object, a, 4, 1);
+        break;
+    case 4:
+        FUN_458a60(object, a, 4, 0);
+        break;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x458d00
+void FUN_458d00(Unk457e70 *object)
+{
+    switch (g_menuState.unk46c8)
+    {
+    case 1:
+    case 2:
+    case 3:
+        g_menuState.unk46d8 = object->entries[object->unk20].id;
+        break;
+    case 4:
+    case 5:
+        g_menuState.unk46dc = object->entries[object->unk20].id;
+        break;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x459300
+void FUN_459300(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
 }

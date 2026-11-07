@@ -7,6 +7,18 @@
 #include "globals.h"
 #include "Game/GameEngine/io_wad.h"
 
+extern int g_612964;
+extern DWORD g_612d00;
+extern DWORD g_612d04;
+extern BYTE g_62dcf0[256];
+void FUN_441ec0();
+void FUN_442490();
+void FUN_442be0();
+
+// GLOBAL: STUNTGP_D3D 0x6126a0
+char g_6126a0[0x100];
+extern int g_612968;
+
 // GLOBAL: STUNTGP_D3D 0x46e780
 const TextKey c_46e780[105] = {
     // STRING: STUNTGP_D3D 0x4835e4
@@ -478,6 +490,13 @@ void Scores_LoadIfNeeded()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x443d80
+void FUN_443d80()
+{
+    g_612964 = 1;
+    g_612968 = 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x445610
 void FUN_445610()
 {
@@ -553,6 +572,18 @@ void Gameplay_LoadIfNeeded()
     {
         Gameplay_Load();
         FUN_445610();
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x4458f0
+void FUN_4458f0()
+{
+    FUN_442490();
+    while (g_612d00 < g_612d04)
+    {
+        FUN_442be0();
+        FUN_441ec0();
+        memcpy(g_62dcf0, g_62d480, sizeof(g_62dcf0));
     }
 }
 
@@ -636,6 +667,18 @@ int Csv_ReadField(char *out, char *text, int *pos)
         (*pos)++;
     }
     return len;
+}
+
+// FUNCTION: STUNTGP_D3D 0x445c60
+int Csv_ReadInt(int *value, char *text, int *pos)
+{
+    int len = Csv_ReadField(g_6126a0, text, pos);
+    // STRING: STUNTGP_D3D 0x483f74
+    if (sscanf(g_6126a0, "%d", value) == 1)
+    {
+        return len;
+    }
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x445ca0
@@ -734,6 +777,12 @@ char *Text_AddString(char *str)
     char *dest = &g_60f6a0[g_4835dc];
     strcpy(dest, str);
     return dest;
+}
+
+// FUNCTION: STUNTGP_D3D 0x445f70
+void FUN_445f70(int value)
+{
+    g_4835e0 = value;
 }
 
 // FUNCTION: STUNTGP_D3D 0x445f80

@@ -6,6 +6,8 @@ void FUN_45f8f0(int track, int loop);
 int FUN_43eee0(int screen);
 void FUN_43dc30(int track);
 
+extern int g_5ff8c0;
+
 // GLOBAL: STUNTGP_D3D 0x5fd250
 int g_5fd250;
 
@@ -56,6 +58,17 @@ void Pool_Free(void *ptr)
     g_pool.freeBlocks[g_pool.freeCount] = block;
     g_pool.freeCount++;
     g_pool.allocCount--;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43eef0
+int FUN_43eef0()
+{
+    if (g_frontEnd.objectCount == 0)
+    {
+        return 0;
+    }
+    g_frontEnd.objectCount--;
+    return FUN_43ee40(g_frontEnd.objects[g_frontEnd.objectCount]);
 }
 
 // FUNCTION: STUNTGP_D3D 0x43ef10
@@ -120,6 +133,12 @@ int FUN_43eee0(int screen)
     return g_5fcab0[screen];
 }
 
+// FUNCTION: STUNTGP_D3D 0x43dc20
+int FUN_43dc20(int first, int last)
+{
+    return last - first + 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43dc30
 void FUN_43dc30(int track)
 {
@@ -168,6 +187,18 @@ void FUN_437ea0()
 // FUNCTION: STUNTGP_D3D 0x4408f0
 void FUN_4408f0()
 {
+}
+
+// FUNCTION: STUNTGP_D3D 0x440900
+void FUN_440900()
+{
+    g_5ff8c0++;
+}
+
+// FUNCTION: STUNTGP_D3D 0x440910
+void FUN_440910()
+{
+    g_5ff8c0--;
 }
 
 // FUNCTION: STUNTGP_D3D 0x440c20

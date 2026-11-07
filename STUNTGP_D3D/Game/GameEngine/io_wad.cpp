@@ -1,5 +1,6 @@
 #include "io_wad.h"
 #include "../../mem.h"
+#include "MenuUpdate.h"
 
 struct WadEntry
 {
@@ -159,6 +160,20 @@ void FUN_44b140(char *out, char *in)
     }
     *out = '\0';
     return;
+}
+
+// FUNCTION: STUNTGP_D3D 0x44aff0
+int FUN_44aff0(char *name, void *data, int size)
+{
+    // STRING: STUNTGP_D3D 0x4858b4
+    FILE *file = fopen(name, "wb");
+    if (file && size > 0 && size < 0xa00000)
+    {
+        int written = fwrite(data, 1, size, file);
+        fclose(file);
+        return written;
+    }
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x44b050
@@ -344,6 +359,41 @@ void FUN_4234d0(char *msg)
 {
     FUN_442180();
     exit(1);
+}
+
+// FUNCTION: STUNTGP_D3D 0x44cc90
+int FUN_44cc90(int value)
+{
+    if (value > 1)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (g_menuState.unk19ee0[i] == value)
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x44ccc0
+void FUN_44ccc0()
+{
+    g_menuState.unk0f1c[g_menuState.unk19d78] = g_menuState.unk19d7c;
+}
+
+// FUNCTION: STUNTGP_D3D 0x44ccf0
+int FUN_44ccf0()
+{
+    for (int i = 0; i < 6; i++)
+    {
+        if (g_menuState.unk1a544[i].unk00)
+        {
+            return i + 1;
+        }
+    }
+    return 0;
 }
 
 // Decodes an uncompressed 24-bit TGA into top-down RGB.

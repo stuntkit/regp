@@ -2,10 +2,13 @@
 #include "../../sound.h"
 
 #include <stdlib.h>
+#include <time.h>
 #include <string.h>
 
 #include <mmsystem.h>
 #include <dsound.h>
+
+extern int g_576be0;
 
 // GLOBAL: STUNTGP_D3D 0x470500
 const GUID DSPROPSETID_EAX20_ListenerProperties = {
@@ -59,6 +62,24 @@ char *g_4898fc[24] = {
     "Track23",
 };
 
+// GLOBAL: STUNTGP_D3D 0x4897a0
+unsigned int g_4897a0 = 7500;
+
+// GLOBAL: STUNTGP_D3D 0x4897a4
+unsigned int g_4897a4 = 7500 * 7500;
+
+// GLOBAL: STUNTGP_D3D 0x4897a8
+float g_4897a8 = 0.000133333335f;
+
+// GLOBAL: STUNTGP_D3D 0x62def8
+int g_62def8;
+
+// GLOBAL: STUNTGP_D3D 0x62defc
+int g_62defc;
+
+// GLOBAL: STUNTGP_D3D 0x62df00
+int g_62df00;
+
 // GLOBAL: STUNTGP_D3D 0x4897b0
 int g_4897b0 = 1;
 
@@ -103,6 +124,23 @@ int g_62f5bc;
 DWORD g_62f5c0;
 
 void FUN_461ae0(LPDIRECTSOUND3DLISTENER listener, GameSlot *slot);
+
+// FUNCTION: STUNTGP_D3D 0x45f5b0
+void FUN_45f5b0()
+{
+    time_t now;
+    time(&now);
+    struct tm *date = localtime(&now);
+    g_62def8 = date->tm_mday;
+    g_62defc = date->tm_mon + 1;
+    g_62df00 = date->tm_year + 1900;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45f7c0
+void FUN_45f7c0(int value)
+{
+    g_62f5a8 = value;
+}
 
 // FUNCTION: STUNTGP_D3D 0x45f7d0
 void FUN_45f7d0(int pan, int volume)
@@ -399,6 +437,14 @@ void FUN_460ce0()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x460d20
+void FUN_460d20(unsigned int n)
+{
+    g_4897a0 = n;
+    g_4897a4 = n * n;
+    g_4897a8 = 1.0f / n;
+}
+
 // FUNCTION: STUNTGP_D3D 0x460d60
 void FUN_460d60(int index)
 {
@@ -408,6 +454,21 @@ void FUN_460d60(int index)
         {
             g_62e118[index].buffer->Stop();
         }
+        g_62f5b4--;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x460d90
+void FUN_460d90(int *channel)
+{
+    if (g_soundInitialised && *channel)
+    {
+        LPDIRECTSOUNDBUFFER buffer = g_62e118[*channel].buffer;
+        if (buffer)
+        {
+            buffer->Stop();
+        }
+        *channel = 0;
         g_62f5b4--;
     }
 }
@@ -448,6 +509,35 @@ void FUN_460df0()
             }
         }
     }
+}
+
+// Nearest active player camera to a point, or the first one in single view.
+// FUNCTION: STUNTGP_D3D 0x461270
+GameSlot *FUN_461270(Vec4 *pos)
+{
+    if (!g_576be0)
+    {
+        return g_498248;
+    }
+    GameSlot *best = g_498248;
+    float bestDist = 2.5e11f;
+    GameSlot *slot = g_498248;
+    for (int i = 0; i < 4; i++, slot++)
+    {
+        if (slot->active == 1)
+        {
+            float dx = slot->cam.pos.x - pos->x;
+            float dy = slot->cam.pos.y - pos->y;
+            float dz = slot->cam.pos.z - pos->z;
+            float dist = dz * dz + dy * dy + dx * dx;
+            if (dist <= bestDist)
+            {
+                bestDist = dist;
+                best = slot;
+            }
+        }
+    }
+    return best;
 }
 
 // FUNCTION: STUNTGP_D3D 0x461ae0
