@@ -2396,6 +2396,48 @@ void FUN_416f30()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x417130
+void FUN_417130(Unk62a078 *p)
+{
+    p->flags = 3;
+    p->unk98 = 0x60;
+    p->mode = 2;
+    p->texture = 0;
+    p->lifetime = 30;
+    p->unk68 = 0.01f;
+    p->gravity = 0.25f;
+    p->unk7c = 1;
+    p->anim = NULL;
+    p->size = 0.25f;
+    p->sizeIn = 6.0f;
+    p->sizeOut = 12.0f;
+    p->alpha = 192.0f;
+    p->alphaIn = 0.59999996f;
+    p->alphaOut = 12.0f;
+    p->colors[0] = 0x182010;
+}
+
+// FUNCTION: STUNTGP_D3D 0x417350
+void FUN_417350(Unk62a078 *p)
+{
+    p->flags = 3;
+    p->texture = 0;
+    p->anim = NULL;
+    p->unk98 = 0x60;
+    p->mode = 2;
+    p->lifetime = 41;
+    p->unk68 = 0.01f;
+    p->gravity = 0.25f;
+    p->unk7c = 1;
+    p->size = 1.0f;
+    p->sizeIn = 0.59999996f;
+    p->sizeOut = 24.0f;
+    p->alpha = 224.0f;
+    p->alphaIn = 0.59999996f;
+    p->alphaOut = 18.0f;
+    p->colors[0] = 0x182010;
+}
+
 // STUB: STUNTGP_D3D 0x4173e0
 void FUN_4173e0()
 {
@@ -2692,6 +2734,18 @@ void FUN_41d760()
 void FUN_407000()
 {
     g_4d5bb8->unk2674 = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x407860
+int FUN_407860()
+{
+    Car *car = g_4d5bb8;
+    if (car->unk2574 * 0.3f < car->unk2570 && car->unk1cf8 > 0.75f && car->unk1cf0 > 3.3333333f &&
+        ((1.0f - car->unk2660) * g_60f2d0[12] + 1.0f) * (car->unk045c * 0.4f) > car->unk1cfc)
+    {
+        return 1;
+    }
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x407dd0

@@ -1710,6 +1710,29 @@ void FUN_4058f0()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x405b50
+void FUN_405b50()
+{
+    Car *car = g_4d5bb8;
+    unsigned int ticks = ++car->unk2664;
+    if (fabs(car->unk1cf0) > 8.333333f)
+    {
+        if (ticks >= 120)
+        {
+            if (car->unk1f10 == 0)
+            {
+                car->unk1f10 = 2;
+            }
+            car->unk2664 = 0;
+        }
+    }
+    else if (car->unk1cf8 > 0.1f && ticks > 300)
+    {
+        car->unk1f10 = car->unk1f10 == 0 ? 2 : 0;
+        car->unk2664 = 0;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x41de40
 void FUN_41de40()
 {

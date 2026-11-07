@@ -519,7 +519,8 @@ struct Car
     float unk2650;            // 0x2650
     BYTE unk2654[0xc];        // 0x2654
     float unk2660;            // 0x2660
-    BYTE unk2664[0x10];       // 0x2664
+    unsigned int unk2664;     // 0x2664
+    BYTE unk2668[0xc];        // 0x2668
     int unk2674;              // 0x2674
     int unk2678;              // 0x2678
     BYTE unk267c[0x28];       // 0x267c
@@ -710,7 +711,8 @@ struct Unk62a078
     Vec4 pos;           // 0x08
     BYTE unk18[0x40];   // 0x18
     float vel[3];       // 0x58
-    BYTE unk64[0x8];    // 0x64
+    BYTE unk64[0x4];    // 0x64
+    float unk68;        // 0x68
     float gravity;      // 0x6c
     DWORD time;         // 0x70
     DWORD lifetime;     // 0x74
