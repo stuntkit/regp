@@ -972,6 +972,28 @@ void FUN_42f7f0(D3DVIEWPORT2 *viewport, DWORD width, DWORD height)
     viewport->dvClipHeight = 2.0f;
 }
 
+// FUNCTION: STUNTGP_D3D 0x42f930
+void FUN_42f930()
+{
+    if (g_61c358)
+    {
+        if (g_5d91b4[57] & ~0x81)
+        {
+            g_592068 = 1;
+            g_59206c = 0;
+            return;
+        }
+        DDCOLORKEY key;
+        key.dwColorSpaceLowValue = 0x10001;
+        key.dwColorSpaceHighValue = 0x10001;
+        (*g_61c358)->SetColorKey(DDCKEY_SRCBLT, &key);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, TRUE);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, FALSE);
+        g_592068 = 0;
+        g_59206c = 1;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x42f9c0
 void FUN_42f9c0()
 {
