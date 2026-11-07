@@ -257,11 +257,6 @@ void FUN_433f20()
     }
 }
 
-// STUB: STUNTGP_D3D 0x43d250
-void FUN_43d250()
-{
-}
-
 // GLOBAL: STUNTGP_D3D 0x61c7cc
 BYTE g_61c7cc[0x6000];
 

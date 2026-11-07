@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "../../d3drender.h"
+#include "../../sprite.h"
 #include "game_state.h"
 
 // GLOBAL: STUNTGP_D3D 0x612984
