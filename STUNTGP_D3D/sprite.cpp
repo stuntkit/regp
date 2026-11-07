@@ -31,6 +31,15 @@ int g_5da360[4];
 // GLOBAL: STUNTGP_D3D 0x47f318
 SpriteFile g_47f318[1];
 
+// GLOBAL: STUNTGP_D3D 0x480134
+SpriteFile g_480134[1];
+
+// GLOBAL: STUNTGP_D3D 0x4798bc
+int g_4798bc = -1;
+
+// GLOBAL: STUNTGP_D3D 0x5ff8bc
+int g_5ff8bc;
+
 // GLOBAL: STUNTGP_D3D 0x608d88
 SpriteDef g_spriteDefs[0x183];
 
@@ -767,6 +776,72 @@ void FUN_43ff90(int arg)
     FUN_438960(320.0f, 240.0f, 5, 0, 4, buf, 1.5f, 0xffffffff, 0x803);
 }
 
+// FUNCTION: STUNTGP_D3D 0x4400a0
+void FUN_4400a0(int value)
+{
+    g_frontEnd.unk84 = value;
+}
+
+// FUNCTION: STUNTGP_D3D 0x440160
+int FUN_440160()
+{
+    return 8;
+}
+
+// FUNCTION: STUNTGP_D3D 0x440170
+int FUN_440170()
+{
+    int value = g_5ff8bc;
+    g_5ff8bc = 0;
+    return value;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4401c0
+BOOL FUN_4401c0(char *path)
+{
+    DWORD attributes = GetFileAttributesA(path);
+    if (attributes != 0xffffffff && (attributes & FILE_ATTRIBUTE_DIRECTORY))
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4402e0
+int FUN_4402e0()
+{
+    return 0x200;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4402f0
+void FUN_4402f0(int value)
+{
+    g_4798bc = value;
+}
+
+// FUNCTION: STUNTGP_D3D 0x440300
+int FUN_440300(int value)
+{
+    return value <= 8;
+}
+
+// FUNCTION: STUNTGP_D3D 0x440310
+int FUN_440310(int value)
+{
+    return value;
+}
+
+// FUNCTION: STUNTGP_D3D 0x440380
+BOOL FUN_440380(char *path)
+{
+    DWORD attributes = GetFileAttributesA(path);
+    if (attributes != 0xffffffff && !(attributes & FILE_ATTRIBUTE_DIRECTORY))
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
+
 // FUNCTION: STUNTGP_D3D 0x441170
 char *FUN_441170(int id)
 {
@@ -921,6 +996,12 @@ void FUN_43d250()
 {
     FUN_43f6b0();
     FUN_437ec0();
+}
+
+// FUNCTION: STUNTGP_D3D 0x441180
+SpriteFile *FUN_441180()
+{
+    return g_480134;
 }
 
 // FUNCTION: STUNTGP_D3D 0x441190

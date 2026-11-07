@@ -209,6 +209,14 @@ void FUN_450190(Camera *cam)
 // GLOBAL: STUNTGP_D3D 0x61c3a4
 float g_61c3a4[16];
 
+// FUNCTION: STUNTGP_D3D 0x44fa00
+void FUN_44fa00(float *m)
+{
+    Vec3_Normalize(m);
+    Vec3_Normalize(m + 4);
+    Vec3_Normalize(m + 8);
+}
+
 // FUNCTION: STUNTGP_D3D 0x44fb00
 void FUN_44fb00(float *m, DWORD yaw, DWORD pitch, DWORD roll)
 {
@@ -373,4 +381,9 @@ void Matrix_FromRows(float *r0, float *r1, float *r2, float *m)
     m[9] = r2[1];
     m[10] = r2[2];
     m[11] = r2[3];
+}
+
+// FUNCTION: STUNTGP_D3D 0x4516f0
+void FUN_4516f0()
+{
 }

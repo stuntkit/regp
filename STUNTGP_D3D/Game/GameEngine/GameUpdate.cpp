@@ -1401,6 +1401,12 @@ int FUN_442fb0()
     return g_60f000[0] < g_60d628[0].ghost->unk1c;
 }
 
+// FUNCTION: STUNTGP_D3D 0x443dd0
+void FUN_443dd0()
+{
+    FUN_4028d0(10);
+}
+
 // FUNCTION: STUNTGP_D3D 0x443de0
 void FUN_443de0()
 {
@@ -1561,6 +1567,13 @@ void FUN_443980()
     FUN_403310(2.55f);
 }
 
+// FUNCTION: STUNTGP_D3D 0x443e10
+void FUN_443e10(Car *car)
+{
+    car->race.unk4c[7] = 0;
+    car->race.unk4c[8] = 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x443e20
 void FUN_443e20()
 {
@@ -1622,6 +1635,12 @@ void FUN_444c20()
     FUN_4058f0();
     g_60f2b4 = 2;
     FUN_41de40();
+}
+
+// FUNCTION: STUNTGP_D3D 0x444c40
+void FUN_444c40(Car *car)
+{
+    car->race.unk00 = 0;
 }
 
 // Start-of-race countdown: plays a beep and shows the next digit every second.
@@ -1856,6 +1875,12 @@ void FUN_447ab0(Fader *fader)
             }
         }
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x447b50
+void FUN_447b50()
+{
+    g_61b740->unk000 = 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x447b60

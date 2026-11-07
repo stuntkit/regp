@@ -599,6 +599,18 @@ void FUN_45ec20()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x45ecf0
+void FUN_45ecf0(int index, int keyMap)
+{
+    g_62d580[index].keyMap = keyMap;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45ed60
+int FUN_45ed60(int index)
+{
+    return g_62d580[index].unk020;
+}
+
 // FUNCTION: STUNTGP_D3D 0x45ee60
 void FUN_45ee60()
 {

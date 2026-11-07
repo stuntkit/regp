@@ -19,6 +19,46 @@ struct MenuInput
     int unk14;    // 0x14
 };
 
+struct Unk450930
+{
+    BYTE unk00[0x24];  // 0x00
+    PoolObject *child; // 0x24
+};
+
+struct Unk453460
+{
+    DWORD unk00[6];    // 0x00
+    PoolObject *unk18; // 0x18
+    int unk1c;         // 0x1c
+    int unk20;         // 0x20
+};
+
+struct Unk454b20
+{
+    BYTE unk00[0x48]; // 0x00
+    char text[1];     // 0x48, length unknown
+};
+
+struct Unk456650
+{
+    BYTE unk00[0x4c]; // 0x00
+    int unk4c[4];     // 0x4c
+};
+
+struct Unk457ea0
+{
+    BYTE unk00[0x40];  // 0x00
+    PoolObject *child; // 0x40
+};
+
+struct Unk458860
+{
+    BYTE unk000[0x1e8]; // 0x000
+    int unk1e8;         // 0x1e8
+    int unk1ec;         // 0x1ec
+    int unk1f0;         // 0x1f0
+};
+
 // GLOBAL: STUNTGP_D3D 0x5da2e8
 MenuInput g_menuInput[5];
 
@@ -563,6 +603,12 @@ int FUN_43dd70()
     return g_frontEnd.unk7c != 0;
 }
 
+// FUNCTION: STUNTGP_D3D 0x43dd90
+void FUN_43dd90(int player)
+{
+    g_frontEnd.lockedPlayer = player;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43dda0
 void FUN_43dda0()
 {
@@ -945,6 +991,12 @@ void FUN_4408e0()
     g_5ff8c0 = 1;
 }
 
+// FUNCTION: STUNTGP_D3D 0x4405b0
+int FUN_4405b0(int value)
+{
+    return value;
+}
+
 // FUNCTION: STUNTGP_D3D 0x440770
 void FUN_440770(int a, int b)
 {
@@ -1016,6 +1068,60 @@ void FUN_441210()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x450930
+void FUN_450930(Unk450930 *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x451a80
+void FUN_451a80(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x452530
+void FUN_452530(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4529c0
+void FUN_4529c0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x452b30
+int FUN_452b30(MenuObject *object)
+{
+    object->unk14 = 0;
+    object->unk18 = 0;
+    FUN_440880(16);
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x452d50
+void FUN_452d50(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
 // FUNCTION: STUNTGP_D3D 0x452d70
 int FUN_452d70(int id)
 {
@@ -1024,4 +1130,185 @@ int FUN_452d70(int id)
         g_menuState.unk0090 = id;
     }
     return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x452fc0
+int FUN_452fc0(MenuObject *object)
+{
+    object->unk14 = 0;
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x453460
+void FUN_453460(Unk453460 *object)
+{
+    object->unk18->message(object->unk18, 0x14, 0);
+    object->unk1c = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4536f0
+void FUN_4536f0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4542a0
+void FUN_4542a0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x454b20
+void FUN_454b20(Unk454b20 *object)
+{
+    int len = strlen(object->text);
+    if (len > 0)
+    {
+        object->text[len - 1] = '\0';
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x454d80
+void FUN_454d80(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x455320
+void FUN_455320(Unk453460 *object)
+{
+    object->unk18->message(object->unk18, 0x14, 0);
+    object->unk1c = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x455410
+void FUN_455410(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x455690
+void FUN_455690(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x455d70
+void FUN_455d70(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x456650
+int FUN_456650(Unk456650 *object)
+{
+    int count = 0;
+    for (int i = 0; i < 4; i++)
+    {
+        if (object->unk4c[i])
+        {
+            count++;
+        }
+    }
+    return count;
+}
+
+// FUNCTION: STUNTGP_D3D 0x456fa0
+void FUN_456fa0(Unk453460 *object)
+{
+    object->unk18->message(object->unk18, 0x14, 0);
+    object->unk20 = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4570f0
+void FUN_4570f0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4572e0
+void FUN_4572e0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x457500
+void FUN_457500(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4577c0
+void FUN_4577c0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x457a20
+int FUN_457a20(int value)
+{
+    return value > 0 && value <= 3;
+}
+
+// FUNCTION: STUNTGP_D3D 0x457ea0
+void FUN_457ea0(Unk457ea0 *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// Integer division rounding up.
+// FUNCTION: STUNTGP_D3D 0x4586e0
+int FUN_4586e0(int value, int divisor)
+{
+    return (value + divisor - 1) / divisor;
+}
+
+// FUNCTION: STUNTGP_D3D 0x458860
+void FUN_458860(Unk458860 *object)
+{
+    object->unk1ec = 0;
+    object->unk1e8 = 0;
+    object->unk1f0 = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x459300
+void FUN_459300(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
 }

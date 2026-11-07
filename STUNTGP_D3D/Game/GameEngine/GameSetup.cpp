@@ -1308,6 +1308,99 @@ void FUN_4469f0()
     Mem_Free(script);
 }
 
+// FUNCTION: STUNTGP_D3D 0x459a00
+int FUN_459a00(int which)
+{
+    if (which == 2)
+    {
+        return g_menuState.unk1a6a4;
+    }
+    return which == 1 ? g_menuState.unk1a6a8 : 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x459a20
+void FUN_459a20(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45a350
+void FUN_45a350()
+{
+    FUN_440880(12);
+}
+
+// FUNCTION: STUNTGP_D3D 0x45a3f0
+void FUN_45a3f0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45a610
+int FUN_45a610(MenuObject *object)
+{
+    object->unk14 = 0;
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45a7f0
+void FUN_45a7f0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45b5b0
+void FUN_45b5b0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45b850
+void FUN_45b850(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45bba0
+int FUN_45bba0(MenuObject *object)
+{
+    object->unk14 = 1;
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45be00
+void FUN_45be00(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45dde0
+void FUN_45dde0(MenuHolder *object)
+{
+    PoolObject *child = object->child;
+    child->destroy(child);
+    Pool_Free(child);
+    object->child = NULL;
+}
+
 // FUNCTION: STUNTGP_D3D 0x45e0e0
 void FUN_45e0e0()
 {

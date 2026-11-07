@@ -104,6 +104,12 @@ DWORD g_62f5c0;
 
 void FUN_461ae0(LPDIRECTSOUND3DLISTENER listener, GameSlot *slot);
 
+// FUNCTION: STUNTGP_D3D 0x45f7c0
+void FUN_45f7c0(int value)
+{
+    g_62f5a8 = value;
+}
+
 // FUNCTION: STUNTGP_D3D 0x45f7d0
 void FUN_45f7d0(int pan, int volume)
 {

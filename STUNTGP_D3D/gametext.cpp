@@ -7,6 +7,9 @@
 #include "globals.h"
 #include "Game/GameEngine/io_wad.h"
 
+extern int g_612964;
+extern int g_612968;
+
 // GLOBAL: STUNTGP_D3D 0x46e780
 const TextKey c_46e780[105] = {
     // STRING: STUNTGP_D3D 0x4835e4
@@ -478,6 +481,13 @@ void Scores_LoadIfNeeded()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x443d80
+void FUN_443d80()
+{
+    g_612964 = 1;
+    g_612968 = 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x445610
 void FUN_445610()
 {
@@ -734,6 +744,12 @@ char *Text_AddString(char *str)
     char *dest = &g_60f6a0[g_4835dc];
     strcpy(dest, str);
     return dest;
+}
+
+// FUNCTION: STUNTGP_D3D 0x445f70
+void FUN_445f70(int value)
+{
+    g_4835e0 = value;
 }
 
 // FUNCTION: STUNTGP_D3D 0x445f80

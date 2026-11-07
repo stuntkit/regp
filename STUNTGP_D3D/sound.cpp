@@ -20,6 +20,9 @@ int g_sfxVolumeTarget = 255;
 // GLOBAL: STUNTGP_D3D 0x62df08
 LPDIRECTSOUNDBUFFER g_musicBuffer;
 
+// GLOBAL: STUNTGP_D3D 0x62e0a4
+DWORD g_62e0a4;
+
 // GLOBAL: STUNTGP_D3D 0x62df38
 DWORD g_musicFlags;
 
@@ -176,6 +179,13 @@ BOOL Music_IsStreaming()
         return TRUE;
     }
     return FALSE;
+}
+
+// FUNCTION: STUNTGP_D3D 0x460220
+int FUN_460220()
+{
+    g_musicBuffer->GetStatus(&g_62e0a4);
+    return g_62e0a4 & DSBSTATUS_PLAYING;
 }
 
 // FUNCTION: STUNTGP_D3D 0x460330

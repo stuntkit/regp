@@ -73,12 +73,30 @@ struct MenuState
     int languageCount;          // 0x437c
     BYTE unk4380[0x13148 - 0x4380];
     Unk4d5cc0 *unk13148; // 0x13148
-    BYTE unk1314c[0x1dae8 - 0x1314c];
+    BYTE unk1314c[0x1a6a4 - 0x1314c];
+    int unk1a6a4; // 0x1a6a4
+    int unk1a6a8; // 0x1a6a8
+    BYTE unk1a6ac[0x1dae8 - 0x1a6ac];
 };
 
 extern MenuState g_menuState;
 
 struct PoolObject;
+
+// Front-end object; the first 0x14 bytes are the pool object header.
+struct MenuObject
+{
+    DWORD unk00[5]; // 0x00
+    int unk14;      // 0x14
+    int unk18;      // 0x18
+};
+
+// Front-end object owning one child object at 0x14.
+struct MenuHolder
+{
+    DWORD unk00[5];    // 0x00
+    PoolObject *child; // 0x14
+};
 
 void FUN_424bd0(float x, float y);
 int FUN_43d790(int value, int min, int max);
