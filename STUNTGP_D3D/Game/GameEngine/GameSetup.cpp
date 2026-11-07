@@ -1054,6 +1054,15 @@ void FUN_42b140(void **out)
     out[3] = 0;
 }
 
+// FUNCTION: STUNTGP_D3D 0x42b180
+void FUN_42b180(int *out)
+{
+    out[5] = ((int)g_6243d0 - out[4]) / 20;
+    out[7] = ((int)g_6243d8 - out[6]) / 20;
+    out[1] = ((int)g_6243c0 - out[0]) / 20;
+    out[3] = ((int)g_6243c8 - out[2]) / 20;
+}
+
 // STUB: STUNTGP_D3D 0x429a40
 void FUN_429a40()
 {

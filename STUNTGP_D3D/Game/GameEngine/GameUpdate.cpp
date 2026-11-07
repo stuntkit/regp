@@ -1083,6 +1083,19 @@ void FUN_426880(AnimObject *obj, ObjectDef *def)
     m[2] = dir;
 }
 
+// FUNCTION: STUNTGP_D3D 0x4268f0
+void FUN_4268f0(AnimObject *obj, ObjectDef *def)
+{
+    Vec4 *m = def->matrix;
+    Vec4 dir;
+    m[0].y = g_sinTable[obj->angleA] * 128.0f - 100.0f + g_sinTable[obj->angleB] * 128.0f;
+    dir.x = 0.0f;
+    dir.y = g_sinTable[(obj->angleB * 2) & 0x1fff];
+    dir.z = 128.0f;
+    Vec3_Normalize(&dir.x);
+    m[2] = dir;
+}
+
 // FUNCTION: STUNTGP_D3D 0x426c70
 void FUN_426c70(AnimObject *obj, ObjectDef *def)
 {

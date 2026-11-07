@@ -81,6 +81,8 @@ int g_592078;
 int g_6244f0;
 
 // Four corner records reset by FUN_425ae0.
+extern int g_6249a4;
+
 // GLOBAL: STUNTGP_D3D 0x5775d0
 float g_5775d0[4][8];
 
@@ -1335,6 +1337,29 @@ void FUN_42bc00()
     g_583990[0] = 0;
     g_587994 = 0;
     g_5895b8 = &g_587990;
+}
+
+// Reads the size of a .PC image; returns whether it fits the texture size limit.
+// FUNCTION: STUNTGP_D3D 0x42bc30
+int FUN_42bc30(char *suffix, char *base, char *path)
+{
+    BYTE header[20];
+    // STRING: STUNTGP_D3D 0x4777d4
+    sprintf(path, "%s%s.PC", base, suffix);
+    if (!size_of_file(path))
+    {
+        return 0;
+    }
+    if (!bload(path, (char *)header, 10))
+    {
+        return 0;
+    }
+    int width = *(WORD *)&header[6];
+    int height = *(WORD *)&header[8];
+    g_489718 = height;
+    g_489714 = width;
+    g_583330 = 1;
+    return width <= g_6249a4;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42bdd0
