@@ -27,7 +27,7 @@ extern DWORD g_61c370;
 extern DWORD g_61c388;
 
 extern DWORD g_61c35c;
-extern DWORD g_61c36c;
+extern float g_61c36c;
 extern DWORD g_61c39c;
 
 extern char g_62ddfc;

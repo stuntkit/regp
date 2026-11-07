@@ -47,7 +47,7 @@ DWORD g_61c388 = 0;
 DWORD g_61c35c = 0;
 
 // GLOBAL: STUNTGP_D3D 0x61c36c
-DWORD g_61c36c = 0;
+float g_61c36c = 0;
 
 // GLOBAL: STUNTGP_D3D 0x61c39c
 DWORD g_61c39c = 0;

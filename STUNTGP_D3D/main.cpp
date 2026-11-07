@@ -69,12 +69,13 @@ void FUN_44e610()
 {
     g_61c388 = g_61c390;
     g_61c390 = GetTickCount();
-    g_61c394 = g_61c394 + 1;
-    g_61c36c = (float)(g_61c390 - g_61c388) * 0.06;
+    g_61c36c = (float)(g_61c390 - g_61c388) * 0.06f;
+    g_61c394++;
+    DWORD elapsed = g_61c390 - g_61c370;
     // if over a second?
-    if (1000 < g_61c390 - g_61c370)
+    if (elapsed > 1000)
     {
-        g_61c39c = (g_61c394 * 1000 + g_61c35c * -1000) / (g_61c390 - g_61c370);
+        g_61c39c = (g_61c394 * 1000 - g_61c35c * 1000) / elapsed;
         g_61c35c = g_61c394;
         g_61c370 = g_61c390;
     }
