@@ -1,7 +1,9 @@
 #include "GameUpdate.h"
 #include "MenuUpdate.h"
 
+#include <stdio.h>
 #include <string.h>
+#include "../../globals.h"
 #include "../../sound.h"
 #include "../../d3drender.h"
 #include "../../objects.h"
@@ -363,9 +365,38 @@ float FUN_43d9e0(float value)
     return value < 0.0f ? -value : value;
 }
 
-// STUB: STUNTGP_D3D 0x43d280
+// Reads the detail level and language overrides next to the executable.
+// FUNCTION: STUNTGP_D3D 0x43d280
 void FUN_43d280()
 {
+    char path[256];
+    FILE *file;
+    // STRING: STUNTGP_D3D 0x4795f4
+    sprintf(path, "%s\\detail.cfg", g_GameDirectory);
+    // STRING: STUNTGP_D3D 0x479604
+    file = fopen(path, "r");
+    if (file)
+    {
+        // STRING: STUNTGP_D3D 0x479608
+        fscanf(file, "%d", &g_menuState.unk0084);
+        int detail = FUN_43d790(g_menuState.unk0084, 0, 100);
+        g_menuState.unk0084 = detail - detail % 10;
+        fclose(file);
+    }
+    // STRING: STUNTGP_D3D 0x47960c
+    sprintf(path, "%s\\language.cfg", g_GameDirectory);
+    // STRING: STUNTGP_D3D 0x47961c
+    file = fopen(path, "r");
+    if (file)
+    {
+        // STRING: STUNTGP_D3D 0x479620
+        fscanf(file, "%d", &g_menuState.unk0090);
+        if (g_menuState.unk0090 <= 0 || g_menuState.unk0090 >= 9)
+        {
+            g_menuState.unk0090 = 0;
+        }
+        fclose(file);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x43dd10
