@@ -414,6 +414,16 @@ void FUN_413670()
     FUN_4130d0(1);
 }
 
+// FUNCTION: STUNTGP_D3D 0x4190b0
+void FUN_4190b0(Car *car, unsigned int percent)
+{
+    car->unk2570 += (unsigned int)(percent * car->unk2574 * 0.01f);
+    if (car->unk2570 > car->unk2574)
+    {
+        car->unk2570 = car->unk2574;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x4199a0
 void FUN_4199a0()
 {

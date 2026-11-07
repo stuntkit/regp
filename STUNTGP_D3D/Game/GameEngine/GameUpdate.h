@@ -322,12 +322,17 @@ struct Car
     float unk045c;            // 0x045c
     BYTE unk0460[0x4];        // 0x0460
     float unk464;             // 0x0464
-    BYTE unk0468[0x80c];      // 0x0468
+    BYTE unk0468[0x8];        // 0x0468
+    float unk470[128];        // 0x0470
+    BYTE unk0670[0x604];      // 0x0670
     unsigned int unkc74;      // 0x0c74
     int unkc78;               // 0x0c78
     float unkc7c[9];          // 0x0c7c
     float unkca0;             // 0x0ca0
-    BYTE unk0ca4[0x14];       // 0x0ca4
+    BYTE unk0ca4[0x8];        // 0x0ca4
+    float unkcac;             // 0x0cac
+    float unkcb0;             // 0x0cb0
+    float unkcb4;             // 0x0cb4
     Vector4 unkcb8[4];        // 0x0cb8
     BYTE unk0cf8[0x60];       // 0x0cf8
     float unkd58;             // 0x0d58

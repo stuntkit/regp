@@ -691,6 +691,59 @@ int FUN_423140(LPDIRECTDRAWSURFACE4 surface, LPDIRECTDRAWPALETTE *palette, BYTE 
     return res;
 }
 
+// FUNCTION: STUNTGP_D3D 0x423230
+void FUN_423230(LPDIRECTDRAWSURFACE4 surface, char color)
+{
+    DDBLTFX fx;
+    fx.dwSize = sizeof(fx);
+    fx.dwFillColor = color;
+    if (surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &fx) != DD_OK &&
+        surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &fx) != DD_OK)
+    {
+        surface->GetBltStatus(DDGBS_CANBLT);
+        // STRING: STUNTGP_D3D 0x477590
+        exitError("Requested Blitter Fill operation failed...\n");
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x423310
+void FUN_423310(LPDIRECTDRAWSURFACE4 src, LPDIRECTDRAWSURFACE4 dst, DWORD x, DWORD y, int width, int height)
+{
+    RECT rect;
+    rect.left = 0;
+    rect.top = 0;
+    rect.right = width;
+    rect.bottom = height;
+    if (dst->BltFast(x, y, src, &rect, DDBLTFAST_WAIT) != DD_OK &&
+        dst->BltFast(x, y, src, &rect, DDBLTFAST_WAIT) != DD_OK)
+    {
+        // STRING: STUNTGP_D3D 0x4775e8
+        exitError("Requested Blitter Blit operation failed...\n");
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x423380
+void FUN_423380(LPDIRECTDRAWSURFACE4 src, LPDIRECTDRAWSURFACE4 dst, int x, int y, int width, int height)
+{
+    DDBLTFX fx;
+    RECT srcRect;
+    RECT dstRect;
+    fx.dwSize = sizeof(fx);
+    srcRect.left = 0;
+    srcRect.top = 0;
+    srcRect.right = width;
+    srcRect.bottom = height;
+    dstRect.left = 0;
+    dstRect.top = 0;
+    dstRect.right = width;
+    dstRect.bottom = height;
+    if (dst->Blt(&dstRect, src, &srcRect, DDBLTFAST_WAIT, &fx) != DD_OK)
+    {
+        // STRING: STUNTGP_D3D 0x477614
+        exitError("Requested Blitter Blit operation failed...\n");
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x423430
 void FUN_423430()
 {

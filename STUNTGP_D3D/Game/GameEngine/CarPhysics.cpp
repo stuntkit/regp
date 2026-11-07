@@ -421,6 +421,28 @@ void FUN_408f90()
     }
 }
 
+// GLOBAL: STUNTGP_D3D 0x60dfec
+int g_60dfec;
+
+// FUNCTION: STUNTGP_D3D 0x409180
+void FUN_409180(int wheel)
+{
+    if (g_60dfec == 1)
+    {
+        if (g_4d5bb8->wheels[wheel].unk78 == 1)
+        {
+            g_4d5bb8->wheels[wheel].unk78 = 3;
+        }
+    }
+    else if (g_60dfec == 6)
+    {
+        if (g_4d5bb8->wheels[wheel].unk78 == 1)
+        {
+            g_4d5bb8->wheels[wheel].unk78 = 4;
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x40a0d0
 void FUN_40a0d0(Car *car)
 {
@@ -439,6 +461,33 @@ void FUN_40a120()
         FUN_40a0d0(&g_49a1f8[i]);
         g_49a1f8[i].unk2270 = g_49a1f8[i].unkf78;
         g_49a1f8[i].unk2274 = g_49a1f8[i].unk1184;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x40a160
+void FUN_40a160()
+{
+    float sum = 0.0f;
+    float step = 0.02226562425494194f;
+    for (unsigned int i = 0; i < 128; i++)
+    {
+        g_4d5bb8->unk470[i] = (float)sqrt(sum);
+        sum += step;
+        if (i > 32)
+        {
+            if (i < 64)
+            {
+                step -= 0.0009765625;
+                if (step < 0.0f)
+                {
+                    step = -0.0025f;
+                }
+            }
+            if (i > 76)
+            {
+                step -= 0.0003f;
+            }
+        }
     }
 }
 
@@ -463,6 +512,19 @@ void FUN_40b750(char *text)
     Script_GetFloat(section, "Bias", &g_4d5bb8->unkd5c);
     // STRING: STUNTGP_D3D 0x4735e8
     Script_GetFloat(section, "Acceleration", &g_4d5bb8->unkd58);
+}
+
+// FUNCTION: STUNTGP_D3D 0x40b930
+void FUN_40b930(char *text)
+{
+    // STRING: STUNTGP_D3D 0x473698
+    char *section = strstr(text, "-AERODYNAMICS[] =");
+    // STRING: STUNTGP_D3D 0x4736ac
+    Script_GetFloat(section, "Cd", &g_4d5bb8->unkcac);
+    // STRING: STUNTGP_D3D 0x4736b0
+    Script_GetFloat(section, "Cl", &g_4d5bb8->unkcb0);
+    // STRING: STUNTGP_D3D 0x4736b4
+    Script_GetFloat(section, "FA", &g_4d5bb8->unkcb4);
 }
 
 // FUNCTION: STUNTGP_D3D 0x40bf20
@@ -1311,6 +1373,20 @@ void FUN_40ead0()
         i = 127;
     }
     car->unk2258 = car->unkd70[i] * car->unkd6c;
+}
+
+// FUNCTION: STUNTGP_D3D 0x40eba0
+void FUN_40eba0()
+{
+    if (g_4d5bb8->unk1f10 == 0)
+    {
+        g_4d5bb8->unk2250 = 0;
+        float limit = g_4d5bb8->unk464 * 0.5f;
+        while (g_4d5bb8->unk1cfc > limit)
+        {
+            g_4d5bb8->unk1cfc *= 0.8f;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x40ee70

@@ -100,6 +100,21 @@ void FUN_4031e0(float delta)
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x403240
+void FUN_403240(float delta)
+{
+    Car *car = g_4722d0->data;
+    car->unk22ec += delta;
+    if (car->unk22ec < 0.0f)
+    {
+        car->unk22ec += 360.0f;
+    }
+    else if (car->unk22ec > 360.0f)
+    {
+        car->unk22ec -= 360.0f;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x4032a0
 void FUN_4032a0()
 {
