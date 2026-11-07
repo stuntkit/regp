@@ -13,6 +13,22 @@ struct GameSlotData
     int unk7648;          // 0x7648
 };
 
+struct Fader
+{
+    BYTE unk00[0x10]; // 0x00
+    int active;       // 0x10
+    float value;      // 0x14
+    float target;     // 0x18
+    BYTE unk1c[0x8];  // 0x1c
+};
+
+struct SlotFx
+{
+    int unk000;       // 0x000
+    int delay;        // 0x004
+    Fader faders[9];  // 0x008
+};
+
 // One of the four per-player blocks at 0x498248 (0x74c bytes each).
 struct GameSlot
 {
@@ -54,7 +70,8 @@ struct GameSlot
     int fadeFrom;         // 0x204
     int fadeTo;           // 0x208
     float fadeScale;      // 0x20c
-    BYTE unk210[0x53c];   // 0x210
+    SlotFx fx;            // 0x210
+    BYTE unk35c[0x3f0];   // 0x35c
 };
 
 // Device-specific input snapshot, copied verbatim from InputDevice to Controller.
@@ -104,6 +121,7 @@ extern Controller g_62d580[4];
 extern Controller *g_61b744;
 
 extern GameSlot *g_4722d0;
+extern SlotFx *g_61b740;
 extern GameSlot g_498248[4];
 
 // --- frame timing ---

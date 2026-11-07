@@ -19,6 +19,9 @@ int g_489798 = 0xff;
 // GLOBAL: STUNTGP_D3D 0x48979c
 int g_48979c = 0xff;
 
+// GLOBAL: STUNTGP_D3D 0x4897b0
+int g_4897b0 = 1;
+
 // GLOBAL: STUNTGP_D3D 0x4897b4
 int g_4897b4 = 1;
 
@@ -96,6 +99,76 @@ void FUN_45f880()
             g_62f5bc = -1;
         }
         FUN_45f7d0(g_62e110, g_62e104);
+    }
+}
+
+// STUB: STUNTGP_D3D 0x460760
+void FUN_460760()
+{
+}
+
+// STUB: STUNTGP_D3D 0x460800
+void FUN_460800()
+{
+}
+
+// STUB: STUNTGP_D3D 0x4608a0
+void FUN_4608a0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x460940
+void FUN_460940()
+{
+}
+
+// STUB: STUNTGP_D3D 0x4609e0
+void FUN_4609e0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x460a80
+int FUN_460a80()
+{
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x460af0
+void FUN_460af0(int zone)
+{
+    if (g_62e0ac == 1 && g_4897b0 == 1)
+    {
+        switch (zone)
+        {
+        case 0:
+            FUN_460760();
+            FUN_460a80();
+            break;
+        case 1:
+            FUN_460800();
+            FUN_460a80();
+            break;
+        case 2:
+            FUN_460800();
+            FUN_460a80();
+            break;
+        case 3:
+            FUN_460800();
+            FUN_460a80();
+            break;
+        case 4:
+            FUN_4608a0();
+            FUN_460a80();
+            break;
+        case 5:
+            FUN_460940();
+            FUN_460a80();
+            break;
+        case 6:
+            FUN_4609e0();
+            FUN_460a80();
+            break;
+        }
     }
 }
 

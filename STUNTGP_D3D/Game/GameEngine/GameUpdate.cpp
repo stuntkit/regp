@@ -26,6 +26,28 @@ int g_61294c;
 // GLOBAL: STUNTGP_D3D 0x612954
 DWORD g_612954;
 
+struct SoundZone
+{
+    int id;           // 0x00
+    int unk04;        // 0x04
+    float bounds[16]; // 0x08
+};
+
+// Entry 0 is the fallback zone; the list ends at id -1.
+// GLOBAL: STUNTGP_D3D 0x483f98
+SoundZone g_483f98[2] = {
+    {0, 0, {1000.0f, 1000.0f, 1000.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f}},
+    {-1},
+};
+
+// GLOBAL: STUNTGP_D3D 0x484898
+SoundZone *g_484898 = g_483f98;
+
+// GLOBAL: STUNTGP_D3D 0x61b740
+SlotFx *g_61b740;
+
+int FUN_4278a0(float *bounds, float *point);
+
 // --- per-tick game logic ---
 
 // STUB: STUNTGP_D3D 0x401770
@@ -68,6 +90,12 @@ void FUN_415df0()
 // STUB: STUNTGP_D3D 0x418a90
 void FUN_418a90()
 {
+}
+
+// STUB: STUNTGP_D3D 0x4278a0
+int FUN_4278a0(float *bounds, float *point)
+{
+    return 0;
 }
 
 // STUB: STUNTGP_D3D 0x427140
@@ -116,14 +144,157 @@ void FUN_443a80()
 {
 }
 
-// STUB: STUNTGP_D3D 0x446110
-void FUN_446110()
+// STUB: STUNTGP_D3D 0x442de0
+void FUN_442de0()
 {
 }
 
-// STUB: STUNTGP_D3D 0x447c90
+// FUNCTION: STUNTGP_D3D 0x446110
+void FUN_446110()
+{
+    SoundZone *found = &g_483f98[0];
+    int searching = 1;
+    for (SoundZone *zone = &g_483f98[1]; zone->id != -1 && searching == 1; zone++)
+    {
+        if (FUN_4278a0(zone->bounds, &g_4722d0->unk008) == 1)
+        {
+            found = zone;
+            searching = 0;
+        }
+    }
+    if (found != g_484898 && found->id >= 0 && found->id <= 6)
+    {
+        FUN_460af0(found->id);
+        g_484898 = found;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x447ab0
+void FUN_447ab0(Fader *fader)
+{
+    if (fader->active)
+    {
+        if (fader->value < fader->target)
+        {
+            float step = (100.0f - (fader->target - fader->value)) * 0.0625f;
+            if (step < 0.1f)
+            {
+                step = 0.1f;
+            }
+            fader->value += step;
+            if (fader->value > fader->target)
+            {
+                fader->active = 0;
+                fader->value = fader->target;
+            }
+        }
+        else
+        {
+            float step = (fader->value - fader->target) * 0.0625f;
+            if (step < 0.1f)
+            {
+                step = 0.1f;
+            }
+            fader->value -= step;
+            if (fader->value < fader->target)
+            {
+                fader->active = 0;
+                fader->value = fader->target;
+            }
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x447b70
+void FUN_447b70(int delay)
+{
+    g_61b740 = &g_4722d0->fx;
+    g_61b740->delay = delay;
+    g_61b740->faders[0].active = 1;
+    g_61b740->faders[0].value = 100.0f;
+    g_61b740->faders[0].target = 0.0f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x447ba0
+void FUN_447ba0(int delay)
+{
+    g_61b740 = &g_4722d0->fx;
+    g_61b740->delay = delay;
+    g_61b740->faders[0].active = 1;
+    g_61b740->faders[0].value = 0.0f;
+    g_61b740->faders[0].target = 100.0f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x447bd0
+void FUN_447bd0(int delay)
+{
+    GameSlot *saved = g_4722d0;
+    g_4722d0 = g_498248;
+    for (int i = 0; i < 4; i++)
+    {
+        if (!g_4722d0->data->unk24e0)
+        {
+            FUN_447b70(delay);
+        }
+        g_4722d0++;
+    }
+    g_4722d0 = saved;
+}
+
+// FUNCTION: STUNTGP_D3D 0x447c30
+void FUN_447c30(int delay)
+{
+    GameSlot *saved = g_4722d0;
+    g_4722d0 = g_498248;
+    for (int i = 0; i < 4; i++)
+    {
+        if (!g_4722d0->data->unk24e0)
+        {
+            FUN_447ba0(delay);
+        }
+        g_4722d0++;
+    }
+    g_4722d0 = saved;
+}
+
+// FUNCTION: STUNTGP_D3D 0x447c90
 void FUN_447c90()
 {
+    for (int i = 0; i < 4; i++)
+    {
+        if (g_498248[i].active == 1)
+        {
+            g_4722d0 = &g_498248[i];
+            g_61b740 = &g_498248[i].fx;
+            if (g_498248[i].data->unk23c4 != -1)
+            {
+                FUN_447ab0(&g_61b740->faders[3]);
+                FUN_447ab0(&g_61b740->faders[4]);
+                FUN_447ab0(&g_61b740->faders[5]);
+            }
+            if (g_4722d0->data->unk7648 == 1)
+            {
+                FUN_447ab0(&g_61b740->faders[6]);
+            }
+            if (g_61b740->faders[0].active == 1)
+            {
+                if (g_61b740->delay)
+                {
+                    g_61b740->delay--;
+                }
+                else
+                {
+                    FUN_447ab0(&g_61b740->faders[0]);
+                }
+            }
+            if (g_61b740->faders[8].active == 1)
+            {
+                FUN_447ab0(&g_61b740->faders[8]);
+            }
+        }
+    }
+    g_4722d0 = g_498248;
+    FUN_442de0();
 }
 
 // STUB: STUNTGP_D3D 0x45e1d0
@@ -138,24 +309,9 @@ void FUN_45f8f0(int a, int b)
 
 // --- sound ---
 
-// STUB: STUNTGP_D3D 0x460af0
-void FUN_460af0(int a)
-{
-}
-
 
 // STUB: STUNTGP_D3D 0x41bdd0
 void FUN_41bdd0()
-{
-}
-
-// STUB: STUNTGP_D3D 0x447bd0
-void FUN_447bd0(int a)
-{
-}
-
-// STUB: STUNTGP_D3D 0x447c30
-void FUN_447c30(int a)
 {
 }
 
