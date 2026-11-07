@@ -21,4 +21,6 @@ void Text_LoadLanguage(int language);
 int Text_Assign(char *key, char *value, int count);
 char *Text_AddString(char *str);
 void FUN_445f80();
+
+extern char *g_6127a0[105];
 #endif /* GAMETEXT_H */

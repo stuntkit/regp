@@ -1,12 +1,15 @@
 #include "GameUpdate.h"
 
 #include <cstring>
+#include <stdio.h>
 #include <float.h>
 
+#include "../../gametext.h"
 #include "../../globals.h"
 #include "../../random.h"
 #include "../../surface.h"
 #include "../../timer.h"
+#include "../../vecmath.h"
 
 // GLOBAL: STUNTGP_D3D 0x60d618
 int g_60d618;
@@ -112,6 +115,18 @@ Car g_49a1f8[6];
 
 // GLOBAL: STUNTGP_D3D 0x4d5bb8
 Car *g_4d5bb8;
+
+// GLOBAL: STUNTGP_D3D 0x60f050
+char g_60f050[6][100];
+
+// GLOBAL: STUNTGP_D3D 0x60f2b0
+DWORD g_60f2b0;
+
+// GLOBAL: STUNTGP_D3D 0x612d10
+unsigned int g_612d10;
+
+// GLOBAL: STUNTGP_D3D 0x612d14
+Car *g_612d14[6];
 
 // GLOBAL: STUNTGP_D3D 0x474630
 Car *g_474630 = g_49a1f8;
@@ -281,9 +296,30 @@ void FUN_418970()
 {
 }
 
-// STUB: STUNTGP_D3D 0x4189e0
+// STUB: STUNTGP_D3D 0x409b60
+void FUN_409b60(int a)
+{
+}
+
+// Flags cars that have fallen off or left the world.
+// FUNCTION: STUNTGP_D3D 0x4189e0
 void FUN_4189e0()
 {
+    g_4d5bb8 = g_49a1f8;
+    for (int i = 0; i < 6; i++)
+    {
+        if (g_4d5bb8->active == 1 && !(g_4d5bb8->unk7268 && *g_4d5bb8->unk7268 == 1))
+        {
+            if (g_4d5bb8->unk1bb0 < -5000.0f || g_4d5bb8->unk1bb0 > 60000.0f ||
+                (g_60f2b0 == 3 && g_4d5bb8->unk1bb0 < 160.0f))
+            {
+                g_4d5bb8->unk763c = 1;
+                g_4d5bb8->unk7638 = 0;
+            }
+            FUN_409b60(0);
+        }
+        g_4d5bb8++;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x418a90
@@ -332,15 +368,146 @@ void FUN_41af50()
     }
 }
 
-// STUB: STUNTGP_D3D 0x41e2d0
-void FUN_41e2d0()
+// STUB: STUNTGP_D3D 0x442cf0
+void FUN_442cf0(int a, char *text, Car *car, int b, int c)
 {
 }
 
-// STUB: STUNTGP_D3D 0x4278a0
+// Sorts the active cars into race order and announces a new leader.
+// FUNCTION: STUNTGP_D3D 0x41e2d0
+void FUN_41e2d0()
+{
+    char text[32];
+    unsigned int i;
+    unsigned int j;
+    memset(g_612d14, 0, sizeof(g_612d14));
+    unsigned int count = 0;
+    for (i = 0; i < 6; i++)
+    {
+        if (g_49a1f8[i].active == 1)
+        {
+            g_612d14[count] = &g_49a1f8[i];
+            count++;
+        }
+    }
+    g_612d10 = count;
+    for (i = 0; i < count; i++)
+    {
+        for (j = 0; j < count; j++)
+        {
+            if (g_612d14[i]->unk23b0 > g_612d14[j]->unk23b0)
+            {
+                Car *t = g_612d14[j];
+                g_612d14[j] = g_612d14[i];
+                g_612d14[i] = t;
+            }
+        }
+    }
+    for (i = 0; i < count; i++)
+    {
+        if (i == 0 && g_612d14[0]->unk24ac)
+        {
+            int index = g_612d14[0] - g_49a1f8;
+            // STRING: STUNTGP_D3D 0x474924
+            sprintf(text, "%s %s", g_60f050[index], g_6127a0[24]);
+            FUN_442cf0(180, text, &g_49a1f8[index], 1, 100);
+        }
+        g_612d14[i]->unk24ac = i;
+    }
+}
+
+// GLOBAL: STUNTGP_D3D 0x477658
+float g_477658[6][4] = {
+    {-1.0f, 0.0f, 0.0f, 0.0f},
+    {0.0f, 1.0f, 0.0f, 0.0f},
+    {0.0f, 0.0f, -1.0f, 0.0f},
+    {1.0f, 0.0f, 0.0f, 0.0f},
+    {0.0f, -1.0f, 0.0f, 0.0f},
+    {0.0f, 0.0f, 1.0f, 0.0f},
+};
+
+// GLOBAL: STUNTGP_D3D 0x4776d8
+float g_4776d8[8][4] = {
+    {-0.5f, 0.5f, -0.5f, 0.0f},
+    {0.5f, 0.5f, -0.5f, 0.0f},
+    {0.5f, -0.5f, -0.5f, 0.0f},
+    {-0.5f, -0.5f, -0.5f, 0.0f},
+    {-0.5f, 0.5f, 0.5f, 0.0f},
+    {0.5f, 0.5f, 0.5f, 0.0f},
+    {0.5f, -0.5f, 0.5f, 0.0f},
+    {-0.5f, -0.5f, 0.5f, 0.0f},
+};
+
+// Point-in-oriented-box test. bounds: centre (0), size (4), two axes (8, 12).
+// FUNCTION: STUNTGP_D3D 0x4278a0
 int FUN_4278a0(float *bounds, float *point)
 {
-    return 0;
+    float m[16];
+    float t[16];
+    float v[4];
+    float e[4];
+    float d;
+    v[0] = bounds[9] * bounds[14] - bounds[13] * bounds[10];
+    v[1] = bounds[12] * bounds[10] - bounds[8] * bounds[14];
+    v[2] = bounds[13] * bounds[8] - bounds[12] * bounds[9];
+    Matrix_FromRows(v, &bounds[8], &bounds[12], m);
+    Matrix_Transpose(t, m);
+    float dx = point[0] - bounds[0];
+    float dy = point[1] - bounds[1];
+    float dz = point[2] - bounds[2];
+    v[0] = t[8] * dz + t[4] * dy + t[0] * dx + t[12];
+    v[1] = t[9] * dz + t[5] * dy + t[1] * dx + t[13];
+    v[2] = t[10] * dz + t[6] * dy + t[2] * dx + t[14];
+    v[0] += bounds[0];
+    v[1] += bounds[1];
+    v[2] += bounds[2];
+
+    e[0] = g_4776d8[0][0] * bounds[4];
+    e[1] = g_4776d8[0][1] * bounds[5];
+    e[2] = g_4776d8[0][2] * bounds[6];
+    e[0] += bounds[0];
+    e[1] += bounds[1];
+    e[2] += bounds[2];
+    e[0] = v[0] - e[0];
+    e[1] = v[1] - e[1];
+    e[2] = v[2] - e[2];
+    d = g_477658[0][2] * e[2] + g_477658[0][1] * e[1] + g_477658[0][0] * e[0];
+    if (*(int *)&d >= 0)
+    {
+        return 0;
+    }
+    d = g_477658[1][2] * e[2] + g_477658[1][1] * e[1] + g_477658[1][0] * e[0];
+    if (*(int *)&d >= 0)
+    {
+        return 0;
+    }
+    d = g_477658[2][2] * e[2] + g_477658[2][1] * e[1] + g_477658[2][0] * e[0];
+    if (*(int *)&d >= 0)
+    {
+        return 0;
+    }
+
+    e[0] = g_4776d8[6][0] * bounds[4];
+    e[1] = g_4776d8[6][1] * bounds[5];
+    e[2] = g_4776d8[6][2] * bounds[6];
+    e[0] += bounds[0];
+    e[1] += bounds[1];
+    e[2] += bounds[2];
+    e[0] = v[0] - e[0];
+    e[1] = v[1] - e[1];
+    e[2] = v[2] - e[2];
+    d = g_477658[3][2] * e[2] + g_477658[3][1] * e[1] + g_477658[3][0] * e[0];
+    if (*(int *)&d >= 0)
+    {
+        return 0;
+    }
+    d = g_477658[4][2] * e[2] + g_477658[4][1] * e[1] + g_477658[4][0] * e[0];
+    if (*(int *)&d >= 0)
+    {
+        return 0;
+    }
+    d = g_477658[5][2] * e[2] + g_477658[5][1] * e[1] + g_477658[5][0] * e[0];
+    return *(int *)&d < 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x427010

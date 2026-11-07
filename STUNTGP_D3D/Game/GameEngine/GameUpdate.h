@@ -58,7 +58,9 @@ struct Car
     int unkf78;              // 0x0f78
     BYTE unk0f7c[0xc2c];     // 0x0f7c
     int active;              // 0x1ba8
-    BYTE unk1bac[0x424];     // 0x1bac
+    BYTE unk1bac[0x4];       // 0x1bac
+    float unk1bb0;           // 0x1bb0
+    BYTE unk1bb4[0x41c];     // 0x1bb4
     float unk1fd0;           // 0x1fd0
     BYTE unk1fd4[0x18];      // 0x1fd4
     Wheel wheels[4];         // 0x1fec
@@ -95,7 +97,11 @@ struct Car
     int unk2398;             // 0x2398
     int unk239c;             // 0x239c
     int unk23a0;             // 0x23a0
-    BYTE unk23a4[0x1c4];     // 0x23a4
+    BYTE unk23a4[0xc];       // 0x23a4
+    float unk23b0;           // 0x23b0
+    BYTE unk23b4[0xf8];      // 0x23b4
+    int unk24ac;             // 0x24ac
+    BYTE unk24b0[0xb8];      // 0x24b0
     int unk2568;             // 0x2568
     int unk256c;             // 0x256c
     int unk2570;             // 0x2570
@@ -105,7 +111,10 @@ struct Car
     int unk26b4;             // 0x26b4
     BYTE unk26b8[0x4bb0];    // 0x26b8
     unsigned short *unk7268; // 0x7268
-    BYTE unk726c[0x4b8];     // 0x726c
+    BYTE unk726c[0x3cc];     // 0x726c
+    int unk7638;             // 0x7638
+    int unk763c;             // 0x763c
+    BYTE unk7640[0xe4];      // 0x7640
 };
 
 struct GameSlot
