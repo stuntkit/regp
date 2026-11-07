@@ -537,6 +537,23 @@ void FUN_40b930(char *text)
     Script_GetFloat(section, "FA", &g_4d5bb8->unkcb4);
 }
 
+void Script_GetFloatArray(char *section, char *key, float *out, DWORD count);
+
+// FUNCTION: STUNTGP_D3D 0x40b990
+void FUN_40b990(char *text)
+{
+    // STRING: STUNTGP_D3D 0x4736b8
+    char *section = strstr(text, "-STEERING[] =");
+    // STRING: STUNTGP_D3D 0x4736c8
+    Script_GetFloat(section, "MaxAngle", &g_4d5bb8->unk24c);
+    // STRING: STUNTGP_D3D 0x4736d4
+    Script_GetFloat(section, "Sensitivity", &g_4d5bb8->unk254);
+    // STRING: STUNTGP_D3D 0x4736e0
+    Script_GetFloat(section, "Acceleration", &g_4d5bb8->unk250);
+    // STRING: STUNTGP_D3D 0x4736f0
+    Script_GetFloatArray(section, "AlignmentTorque", g_4d5bb8->unk258, 128);
+}
+
 void Script_GetInt(char *section, char *key, int *out);
 
 // FUNCTION: STUNTGP_D3D 0x40bc30

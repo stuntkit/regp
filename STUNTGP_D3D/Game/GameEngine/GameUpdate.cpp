@@ -848,6 +848,33 @@ void FUN_418d10()
     g_4d5ca8 = g_4d5cac = 0;
 }
 
+GameSlot *FUN_402590(Car *car);
+void FUN_402580();
+void FUN_419180();
+
+// FUNCTION: STUNTGP_D3D 0x418d90
+void FUN_418d90(Car *car)
+{
+    Car *saved = g_4d5bb8;
+    car->unk26a8 = 1;
+    g_4d5bb8 = car;
+    if (car->unk7648 == 1)
+    {
+        car->unk7674 = 0;
+        car->unk7648 = 0;
+        car->unk2278 = car->unk7654;
+        g_4722d0 = FUN_402590(car);
+        if (g_4722d0 && g_4722d0->camMode != g_4d5bb8->unk22c8)
+        {
+            FUN_4028d0(g_4d5bb8->unk22c8);
+        }
+        FUN_402580();
+        FUN_419180();
+        FUN_418d10();
+    }
+    g_4d5bb8 = saved;
+}
+
 // GLOBAL: STUNTGP_D3D 0x570ac0
 Replay *g_570ac0;
 

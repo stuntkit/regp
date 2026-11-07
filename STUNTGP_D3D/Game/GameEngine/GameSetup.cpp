@@ -502,6 +502,29 @@ int FUN_419a40(Replay *replay)
     return replay->size = replay->count * sizeof(ReplayFrame) + sizeof(Replay);
 }
 
+void FUN_40fb30();
+
+// FUNCTION: STUNTGP_D3D 0x419e30
+void FUN_419e30()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        if (g_4d5bb8->wheels[i].unk0c > 8.515625f)
+        {
+            g_4d5bb8->wheels[i].unk70 = 8;
+            if (g_4d5bb8->unk71ec < 8)
+            {
+                g_4d5bb8->unk71ec++;
+            }
+        }
+        else if (g_4d5bb8->wheels[i].unk70)
+        {
+            g_4d5bb8->wheels[i].unk70--;
+        }
+    }
+    FUN_40fb30();
+}
+
 void FUN_415630();
 void FUN_414ac0(unsigned int wheel);
 

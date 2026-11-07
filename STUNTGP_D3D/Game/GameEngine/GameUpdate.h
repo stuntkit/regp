@@ -617,7 +617,10 @@ struct Car
     int unk7640;              // 0x7640
     int unk7644;              // 0x7644
     int unk7648;              // 0x7648
-    BYTE unk764c[0x2c];       // 0x764c
+    BYTE unk764c[0x8];        // 0x764c
+    int unk7654;              // 0x7654
+    BYTE unk7658[0x1c];       // 0x7658
+    int unk7674;              // 0x7674
     int unk7678;              // 0x7678
     int unk767c;              // 0x767c
     DWORD unk7680;            // 0x7680
