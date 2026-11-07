@@ -2,11 +2,13 @@
 #include "d3drender.h"
 #include "font.h"
 
+#include <stdio.h>
 #include <string.h>
 
 #include "common.h"
 #include "globals.h"
 #include "mem.h"
+#include "objects.h"
 #include "surface.h"
 #include "windowInit.h"
 
@@ -46,6 +48,21 @@ int g_5df524 = 0;
 
 // GLOBAL: STUNTGP_D3D 0x4793d4
 int g_4793d4 = -1;
+
+// Scroll bar thickness.
+// GLOBAL: STUNTGP_D3D 0x4793e8
+float g_4793e8 = 13.0f;
+
+// Per-frame arena the sprite nodes are carved from.
+// GLOBAL: STUNTGP_D3D 0x5da374
+BYTE g_spriteArena[20000];
+
+// High-water mark of g_5da370.
+// GLOBAL: STUNTGP_D3D 0x5df514
+int g_5df514;
+
+// GLOBAL: STUNTGP_D3D 0x605cc8
+char *g_feText[0x2dc];
 
 // FUNCTION: STUNTGP_D3D 0x437e40
 void FUN_437e40(char *name)
@@ -240,6 +257,339 @@ float FUN_438950(float size)
     return size * 16.0f;
 }
 
+// Clips a sprite against the integer clip rectangle and queues it.
+// FUNCTION: STUNTGP_D3D 0x438370
+void FUN_438370(SpriteData *src, int layer, int sub)
+{
+    SpriteData s;
+    float t;
+    float bottom;
+    float top;
+    float right;
+    float left;
+
+    left = (float)g_5da360[0];
+    if (src->width + src->x < left)
+    {
+        return;
+    }
+    top = (float)g_5da360[1];
+    if (src->height + src->y < top)
+    {
+        return;
+    }
+    right = (float)g_5da360[2];
+    if (src->x > right)
+    {
+        return;
+    }
+    bottom = (float)g_5da360[3];
+    if (src->y > bottom)
+    {
+        return;
+    }
+    s = *src;
+    if (s.x < left)
+    {
+        float d = left - s.x;
+        s.x = left;
+        t = d / s.width;
+        s.width -= d;
+        s.u0 += (s.u1 - s.u0) * t;
+    }
+    if (s.width + s.x > right)
+    {
+        t = (s.width + s.x - right) / s.width;
+        s.width = right - s.x;
+        s.u1 += (s.u0 - s.u1) * t;
+    }
+    if (s.y < top)
+    {
+        float d = top - s.y;
+        s.y = top;
+        t = d / s.height;
+        s.height -= d;
+        s.v0 += (s.v1 - s.v0) * t;
+    }
+    if (s.height + s.y > bottom)
+    {
+        t = (s.height + s.y - bottom) / s.height;
+        s.height = bottom - s.y;
+        s.v1 += (s.v0 - s.v1) * t;
+    }
+    if (s.width > 1.0f && s.height > 1.0f)
+    {
+        FUN_438500(layer, sub, &s);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x438500
+void FUN_438500(int layer, int sub, SpriteData *sprite)
+{
+    SpriteNode *node = (SpriteNode *)FUN_438550(sizeof(SpriteData) + 8);
+    if (node != NULL)
+    {
+        node->sprite = *sprite;
+        node->type = 1;
+        FUN_438590(layer, sub, node);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x438550
+void *FUN_438550(int size)
+{
+    int end = g_5da370 + ((size + 3) & ~3);
+    void *p = &g_spriteArena[g_5da370];
+    if (end > 20000)
+    {
+        return NULL;
+    }
+    g_5da370 = end;
+    if (end > g_5df514)
+    {
+        g_5df514 = end;
+    }
+    return p;
+}
+
+// FUNCTION: STUNTGP_D3D 0x438590
+void FUN_438590(int layer, int sub, SpriteNode *node)
+{
+    int i = layer * 4 + sub;
+    node->next = NULL;
+    if (g_spriteLists.tails[i] == NULL)
+    {
+        g_spriteLists.tails[i] = node;
+        g_spriteLists.heads[i] = node;
+    }
+    else
+    {
+        g_spriteLists.tails[i]->next = node;
+        g_spriteLists.tails[i] = node;
+    }
+}
+
+// Tiles a 64-pixel texture over a rectangle, scrolled by the fractional part of u/v.
+// FUNCTION: STUNTGP_D3D 0x438830
+void FUN_438830(int layer, int def, float x0, float y0, float x1, float y1, float u, float v)
+{
+    if (def != 0)
+    {
+        SpriteData s;
+        FUN_441320(&s, def);
+        s.flags = 2;
+        s.blendMode = 0x20;
+        s.alpha = 0xff;
+        u -= (int)u;
+        v -= (int)v;
+        s.x = x0;
+        s.y = y0;
+        s.width = x1 - x0;
+        s.height = y1 - y0;
+        s.u0 = (x0 * 0.015625f - u) * 1024.0f;
+        s.v0 = (y0 * 0.015625f - v) * 1024.0f;
+        s.u1 = (x1 * 0.015625f - u) * 1024.0f;
+        s.v1 = (y1 * 0.015625f - v) * 1024.0f;
+        FUN_438370(&s, layer, 0);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x438960
+void FUN_438960(int layer, int sub, float x, float y, int style, const char *text, float size, D3DCOLOR color,
+                DWORD flags)
+{
+    FUN_438990(layer, sub, x, y, style, text, size, color, flags, 0.0f);
+}
+
+// FUNCTION: STUNTGP_D3D 0x438990
+void FUN_438990(int layer, int sub, float x, float y, int style, const char *text, float size, D3DCOLOR color,
+                DWORD flags, float unk18)
+{
+    int len = strlen(text) + 1;
+    SpriteNode *node = (SpriteNode *)FUN_438550(len + 0x38);
+    if (node != NULL)
+    {
+        node->text.x = x;
+        node->text.y = y;
+        node->text.style = style;
+        node->type = 0;
+        memcpy(node->text.text, text, len);
+        node->text.size = size;
+        node->text.color = color;
+        node->text.flags = flags;
+        node->text.unk18 = unk18;
+        FUN_438590(layer, sub, node);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x438be0
+void FUN_438be0(int layer, int style, float x, float y, int textId, float size, D3DCOLOR color, DWORD flags)
+{
+    FUN_438990(layer, 1, x, y, style, FUN_441170(textId), size, color, flags, 0.0f);
+}
+
+// FUNCTION: STUNTGP_D3D 0x439380
+void FUN_439380(int layer, int scroll, float x0, float y0, float x1, float y1, int flags, float fade)
+{
+    SpriteData s;
+    FUN_441320(&s, 0x76);
+    s.flags = 2;
+    s.alpha = 0xff;
+    if (flags & 0x100)
+    {
+        s.blendMode = 0x58;
+    }
+    else if (flags & 0x200)
+    {
+        s.blendMode = 0x70;
+    }
+    else if (flags & 0x400)
+    {
+        s.alpha = (int)(FUN_43d7b0(fade, 0.0f, 1.0f) * 255.0f);
+        s.blendMode = 0x60;
+    }
+    else
+    {
+        s.blendMode = 0x20;
+    }
+    float offset = scroll * 32.0f;
+    s.x = x0;
+    s.y = y0;
+    s.width = x1 - x0;
+    s.height = y1 - y0;
+    s.v0 += offset;
+    s.v1 += offset;
+    FUN_438370(&s, layer, 0);
+}
+
+// Framed panel, with a drop shadow when flags & 0x40.
+// FUNCTION: STUNTGP_D3D 0x439450
+void FUN_439450(int layer, int def, float x0, float y0, float x1, float y1, int flags)
+{
+    if (x0 < x1 && y0 < y1)
+    {
+        if (flags & 0x40)
+        {
+            FUN_439520(15, 0, x0 + 8.0f, y0 + 8.0f, x1 + 8.0f, y1 + 8.0f, def, 2, 0x70);
+        }
+        FUN_439520(layer, 3, x0, y0, x1, y1, def, 1, 0x70);
+        FUN_439520(layer, 2, x0, y0, x1, y1, def, 0, 0x58);
+    }
+}
+
+// STUB: STUNTGP_D3D 0x439520
+void FUN_439520(int layer, int sub, float x0, float y0, float x1, float y1, int def, int a, int blend)
+{
+}
+
+// Panel with optional horizontal and vertical scroll bars.
+// FUNCTION: STUNTGP_D3D 0x4398a0
+void FUN_4398a0(int layer, int def, float x0, float y0, float x1, float y1, int flags, float a0, float a1,
+                float a2, float b0, float b1, float b2)
+{
+    FUN_439450(layer, def, x0, y0, x1, y1, flags);
+    if (a0 > 0.0f && a1 > 0.0f && a2 <= a0)
+    {
+        FUN_4399b0(0x75, layer, x0 + 10.0f, x1 - 10.0f, y1 + 10.0f - g_4793e8, a0, a1, a2);
+    }
+    if (b0 > 0.0f && b1 > 0.0f && b2 <= b0)
+    {
+        FUN_439b80(0x75, layer, x1 + 10.0f - g_4793e8, y0 + 10.0f, y1 - 10.0f, b0, b1, b2);
+    }
+}
+
+// STUB: STUNTGP_D3D 0x4399b0
+void FUN_4399b0(int def, int layer, float x0, float x1, float y, float a0, float a1, float a2)
+{
+}
+
+// STUB: STUNTGP_D3D 0x439b80
+void FUN_439b80(int def, int layer, float x, float y0, float y1, float b0, float b1, float b2)
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d7b0
+float FUN_43d7b0(float value, float lo, float hi)
+{
+    if (value < lo)
+    {
+        return lo;
+    }
+    if (value > hi)
+    {
+        return hi;
+    }
+    return value;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d960
+void FUN_43d960(ScreenRect *dst, ScreenRect *from, ScreenRect *to, float t)
+{
+    dst->left = (to->left - from->left) * t + from->left;
+    dst->top = (to->top - from->top) * t + from->top;
+    dst->right = (to->right - from->right) * t + from->right;
+    dst->bottom = (to->bottom - from->bottom) * t + from->bottom;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43dd60
+int FUN_43dd60()
+{
+    return g_frontEnd.unk74;
+}
+
+// Darkens the screen around a rectangle.
+// FUNCTION: STUNTGP_D3D 0x43feb0
+void FUN_43feb0(int def, float x0, float y0, float x1, float y1, float u, float v)
+{
+    FUN_438830(0x10, def, 0.0f, 0.0f, x0, 480.0f, u, v);
+    FUN_438830(0x10, def, x1, 0.0f, 640.0f, 480.0f, u, v);
+    FUN_438830(0x10, def, 0.0f, 0.0f, 640.0f, y0, u, v);
+    FUN_438830(0x10, def, 0.0f, y1, 640.0f, 480.0f, u, v);
+}
+
+// Collapses a rectangle to a 48x48 square around its centre.
+// FUNCTION: STUNTGP_D3D 0x43ff40
+void FUN_43ff40(ScreenRect *rect)
+{
+    float cx = (rect->left + rect->right) * 0.5f;
+    float cy = (rect->top + rect->bottom) * 0.5f;
+    rect->left = cx - 24.0f;
+    rect->top = cy - 24.0f;
+    rect->right = cx + 24.0f;
+    rect->bottom = cy + 24.0f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43ff90
+void FUN_43ff90(int arg)
+{
+    char buf[256];
+    FUN_438830(0x13, 0x5f, 0.0f, 0.0f, 640.0f, 480.0f, g_frontEnd.unk6c, g_frontEnd.unk70);
+    if (arg != 0)
+    {
+        sprintf(buf, FUN_441170(0x25e), arg);
+    }
+    else
+    {
+        strcpy(buf, FUN_441170(0x25d));
+    }
+    FUN_439450(3, (FUN_43dd60() & 0x20) ? 0x6f : 0x70, 40.0f, 220.0f, 600.0f, 260.0f, 0x40);
+    FUN_439380(6, 2, 40.0f, 220.0f, 600.0f, 260.0f, 0, 0.0f);
+    FUN_438960(5, 0, 320.0f, 240.0f, 4, buf, 1.5f, 0xffffffff, 0x803);
+}
+
+// FUNCTION: STUNTGP_D3D 0x441170
+char *FUN_441170(int id)
+{
+    return g_feText[id];
+}
+
+// FUNCTION: STUNTGP_D3D 0x441320
+int FUN_441320(SpriteData *dst, int id)
+{
+    *dst = g_spriteDefs[id];
+    return 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x441220
 void FUN_441220()
 {
@@ -249,9 +599,143 @@ void FUN_441220()
     }
 }
 
-// STUB: STUNTGP_D3D 0x43f6b0
+// FUNCTION: STUNTGP_D3D 0x43f6b0
 void FUN_43f6b0()
 {
+    ScreenRect to;
+    ScreenRect from;
+    ScreenRect rect;
+    float u;
+    float v;
+
+    u = g_frontEnd.unk6c;
+    v = g_frontEnd.unk70;
+    FUN_438190(0.0f, 0.0f, 640.0f, 480.0f);
+    rect.left = 0.0f;
+    rect.top = 0.0f;
+    rect.right = 640.0f;
+    rect.bottom = 480.0f;
+    from = rect;
+    to = rect;
+    if (g_frontEnd.unkbc != 0)
+    {
+        FUN_43ff90(g_frontEnd.lockedPlayer);
+        g_frontEnd.unk78 = 0;
+        return;
+    }
+    switch (g_frontEnd.unk84)
+    {
+    case 1:
+        FUN_438830(0x10, g_frontEnd.unk60, 0.0f, 0.0f, 640.0f, 480.0f, u, v);
+        break;
+    case 4:
+        from.left = 40.0f;
+        from.top = 96.0f;
+        from.right = 600.0f;
+        from.bottom = 256.0f;
+        to = from;
+        FUN_43ff40(&from);
+        FUN_43d960(&rect, &from, &to, g_frontEnd.unk80);
+        FUN_438830(0x13, 0x5f, rect.left, rect.top, rect.right, rect.bottom, u * 0.5f, v * 0.5f);
+        FUN_43feb0(g_frontEnd.unk60, rect.left, rect.top, rect.right, rect.bottom, u, v);
+        FUN_4398a0(0xe, 0x6e, rect.left, rect.top, rect.right, rect.bottom, 0x40, g_frontEnd.unk88[0],
+                   g_frontEnd.unk88[1], g_frontEnd.unk88[2], g_frontEnd.unk88[3], g_frontEnd.unk88[4],
+                   g_frontEnd.unk88[5]);
+        FUN_439450(10, 0x6f, 40.0f, 288.0f, 408.0f, 384.0f, 0x40);
+        FUN_439380(0xd, 2, 40.0f, 288.0f, 408.0f, 384.0f, 0, 0.0f);
+        break;
+    case 3:
+        from.left = 180.0f;
+        from.top = 86.0f;
+        from.right = 588.0f;
+        from.bottom = 310.0f;
+        to = from;
+        FUN_43ff40(&from);
+        FUN_43d960(&rect, &from, &to, g_frontEnd.unk80);
+        FUN_438830(0x13, 0x5f, rect.left, rect.top, rect.right, rect.bottom, u * 0.5f, v * 0.5f);
+        FUN_43feb0(g_frontEnd.unk60, rect.left, rect.top, rect.right, rect.bottom, u, v);
+        FUN_4398a0(0xe, 0x6e, rect.left, rect.top, rect.right, rect.bottom, 0x40, g_frontEnd.unk88[0],
+                   g_frontEnd.unk88[1], g_frontEnd.unk88[2], g_frontEnd.unk88[3], g_frontEnd.unk88[4],
+                   g_frontEnd.unk88[5]);
+        FUN_439450(10, 0x6e, 180.0f, 342.0f, 588.0f, 422.0f, 0x40);
+        FUN_439380(0xd, 2, 180.0f, 342.0f, 588.0f, 422.0f, 0, 0.0f);
+        break;
+    case 2:
+        from.left = 48.0f;
+        from.top = 86.0f;
+        from.right = 592.0f;
+        from.bottom = 272.0f;
+        to = from;
+        FUN_43ff40(&from);
+        FUN_43d960(&rect, &from, &to, g_frontEnd.unk80);
+        FUN_438830(0x13, 0x5f, rect.left, rect.top, rect.right, rect.bottom, u * 0.5f, v * 0.5f);
+        FUN_43feb0(g_frontEnd.unk60, rect.left, rect.top, rect.right, rect.bottom, u, v);
+        FUN_4398a0(0xe, 0x6e, rect.left, rect.top, rect.right, rect.bottom, 0x40, g_frontEnd.unk88[0],
+                   g_frontEnd.unk88[1], g_frontEnd.unk88[2], g_frontEnd.unk88[3], g_frontEnd.unk88[4],
+                   g_frontEnd.unk88[5]);
+        break;
+    case 5:
+        from.left = 49.0f;
+        from.top = 82.0f;
+        from.right = 391.0f;
+        from.bottom = 334.0f;
+        to = from;
+        FUN_43ff40(&from);
+        FUN_43d960(&rect, &from, &to, g_frontEnd.unk80);
+        FUN_438830(0x13, 0x5f, rect.left, rect.top, rect.right, rect.bottom, u * 0.5f, v * 0.5f);
+        FUN_43feb0(g_frontEnd.unk60, rect.left, rect.top, rect.right, rect.bottom, u, v);
+        FUN_4398a0(0xe, 0x6e, rect.left, rect.top, rect.right, rect.bottom, 0x40, g_frontEnd.unk88[0],
+                   g_frontEnd.unk88[1], g_frontEnd.unk88[2], g_frontEnd.unk88[3], g_frontEnd.unk88[4],
+                   g_frontEnd.unk88[5]);
+        FUN_439450(10, 0x6e, 423.0f, 82.0f, 591.0f, 334.0f, 0x40);
+        FUN_439380(0xd, 2, 423.0f, 82.0f, 591.0f, 334.0f, 0, 0.0f);
+        break;
+    case 7:
+        from.left = 49.0f;
+        from.top = 82.0f;
+        from.right = 391.0f;
+        from.bottom = 334.0f;
+        to = from;
+        FUN_43ff40(&from);
+        FUN_43d960(&rect, &from, &to, g_frontEnd.unk80);
+        FUN_438830(0x13, 0x5f, rect.left, rect.top, rect.right, rect.bottom, u * 0.5f, v * 0.5f);
+        FUN_43feb0(g_frontEnd.unk60, rect.left, rect.top, rect.right, rect.bottom, u, v);
+        FUN_4398a0(0xe, 0x6e, rect.left, rect.top, rect.right, rect.bottom, 0x40, g_frontEnd.unk88[0],
+                   g_frontEnd.unk88[1], g_frontEnd.unk88[2], g_frontEnd.unk88[3], g_frontEnd.unk88[4],
+                   g_frontEnd.unk88[5]);
+        FUN_439450(10, 0x6e, 423.0f, 82.0f, 591.0f, 240.0f, 0x40);
+        FUN_439380(0xd, 2, 423.0f, 82.0f, 591.0f, 240.0f, 0, 0.0f);
+        FUN_439450(10, 0x6f, 423.0f, 272.0f, 591.0f, 334.0f, 0x40);
+        FUN_439380(0xd, 2, 423.0f, 272.0f, 591.0f, 334.0f, 0, 0.0f);
+        break;
+    case 6:
+        from.left = 120.0f;
+        from.top = 90.0f;
+        from.right = 520.0f;
+        from.bottom = 380.0f;
+        to = from;
+        FUN_43ff40(&from);
+        FUN_43d960(&rect, &from, &to, g_frontEnd.unk80);
+        FUN_438830(0x13, 0x5f, rect.left, rect.top, rect.right, rect.bottom, u * 0.5f, v * 0.5f);
+        FUN_43feb0(g_frontEnd.unk60, rect.left, rect.top, rect.right, rect.bottom, u, v);
+        FUN_4398a0(0xe, 0x6e, rect.left, rect.top, rect.right, rect.bottom, 0x40, g_frontEnd.unk88[0],
+                   g_frontEnd.unk88[1], g_frontEnd.unk88[2], g_frontEnd.unk88[3], g_frontEnd.unk88[4],
+                   g_frontEnd.unk88[5]);
+        break;
+    }
+    FUN_439450(1, 0x71, 0.0f, 0.0f, 640.0f, 480.0f, 0);
+    FUN_438190(rect.left, rect.top, rect.right, rect.bottom);
+    if (g_frontEnd.screen != NULL)
+    {
+        if (g_frontEnd.screen->unk00[1] != 1)
+        {
+            FUN_438be0(2, 4, 320.0f, 16.0f, 1, 1.25f, 0xffffffff, 0x803);
+        }
+        if (g_frontEnd.screen != NULL)
+        {
+            g_frontEnd.screen->message(g_frontEnd.screen, 3, 0);
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x43d250

@@ -979,15 +979,16 @@ void FUN_43d1d0()
     FUN_4411c0();
 }
 
-// STUB: STUNTGP_D3D 0x43d1f0
-void FUN_43d1f0()
-{
-}
-
 // FUNCTION: STUNTGP_D3D 0x43d420
 int FUN_43d420()
 {
     return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d1f0
+void FUN_43d1f0()
+{
+    FUN_43d420();
 }
 
 // FUNCTION: STUNTGP_D3D 0x443050
