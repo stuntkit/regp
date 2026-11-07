@@ -2,6 +2,7 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "../../gametext.h"
 
@@ -173,9 +174,27 @@ void FUN_412670()
 {
 }
 
-// STUB: STUNTGP_D3D 0x413330
+// Damped spring, stepped four times per tick.
+// FUNCTION: STUNTGP_D3D 0x413330
 void FUN_413330()
 {
+    for (int i = 0; i < 4; i++)
+    {
+        float v[4];
+        memcpy(v, g_4d5bb8->unk2308, sizeof(v));
+        v[0] *= 0.033333335f;
+        v[1] *= 0.033333335f;
+        v[2] *= 0.033333335f;
+        g_4d5bb8->unk2328 -= v[0];
+        g_4d5bb8->unk232c -= v[1];
+        g_4d5bb8->unk2330 -= v[2];
+        g_4d5bb8->unk2308[0] = g_4d5bb8->unk2328 + g_4d5bb8->unk2308[0];
+        g_4d5bb8->unk2308[1] = g_4d5bb8->unk232c + g_4d5bb8->unk2308[1];
+        g_4d5bb8->unk2308[2] = g_4d5bb8->unk2330 + g_4d5bb8->unk2308[2];
+        g_4d5bb8->unk2328 *= 0.9f;
+        g_4d5bb8->unk232c *= 0.9f;
+        g_4d5bb8->unk2330 *= 0.9f;
+    }
 }
 
 // STUB: STUNTGP_D3D 0x4137b0
@@ -278,9 +297,35 @@ void FUN_418320()
 {
 }
 
-// STUB: STUNTGP_D3D 0x418580
+// FUNCTION: STUNTGP_D3D 0x418580
 void FUN_418580()
 {
+    g_4d5bb8->unk261c = g_4d5bb8->unk22c;
+    g_4d5bb8->unk2618 = g_4d5bb8->unk2270 * g_4d5bb8->unkf7c + g_4d5bb8->unk220;
+    if (g_4d5bb8->unk762c == 1)
+    {
+        g_4d5bb8->unk2618 = 1000.0f;
+        g_4d5bb8->unk261c = 30.000002f;
+    }
+    if (g_4d5bb8->unk7648 == 1 && g_4d5bb8->unk261c > 10.0f)
+    {
+        g_4d5bb8->unk261c = 10.0f;
+    }
+    float scale;
+    if (!g_4d5bb8->unk1f10)
+    {
+        scale = 2.0f;
+    }
+    else
+    {
+        scale = g_4d5bb8->unk2634;
+    }
+    for (int i = 0; i < 4; i++)
+    {
+        g_4d5bb8->wheels[i].unk30 = scale * g_4d5bb8->unkcc0[i].x;
+        g_4d5bb8->wheels[i].unk34 = scale * g_4d5bb8->unkcc0[i].y;
+    }
+    g_4d5bb8->unk1f08 = g_4d5bb8->unk2634 * g_4d5bb8->unk1f08;
 }
 
 // FUNCTION: STUNTGP_D3D 0x418660
