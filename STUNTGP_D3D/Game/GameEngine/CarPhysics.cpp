@@ -554,6 +554,23 @@ void FUN_40b990(char *text)
     Script_GetFloatArray(section, "AlignmentTorque", g_4d5bb8->unk258, 128);
 }
 
+// FUNCTION: STUNTGP_D3D 0x40bac0
+void FUN_40bac0(char *text)
+{
+    // STRING: STUNTGP_D3D 0x47378c
+    char *section = strstr(text, "-FUEL[] =");
+    // STRING: STUNTGP_D3D 0x473798
+    Script_GetFloat(section, "MaxFuel", &g_4d5bb8->unkf78);
+    // STRING: STUNTGP_D3D 0x4737a0
+    Script_GetFloat(section, "UnitMass", &g_4d5bb8->unkf7c);
+    // STRING: STUNTGP_D3D 0x4737ac
+    Script_GetFloat(section, "MaxConsumption", &g_4d5bb8->unkf80);
+    // STRING: STUNTGP_D3D 0x4737bc
+    Script_GetFloat(section, "RefuelRate", &g_4d5bb8->unk1184);
+    // STRING: STUNTGP_D3D 0x4737c8
+    Script_GetFloatArray(section, "ConsumptionEnv", g_4d5bb8->unkf84, 128);
+}
+
 void Script_GetInt(char *section, char *key, int *out);
 
 // FUNCTION: STUNTGP_D3D 0x40bc30

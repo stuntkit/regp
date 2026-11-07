@@ -906,6 +906,24 @@ void FUN_41a3c0()
     }
 }
 
+extern float g_482670;
+
+// FUNCTION: STUNTGP_D3D 0x41a430
+void FUN_41a430()
+{
+    Car *car = g_4d5bb8;
+    BYTE flag = g_570ac4->flags & 0x20;
+    for (int i = 0; i < 4; i++)
+    {
+        float prev = g_4d5cb8->unk14[i] * 0.5f;
+        car->wheels[i].unk80 = car->wheels[i].unk0c = (g_570ac4->unk14[i] * 0.5f - prev) * g_570ac0->unk08 + prev;
+        if (flag)
+        {
+            car->wheels[i].unk80 = g_482670 * g_4d5bb8->unk2618 * 3.5f;
+        }
+    }
+}
+
 void FUN_40c160();
 
 // FUNCTION: STUNTGP_D3D 0x41a780
@@ -1730,6 +1748,33 @@ void FUN_405b50()
     {
         car->unk1f10 = car->unk1f10 == 0 ? 2 : 0;
         car->unk2664 = 0;
+    }
+}
+
+void FUN_40cc90();
+
+// FUNCTION: STUNTGP_D3D 0x405be0
+void FUN_405be0(float target)
+{
+    Car *car = g_4d5bb8;
+    target -= car->unk1cf0;
+    if (target <= 0.0f)
+    {
+        car->unk22bc = 0;
+        if (target > -5.0f)
+        {
+            car->unk1cf8 *= 0.8f;
+            return;
+        }
+        float brake = target * -32.0f;
+        car->unk1cf8 = 0;
+        car->controls[0] = 0;
+        if (brake > 255.0f)
+        {
+            brake = 255.0f;
+        }
+        car->controls[1] = (BYTE)brake;
+        FUN_40cc90();
     }
 }
 
