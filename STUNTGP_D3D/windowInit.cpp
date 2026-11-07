@@ -245,35 +245,60 @@ int ddGetDD4(LPDIRECTDRAW *lplpDD, LPDIRECTDRAW4 *lplpDD4, HWND hWnd)
 // {
 // }
 
-// // STUB: STUNTGP_D3D 0x422880
-// void FUN_422880()
-// {
-// }
+// FUNCTION: STUNTGP_D3D 0x422880
+void ddReleaseSurface(LPDIRECTDRAWSURFACE4 *surface)
+{
+    if (*surface)
+    {
+        (*surface)->Release();
+        *surface = NULL;
+    }
+}
 
-// // STUB: STUNTGP_D3D 0x4228a0
-// void FUN_4228a0()
-// {
-// }
+// FUNCTION: STUNTGP_D3D 0x4228a0
+void ddReleaseDD(LPDIRECTDRAW *lplpDD)
+{
+    if (*lplpDD)
+    {
+        (*lplpDD)->Release();
+        *lplpDD = NULL;
+    }
+}
 
-// // STUB: STUNTGP_D3D 0x4228c0
-// void FUN_4228c0()
-// {
-// }
+// FUNCTION: STUNTGP_D3D 0x4228c0
+void ddReleaseDD4(LPDIRECTDRAW4 *lplpDD4)
+{
+    if (*lplpDD4)
+    {
+        (*lplpDD4)->Release();
+        *lplpDD4 = NULL;
+    }
+}
 
-// // STUB: STUNTGP_D3D 0x4228e0
-// void FUN_4228e0()
-// {
-// }
+// FUNCTION: STUNTGP_D3D 0x4228e0
+void ddRelease()
+{
+    ddReleaseDD(&g_dd);
+    ddReleaseDD4(&g_dd4);
+    g_61c358 = NULL;
+    g_surface = NULL;
+    g_surface2 = NULL;
+}
 
 // // STUB: STUNTGP_D3D 0x422910 - unused
 // void FUN_422910()
 // {
 // }
 
-// // STUB: STUNTGP_D3D 0x422930
-// void FUN_422930()
-// {
-// }
+// FUNCTION: STUNTGP_D3D 0x422930
+void windowDestroy(HWND *hWnd)
+{
+    if (hWnd)
+    {
+        DestroyWindow(*hWnd);
+        *hWnd = NULL;
+    }
+}
 
 // FUNCTION: STUNTGP_D3D 0x422950
 int ddGetMemory(LPDIRECTDRAW4 *lplpDD4, LPDWORD totalVideoMem, LPDWORD totalTextureMem, LPDWORD freeVideoMem)
@@ -329,15 +354,30 @@ void FUN_422a00(LPDIRECTDRAWSURFACE4 *surface)
     g_trackedSurfaces[g_surfaceCount++] = *surface;
 }
 
-// // STUB: STUNTGP_D3D 0x422a20
-// void FUN_422a20()
-// {
-// }
+// FUNCTION: STUNTGP_D3D 0x422a20
+void FUN_422a20()
+{
+    for (DWORD i = 0; i < g_surfaceCount; i++)
+    {
+        if (g_trackedSurfaces[i])
+        {
+            g_trackedSurfaces[i]->Release();
+            g_trackedSurfaces[i] = NULL;
+        }
+    }
+    FUN_4229e0();
+}
 
-// // STUB: STUNTGP_D3D 0x422a60
-// void FUN_422a60()
-// {
-// }
+// FUNCTION: STUNTGP_D3D 0x422a60
+void FUN_422a60()
+{
+    if (g_dd)
+    {
+        FUN_422a20();
+        ddRelease();
+        windowDestroy(&g_Hwnd);
+    }
+}
 
 // FUNCTION: STUNTGP_D3D 0x422a80
 int FUN_422a80(LPDIRECTDRAW4 dd, LPDIRECTDRAWSURFACE4 *surface, LPDDSURFACEDESC2 desc, int fatal)
