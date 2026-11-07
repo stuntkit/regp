@@ -43,6 +43,35 @@ struct MenuRecord
     BYTE unk04[0x80];
 };
 
+struct MenuSponsor
+{
+    int unk00; // 0x00
+    int id;    // 0x04, matched against ShopItem::sponsor
+};
+
+struct MenuRoundCar
+{
+    int unk00; // 0x00
+    int unk04; // 0x04
+    int unk08; // 0x08
+};
+
+struct MenuRound
+{
+    int track;            // 0x00
+    int unk04;            // 0x04
+    MenuRoundCar cars[5]; // 0x08
+};
+
+// Shop catalogue entry.
+struct ShopItem
+{
+    int price;           // 0x000
+    BYTE unk004[0x120];  // 0x004
+    int sponsor;         // 0x124
+    int unk128;          // 0x128
+};
+
 // Menu entry; entries with a negative id are skipped, a zero text ends the list.
 struct MenuItem
 {
@@ -147,9 +176,16 @@ struct MenuState
     BYTE unk1314c[0x19d78 - 0x1314c];
     int unk19d78;          // 0x19d78, index into unk0f1c
     MenuSlot160 unk19d7c;  // 0x19d7c
-    BYTE unk19edc[4];
-    int unk19ee0[4]; // 0x19ee0
-    BYTE unk19ef0[0x1a544 - 0x19ef0];
+    // Championship settings, read by FUN_435b60; names are the csv keys.
+    int numberOfRounds;          // 0x19edc
+    int bonusRounds[4];          // 0x19ee0
+    int saveRounds[6];           // 0x19ef0
+    int sponsorDiscountPercent;  // 0x19f08
+    int usedItemDiscountPercent; // 0x19f0c
+    MenuSponsor sponsors[7];     // 0x19f10, [1..6] used
+    int positions[6][4];         // 0x19f48
+    MenuRound rounds[21];        // 0x19fa8
+    BYTE unk1a53c[0x1a544 - 0x1a53c];
     MenuSlot20 unk1a544[6]; // 0x1a544
     BYTE unk1a604[0x1a6a4 - 0x1a604];
     int unk1a6a4; // 0x1a6a4

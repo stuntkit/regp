@@ -368,7 +368,7 @@ int FUN_44cc90(int value)
     {
         for (int i = 0; i < 4; i++)
         {
-            if (g_menuState.unk19ee0[i] == value)
+            if (g_menuState.bonusRounds[i] == value)
             {
                 return 1;
             }

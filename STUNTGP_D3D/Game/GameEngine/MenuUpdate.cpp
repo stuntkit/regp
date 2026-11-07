@@ -302,6 +302,22 @@ void FUN_436410()
 {
 }
 
+// Price after the used-item and sponsor discounts.
+// FUNCTION: STUNTGP_D3D 0x436420
+int FUN_436420(int sponsor, ShopItem *item, int *used, int unused)
+{
+    int price = item->price;
+    if (*used)
+    {
+        price += g_menuState.usedItemDiscountPercent * price / -100;
+    }
+    if (sponsor && item->sponsor == g_menuState.sponsors[sponsor].id)
+    {
+        price += g_menuState.sponsorDiscountPercent * price / -100;
+    }
+    return price;
+}
+
 // FUNCTION: STUNTGP_D3D 0x436e90
 void FUN_436e90(int *p)
 {
