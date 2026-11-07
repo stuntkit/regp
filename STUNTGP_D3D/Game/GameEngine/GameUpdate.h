@@ -55,7 +55,9 @@ struct Car
     int unk23d0;          // 0x23d0
     int unk23d4;          // 0x23d4
     int unk23d8;          // 0x23d8
-    BYTE unk23dc[0x18c];  // 0x23dc
+    BYTE unk23dc[0x108];  // 0x23dc
+    int unk24e4;          // 0x24e4
+    BYTE unk24e8[0x80];   // 0x24e8
     int unk2568;          // 0x2568
     int unk256c;          // 0x256c
     int unk2570;          // 0x2570
