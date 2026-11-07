@@ -56,6 +56,9 @@ OverlayPoly *g_61c5f0 = NULL;
 // GLOBAL: STUNTGP_D3D 0x61c604
 DWORD g_61c604 = 0;
 
+// GLOBAL: STUNTGP_D3D 0x58332c
+int g_58332c = 0;
+
 // GLOBAL: STUNTGP_D3D 0x592050
 int g_592050 = 0;
 
@@ -586,9 +589,29 @@ void FUN_432a90()
     }
 }
 
-// STUB: STUNTGP_D3D 0x432840
+// FUNCTION: STUNTGP_D3D 0x4327c0
+void FUN_4327c0(WORD *pixels, DWORD width, DWORD height)
+{
+    DWORD count = width * height;
+    for (DWORD i = 0; i < count; i++)
+    {
+        *pixels ^= 0x7fff;
+        pixels++;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x432840
 void FUN_432840(BYTE *texture, Font *font, int arg)
 {
+    g_489714 = 256;
+    g_489718 = 256;
+    if (g_58332c == 1)
+    {
+        FUN_430280(texture, texture, 256, 256);
+        FUN_431560(font->glyphs[0].texture, texture);
+        FUN_4327c0((WORD *)texture, 256, 256);
+        FUN_431560(font->glyphs[0].textureAlt, texture);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x432af0

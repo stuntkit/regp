@@ -105,12 +105,14 @@ extern float g_clipRight;
 extern float g_clipTop;
 extern float g_clipBottom;
 extern int g_592050;
+extern int g_58332c;
 
 int FUN_4251a0(SpriteDesc *desc);
 void FUN_430280(BYTE *src, BYTE *dst, int width, int height);
 void FUN_430330(char *path, BYTE *dst);
 void FUN_431560(int slot, BYTE *image);
 int FUN_4316f0(int slot, char *path);
+void FUN_4327c0(WORD *pixels, DWORD width, DWORD height);
 void FUN_432840(BYTE *texture, Font *font, int arg);
 void FUN_42f340();
 void FUN_42f380();

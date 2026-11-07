@@ -40,6 +40,13 @@ extern Font *g_currentFont;
 extern float g_57b418;
 extern BYTE g_57b318[256];
 
+extern BYTE g_577ad0[160];
+
+void FUN_428a80();
+void FUN_428ab0(Font *font, BYTE *cell, DWORD *outWidth, DWORD *outHeight, DWORD *outLeft, DWORD *outTop);
+void FUN_429180(Font *font, DWORD width);
+void FUN_4291b0(Font *font, float value);
+void FUN_4291d0(Font *font, float value);
 void Font_Load(char *name);
 void FUN_428c00(Font *font, BYTE *data, BYTE *texture);
 void FUN_4291a0(float value);
