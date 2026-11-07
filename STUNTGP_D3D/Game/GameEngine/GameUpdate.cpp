@@ -4,6 +4,7 @@
 #include <float.h>
 
 #include "../../globals.h"
+#include "../../random.h"
 #include "../../surface.h"
 #include "../../timer.h"
 
@@ -112,6 +113,9 @@ Car g_49a1f8[6];
 // GLOBAL: STUNTGP_D3D 0x4d5bb8
 Car *g_4d5bb8;
 
+// GLOBAL: STUNTGP_D3D 0x474630
+Car *g_474630 = g_49a1f8;
+
 void FUN_41af50();
 void FUN_41e2d0();
 
@@ -183,9 +187,19 @@ void FUN_405210()
     g_4722d0 = g_498248;
 }
 
-// STUB: STUNTGP_D3D 0x40dd30
+// Picks a random active car, giving up after 16 tries.
+// FUNCTION: STUNTGP_D3D 0x40dd30
 void FUN_40dd30()
 {
+    for (unsigned int i = 0; i < 16; i++)
+    {
+        int index = FUN_42f1f0(1024) % 6;
+        if (g_49a1f8[index].active == 1)
+        {
+            g_474630 = &g_49a1f8[index];
+            i = 16;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x40dd80
@@ -248,9 +262,13 @@ void FUN_415df0()
 {
 }
 
-// STUB: STUNTGP_D3D 0x40e340
+// FUNCTION: STUNTGP_D3D 0x40e340
 void FUN_40e340()
 {
+    for (int i = 0; i < 6; i++)
+    {
+        g_49a1f8[i].unk1fd0 = 1.0f;
+    }
 }
 
 // STUB: STUNTGP_D3D 0x418830
@@ -295,9 +313,23 @@ void FUN_418a90()
     g_4d5bb8 = g_49a1f8;
 }
 
-// STUB: STUNTGP_D3D 0x41af50
+// STUB: STUNTGP_D3D 0x41ab70
+void FUN_41ab70(Car *car)
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x41af50
 void FUN_41af50()
 {
+    if (g_4d5bb8->unk7268)
+    {
+        switch (*g_4d5bb8->unk7268)
+        {
+        case 1:
+            FUN_41ab70(g_4d5bb8);
+            break;
+        }
+    }
 }
 
 // STUB: STUNTGP_D3D 0x41e2d0
@@ -648,7 +680,41 @@ void FUN_45f8f0(int a, int b)
 // --- sound ---
 
 
-// STUB: STUNTGP_D3D 0x41bdd0
+// FUNCTION: STUNTGP_D3D 0x41bdd0
 void FUN_41bdd0()
 {
+    FUN_460dd0();
+    for (int i = 0; i < 6; i++)
+    {
+        if (g_49a1f8[i].active == 1)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                g_49a1f8[i].unk233c[j] = 0;
+                g_49a1f8[i].wheels[j].unk24 = 0;
+            }
+            g_49a1f8[i].unk234c = 0;
+            g_49a1f8[i].unk2350 = 0;
+            g_49a1f8[i].unk2354 = 0;
+            g_49a1f8[i].unk2358 = 0;
+            g_49a1f8[i].unk235c = 0;
+            g_49a1f8[i].unk2360 = 0;
+            g_49a1f8[i].unk2364 = 0;
+            g_49a1f8[i].unk2368 = 0;
+            g_49a1f8[i].unk236c = 0;
+            g_49a1f8[i].unk2370 = 0;
+            g_49a1f8[i].unk2374 = 0;
+            g_49a1f8[i].unk2378 = 0;
+            g_49a1f8[i].unk237c = 0;
+            g_49a1f8[i].unk2380 = 0;
+            g_49a1f8[i].unk2384 = 0;
+            g_49a1f8[i].unk2388 = 0;
+            g_49a1f8[i].unk238c = 0;
+            g_49a1f8[i].unk2390 = 0;
+            g_49a1f8[i].unk2394 = 0;
+            g_49a1f8[i].unk2398 = 0;
+            g_49a1f8[i].unk239c = 0;
+            g_49a1f8[i].unk23a0 = 0;
+        }
+    }
 }
