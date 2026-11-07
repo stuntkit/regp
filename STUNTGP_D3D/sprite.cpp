@@ -2,6 +2,7 @@
 #include "d3drender.h"
 #include "font.h"
 
+#include <direct.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -805,6 +806,18 @@ int FUN_440170()
     int value = g_5ff8bc;
     g_5ff8bc = 0;
     return value;
+}
+
+// Makes sure the save directory exists: 7 if it already did, 0 if created, 8 on failure.
+// FUNCTION: STUNTGP_D3D 0x440180
+int FUN_440180()
+{
+    char *path = FUN_4401e0(g_4798bc);
+    if (FUN_4401c0(path))
+    {
+        return 7;
+    }
+    return _mkdir(path) < 0 ? 8 : 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4401c0

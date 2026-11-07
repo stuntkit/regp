@@ -22,6 +22,7 @@ int Csv_SkipBlankLines(char *text, int *pos);
 int Csv_IsBlank(char c);
 int Csv_IsNewline(char c);
 int Csv_ReadField(char *out, char *text, int *pos);
+int Csv_ReadInt(int *value, char *text, int *pos);
 char *Csv_Load(char *name);
 void Text_InitKeys();
 void Text_LoadLanguage(int language);

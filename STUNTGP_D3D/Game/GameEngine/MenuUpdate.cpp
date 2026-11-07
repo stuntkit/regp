@@ -40,12 +40,32 @@ struct Unk451a50
     int groups[1];      // 0x50, group count unknown
 };
 
+// Name entry: three characters plus the terminator.
 struct Unk454b20
 {
     BYTE unk00[0x14]; // 0x00
     int unk14;        // 0x14
-    BYTE unk18[0x30]; // 0x18
-    char text[1];     // 0x48, length unknown
+    int unk18;        // 0x18
+    int unk1c;        // 0x1c
+    int unk20;        // 0x20
+    int unk24;        // 0x24
+    int unk28;        // 0x28
+    int unk2c;        // 0x2c
+    int unk30;        // 0x30
+    int unk34;        // 0x34
+    int unk38;        // 0x38
+    int unk3c;        // 0x3c
+    int unk40;        // 0x40
+    int unk44;        // 0x44
+    char text[4];     // 0x48
+    int unk4c;        // 0x4c
+};
+
+struct Unk457770
+{
+    DWORD unk00[5];    // 0x00
+    PoolObject *unk14; // 0x14
+    int unk18;         // 0x18
 };
 
 struct Unk454b40
@@ -57,6 +77,25 @@ struct Unk454b40
     float unk28;      // 0x28
     float unk2c;      // 0x2c
     float unk30;      // 0x30
+};
+
+struct Unk455fc0
+{
+    BYTE unk00[0x18]; // 0x00
+    int unk18;        // 0x18
+    int unk1c;        // 0x1c
+    int unk20;        // 0x20
+    int unk24;        // 0x24
+    int unk28;        // 0x28
+    int unk2c;        // 0x2c
+};
+
+struct Unk456070
+{
+    BYTE unk00[0x24]; // 0x00
+    int unk24[4];     // 0x24
+    BYTE unk34[0x4];  // 0x34
+    int unk38[4];     // 0x38
 };
 
 struct Unk456650
@@ -81,7 +120,9 @@ struct Unk457e70Entry
 
 struct Unk457e70
 {
-    BYTE unk000[0x64];            // 0x000
+    BYTE unk000[0x20];            // 0x000
+    int unk20;                    // 0x020, selected entry
+    BYTE unk024[0x40];            // 0x024
     Unk457e70Entry entries[8];    // 0x064
     int count;                    // 0x1e4
 };
@@ -92,6 +133,19 @@ struct Unk458860
     int unk1e8;         // 0x1e8
     int unk1ec;         // 0x1ec
     int unk1f0;         // 0x1f0
+};
+
+// Character grid for name entry, eight per row.
+// GLOBAL: STUNTGP_D3D 0x4881b0
+char *g_4881b0[4] = {
+    // STRING: STUNTGP_D3D 0x4881c8
+    "ABCDEFGH",
+    // STRING: STUNTGP_D3D 0x4881d4
+    "IJKLMNOP",
+    // STRING: STUNTGP_D3D 0x4881e0
+    "QRSTUVWX",
+    // STRING: STUNTGP_D3D 0x4881ec
+    "YZ=:()de",
 };
 
 // GLOBAL: STUNTGP_D3D 0x5da2e8
@@ -622,6 +676,25 @@ void FUN_43d280()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x43dcc0
+int FUN_43dcc0(int index, int base)
+{
+    switch (index)
+    {
+    case 1:
+        return base + 0x171;
+    case 2:
+        return base + 0x174;
+    case 3:
+        return base + 0x177;
+    case 4:
+        return base + 0x17a;
+    case 5:
+        return base + 0x17d;
+    }
+    return 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43dd10
 void FUN_43dd10(DWORD color)
 {
@@ -695,6 +768,17 @@ void FUN_43dee0()
     g_frontEnd.unka0[3] = 0.0f;
     g_frontEnd.unka0[4] = 0.0f;
     g_frontEnd.unka0[5] = 0.0f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43df60
+void FUN_43df60(float a, float b, float c, float d, float e, float f)
+{
+    g_frontEnd.unka0[0] = a;
+    g_frontEnd.unka0[1] = b;
+    g_frontEnd.unka0[2] = c;
+    g_frontEnd.unka0[3] = d;
+    g_frontEnd.unka0[4] = e;
+    g_frontEnd.unka0[5] = f;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43efc0
@@ -1166,6 +1250,16 @@ void FUN_450e10(Unk4516c0 *object)
     object->unk18 = NULL;
 }
 
+// FUNCTION: STUNTGP_D3D 0x451680
+void FUN_451680(Unk4516c0 *object)
+{
+    object->unk14->message(object->unk14, 0x19, 0);
+    PoolObject *child = object->unk18;
+    child->message(child, 0x13, 0);
+    child->message(child, 0x1c, 2);
+    object->unk28 = 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x4516c0
 void FUN_4516c0(Unk4516c0 *object)
 {
@@ -1290,6 +1384,45 @@ void FUN_4542a0(MenuHolder *object)
     object->child = NULL;
 }
 
+// FUNCTION: STUNTGP_D3D 0x454410
+int FUN_454410(Unk454b20 *object)
+{
+    object->unk1c = 0;
+    object->unk20 = 0;
+    object->unk24 = 0;
+    object->unk28 = 0;
+    object->unk2c = 0;
+    object->unk30 = 0;
+    object->unk3c = 0;
+    object->unk40 = 0;
+    object->unk44 = 0;
+    object->unk34 = 0;
+    object->unk38 = 0;
+    object->unk14 = 0;
+    object->unk4c = 0;
+    object->text[0] = g_menuState.unk44d0 = 0;
+    object->unk18 = g_menuState.unk4238;
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4547e0
+int FUN_4547e0(char c, int *column, int *row)
+{
+    for (int r = 0; r < 4; r++)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            if (g_4881b0[r][i] == c)
+            {
+                *column = i;
+                *row = r;
+                return i + r * 8;
+            }
+        }
+    }
+    return -1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x454af0
 void FUN_454af0(Unk454b20 *object, char c)
 {
@@ -1390,6 +1523,34 @@ void FUN_455d70(MenuHolder *object)
     object->child = NULL;
 }
 
+// FUNCTION: STUNTGP_D3D 0x455fc0
+void FUN_455fc0(Unk455fc0 *object)
+{
+    g_menuState.unk00d4 = object->unk18;
+    g_menuState.unk00d8 = object->unk1c;
+    g_menuState.unk00dc = object->unk20;
+    g_menuState.unk00e0 = object->unk24;
+    g_menuState.unk00e4 = object->unk28;
+    g_menuState.unk00e8 = object->unk2c;
+}
+
+// FUNCTION: STUNTGP_D3D 0x456070
+void FUN_456070(Unk456070 *object)
+{
+    for (int i = 1; i < 5; i++)
+    {
+        int a;
+        int b;
+        a = b = 1;
+        if (!FUN_437090(i))
+        {
+            a = b = 0;
+        }
+        object->unk24[i - 1] = a;
+        object->unk38[i - 1] = b;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x456650
 int FUN_456650(Unk456650 *object)
 {
@@ -1402,6 +1563,23 @@ int FUN_456650(Unk456650 *object)
         }
     }
     return count;
+}
+
+// FUNCTION: STUNTGP_D3D 0x456670
+int FUN_456670(Unk456650 *object)
+{
+    int count = 0;
+    int *out = g_menuState.unk46ac;
+    for (int i = 1; i < 5; i++)
+    {
+        if (object->unk4c[i - 1])
+        {
+            *out++ = i;
+            count++;
+        }
+    }
+    g_menuState.unk423c = count;
+    return count >= 2;
 }
 
 // FUNCTION: STUNTGP_D3D 0x456910
@@ -1458,6 +1636,24 @@ void FUN_457500(MenuHolder *object)
     child->destroy(child);
     Pool_Free(child);
     object->child = NULL;
+}
+
+// FUNCTION: STUNTGP_D3D 0x457770
+void FUN_457770(Unk457770 *object)
+{
+    if (object->unk18)
+    {
+        switch (g_menuState.unk0094)
+        {
+        case 2:
+            object->unk14->message(object->unk14, 0x1c, 1);
+            break;
+        case 1:
+            object->unk14->message(object->unk14, 0x1c, 0);
+            break;
+        }
+        object->unk18 = 0;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x4577c0
@@ -1535,6 +1731,23 @@ void FUN_458860(Unk458860 *object)
     object->unk1ec = 0;
     object->unk1e8 = 0;
     object->unk1f0 = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x458d00
+void FUN_458d00(Unk457e70 *object)
+{
+    switch (g_menuState.unk46c8)
+    {
+    case 1:
+    case 2:
+    case 3:
+        g_menuState.unk46d8 = object->entries[object->unk20].id;
+        break;
+    case 4:
+    case 5:
+        g_menuState.unk46dc = object->entries[object->unk20].id;
+        break;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x459300

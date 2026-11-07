@@ -58,8 +58,11 @@ extern DWORD g_60eff4;
 extern DWORD g_60eff8;
 extern char g_LevelScript[32];
 void FUN_445f70(int value);
+void FUN_4487d0(unsigned int index, float x, float y, float z);
 extern int g_60f020;
 extern int g_60f2c8;
+extern int g_60f01c;
+extern int g_60eff0;
 extern int g_60df98;
 extern int g_61b74c;
 
@@ -267,6 +270,17 @@ void FUN_4452e0()
         FUN_445f70(g_60d744);
         sprintf(g_LevelScript, g_482b88[g_60d748]);
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x445310
+void FUN_445310()
+{
+    g_612990 = 3600;
+    g_61299c = 1;
+    g_60f2c8 = 4;
+    g_60f01c = 10;
+    g_60eff0 = 1;
+    g_60df98 = 2;
 }
 
 // FUNCTION: STUNTGP_D3D 0x445350
@@ -704,6 +718,22 @@ void FUN_447fa0()
     }
     g_61b740->faders[10].x = g_61b740->faders[10].dx * v * 0.01f + g_61b740->faders[10].unk08;
     g_61b740->faders[10].y = g_61b740->faders[10].dy * v * 0.01f + g_61b740->faders[10].unk0c;
+}
+
+// FUNCTION: STUNTGP_D3D 0x448a70
+void FUN_448a70()
+{
+    Car *car = g_4722d0->data;
+    unsigned int index;
+    if (car->unk24e0 == 1)
+    {
+        index = car->unk24e4;
+    }
+    else
+    {
+        index = car->unk24ac;
+    }
+    FUN_4487d0(index, g_61b740->faders[6].x, g_61b740->faders[6].y, 0.95f);
 }
 
 // FUNCTION: STUNTGP_D3D 0x449e80

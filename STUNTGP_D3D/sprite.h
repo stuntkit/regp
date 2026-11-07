@@ -117,6 +117,8 @@ void FUN_437e60();
 void FUN_437e80();
 void FUN_438190(float left, float top, float right, float bottom);
 void FUN_441190();
+BOOL FUN_4401c0(char *path);
+char *FUN_4401e0(int card);
 void FUN_441340();
 void FUN_441380(SpriteDef *def, int id);
 void FUN_4411c0();

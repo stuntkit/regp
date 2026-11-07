@@ -77,7 +77,9 @@ struct MenuState
     ScoreEntry unk1dac[10];     // 0x1dac
     ScoreEntry unk1dfc[100];    // 0x1dfc
     BYTE saved[0x2114]; // 0x211c, copy of 0x0008..0x211c
-    BYTE unk4230[0x10];
+    BYTE unk4230[0x8];
+    int unk4238; // 0x4238
+    int unk423c; // 0x423c, entries used in unk46ac
     int unk4240; // 0x4240
     int unk4244; // 0x4244
     BYTE unk4248[0x4258 - 0x4248];
@@ -89,9 +91,17 @@ struct MenuState
     int unk440c[26]; // 0x440c
     int unk4474;     // 0x4474
     int unk4478; // 0x4478
-    BYTE unk447c[0x46c4 - 0x447c];
+    BYTE unk447c[0x44d0 - 0x447c];
+    int unk44d0; // 0x44d0
+    BYTE unk44d4[0x46ac - 0x44d4];
+    int unk46ac[4]; // 0x46ac
+    BYTE unk46bc[0x46c4 - 0x46bc];
     int unk46c4; // 0x46c4
-    BYTE unk46c8[0x13148 - 0x46c8];
+    int unk46c8; // 0x46c8
+    BYTE unk46cc[0x46d8 - 0x46cc];
+    int unk46d8; // 0x46d8
+    int unk46dc; // 0x46dc
+    BYTE unk46e0[0x13148 - 0x46e0];
     Unk4d5cc0 *unk13148; // 0x13148
     BYTE unk1314c[0x19d78 - 0x1314c];
     int unk19d78;          // 0x19d78, index into unk0f1c

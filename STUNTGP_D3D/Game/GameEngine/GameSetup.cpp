@@ -30,9 +30,13 @@ struct Unk45ab70
 
 struct Unk45c670
 {
-    BYTE unk00[0x30]; // 0x00
-    int unk30;        // 0x30
+    BYTE unk00[0x14];  // 0x00
+    PoolObject *unk14; // 0x14
+    BYTE unk18[0x18];  // 0x18
+    int unk30;         // 0x30
 };
+
+void FUN_45c670(Unk45c670 *object);
 
 struct StuntKnot
 {
@@ -1429,6 +1433,16 @@ void FUN_45c050(MenuObject *object)
     FUN_43dd90(0);
 }
 
+// FUNCTION: STUNTGP_D3D 0x45c640
+void FUN_45c640(Unk45c670 *object)
+{
+    PoolObject *child = object->unk14;
+    child->destroy(child);
+    Pool_Free(child);
+    object->unk14 = NULL;
+    FUN_45c670(object);
+}
+
 // FUNCTION: STUNTGP_D3D 0x45c670
 void FUN_45c670(Unk45c670 *object)
 {
@@ -1447,6 +1461,16 @@ void FUN_45c670(Unk45c670 *object)
         g_menuState.unk4478 = 5;
         break;
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45db10
+void FUN_45db10(Unk4516c0 *object)
+{
+    object->unk14->message(object->unk14, 0x14, 0);
+    PoolObject *child = object->unk18;
+    child->message(child, 0x13, 0);
+    child->message(child, 0x1c, 2);
+    object->unk1c = 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x45db50

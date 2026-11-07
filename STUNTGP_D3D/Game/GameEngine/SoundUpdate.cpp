@@ -2,6 +2,7 @@
 #include "../../sound.h"
 
 #include <stdlib.h>
+#include <time.h>
 #include <string.h>
 
 #include <mmsystem.h>
@@ -68,6 +69,15 @@ unsigned int g_4897a4 = 7500 * 7500;
 // GLOBAL: STUNTGP_D3D 0x4897a8
 float g_4897a8 = 0.000133333335f;
 
+// GLOBAL: STUNTGP_D3D 0x62def8
+int g_62def8;
+
+// GLOBAL: STUNTGP_D3D 0x62defc
+int g_62defc;
+
+// GLOBAL: STUNTGP_D3D 0x62df00
+int g_62df00;
+
 // GLOBAL: STUNTGP_D3D 0x4897b0
 int g_4897b0 = 1;
 
@@ -112,6 +122,17 @@ int g_62f5bc;
 DWORD g_62f5c0;
 
 void FUN_461ae0(LPDIRECTSOUND3DLISTENER listener, GameSlot *slot);
+
+// FUNCTION: STUNTGP_D3D 0x45f5b0
+void FUN_45f5b0()
+{
+    time_t now;
+    time(&now);
+    struct tm *date = localtime(&now);
+    g_62def8 = date->tm_mday;
+    g_62defc = date->tm_mon + 1;
+    g_62df00 = date->tm_year + 1900;
+}
 
 // FUNCTION: STUNTGP_D3D 0x45f7c0
 void FUN_45f7c0(int value)
@@ -431,6 +452,21 @@ void FUN_460d60(int index)
         {
             g_62e118[index].buffer->Stop();
         }
+        g_62f5b4--;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x460d90
+void FUN_460d90(int *channel)
+{
+    if (g_soundInitialised && *channel)
+    {
+        LPDIRECTSOUNDBUFFER buffer = g_62e118[*channel].buffer;
+        if (buffer)
+        {
+            buffer->Stop();
+        }
+        *channel = 0;
         g_62f5b4--;
     }
 }

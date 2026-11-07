@@ -1051,6 +1051,24 @@ void FUN_445530()
 // GLOBAL: STUNTGP_D3D 0x60d628
 GhostRecord g_60d628[4];
 
+// GLOBAL: STUNTGP_D3D 0x60d668
+int g_60d668;
+
+extern Unk4d5cc0 g_4d5cc0[6];
+
+// FUNCTION: STUNTGP_D3D 0x443010
+void FUN_443010(int enable)
+{
+    g_60d668 = 0;
+    if (enable)
+    {
+        g_60d668 = 1;
+        g_60d628[1].ghost = &g_4d5cc0[2];
+        g_60d628[1].unk04 = (int)&g_49a1f8[3];
+        g_60d628[1].time = g_4d5cc0[2].unk1c;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x443300
 GhostRecord *FUN_443300()
 {
