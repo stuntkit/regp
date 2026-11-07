@@ -227,28 +227,47 @@ HRESULT surfaceRestore(LPDIRECTDRAWSURFACE4 *surface)
     return DD_OK;
 }
 
-// STUB: STUNTGP_D3D 0x4314c0
-BOOL FUN_4314c0()
+// FUNCTION: STUNTGP_D3D 0x4314c0
+BOOL surfaceSlotsNoneLost()
 {
-    if (false)
+    for (DWORD i = 0; i < g_surfaceSlotCount; i++)
     {
+        if (g_surfaceSlots[i].surface && g_surfaceSlots[i].surface->IsLost())
+        {
+            return FALSE;
+        }
+        if (g_surfaceSlots[i].surface2 && g_surfaceSlots[i].surface2->IsLost())
+        {
+            return FALSE;
+        }
     }
-    return 1;
+    return TRUE;
 }
 
 // FUNCTION: STUNTGP_D3D 0x44e9d0
 void FUN_44e9d0()
 {
-    if (surfaceIsLost(&g_surface) == DD_OK && surfaceIsLost(&g_surface2) == DD_OK && FUN_4314c0() == TRUE)
+    if (surfaceIsLost(&g_surface) == DD_OK && surfaceIsLost(&g_surface2) == DD_OK && surfaceSlotsNoneLost() == TRUE)
     {
         return;
     }
     FUN_44e4b0(1);
 }
 
-// STUB: STUNTGP_D3D 0x431510
-BOOL FUN_431510()
+// FUNCTION: STUNTGP_D3D 0x431510
+BOOL surfaceSlotsRestore()
 {
+    for (DWORD i = 0; i < g_surfaceSlotCount; i++)
+    {
+        if (g_surfaceSlots[i].surface && g_surfaceSlots[i].surface->Restore())
+        {
+            return FALSE;
+        }
+        if (g_surfaceSlots[i].surface2 && g_surfaceSlots[i].surface2->Restore())
+        {
+            return FALSE;
+        }
+    }
     return TRUE;
 }
 
@@ -260,7 +279,7 @@ void FUN_42bf00()
 // FUNCTION: STUNTGP_D3D 0x44ea10
 void FUN_44ea10()
 {
-    if (surfaceRestore(&g_surface) != DD_OK || surfaceRestore(&g_surface2) != DD_OK || FUN_431510() != TRUE)
+    if (surfaceRestore(&g_surface) != DD_OK || surfaceRestore(&g_surface2) != DD_OK || surfaceSlotsRestore() != TRUE)
     {
         FUN_44e4b0(1);
         return;

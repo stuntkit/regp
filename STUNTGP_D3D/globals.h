@@ -49,4 +49,15 @@ extern int g_DD_DISPLAYRESWIDTH;
 extern int g_DD_DISPLAYRESHEIGHT;
 extern int g_DD_DISPLAYRESDEPTH;
 extern int g_005728d8_dd;
+
+struct SurfaceSlot
+{
+    LPDIRECTDRAWSURFACE4 surface;
+    DWORD unk04;
+    LPDIRECTDRAWSURFACE4 surface2;
+    DWORD unk0c;
+};
+
+extern DWORD g_surfaceSlotCount;
+extern SurfaceSlot g_surfaceSlots[255];
 #endif /* GLOBALS_H */
