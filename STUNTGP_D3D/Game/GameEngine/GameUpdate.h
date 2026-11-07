@@ -100,7 +100,9 @@ struct Wheel
     float unk38;        // 0x0038
     BYTE unk003c[0x3c]; // 0x003c
     int unk78;          // 0x0078
-    BYTE unk007c[0x1c]; // 0x007c
+    BYTE unk007c[0x14]; // 0x007c
+    float unk90;        // 0x0090
+    float unk94;        // 0x0094
 };
 
 struct ModelMesh
@@ -273,7 +275,9 @@ struct Car
     int unk23d0;             // 0x23d0
     int unk23d4;             // 0x23d4
     int unk23d8;             // 0x23d8
-    BYTE unk23dc[0xd0];      // 0x23dc
+    BYTE unk23dc[0xc8];      // 0x23dc
+    int unk24a4;             // 0x24a4
+    BYTE unk24a8[0x4];       // 0x24a8
     int unk24ac;             // 0x24ac
     BYTE unk24b0[0x30];      // 0x24b0
     int unk24e0;             // 0x24e0
@@ -297,9 +301,14 @@ struct Car
     BYTE unk2644[0x6c];      // 0x2644
     CarModel *unk26b0;       // 0x26b0
     int unk26b4;             // 0x26b4
-    BYTE unk26b8[0x1e8];     // 0x26b8
+    BYTE unk26b8[0x94];      // 0x26b8
+    float wheelMatrix[4][16]; // 0x274c
+    BYTE unk284c[0x54];      // 0x284c
     int unk28a0;             // 0x28a0
-    BYTE unk28a4[0x18];      // 0x28a4
+    int unk28a4;             // 0x28a4
+    int unk28a8;             // 0x28a8
+    BYTE unk28ac[0xc];       // 0x28ac
+    int unk28b8;             // 0x28b8
     int unk28bc;             // 0x28bc
     Trail unk28c0;           // 0x28c0
     int unk2ad8;             // 0x2ad8
@@ -337,7 +346,7 @@ struct Car
     int unk7648;             // 0x7648
     BYTE unk764c[0x34];      // 0x764c
     DWORD unk7680;           // 0x7680
-    BYTE unk7684[0x4];       // 0x7684
+    float unk7684;           // 0x7684
     CarRace race;            // 0x7688
 };
 

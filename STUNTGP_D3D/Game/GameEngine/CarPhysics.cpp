@@ -5,6 +5,8 @@
 #include <string.h>
 
 #include "../../gametext.h"
+#include "../../vecmath.h"
+#include "game_state.h"
 
 extern float g_482678;
 extern float g_48267c;
@@ -71,13 +73,14 @@ void FUN_414c50(Car *car);
 void FUN_414ef0(Car *car);
 void FUN_4152c0(Car *car);
 
-struct CameraPath;
 CameraPath *FUN_428800(int id);
 
 extern int g_60d688[37];
 extern DWORD g_61297c;
 extern int g_60f02c[0x96];
 extern CameraPath *g_571328;
+extern float g_60e1f0[0x80];
+extern float g_60e3f0[0x80];
 
 // GLOBAL: STUNTGP_D3D 0x5712f0
 DWORD g_5712f0;
@@ -275,9 +278,18 @@ void FUN_413da0()
     g_4d5bb8->unk33cc.unk13c = 1;
 }
 
-// STUB: STUNTGP_D3D 0x414370
+// Spins each wheel by the distance it rolled this tick.
+// FUNCTION: STUNTGP_D3D 0x414370
 void FUN_414370()
 {
+    for (int i = 0; i < 4; i++)
+    {
+        float angle = -(g_4d5bb8->wheels[i].unk04 * 180.0f / (g_4d5bb8->unkcb8[i].x * 3.1415927f)) +
+                      g_4d5bb8->wheels[i].unk94;
+        g_4d5bb8->wheels[i].unk90 = g_4d5bb8->wheels[i].unk94;
+        g_4d5bb8->wheels[i].unk94 = angle;
+        Matrix_RotationX(g_4d5bb8->wheelMatrix[i], angle);
+    }
 }
 
 // STUB: STUNTGP_D3D 0x414460
@@ -310,14 +322,98 @@ void FUN_4152d0()
 {
 }
 
-// STUB: STUNTGP_D3D 0x415640
+// Fades the light mesh brightness down by 32 a tick, holding at 120 while lit.
+// FUNCTION: STUNTGP_D3D 0x415640
 void FUN_415640()
 {
+    if (g_4d5bb8->unk28a8 != 0)
+    {
+        g_4d5bb8->unk28a8 -= 32;
+        if (g_4d5bb8->unk28a8 < 0)
+        {
+            g_4d5bb8->unk28a8 = 0;
+        }
+    }
+    if (g_4d5bb8->unk28a0 == 1 && g_4d5bb8->unk28a8 < 120)
+    {
+        g_4d5bb8->unk28a8 = 120;
+    }
+    int level = g_4d5bb8->unk28a8;
+    ModelMesh *mesh = &g_4d5bb8->unk26b0->parts[g_4d5bb8->unk26b0->current]->meshes[5];
+    mesh->visible = level != 0;
+    if (level != g_4d5bb8->unk28a4)
+    {
+        g_4d5bb8->unk28a4 = level;
+        BYTE *vert = mesh->verts;
+        for (DWORD i = 0; i < mesh->vertCount; i++)
+        {
+            vert[2] = level;
+            vert[3] = 0x60;
+            vert += 8;
+        }
+    }
 }
 
-// STUB: STUNTGP_D3D 0x415770
+// FUNCTION: STUNTGP_D3D 0x4156e0
+void FUN_4156e0(Car *car)
+{
+    if (car->unk28a0 != 1)
+    {
+        car->unk28a0 = 1;
+        FUN_414ef0(car);
+        FUN_4152c0(car);
+        for (int i = 0; i < 4; i++)
+        {
+            ModelPart *part = g_4d5bb8->unk26b0->parts[i];
+            part->meshes[10].visible = 1;
+            part->meshes[5].visible = 1;
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x415730
+void FUN_415730(Car *car)
+{
+    if (car->unk28a0 != 0)
+    {
+        g_4d5bb8->unk28a0 = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            ModelPart *part = g_4d5bb8->unk26b0->parts[i];
+            part->meshes[10].visible = 0;
+            part->meshes[5].visible = 0;
+        }
+    }
+}
+
+// Switches the car lights from the track's light mask at the car's path position.
+// FUNCTION: STUNTGP_D3D 0x415770
 void FUN_415770()
 {
+    if (g_4d5bb8->unk26b0->meshCount > 10)
+    {
+        DWORD count = g_624474->count;
+        int pos = g_4d5bb8->unk24a4;
+        DWORD wrapped;
+        if (pos < 0)
+        {
+            wrapped = count - (DWORD)-pos % count;
+        }
+        else
+        {
+            wrapped = (DWORD)pos % count;
+        }
+        DWORD index = (wrapped << 7) / count;
+        if (g_60e1f0[index] != 0.0f)
+        {
+            FUN_4156e0(g_4d5bb8);
+        }
+        else
+        {
+            FUN_415730(g_4d5bb8);
+        }
+        g_4d5bb8->unk7684 = g_60e3f0[index];
+    }
 }
 
 // STUB: STUNTGP_D3D 0x415880
@@ -728,16 +824,17 @@ void FUN_4150d0()
     Car *car = g_49a1f8;
     for (int i = 0; i < 6; i++)
     {
-        car->unk28bc = 0;
-        car->unk2ad8 = 0;
+        car->unk2ad8 = car->unk28bc = 0;
         if (car->active == 1 && car->unk26b0->meshCount >= 21)
         {
+            ModelMesh *mesh = &car->unk26b0->parts[0]->meshes[21];
             car->unk28bc = 1;
-            car->unk28c0.pos = *car->unk26b0->parts[0]->meshes[21].matrix;
+            car->unk28c0.pos = *mesh->matrix;
             if (car->unk26b0->meshCount >= 22)
             {
+                mesh = &car->unk26b0->parts[0]->meshes[22];
                 car->unk2ad8 = 1;
-                car->unk2adc.pos = *car->unk26b0->parts[0]->meshes[22].matrix;
+                car->unk2adc.pos = *mesh->matrix;
             }
         }
         car++;
@@ -757,8 +854,8 @@ void FUN_4162c0()
             car->unk33cc.active = 0;
             if (car->unk26b0->meshCount > 19)
             {
-                car->unk328c.active = 1;
                 ModelPart *part = car->unk26b0->parts[car->unk26b0->current];
+                car->unk328c.active = 1;
                 car->unk328c.unk004 = part->meshes[19].matrix[0];
                 car->unk328c.unk014 = part->meshes[19].matrix[1];
                 if (part->meshes[20].visible == 1 && car->unk26b0->meshCount > 20)
@@ -789,18 +886,20 @@ void FUN_417e10()
             }
             else
             {
-                ModelMesh *mesh = &car->unk26b0->parts[car->unk26b0->current]->meshes[11];
+                ModelPart *part = car->unk26b0->parts[car->unk26b0->current];
                 float top = 0.0f;
-                for (DWORD j = 0; j < mesh->pointCount; j++)
+                DWORD count = part->meshes[11].pointCount;
+                Vec4 *points = part->meshes[11].points;
+                for (DWORD j = 0; j < count; j++)
                 {
-                    if (top < mesh->points[j].z)
+                    if (top < points[j].z)
                     {
-                        top = mesh->points[j].z;
+                        top = points[j].z;
                     }
                 }
-                car->unk3148 = mesh->matrix[2];
+                car->unk3148 = part->meshes[11].matrix[2];
                 car->unk3148.x = -car->unk3148.x;
-                car->unk3138 = mesh->matrix[0];
+                car->unk3138 = part->meshes[11].matrix[0];
                 car->unk3158 = top * 0.99f;
                 car->unk3134 = 1;
             }

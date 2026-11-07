@@ -95,6 +95,15 @@ void Matrix_Set(float *m, float m00, float m01, float m02, float m03, float m10,
     m[15] = m33;
 }
 
+// FUNCTION: STUNTGP_D3D 0x44f790
+void Matrix_RotationX(float *m, float degrees)
+{
+    int i = (int)(degrees * (8192.0f / 360.0f)) & 0x1fff;
+    float c = g_cosTable[i];
+    float s = g_sinTable[i];
+    Matrix_Set(m, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, c, s, 0.0f, 0.0f, -s, c, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+}
+
 // FUNCTION: STUNTGP_D3D 0x44f870
 void Matrix_RotationZ(float *m, float degrees)
 {
