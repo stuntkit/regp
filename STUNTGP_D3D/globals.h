@@ -60,4 +60,8 @@ struct SurfaceSlot
 
 extern DWORD g_surfaceSlotCount;
 extern SurfaceSlot g_surfaceSlots[255];
+
+// --- agent B: windowCreate ---
+extern HINSTANCE g_hInstance;
+// --- end agent B ---
 #endif /* GLOBALS_H */

@@ -97,3 +97,8 @@ DWORD g_surfaceSlotCount = 0;
 // size inferred: next referenced address is 0x5da1c0
 // GLOBAL: STUNTGP_D3D 0x5d91d0
 SurfaceSlot g_surfaceSlots[255];
+
+// --- agent B: windowCreate ---
+// GLOBAL: STUNTGP_D3D 0x61c38c
+HINSTANCE g_hInstance = NULL;
+// --- end agent B ---

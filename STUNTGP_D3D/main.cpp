@@ -154,19 +154,21 @@ void m_keyboard()
     }
 }
 
+// STUB: STUNTGP_D3D 0x4229e0
+void FUN_4229e0()
+{
+}
+
+#pragma optimize("y", off)
 // FUNCTION: STUNTGP_D3D 0x44e890
 BOOL windowCreate(HINSTANCE hInstance, HINSTANCE hPrevInstance)
 {
+    DWORD totalVideoMem;
+    DWORD totalTextureMem;
+    DWORD freeMem;
 
-    // TODO: global?
-    static HINSTANCE g_HINSTANCE = hInstance;
-
-    DWORD totalVideoMem = 0;
-    DWORD totalTextureMem = 0;
-    DWORD freeMem = 0;
-
-    const char menuName[] = "AppMenu";
-    const char className[] = "Stunt GP";
+    g_hInstance = hInstance;
+    g_61c384 = NULL;
     if (!hPrevInstance)
     {
         WNDCLASS windowInfo;
@@ -175,31 +177,36 @@ BOOL windowCreate(HINSTANCE hInstance, HINSTANCE hPrevInstance)
         windowInfo.cbClsExtra = 0;
         windowInfo.cbWndExtra = 0;
         windowInfo.hInstance = hInstance;
-        windowInfo.hIcon = LoadIcon(hInstance, IDC_ARROW);
+        windowInfo.hIcon = LoadIcon(hInstance, IDI_APPLICATION);
         windowInfo.hCursor = NULL;
         windowInfo.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);
-        windowInfo.lpszMenuName = menuName;
-        windowInfo.lpszClassName = className;
+        // STRING: STUNTGP_D3D 0x486474
+        windowInfo.lpszMenuName = "AppMenu";
+        // STRING: STUNTGP_D3D 0x48647c
+        windowInfo.lpszClassName = "Stunt GP";
         if (!RegisterClass(&windowInfo))
         {
             return FALSE;
         }
     }
+    // STRING: STUNTGP_D3D 0x486494
+    // STRING: STUNTGP_D3D 0x486488
     g_Hwnd = windowCreateInternal(hInstance, "Stunt GP", "Stunt GP");
     if (!g_Hwnd)
     {
         return FALSE;
     }
 
-    //  TODO: DirectX init
     windowDDCreate(&g_dd, NULL, g_Hwnd);
     ddGetDD4(g_dd, &g_dd4, g_Hwnd);
     ddGetMemory(g_dd4, &totalVideoMem, &totalTextureMem, &freeMem);
-    // FUN_4229e0();
+    FUN_4229e0();
     FUN_422f30(g_dd4, &g_surface, &g_surface2, 640, 480, 8);
     m_keyboard();
-    return !FUN_4230b0(g_61c384, g_571fd4);
+    return !FUN_4230b0(g_61c384, &g_571fd4);
 }
+
+#pragma optimize("", on)
 
 // FUNCTION: STUNTGP_D3D 0x44e9b0
 HRESULT surfaceIsLost(LPDIRECTDRAWSURFACE4 *surface)
