@@ -326,7 +326,10 @@ struct MenuState
     int unk1a6a8; // 0x1a6a8
     BYTE unk1a6ac[0x1a6b0 - 0x1a6ac];
     MenuRecord unk1a6b0[64]; // 0x1a6b0, count unknown
-    BYTE unk1c7b0[0x1dae4 - 0x1c7b0];
+    BYTE unk1c7b0[0x1da90 - 0x1c7b0];
+    int unk1da90[4][2];  // 0x1da90
+    MenuSlot unk1dab0[4]; // 0x1dab0, sorted by FUN_44d070
+    BYTE unk1dae0[0x1dae4 - 0x1dae0];
     int unk1dae4; // 0x1dae4
 };
 

@@ -1300,6 +1300,28 @@ int FUN_437490(int track)
     return 0;
 }
 
+// Sorts tracks by FUN_437490 rank.
+// FUNCTION: STUNTGP_D3D 0x4375a0
+int FUN_4375a0(int *tracks, int count)
+{
+    for (int i = count - 1; i >= 0; i--)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            int b = tracks[j + 1];
+            int a = tracks[j];
+            int rb = FUN_437490(b);
+            int ra = FUN_437490(a);
+            if (ra > rb)
+            {
+                tracks[j] = b;
+                tracks[j + 1] = a;
+            }
+        }
+    }
+    return 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x437620
 int FUN_437620(int track)
 {

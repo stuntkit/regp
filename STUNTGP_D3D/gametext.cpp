@@ -640,6 +640,31 @@ void FUN_445800()
     }
 }
 
+extern int g_frameCount;
+void FUN_432a60();
+void FUN_433ee0();
+void FUN_4328c0(int color);
+void FUN_42e420();
+void FUN_442a00();
+void FUN_442a20();
+void FUN_431a80();
+void FUN_433f20();
+
+// FUNCTION: STUNTGP_D3D 0x4458b0
+void FUN_4458b0()
+{
+    g_frameCount++;
+    FUN_432a60();
+    FUN_433ee0();
+    FUN_4328c0(0);
+    FUN_42e420();
+    FUN_442a00();
+    FUN_445800();
+    FUN_442a20();
+    FUN_431a80();
+    FUN_433f20();
+}
+
 // FUNCTION: STUNTGP_D3D 0x4458f0
 void FUN_4458f0()
 {

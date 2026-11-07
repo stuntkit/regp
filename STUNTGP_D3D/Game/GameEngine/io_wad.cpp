@@ -435,6 +435,20 @@ void FUN_44cd10(int track, Initials *name, int time0, int time1, int score2, int
     FUN_437d20(&g_menuState.unk1a1c[track][3], name, score3);
 }
 
+void FUN_44d070(MenuSlot *slots, int count);
+
+// FUNCTION: STUNTGP_D3D 0x44d030
+void FUN_44d030()
+{
+    for (int i = 0; i < g_menuState.unk423c; i++)
+    {
+        g_menuState.unk1dab0[i].unk00 = i;
+        g_menuState.unk1dab0[i].unk04 = g_menuState.unk1da90[i][0];
+        g_menuState.unk1dab0[i].unk08 = g_menuState.unk1da90[i][1];
+    }
+    FUN_44d070(g_menuState.unk1dab0, g_menuState.unk423c);
+}
+
 // Bubble sort, highest unk04 first, then unk08.
 // FUNCTION: STUNTGP_D3D 0x44d070
 void FUN_44d070(MenuSlot *slots, int count)
