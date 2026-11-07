@@ -115,6 +115,16 @@ struct GameSlot
     SlotEvent events[8];  // 0x4ac
 };
 
+// Level box: an axis frame (position, scale, V, N) with a sound/EAX zone id.
+struct SoundZone
+{
+    int id;           // 0x00
+    int unk04;        // 0x04
+    float bounds[16]; // 0x08
+};
+
+extern SoundZone g_483f98[32];
+
 // Device-specific input snapshot, copied verbatim from InputDevice to Controller.
 struct InputState
 {

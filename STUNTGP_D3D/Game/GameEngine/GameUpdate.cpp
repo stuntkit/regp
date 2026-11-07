@@ -30,16 +30,9 @@ int g_61294c;
 // GLOBAL: STUNTGP_D3D 0x612954
 DWORD g_612954;
 
-struct SoundZone
-{
-    int id;           // 0x00
-    int unk04;        // 0x04
-    float bounds[16]; // 0x08
-};
-
 // Entry 0 is the fallback zone; the list ends at id -1.
 // GLOBAL: STUNTGP_D3D 0x483f98
-SoundZone g_483f98[2] = {
+SoundZone g_483f98[32] = {
     {0, 0, {1000.0f, 1000.0f, 1000.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f}},
     {-1},
 };
