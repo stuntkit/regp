@@ -365,11 +365,12 @@ struct Car
     float unk1c0c[16];        // 0x1c0c
     float unk1c4c[16];        // 0x1c4c
     Vec4 unk1c8c;             // 0x1c8c
-    BYTE unk1c9c[0x20];       // 0x1c9c
+    Vec4 unk1c9c;             // 0x1c9c
+    Vec4 unk1cac;             // 0x1cac
     Vec4 axisX;               // 0x1cbc
     Vec4 axisY;               // 0x1ccc
     Vec4 axisZ;               // 0x1cdc
-    BYTE unk1cec[0x4];        // 0x1cec
+    float unk1cec;            // 0x1cec
     float unk1cf0;            // 0x1cf0
     float unk1cf4;            // 0x1cf4
     float unk1cf8;            // 0x1cf8
@@ -475,7 +476,9 @@ struct Car
     int unk24a4;              // 0x24a4
     int unk24a8;              // 0x24a8
     int unk24ac;              // 0x24ac
-    BYTE unk24b0[0x30];       // 0x24b0
+    BYTE unk24b0[0x10];       // 0x24b0
+    Vec4 unk24c0;             // 0x24c0
+    BYTE unk24d0[0x10];       // 0x24d0
     int unk24e0;              // 0x24e0
     int unk24e4;              // 0x24e4
     int unk24e8;              // 0x24e8
@@ -606,7 +609,7 @@ struct Car
     BYTE unk761c[0x10];       // 0x761c
     int unk762c;              // 0x762c
     int unk7630;              // 0x7630
-    BYTE unk7634[0x4];        // 0x7634
+    unsigned int unk7634;     // 0x7634
     int unk7638;              // 0x7638
     int unk763c;              // 0x763c
     int unk7640;              // 0x7640

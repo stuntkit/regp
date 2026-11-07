@@ -869,6 +869,16 @@ void FUN_41a370()
     g_4d5bb8->unk1cfc = (g_570ac4->unk20 - g_4d5cb8->unk20) * g_570ac0->unk08 + g_4d5cb8->unk20;
 }
 
+// FUNCTION: STUNTGP_D3D 0x41a3c0
+void FUN_41a3c0()
+{
+    for (unsigned int i = 0; i < 4; i++)
+    {
+        float prev = g_4d5cb8->unk1c[i] * 0.5f;
+        g_4d5bb8->unk2240[i] = (g_570ac4->unk1c[i] * 0.5f - prev) * g_570ac0->unk08 + prev;
+    }
+}
+
 void FUN_40c160();
 
 // FUNCTION: STUNTGP_D3D 0x41a780
