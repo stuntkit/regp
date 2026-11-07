@@ -37,7 +37,9 @@ struct CameraPreset
 
 struct Fader
 {
-    BYTE unk00[0x10]; // 0x00
+    float x;          // 0x00
+    float y;          // 0x04
+    BYTE unk08[0x8];  // 0x08
     int active;       // 0x10
     float value;      // 0x14
     float target;     // 0x18
@@ -48,7 +50,7 @@ struct SlotFx
 {
     int unk000;       // 0x000
     int delay;        // 0x004
-    Fader faders[9];  // 0x008
+    Fader faders[18]; // 0x008
 };
 
 struct SlotEvent
@@ -172,7 +174,7 @@ struct GameSlot
     int fadeTo;           // 0x208
     float fadeScale;      // 0x20c
     SlotFx fx;            // 0x210
-    BYTE unk35c[0x150];   // 0x35c
+    BYTE unk4a0[0xc];     // 0x4a0
     SlotEvent events[8];  // 0x4ac
 };
 
@@ -241,6 +243,10 @@ extern int g_DisableFramerateCorrection;
 extern int g_60f2c0;
 extern DWORD g_60f2c4;
 extern int g_61294c;
+extern DWORD g_612990;
+extern int g_473a24;
+extern float g_4d5b18;
+extern int g_4d5b1c;
 extern int g_61299c;
 extern int g_61b634;
 extern DWORD g_612954;

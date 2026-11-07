@@ -65,7 +65,7 @@ float g_4d5b18;
 int g_4d5b1c;
 
 // GLOBAL: STUNTGP_D3D 0x612990
-int g_612990;
+DWORD g_612990;
 
 // GLOBAL: STUNTGP_D3D 0x61299c
 int g_61299c;

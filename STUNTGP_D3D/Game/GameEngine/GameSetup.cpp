@@ -101,7 +101,7 @@ int g_612988;
 // GLOBAL: STUNTGP_D3D 0x61298c
 int g_61298c;
 
-extern int g_612990;
+extern DWORD g_612990;
 
 // GLOBAL: STUNTGP_D3D 0x612998
 int g_612998;

@@ -357,24 +357,187 @@ void FUN_431830(int a)
 {
 }
 
-// STUB: STUNTGP_D3D 0x4473f0
-void FUN_4473f0()
-{
-}
-
 // STUB: STUNTGP_D3D 0x449fb0
 void FUN_449fb0()
 {
 }
 
-// STUB: STUNTGP_D3D 0x40de80
-void FUN_40de80()
+// STUB: STUNTGP_D3D 0x430d40
+void FUN_430d40(int a, int b)
 {
 }
 
-// STUB: STUNTGP_D3D 0x40df90
+// STUB: STUNTGP_D3D 0x448110
+void FUN_448110()
+{
+}
+
+// STUB: STUNTGP_D3D 0x447100
+void FUN_447100()
+{
+}
+
+// STUB: STUNTGP_D3D 0x447280
+void FUN_447280(float x, float y, float width, float height)
+{
+}
+
+// STUB: STUNTGP_D3D 0x446c20
+void FUN_446c20(float x, float y)
+{
+}
+
+// STUB: STUNTGP_D3D 0x446d90
+void FUN_446d90(int value, float x, float y, float width, float height)
+{
+}
+
+// GLOBAL: STUNTGP_D3D 0x6244fc
+int g_6244fc;
+
+// GLOBAL: STUNTGP_D3D 0x624500
+int g_624500;
+
+// GLOBAL: STUNTGP_D3D 0x61b74c
+int g_61b74c;
+
+// GLOBAL: STUNTGP_D3D 0x61b754
+int g_61b754;
+
+// GLOBAL: STUNTGP_D3D 0x485198
+int g_485198;
+
+// FUNCTION: STUNTGP_D3D 0x4473f0
+void FUN_4473f0()
+{
+    float width;
+    float x;
+
+    if (g_612bf4 == 1 || g_612958 == 1)
+    {
+        return;
+    }
+    if (g_61294c != 1)
+    {
+        g_61b754 = 0;
+        g_61b74c = 0;
+        return;
+    }
+    if (!g_61b754)
+    {
+        FUN_430d40(15, 0x1a);
+        g_61b754 = 1;
+    }
+    FUN_447100();
+    switch (g_4835e0)
+    {
+    case 4:
+    case 6:
+        width = 323.2f;
+        break;
+    default:
+        width = 256.0f;
+        break;
+    }
+    x = (640.0f - width) * 0.5f;
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.x = x;
+    g_spriteDesc.y = 120.0f;
+    g_spriteDesc.z = 0.96f;
+    if (!g_61b754)
+    {
+        g_spriteDesc.u0 = 952.0f;
+        g_spriteDesc.v0 = 800.0f;
+        g_spriteDesc.u1 = 1016.0f;
+        g_spriteDesc.v1 = 864.0f;
+        g_spriteDesc.texture = 11;
+        FUN_447280(x, 120.0f, width, 240.0f);
+    }
+    else
+    {
+        g_spriteDesc.u0 = 0.0f;
+        g_spriteDesc.v0 = 0.0f;
+        g_spriteDesc.u1 = 1024.0f;
+        g_spriteDesc.v1 = 1024.0f;
+        g_spriteDesc.texture = 15;
+    }
+    g_spriteDesc.width = width;
+    g_spriteDesc.height = 240.0f;
+    g_spriteDesc.blendMode = 0x20;
+    FUN_432e00(&g_spriteDesc);
+    if (!g_61b754)
+    {
+        g_spriteDesc.flags = 2;
+        g_spriteDesc.x = (width - 65.0f) * 0.5f + x;
+        g_spriteDesc.y = 136.0f;
+        g_spriteDesc.z = 0.99f;
+        g_spriteDesc.u0 = 320.0f;
+        g_spriteDesc.v0 = 644.0f;
+        g_spriteDesc.u1 = 580.0f;
+        g_spriteDesc.v1 = 732.0f;
+        g_spriteDesc.width = 65.0f;
+        g_spriteDesc.height = 22.0f;
+        g_spriteDesc.texture = 14;
+        g_spriteDesc.blendMode = 0x20;
+        FUN_432e00(&g_spriteDesc);
+    }
+    FUN_446c20(x, 120.0f);
+    x = width - 64.0f - 12.0f - 12.8f + x + 12.8f;
+    FUN_446d90(g_sfxSetting, x, 255.2f, 64.0f, 12.0f);
+    FUN_446d90(g_musicSetting, x, 275.2f, 64.0f, 12.0f);
+    if (g_485198 == 1)
+    {
+        FUN_446d90(g_61297c, x, 295.2f, 64.0f, 12.0f);
+    }
+    if (g_61b744)
+    {
+        FUN_4291f0(g_6127a0[98 + g_61b744->unk01c], 1, 320.0f, 80.0f, 0.98f, 0xffff00, 2.0f, 6);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x40de80
+void FUN_40de80()
+{
+    if (g_473a24 > 300)
+    {
+        return;
+    }
+    if (!g_4d5b1c)
+    {
+        g_4d5b1c = 1;
+        FUN_430d40(11, 0x1c);
+        FUN_430d40(14, 0x1d);
+        FUN_448110();
+        return;
+    }
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.x = g_61b740->faders[1].x - 48.0f;
+    g_spriteDesc.y = g_61b740->faders[1].y - 80.0f - g_4d5b18;
+    g_spriteDesc.z = 0.97f;
+    g_spriteDesc.u0 = 0.0f;
+    g_spriteDesc.v0 = 0.0f;
+    g_spriteDesc.u1 = 1024.0f;
+    g_spriteDesc.v1 = 1024.0f;
+    g_spriteDesc.width = 200.0f;
+    g_spriteDesc.height = 200.0f;
+    g_spriteDesc.texture = 14;
+    g_spriteDesc.blendMode = 0x70;
+    g_spriteDesc.alpha = 0xff;
+    FUN_432e00(&g_spriteDesc);
+    g_spriteDesc.texture = 11;
+    g_spriteDesc.blendMode = 0x58;
+    FUN_432e00(&g_spriteDesc);
+}
+
+// FUNCTION: STUNTGP_D3D 0x40df90
 void FUN_40df90()
 {
+    DWORD color;
+
+    FUN_428f70(1);
+    color = g_612990 % 60 < 20 ? 0xff404000 : 0xffffff00;
+    FUN_4291f0(g_6127a0[95], 1, g_6244fc + 320.0f, 448.0f - g_624500, 0.99f, color, 2.0f, 6);
+    FUN_4291f0(g_6127a0[104], 1, g_6244fc + 320.0f, g_624500, 0.99f, color, 2.0f, 6);
 }
 
 // FUNCTION: STUNTGP_D3D 0x442500
