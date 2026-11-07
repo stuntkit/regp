@@ -132,7 +132,7 @@ struct Body
     float mat2[16];        // 0x0c8
     BYTE unk108[0x34];     // 0x108
     DWORD numPoints;       // 0x13c
-    BYTE unk140[0x4];      // 0x140
+    float unk140;          // 0x140
     BodyPoint points[8];   // 0x144
 };
 
@@ -160,7 +160,10 @@ struct Car
     float unk248;            // 0x0248
     BYTE unk024c[0x8];       // 0x024c
     float unk254;            // 0x0254
-    BYTE unk0258[0xa48];     // 0x0258
+    BYTE unk0258[0xa1c];     // 0x0258
+    unsigned int unkc74;     // 0x0c74
+    int unkc78;              // 0x0c78
+    BYTE unk0c7c[0x24];      // 0x0c7c
     float unkca0;            // 0x0ca0
     BYTE unk0ca4[0x14];      // 0x0ca4
     Vector4 unkcb8[4];       // 0x0cb8
@@ -174,7 +177,9 @@ struct Car
     float unkf74;            // 0x0f74
     float unkf78;            // 0x0f78
     float unkf7c;            // 0x0f7c
-    BYTE unk0f80[0xc28];     // 0x0f80
+    BYTE unk0f80[0xc20];     // 0x0f80
+    float unk1ba0;           // 0x1ba0
+    float unk1ba4;           // 0x1ba4
     int active;              // 0x1ba8
     float posX;              // 0x1bac
     float posY;              // 0x1bb0
@@ -193,9 +198,11 @@ struct Car
     BYTE unk1d00[0x208];     // 0x1d00
     float unk1f08;           // 0x1f08
     BYTE unk1f0c[0x4];       // 0x1f0c
-    int unk1f10;             // 0x1f10
+    unsigned int unk1f10;    // 0x1f10
     float unk1f14;           // 0x1f14
-    BYTE unk1f18[0xb8];      // 0x1f18
+    BYTE unk1f18[0x4];       // 0x1f18
+    int unk1f1c;             // 0x1f1c
+    BYTE unk1f20[0xb0];      // 0x1f20
     float unk1fd0;           // 0x1fd0
     BYTE unk1fd4[0x4];       // 0x1fd4
     int unk1fd8;             // 0x1fd8
@@ -218,7 +225,8 @@ struct Car
     int unk22b4;             // 0x22b4
     BYTE unk22b8[0x4];       // 0x22b8
     int unk22bc;             // 0x22bc
-    BYTE unk22c0[0x8];       // 0x22c0
+    BYTE unk22c0[0x4];       // 0x22c0
+    float unk22c4;           // 0x22c4
     int unk22c8;             // 0x22c8
     BYTE unk22cc[0x10];      // 0x22cc
     float unk22dc;           // 0x22dc
@@ -304,9 +312,19 @@ struct Car
     int unk3924;             // 0x3924
     BYTE unk3928[0x38c4];    // 0x3928
     int unk71ec;             // 0x71ec
-    BYTE unk71f0[0xc];       // 0x71f0
+    int unk71f0;             // 0x71f0
+    BYTE unk71f4[0x8];       // 0x71f4
     unsigned int unk71fc;    // 0x71fc
-    BYTE unk7200[0x68];      // 0x7200
+    BYTE unk7200[0x14];      // 0x7200
+    float unk7214;           // 0x7214
+    float unk7218;           // 0x7218
+    BYTE unk721c[0x8];       // 0x721c
+    float unk7224;           // 0x7224
+    float unk7228;           // 0x7228
+    float unk722c;           // 0x722c
+    BYTE unk7230[0x4];       // 0x7230
+    DWORD unk7234;           // 0x7234
+    BYTE unk7238[0x30];      // 0x7238
     unsigned short *unk7268; // 0x7268
     BYTE unk726c[0x4];       // 0x726c
     Body body;               // 0x7270
