@@ -126,12 +126,12 @@ void FUN_401770()
 void FUN_4023f0()
 {
     GameSlot *slot = g_4722d0;
-    slot->unk0d8 = 0;
-    slot->unk0dc = 0;
-    slot->unk0e0 = 0;
-    slot->unk104 = 0;
-    slot->unk108 = 0;
-    slot->unk10c = 0;
+    slot->accelX = 0;
+    slot->accelY = 0;
+    slot->accelZ = 0;
+    slot->angAccelX = 0;
+    slot->angAccelY = 0;
+    slot->angAccelZ = 0;
 }
 
 // STUB: STUNTGP_D3D 0x402950
@@ -488,7 +488,7 @@ void FUN_446110()
     int searching = 1;
     for (SoundZone *zone = &g_483f98[1]; zone->id != -1 && searching == 1; zone++)
     {
-        if (FUN_4278a0(zone->bounds, &g_4722d0->unk008) == 1)
+        if (FUN_4278a0(zone->bounds, &g_4722d0->cam.pos.x) == 1)
         {
             found = zone;
             searching = 0;

@@ -3,14 +3,35 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-struct GameSlotData
+struct Vec4
 {
-    BYTE unk0000[0x23c4]; // 0x0000
-    int unk23c4;          // 0x23c4
-    BYTE unk23c8[0x118];  // 0x23c8
-    int unk24e0;          // 0x24e0
-    BYTE unk24e4[0x5164]; // 0x24e4
-    int unk7648;          // 0x7648
+    float x; // 0x00
+    float y; // 0x04
+    float z; // 0x08
+    float w; // 0x0c
+};
+
+struct Camera
+{
+    Vec4 pos;     // 0x00
+    Vec4 scale;   // 0x10
+    Vec4 target;  // 0x20
+    Vec4 up;      // 0x30
+    int unk40;    // 0x40
+    Vec4 *unk44;  // 0x44
+    Vec4 *matrix; // 0x48
+    int unk4c;    // 0x4c
+};
+
+// Preset a GameSlot camera is reset to (GameSlot::preset).
+struct CameraPreset
+{
+    Vec4 pos;    // 0x00
+    Vec4 target; // 0x10
+    Vec4 up;     // 0x20
+    float fov;   // 0x30
+    int unk34;   // 0x34
+    float roll;  // 0x38
 };
 
 struct Fader
@@ -37,16 +58,28 @@ struct SlotEvent
     BYTE unk0c[0x48]; // 0x0c
 };
 
-// One of the four per-player blocks at 0x498248 (0x74c bytes each).
+// 6 entries at 0x49a1f8
 struct Car
 {
     BYTE unk0000[0xf78];  // 0x0000
     int unkf78;           // 0x0f78
     BYTE unkf7c[0xc2c];   // 0x0f7c
     int active;           // 0x1ba8
-    BYTE unk1bac[0x6c4];  // 0x1bac
+    float posX;           // 0x1bac
+    float posY;           // 0x1bb0
+    float posZ;           // 0x1bb4
+    BYTE unk1bb8[0x6b8];  // 0x1bb8
     int unk2270;          // 0x2270
-    BYTE unk2274[0x2f4];  // 0x2274
+    BYTE unk2274[0x68];   // 0x2274
+    float unk22dc;        // 0x22dc
+    float unk22e0;        // 0x22e0
+    float unk22e4;        // 0x22e4
+    BYTE unk22e8[0xdc];   // 0x22e8
+    int unk23c4;          // 0x23c4
+    BYTE unk23c8[0x118];  // 0x23c8
+    int unk24e0;          // 0x24e0
+    int unk24e4;          // 0x24e4
+    BYTE unk24e8[0x80];   // 0x24e8
     int unk2568;          // 0x2568
     int unk256c;          // 0x256c
     int unk2570;          // 0x2570
@@ -56,39 +89,66 @@ struct Car
     int unk26b4;          // 0x26b4
     BYTE unk26b8[0x4bb0]; // 0x26b8
     short *unk7268;       // 0x7268
-    BYTE unk726c[0x4b8];  // 0x726c
+    BYTE unk726c[0x3dc];  // 0x726c
+    int unk7648;          // 0x7648
+    BYTE unk764c[0x3c];   // 0x764c
+    DWORD unk7688;        // 0x7688
+    BYTE unk768c[0x14];   // 0x768c
+    int unk76a0;          // 0x76a0
+    int unk76a4;          // 0x76a4
+    BYTE unk76a8[0xc];    // 0x76a8
+    DWORD unk76b4;        // 0x76b4
+    BYTE unk76b8[0x6c];   // 0x76b8
 };
 
+// One of the four per-player blocks at 0x498248 (0x74c bytes each).
 struct GameSlot
 {
-    int active;           // 0x000
-    int unk004;           // 0x004
-    float unk008;         // 0x008
-    float unk00c;         // 0x00c
-    float unk010;         // 0x010
-    BYTE unk014[0x78];    // 0x014
-    float unk08c;         // 0x08c
-    float unk090;         // 0x090
-    float unk094;         // 0x094
-    int unk098;           // 0x098
-    float unk09c;         // 0x09c
-    float unk0a0;         // 0x0a0
-    float unk0a4;         // 0x0a4
-    int unk0a8;           // 0x0a8
-    GameSlotData *data;   // 0x0ac
-    BYTE unk0b0[0x14];    // 0x0b0
-    float unk0c4;         // 0x0c4
-    float unk0c8;         // 0x0c8
-    float unk0cc;         // 0x0cc
-    BYTE unk0d0[0x8];     // 0x0d0
-    int unk0d8;           // 0x0d8
-    int unk0dc;           // 0x0dc
-    int unk0e0;           // 0x0e0
-    BYTE unk0e4[0x20];    // 0x0e4
-    int unk104;           // 0x104
-    int unk108;           // 0x108
-    int unk10c;           // 0x10c
-    BYTE unk110[0xd8];    // 0x110
+    int active;            // 0x000
+    int camMode;           // 0x004
+    Camera cam;            // 0x008
+    BYTE unk058[0x20];     // 0x058
+    float roll;            // 0x078
+    Vec4 axisX;            // 0x07c
+    Vec4 axisY;            // 0x08c
+    Vec4 axisZ;            // 0x09c
+    Car *data;             // 0x0ac
+    float fov;             // 0x0b0
+    float unk0b4;          // 0x0b4
+    float unk0b8;          // 0x0b8
+    float unk0bc;          // 0x0bc
+    float unk0c0;          // 0x0c0
+    float velX;            // 0x0c4
+    float velY;            // 0x0c8
+    float velZ;            // 0x0cc
+    BYTE unk0d0[0x4];      // 0x0d0
+    float speed;           // 0x0d4
+    float accelX;          // 0x0d8
+    float accelY;          // 0x0dc
+    float accelZ;          // 0x0e0
+    BYTE unk0e4[0x4];      // 0x0e4
+    DWORD angX;            // 0x0e8
+    DWORD angY;            // 0x0ec
+    DWORD angZ;            // 0x0f0
+    float angVelX;         // 0x0f4
+    float angVelY;         // 0x0f8
+    float angVelZ;         // 0x0fc
+    BYTE unk100[0x4];      // 0x100
+    float angAccelX;       // 0x104
+    float angAccelY;       // 0x108
+    float angAccelZ;       // 0x10c
+    BYTE unk110[0x90];     // 0x110
+    float fov2;            // 0x1a0
+    int unk1a4;            // 0x1a4
+    void *unk1a8;          // 0x1a8
+    BYTE unk1ac[0x20];     // 0x1ac
+    CameraPreset *unk1cc;  // 0x1cc
+    BYTE unk1d0[0x4];      // 0x1d0
+    int unk1d4;            // 0x1d4
+    CameraPreset *preset;  // 0x1d8
+    int presetMode;        // 0x1dc
+    int fovPending;        // 0x1e0
+    float fovNext;         // 0x1e4
     int fadeActive;       // 0x1e8
     int fadeTime;         // 0x1ec
     int fadeValue;        // 0x1f0
