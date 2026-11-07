@@ -68,6 +68,41 @@ int g_61299c;
 
 void FUN_441e20();
 
+struct AnimObject
+{
+    int type;         // 0x00
+    float rotX;       // 0x04
+    float rotY;       // 0x08
+    float rotZ;       // 0x0c
+    int unk10;        // 0x10
+    float spinX;      // 0x14
+    float spinY;      // 0x18
+    float spinZ;      // 0x1c
+    BYTE unk20[0x18]; // 0x20
+    int angleA;       // 0x38
+    int angleB;       // 0x3c
+    BYTE unk40[0x8];  // 0x40
+};
+
+struct ObjectDef
+{
+    BYTE unk00[0x40]; // 0x00
+};
+
+struct Scene
+{
+    BYTE unk00[0x24];   // 0x00
+    DWORD objectCount;  // 0x24
+    BYTE unk28[0x20];   // 0x28
+    ObjectDef *objects; // 0x48
+};
+
+// GLOBAL: STUNTGP_D3D 0x576cd0
+AnimObject g_576cd0[32];
+
+// GLOBAL: STUNTGP_D3D 0x636448
+Scene *g_636448;
+
 // --- per-tick game logic ---
 
 // STUB: STUNTGP_D3D 0x401770
@@ -168,9 +203,109 @@ int FUN_4278a0(float *bounds, float *point)
     return 0;
 }
 
-// STUB: STUNTGP_D3D 0x427140
+// FUNCTION: STUNTGP_D3D 0x427010
+void FUN_427010(AnimObject *obj)
+{
+    obj->angleA = (obj->angleA + 0x80) & 0x1fff;
+}
+
+// FUNCTION: STUNTGP_D3D 0x427030
+void FUN_427030(AnimObject *obj, int step)
+{
+    obj->angleA = (obj->angleA - step) & 0x1fff;
+}
+
+// FUNCTION: STUNTGP_D3D 0x427040
+void FUN_427040(AnimObject *obj, int step)
+{
+    obj->angleB = (obj->angleB - step) & 0x1fff;
+}
+
+// FUNCTION: STUNTGP_D3D 0x427050
+void FUN_427050(AnimObject *obj, ObjectDef *def)
+{
+    float dx = obj->spinX * (1.0f / 60.0f);
+    float dy = obj->spinY * (1.0f / 60.0f);
+    float dz = obj->spinZ * (1.0f / 60.0f);
+    float x = obj->rotX += dx;
+    float y = obj->rotY += dy;
+    float z = obj->rotZ += dz;
+    if (x < 0.0f)
+    {
+        obj->rotX = x + 360.0f;
+    }
+    else if (x > 360.0f)
+    {
+        obj->rotX = x - 360.0f;
+    }
+    if (y < 0.0f)
+    {
+        obj->rotY = y + 360.0f;
+    }
+    else if (y > 360.0f)
+    {
+        obj->rotY = y - 360.0f;
+    }
+    if (z < 0.0f)
+    {
+        obj->rotZ = z + 360.0f;
+    }
+    else if (z > 360.0f)
+    {
+        obj->rotZ = z - 360.0f;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x427140
 void FUN_427140()
 {
+    Scene *scene = g_636448;
+    if (scene && scene->objectCount > 1)
+    {
+        for (DWORD i = 1; i < scene->objectCount; i++)
+        {
+            switch (g_576cd0[i].type)
+            {
+            case 1:
+                FUN_427010(&g_576cd0[i]);
+                break;
+            case 3:
+                FUN_427030(&g_576cd0[i], -0x100);
+                break;
+            case 4:
+                FUN_427050(&g_576cd0[i], &scene->objects[i]);
+                break;
+            case 16:
+                FUN_427050(&g_576cd0[i], &scene->objects[i]);
+                FUN_427030(&g_576cd0[i], 0x80);
+                FUN_427040(&g_576cd0[i], 0x2a);
+                break;
+            case 2:
+            case 8:
+            case 9:
+                FUN_427030(&g_576cd0[i], 0x100);
+                break;
+            case 5:
+            case 6:
+            case 10:
+                FUN_427030(&g_576cd0[i], 0x40);
+                break;
+            case 11:
+                FUN_427030(&g_576cd0[i], 0x80);
+                break;
+            case 12:
+                FUN_427030(&g_576cd0[i], 8);
+                break;
+            case 13:
+                FUN_427030(&g_576cd0[i], 0x10);
+                break;
+            case 7:
+            case 14:
+                FUN_427030(&g_576cd0[i], 0x20);
+                break;
+            }
+        }
+    }
 }
 
 // --- fpu ---
