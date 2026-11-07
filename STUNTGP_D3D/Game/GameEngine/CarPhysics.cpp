@@ -571,6 +571,23 @@ void FUN_40bc30(char *text)
     Script_GetInt(section, "Horn", (int *)&g_4d5bb8->race.unk80[0]);
 }
 
+// FUNCTION: STUNTGP_D3D 0x40bcb0
+void FUN_40bcb0(char *text)
+{
+    // STRING: STUNTGP_D3D 0x473870
+    char *section = strstr(text, "-STUNT[] =");
+    // STRING: STUNTGP_D3D 0x47387c
+    Script_GetFloat(section, "LaunchTime", &g_4d5bb8->unk1b94);
+    // STRING: STUNTGP_D3D 0x473888
+    Script_GetFloat(section, "LaunchTolerance", &g_4d5bb8->unk1b98);
+    // STRING: STUNTGP_D3D 0x473898
+    Script_GetFloat(section, "LaunchSpd", &g_4d5bb8->unk1b9c);
+    // STRING: STUNTGP_D3D 0x4738a4
+    Script_GetFloat(section, "MaxRotSpd_X", &g_4d5bb8->unk1ba0);
+    // STRING: STUNTGP_D3D 0x4738b0
+    Script_GetFloat(section, "MaxRotSpd_Y", &g_4d5bb8->unk1ba4);
+}
+
 // FUNCTION: STUNTGP_D3D 0x40bf20
 void FUN_40bf20()
 {
@@ -1430,6 +1447,28 @@ void FUN_40eba0()
         {
             g_4d5bb8->unk1cfc *= 0.8f;
         }
+    }
+}
+
+void FUN_4057e0(Car *car, float *v);
+
+// FUNCTION: STUNTGP_D3D 0x40eca0
+void FUN_40eca0(float v)
+{
+    unsigned int i = v * 128.0f / g_4d5bb8->unkd64;
+    if (i >= 128)
+    {
+        i = 127;
+    }
+    v = g_4d5bb8->unkf84[i] * g_4d5bb8->unkf70;
+    if (g_4d5bb8->unk2640 == 1)
+    {
+        FUN_4057e0(g_4d5bb8, &v);
+    }
+    g_4d5bb8->unk2570 -= v * g_4d5bb8->unk2574 / g_4d5bb8->unkf78;
+    if (g_4d5bb8->unk2570 < 0.0f)
+    {
+        g_4d5bb8->unk2570 = 0;
     }
 }
 
