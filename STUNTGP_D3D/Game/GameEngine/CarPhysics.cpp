@@ -124,6 +124,16 @@ GameSlot *FUN_402590(Car *car)
     return NULL;
 }
 
+void FUN_404310(Car *car);
+
+// FUNCTION: STUNTGP_D3D 0x4026e0
+void FUN_4026e0(int slot, Car *car)
+{
+    g_498248[slot].data = car;
+    g_498248[slot].active = 1;
+    FUN_404310(car);
+}
+
 // FUNCTION: STUNTGP_D3D 0x405350
 void FUN_405350()
 {
@@ -3305,6 +3315,17 @@ void FUN_41d1f0(Stat *stat, float value)
     stat->last = value;
     stat->sum = value + stat->sum;
     stat->mean = stat->sum / stat->count;
+}
+
+// FUNCTION: STUNTGP_D3D 0x41d230
+void FUN_41d230()
+{
+    Car *car = g_4d5bb8;
+    float d = car->unk723c - car->unk7238;
+    if (d >= 0.0f)
+    {
+        FUN_41d1f0(&car->unk25b4, d);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x41d270

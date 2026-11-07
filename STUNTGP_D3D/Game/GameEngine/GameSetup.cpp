@@ -356,6 +356,16 @@ void FUN_4192d0()
     g_4d5ca0 = 0;
 }
 
+CameraPath *FUN_428800(int id);
+void FUN_418b10();
+
+// FUNCTION: STUNTGP_D3D 0x4192f0
+void FUN_4192f0()
+{
+    g_4d5c9c = (int)FUN_428800(2);
+    FUN_418b10();
+}
+
 void FUN_40bde0();
 void FUN_41d300();
 void FUN_413450();
@@ -422,6 +432,17 @@ void FUN_4190b0(Car *car, unsigned int percent)
     {
         car->unk2570 = car->unk2574;
     }
+}
+
+void FUN_442cf0(int frames, char *text, Car *car, int mode, int clear);
+
+// FUNCTION: STUNTGP_D3D 0x419180
+void FUN_419180()
+{
+    char text[64];
+    // STRING: STUNTGP_D3D 0x47468c
+    sprintf(text, "%s %s\n", g_60f02c[g_4d5bb8 - g_49a1f8].name, g_6127a0[23]);
+    FUN_442cf0(180, text, g_4d5bb8, 1, 0);
 }
 
 // FUNCTION: STUNTGP_D3D 0x4199a0

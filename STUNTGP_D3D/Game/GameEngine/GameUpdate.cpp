@@ -904,6 +904,23 @@ void FUN_41a820()
     }
 }
 
+extern float g_482670;
+
+// FUNCTION: STUNTGP_D3D 0x41a860
+void FUN_41a860()
+{
+    Car *car = g_4d5bb8;
+    BYTE flag = g_570ac4->flags & 0x20;
+    for (int i = 0; i < 4; i++)
+    {
+        car->wheels[i].unk80 = car->wheels[i].unk0c = g_570ac4->unk14[i] * 0.5f;
+        if (flag)
+        {
+            car->wheels[i].unk80 = g_482670 * car->unk2618 * 3.5f;
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x41a8d0
 void FUN_41a8d0()
 {
