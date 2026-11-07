@@ -70,24 +70,36 @@ int g_61299c;
 
 void FUN_441e20();
 
+// Animation setup of a scene object, as loaded with the level.
+struct AnimDef
+{
+    Vec4 rot;   // 0x00
+    Vec4 spin;  // 0x10
+    Vec4 unk20; // 0x20
+    int type;   // 0x30
+    int unk34;  // 0x34
+    int unk38;  // 0x38
+    int unk3c;  // 0x3c
+};
+
 struct AnimObject
 {
-    int type;         // 0x00
-    float rotX;       // 0x04
-    float rotY;       // 0x08
-    float rotZ;       // 0x0c
-    int unk10;        // 0x10
-    float spinX;      // 0x14
-    float spinY;      // 0x18
-    float spinZ;      // 0x1c
-    BYTE unk20[0x18]; // 0x20
-    int angleA;       // 0x38
-    int angleB;       // 0x3c
-    BYTE unk40[0x8];  // 0x40
+    int type;    // 0x00
+    Vec4 rot;    // 0x04
+    Vec4 spin;   // 0x14
+    Vec4 unk24;  // 0x24
+    int unk34;   // 0x34
+    int angleA;  // 0x38
+    int angleB;  // 0x3c
+    int unk40;   // 0x40
+    int unk44;   // 0x44
 };
 
 // GLOBAL: STUNTGP_D3D 0x576cd0
 AnimObject g_576cd0[32];
+
+// GLOBAL: STUNTGP_D3D 0x624484
+AnimDef *g_624484;
 
 // 6 entries at 0x49a1f8, 0x7724 bytes each
 // GLOBAL: STUNTGP_D3D 0x49a1f8
@@ -892,6 +904,43 @@ int FUN_4278a0(float *bounds, float *point)
     return *(int *)&d < 0;
 }
 
+// STUB: STUNTGP_D3D 0x425df0
+void FUN_425df0(Scene *scene, ObjectDef *def, int type)
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x426260
+void FUN_426260()
+{
+    if (g_612be8 == 2)
+    {
+        return;
+    }
+    Scene *scene = g_636418[3].scene;
+    if (scene && scene->objectCount > 1)
+    {
+        ObjectDef *def = scene->objects;
+        for (DWORD i = 0; i < scene->objectCount; i++)
+        {
+            int type = g_624484[i].type;
+            if (type == 1 || type == 2 || type == 3)
+            {
+                FUN_425df0(scene, def, type);
+            }
+            AnimDef *src = &g_624484[i];
+            AnimObject *obj = &g_576cd0[i];
+            obj->type = src->type;
+            obj->rot = src->rot;
+            obj->spin = src->spin;
+            obj->unk24 = src->unk20;
+            obj->unk34 = src->unk34;
+            obj->unk44 = src->unk38;
+            obj->angleA = 0;
+            def++;
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x427010
 void FUN_427010(AnimObject *obj)
 {
@@ -918,35 +967,35 @@ void FUN_427050(AnimObject *obj, ObjectDef *def)
     float x;
     float y;
     float z;
-    delta[0] = obj->spinX * (1.0f / 60.0f);
-    delta[1] = obj->spinY * (1.0f / 60.0f);
-    delta[2] = obj->spinZ * (1.0f / 60.0f);
-    obj->rotX = x = obj->rotX + delta[0];
-    obj->rotY = y = obj->rotY + delta[1];
-    obj->rotZ = z = obj->rotZ + delta[2];
+    delta[0] = obj->spin.x * (1.0f / 60.0f);
+    delta[1] = obj->spin.y * (1.0f / 60.0f);
+    delta[2] = obj->spin.z * (1.0f / 60.0f);
+    obj->rot.x = x = obj->rot.x + delta[0];
+    obj->rot.y = y = obj->rot.y + delta[1];
+    obj->rot.z = z = obj->rot.z + delta[2];
     if (x < 0.0f)
     {
-        obj->rotX = x + 360.0f;
+        obj->rot.x = x + 360.0f;
     }
     else if (x > 360.0f)
     {
-        obj->rotX = x - 360.0f;
+        obj->rot.x = x - 360.0f;
     }
     if (y < 0.0f)
     {
-        obj->rotY = y + 360.0f;
+        obj->rot.y = y + 360.0f;
     }
     else if (y > 360.0f)
     {
-        obj->rotY = y - 360.0f;
+        obj->rot.y = y - 360.0f;
     }
     if (z < 0.0f)
     {
-        obj->rotZ = z + 360.0f;
+        obj->rot.z = z + 360.0f;
     }
     else if (z > 360.0f)
     {
-        obj->rotZ = z - 360.0f;
+        obj->rot.z = z - 360.0f;
     }
 }
 
