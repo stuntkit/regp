@@ -15,6 +15,10 @@
 #include "common.h"
 // #include "pure.h"
 
+// The original keeps EBP frames (no /Oy); per-function pragma toggling breaks
+// return-block duplication, so it stays off for the whole span.
+#pragma optimize("y", off)
+
 // FUNCTION: STUNTGP_D3D 0x44e490
 void FUN_44e490()
 {
@@ -33,7 +37,6 @@ void FUN_4320c0(float value)
 {
 }
 
-#pragma optimize("y", off)
 // FUNCTION: STUNTGP_D3D 0x44e4b0
 void FUN_44e4b0(BOOL windowMessage)
 {
@@ -64,8 +67,6 @@ void FUN_44e4b0(BOOL windowMessage)
         FUN_4320c0(1.0f);
     }
 }
-
-#pragma optimize("", on)
 
 // FUNCTION: STUNTGP_D3D 0x44e5d0
 void FUN_44e5d0()
@@ -106,7 +107,6 @@ void FUN_44e6c0()
     g_61c390 = GetTickCount();
 }
 
-#pragma optimize("y", off)
 // FUNCTION: STUNTGP_D3D 0x44e6d0
 LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -114,7 +114,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
     case WM_DESTROY:
         PostQuitMessage(0);
-        return DefWindowProc(hWnd, uMsg, wParam, lParam);
+        break;
     case WM_MOVE:
     case WM_SIZE:
         if (IsIconic(hWnd))
@@ -135,13 +135,9 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             g_62ddfc = wParam;
         }
         break;
-    default:
-        return DefWindowProc(hWnd, uMsg, wParam, lParam);
     }
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
-
-#pragma optimize("", on)
 
 // unused: STUNTGP_D3D 0x44e7a0
 
@@ -159,7 +155,6 @@ void FUN_4229e0()
 {
 }
 
-#pragma optimize("y", off)
 // FUNCTION: STUNTGP_D3D 0x44e890
 BOOL windowCreate(HINSTANCE hInstance, HINSTANCE hPrevInstance)
 {
@@ -205,8 +200,6 @@ BOOL windowCreate(HINSTANCE hInstance, HINSTANCE hPrevInstance)
     m_keyboard();
     return !FUN_4230b0(g_61c384, &g_571fd4);
 }
-
-#pragma optimize("", on)
 
 // FUNCTION: STUNTGP_D3D 0x44e9b0
 HRESULT surfaceIsLost(LPDIRECTDRAWSURFACE4 *surface)
@@ -292,6 +285,8 @@ void FUN_44ea10()
 void FUN_44ea50()
 {
 }
+
+#pragma optimize("", on)
 
 // FUNCTION: STUNTGP_D3D 0x44ea60
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nCmdShow)
