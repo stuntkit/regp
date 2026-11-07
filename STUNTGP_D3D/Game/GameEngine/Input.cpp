@@ -4,6 +4,7 @@
 #include <cstring>
 
 #include "../../globals.h"
+#include "../../input.h"
 
 // Rows are indexed by Controller::keyMap. Columns 0-3 are up/down/left/right,
 // 10 and 12 are the menu keys (return/escape on the keyboard map).
@@ -82,9 +83,132 @@ Controller g_62d580[4];
 // GLOBAL: STUNTGP_D3D 0x62dcf0
 BYTE g_62dcf0[256];
 
-// STUB: STUNTGP_D3D 0x40d860
+// Latches the per-controller direction/button bits used by the menus.
+// FUNCTION: STUNTGP_D3D 0x40d860
 void FUN_40d860()
 {
+    for (int i = 0; i < 4; i++)
+    {
+        if (g_62d580[i].active == 1 && g_62d580[i].unk008 == 0)
+        {
+            memcpy(g_62d580[i].prevKeys, g_62d580[i].keys, 7);
+            memset(g_62d580[i].keys, 0, 7);
+            switch (g_62d580[i].type)
+            {
+            case 1:
+                if (g_612be8 == 1)
+                {
+                    if (g_62d480[VK_ESCAPE] & 0x80)
+                    {
+                        g_62d580[i].keys[6] = 1;
+                    }
+                    else
+                    {
+                        g_62d580[i].keys[6] = 0;
+                    }
+                }
+                if (g_62d480[VK_RETURN] & 0x80)
+                {
+                    g_62d580[i].keys[4] = 1;
+                }
+                else
+                {
+                    g_62d580[i].keys[4] = 0;
+                }
+                if (g_62d480[VK_ESCAPE] & 0x80)
+                {
+                    g_62d580[i].keys[5] = 1;
+                }
+                else
+                {
+                    g_62d580[i].keys[5] = 0;
+                }
+                g_62d580[i].keys[0] = g_62d480[VK_LEFT] >> 7;
+                if (g_62d480[VK_RIGHT] & 0x80)
+                {
+                    g_62d580[i].keys[1] = 1;
+                }
+                else
+                {
+                    g_62d580[i].keys[1] = 0;
+                }
+                if (g_62d480[VK_UP] & 0x80)
+                {
+                    g_62d580[i].keys[2] = 1;
+                }
+                else
+                {
+                    g_62d580[i].keys[2] = 0;
+                }
+                if (g_62d480[VK_DOWN] & 0x80)
+                {
+                    g_62d580[i].keys[3] = 1;
+                }
+                else
+                {
+                    g_62d580[i].keys[3] = 0;
+                }
+                break;
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+                int deadZone = g_62d580[i].state.range >> 1;
+                g_576b6c = &g_62d580[i].state;
+                if (g_576b6c->buttons[g_473978[0][12]])
+                {
+                    g_62d580[i].keys[6] = 1;
+                }
+                else
+                {
+                    g_62d580[i].keys[6] = 0;
+                }
+                if (g_576b6c->buttons[g_473978[0][10]])
+                {
+                    g_62d580[i].keys[4] = 1;
+                }
+                else
+                {
+                    g_62d580[i].keys[4] = 0;
+                }
+                if (g_576b6c->buttons[g_473978[0][11]])
+                {
+                    g_62d580[i].keys[5] = 1;
+                }
+                else
+                {
+                    g_62d580[i].keys[5] = 0;
+                }
+                if (g_576b6c->x > deadZone)
+                {
+                    g_62d580[i].keys[1] = 1;
+                }
+                else
+                {
+                    g_62d580[i].keys[1] = 0;
+                }
+                g_62d580[i].keys[0] = g_576b6c->x < -deadZone;
+                if (g_62d580[i].state.y > deadZone)
+                {
+                    g_62d580[i].keys[3] = 1;
+                }
+                else
+                {
+                    g_62d580[i].keys[3] = 0;
+                }
+                if (g_62d580[i].state.y < -deadZone)
+                {
+                    g_62d580[i].keys[2] = 1;
+                }
+                else
+                {
+                    g_62d580[i].keys[2] = 0;
+                }
+                break;
+            }
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x4243f0

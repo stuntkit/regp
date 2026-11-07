@@ -18,6 +18,9 @@ struct InputDevice
     InputEffect effects[12];
 };
 
+struct InputState;
+extern InputState *g_576b6c;
+
 void FUN_4239b0();
 int FUN_4249b0();
 void Input_Shutdown();
