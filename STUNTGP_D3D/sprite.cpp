@@ -907,6 +907,20 @@ int FUN_440480(char *path)
     return (int)data.size;
 }
 
+// FUNCTION: STUNTGP_D3D 0x4405c0
+int FUN_4405c0(int ghost)
+{
+    char path[0x400];
+    char *dir = FUN_4401e0(g_4798bc);
+    if (!FUN_4401c0(dir))
+    {
+        return 1;
+    }
+    // STRING: STUNTGP_D3D 0x479a74
+    sprintf(path, "%s\\ghost%02d.bin", dir, ghost);
+    return FUN_440380(path) ? 4 : 6;
+}
+
 // FUNCTION: STUNTGP_D3D 0x441170
 char *FUN_441170(int id)
 {

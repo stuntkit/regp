@@ -1666,6 +1666,25 @@ int FUN_456670(Unk456070 *object)
     return count >= 2;
 }
 
+// FUNCTION: STUNTGP_D3D 0x456760
+void FUN_456760(Unk456070 *object)
+{
+    int seconds = object->unk1c / 60;
+    if (FUN_456650(object) < 2)
+    {
+        object->unk1c = 0x293;
+        return;
+    }
+    if (object->unk1c)
+    {
+        object->unk1c--;
+    }
+    if (seconds != object->unk1c / 60)
+    {
+        FUN_440880(10);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x456910
 void FUN_456910(Unk4516c0 *object)
 {

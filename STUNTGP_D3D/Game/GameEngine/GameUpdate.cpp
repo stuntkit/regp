@@ -1,6 +1,30 @@
 #include "GameUpdate.h"
 #include "Game.h"
 
+// 128-byte PCX file header.
+struct PcxHeader
+{
+    BYTE manufacturer;  // 0x00
+    BYTE version;       // 0x01
+    BYTE encoding;      // 0x02
+    BYTE bitsPerPixel;  // 0x03
+    short xMin;         // 0x04
+    short yMin;         // 0x06
+    short xMax;         // 0x08
+    short yMax;         // 0x0a
+    short hDpi;         // 0x0c
+    short vDpi;         // 0x0e
+    BYTE palette[48];   // 0x10
+    BYTE reserved;      // 0x40
+    BYTE planes;        // 0x41
+    short bytesPerLine; // 0x42
+    short paletteInfo;  // 0x44
+    BYTE filler[58];    // 0x46
+};
+
+extern int g_48971c;
+extern int g_489720;
+
 #include <cstring>
 #include <stdio.h>
 #include <float.h>
@@ -2292,6 +2316,26 @@ void FUN_45e1d0()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x45e7b0
+void FUN_45e7b0(PcxHeader *header)
+{
+    header->manufacturer = 10;
+    header->version = 5;
+    header->encoding = 1;
+    header->bitsPerPixel = 8;
+    header->xMin = 0;
+    header->yMin = 0;
+    header->xMax = g_48971c - 1;
+    header->yMax = g_489720 - 1;
+    header->hDpi = 200;
+    header->vDpi = 200;
+    memset(header->palette, 0, sizeof(header->palette));
+    header->reserved = 0;
+    header->planes = 1;
+    header->bytesPerLine = g_48971c;
+    header->paletteInfo = 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x45e820
 void FUN_45e820(DWORD *src, DWORD *dst, int size)
 {
@@ -2310,6 +2354,17 @@ void FUN_45e850(BYTE *dst, BYTE *src)
         *dst++ = *++src;
         *dst++ = *++src;
         src++;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45ea50
+void FUN_45ea50(char *path)
+{
+    char header[0xc0];
+    if (bload(path, header, 0x80))
+    {
+        g_489714 = g_48971c = (header[0x43] << 8) | (BYTE)header[0x42];
+        g_489718 = g_489720 = ((header[0xb] << 8) | (BYTE)header[0xa]) + 1;
     }
 }
 
