@@ -178,9 +178,9 @@ void FUN_403bc0()
     if (g_4722d0->camMode < 10)
     {
         g_4722d0->unk1c0 = 0.0f;
-        float speed = (float)sqrt(g_4722d0->data->unk1c8c[0] * g_4722d0->data->unk1c8c[0] +
-                                  g_4722d0->data->unk1c8c[1] * g_4722d0->data->unk1c8c[1] +
-                                  g_4722d0->data->unk1c8c[2] * g_4722d0->data->unk1c8c[2]) -
+        float speed = (float)sqrt(g_4722d0->data->unk1c8c.x * g_4722d0->data->unk1c8c.x +
+                                  g_4722d0->data->unk1c8c.y * g_4722d0->data->unk1c8c.y +
+                                  g_4722d0->data->unk1c8c.z * g_4722d0->data->unk1c8c.z) -
                       83.333336f;
         if (speed < 0.0f)
         {
