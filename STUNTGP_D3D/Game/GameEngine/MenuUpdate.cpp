@@ -323,9 +323,103 @@ void FUN_43c060()
     FUN_424a90(g_menuState.unk0094);
 }
 
-// STUB: STUNTGP_D3D 0x43c130
+// Blank initials; each reset site has its own copy.
+// GLOBAL: STUNTGP_D3D 0x479420
+char g_479420[4] = "...";
+
+// GLOBAL: STUNTGP_D3D 0x479424
+char g_479424[4] = "...";
+
+// GLOBAL: STUNTGP_D3D 0x479428
+char g_479428[4] = "...";
+
+// GLOBAL: STUNTGP_D3D 0x47942c
+char g_47942c[4] = "...";
+
+// GLOBAL: STUNTGP_D3D 0x479430
+char g_479430[4] = "...";
+
+// GLOBAL: STUNTGP_D3D 0x479434
+char g_479434[4] = "...";
+
+// GLOBAL: STUNTGP_D3D 0x479438
+char g_479438[4] = "...";
+
+// GLOBAL: STUNTGP_D3D 0x47943c
+char g_47943c[4] = "...";
+
+// GLOBAL: STUNTGP_D3D 0x479440
+char g_479440[4] = "...";
+
+// GLOBAL: STUNTGP_D3D 0x479444
+char g_479444[4] = "...";
+
+// GLOBAL: STUNTGP_D3D 0x479448
+char g_479448[4] = "...";
+
+// GLOBAL: STUNTGP_D3D 0x47944c
+char g_47944c[4] = "...";
+
+// GLOBAL: STUNTGP_D3D 0x479450
+char g_479450[4] = "...";
+
+// FUNCTION: STUNTGP_D3D 0x43c130
 void FUN_43c130()
 {
+    int i;
+    int j;
+
+    for (i = 0; i < 19; i++)
+    {
+        g_menuState.unk0114[i][0].time = 7200;
+        memcpy(g_menuState.unk0114[i][0].name, g_479420, 3);
+        g_menuState.unk0114[i][1].time = 36000;
+        memcpy(g_menuState.unk0114[i][1].name, g_479424, 3);
+        g_menuState.unk0114[i][2].time = 0;
+        memcpy(g_menuState.unk0114[i][2].name, g_479428, 3);
+        g_menuState.unk0114[i][3].time = 0;
+        memcpy(g_menuState.unk0114[i][3].name, g_47942c, 3);
+    }
+    for (i = 0; i < 100; i++)
+    {
+        g_menuState.unk0374[i].time = 0;
+        memcpy(g_menuState.unk0374[i].name, g_479430, 3);
+    }
+    for (i = 0; i < 100; i++)
+    {
+        g_menuState.unk1dfc[i].time = 0;
+        memcpy(g_menuState.unk1dfc[i].name, g_479434, 3);
+    }
+    for (i = 0; i < 25; i++)
+    {
+        g_menuState.unk0694[i].unk00 = 0;
+        for (j = 0; j < 10; j++)
+        {
+            g_menuState.unk0694[i].entries[j].time = 7200;
+            memcpy(g_menuState.unk0694[i].entries[j].name, g_479438, 3);
+        }
+    }
+    for (i = 0; i < 25; i++)
+    {
+        memcpy(g_menuState.unk1a1c[i][0].name, g_47943c, 3);
+        g_menuState.unk1a1c[i][0].time = 7200;
+        memcpy(g_menuState.unk1a1c[i][1].name, g_479440, 3);
+        g_menuState.unk1a1c[i][1].time = 36000;
+        memcpy(g_menuState.unk1a1c[i][2].name, g_479444, 3);
+        g_menuState.unk1a1c[i][2].time = 0;
+        memcpy(g_menuState.unk1a1c[i][3].name, g_479448, 3);
+        g_menuState.unk1a1c[i][3].time = 0;
+    }
+    for (i = 0; i < 10; i++)
+    {
+        memcpy(g_menuState.unk1d5c[i].name, g_47944c, 3);
+        g_menuState.unk1d5c[i].time = 0;
+    }
+    for (i = 0; i < 10; i++)
+    {
+        memcpy(g_menuState.unk1dac[i].name, g_479450, 3);
+        g_menuState.unk1dac[i].time = 0;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x43c370
@@ -373,9 +467,9 @@ void FUN_43d200()
     FUN_43eff0();
     FUN_437eb0();
     FUN_43c000();
-    if (g_menuState.unk0090 && g_menuState.unk0090 != g_menuState.unk4258 && FUN_43efc0() && !FUN_452d70(g_menuState.unk0090))
+    if (g_menuState.unk0090 && g_menuState.unk0090 != g_menuState.language && FUN_43efc0() && !FUN_452d70(g_menuState.unk0090))
     {
-        g_menuState.unk0090 = g_menuState.unk4258;
+        g_menuState.unk0090 = g_menuState.language;
     }
 }
 
@@ -845,12 +939,6 @@ void FUN_43f610()
     g_frontEnd.unk7c = FUN_43d790(g_frontEnd.unk7c, 0, 70);
 }
 
-// STUB: STUNTGP_D3D 0x440c40
-int FUN_440c40(int id)
-{
-    return 0;
-}
-
 // FUNCTION: STUNTGP_D3D 0x4408e0
 void FUN_4408e0()
 {
@@ -921,11 +1009,6 @@ int FUN_4407a0(int id)
 void FUN_440880(int a)
 {
     FUN_440770(a, 0);
-}
-
-// STUB: STUNTGP_D3D 0x440ae0
-void FUN_440ae0()
-{
 }
 
 // FUNCTION: STUNTGP_D3D 0x441210

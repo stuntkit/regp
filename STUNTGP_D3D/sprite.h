@@ -97,9 +97,15 @@ struct SpriteFile
     int unk08;
 };
 
-struct SpriteDef
+// Sprite template, copied into a SpriteData before it is queued.
+typedef SpriteData SpriteDef;
+
+struct ScreenRect
 {
-    DWORD unk00[12];
+    float left;
+    float top;
+    float right;
+    float bottom;
 };
 
 extern int g_5da360[4];
@@ -122,12 +128,38 @@ void FUN_432e00(SpriteDesc *desc);
 void FUN_43d250();
 void FUN_43f6b0();
 int FUN_438130(int style, float size);
+float FUN_438910(const char *text, float size);
 float FUN_438950(float size);
 int FUN_441240(SpriteData *sprite);
 int FUN_441270(int id);
 int FUN_4412c0();
 void FUN_441310(int slot, int id);
 void FUN_430d40(int slot, int id);
+char *FUN_441170(int id);
+int FUN_441320(SpriteData *dst, int id);
+void FUN_438370(SpriteData *src, int layer, int sub);
+void FUN_438500(int layer, int sub, SpriteData *sprite);
+void *FUN_438550(int size);
+void FUN_438590(int layer, int sub, SpriteNode *node);
+void FUN_438830(float x0, float y0, float x1, float y1, int layer, int def, float u, float v);
+void FUN_438960(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color, DWORD flags);
+void FUN_438990(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color, DWORD flags, float unk18);
+void FUN_438be0(float x, float y, int layer, int style, int textId, float size, D3DCOLOR color, DWORD flags);
+void FUN_439380(float x0, float y0, float x1, float y1, int layer, int scroll, int flags, float fade);
+void FUN_439450(float x0, float y0, float x1, float y1, int layer, int def, int flags);
+void FUN_439520(float x0, float y0, float x1, float y1, int layer, int sub, int def, DWORD row, int blend);
+void FUN_4398a0(float x0, float y0, float x1, float y1, int layer, int def, int flags, float a0, float a1, float a2, float b0, float b1, float b2);
+void FUN_4399b0(int def, float x0, float x1, float y, float a0, float a1, float a2, int layer);
+void FUN_439b80(int def, float x, float y0, float y1, float b0, float b1, float b2, int layer);
+float FUN_43d7b0(float value, float lo, float hi);
+void FUN_43d960(ScreenRect *dst, ScreenRect *from, ScreenRect *to, float t);
+int FUN_43dd60();
+void FUN_43feb0(float x0, float y0, float x1, float y1, int def, float u, float v);
+void FUN_43ff40(ScreenRect *rect);
+void FUN_43ff90(int arg);
+
+// Front-end text strings by id.
+extern char *g_feText[0x2dc];
 
 // Texture cache: slot -> texture id, texture id -> slot, slot age.
 extern int g_6087a8[0x25];

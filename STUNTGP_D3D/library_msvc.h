@@ -12,6 +12,9 @@
 // LIBRARY: STUNTGP_D3D 0x462fcd
 // _malloc
 
+// LIBRARY: STUNTGP_D3D 0x46348e
+// _sscanf
+
 // LIBRARY: LEGO1 0x1008a100
 // _calloc
 

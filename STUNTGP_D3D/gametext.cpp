@@ -7,12 +7,6 @@
 #include "globals.h"
 #include "Game/GameEngine/io_wad.h"
 
-struct TextKey
-{
-    const char *name;
-    int id;
-};
-
 // GLOBAL: STUNTGP_D3D 0x46e780
 const TextKey c_46e780[105] = {
     // STRING: STUNTGP_D3D 0x4835e4

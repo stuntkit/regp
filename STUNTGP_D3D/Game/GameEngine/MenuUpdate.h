@@ -12,6 +12,24 @@ struct MenuSlot
     int unk08;
 };
 
+struct ScoreEntry
+{
+    int time;
+    char name[4];
+};
+
+struct ScoreTable
+{
+    int unk00;
+    ScoreEntry entries[10];
+};
+
+struct MenuLanguage
+{
+    char name[0x20];
+    int id;
+};
+
 // Front-end state, cleared as a whole by FUN_43d0b0.
 struct MenuState
 {
@@ -35,15 +53,25 @@ struct MenuState
     int unk00e0; // 0x00e0
     int unk00e4; // 0x00e4
     int unk00e8; // 0x00e8
-    BYTE unk00ec[0x211c - 0xec];
+    BYTE unk00ec[0x114 - 0xec];
+    // High-score tables, reset by FUN_43c130.
+    ScoreEntry unk0114[19][4];  // 0x0114
+    ScoreEntry unk0374[100];    // 0x0374
+    ScoreTable unk0694[25];     // 0x0694
+    BYTE unk0ec8[0x1a1c - 0xec8];
+    ScoreEntry unk1a1c[25][4];  // 0x1a1c
+    BYTE unk1d3c[0x1d5c - 0x1d3c];
+    ScoreEntry unk1d5c[10];     // 0x1d5c
+    ScoreEntry unk1dac[10];     // 0x1dac
+    ScoreEntry unk1dfc[100];    // 0x1dfc
     BYTE saved[0x2114]; // 0x211c, copy of 0x0008..0x211c
     BYTE unk4230[0x10];
     int unk4240; // 0x4240
     BYTE unk4244[0x4258 - 0x4244];
-    int unk4258; // 0x4258
-    BYTE unk425c[0x427c - 0x425c];
-    int unk427c; // 0x427c
-    BYTE unk4280[0x13148 - 0x4280];
+    int language;               // 0x4258, id of the loaded front-end language
+    MenuLanguage languages[8];  // 0x425c, from Setup\languagePC.csv
+    int languageCount;          // 0x437c
+    BYTE unk4380[0x13148 - 0x4380];
     Unk4d5cc0 *unk13148; // 0x13148
     BYTE unk1314c[0x1dae8 - 0x1314c];
 };
