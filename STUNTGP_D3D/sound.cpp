@@ -18,14 +18,38 @@ LPDIRECTSOUNDBUFFER g_musicBuffer;
 // GLOBAL: STUNTGP_D3D 0x62df38
 DWORD g_musicFlags;
 
+// GLOBAL: STUNTGP_D3D 0x62df28
+DWORD g_62df28;
+
+// GLOBAL: STUNTGP_D3D 0x62df2c
+DWORD g_62df2c;
+
+// GLOBAL: STUNTGP_D3D 0x62df30
+DWORD g_62df30;
+
+// GLOBAL: STUNTGP_D3D 0x62df34
+DWORD g_62df34;
+
 // GLOBAL: STUNTGP_D3D 0x62df4c
 UINT g_musicTimerPeriod;
+
+// GLOBAL: STUNTGP_D3D 0x62df50
+UINT g_musicTimer;
 
 // GLOBAL: STUNTGP_D3D 0x62e06c
 HMMIO g_musicFile;
 
+// GLOBAL: STUNTGP_D3D 0x62e07c
+LONG g_musicDataOffset;
+
+// GLOBAL: STUNTGP_D3D 0x62e084
+DWORD g_62e084;
+
 // GLOBAL: STUNTGP_D3D 0x62e088
 BOOL g_musicPlaying;
+
+// GLOBAL: STUNTGP_D3D 0x62e08c
+HRESULT g_musicResult;
 
 // GLOBAL: STUNTGP_D3D 0x62e0a8
 DWORD g_musicSetting;
@@ -41,6 +65,9 @@ DWORD g_sfxSetting;
 
 // GLOBAL: STUNTGP_D3D 0x62e0f8
 DWORD g_musicVolume;
+
+// GLOBAL: STUNTGP_D3D 0x62f5ac
+DWORD g_62f5ac;
 
 // GLOBAL: STUNTGP_D3D 0x60d734
 DWORD g_60d734;
@@ -68,7 +95,7 @@ void Music_Stop()
 {
     if (g_musicPlaying)
     {
-        FUN_460330();
+        Music_StopStream();
         g_musicBuffer->Release();
         timeEndPeriod(g_musicTimerPeriod);
         if (g_musicFile)
@@ -81,10 +108,43 @@ void Music_Stop()
     }
 }
 
-// STUB: STUNTGP_D3D 0x460330
-int FUN_460330()
+// FUNCTION: STUNTGP_D3D 0x460200
+BOOL Music_IsStreaming()
 {
-    return 0;
+    if (g_musicPlaying && (g_musicFlags & 0x4000))
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+// FUNCTION: STUNTGP_D3D 0x460330
+HRESULT Music_StopStream()
+{
+    if (!Music_IsStreaming())
+    {
+        return g_musicResult = DSERR_UNINITIALIZED;
+    }
+    InterlockedExchange((LONG *)&g_musicFlags, g_musicFlags | 0x8000);
+    if (g_musicTimer)
+    {
+        timeKillEvent(g_musicTimer);
+        g_musicTimer = 0;
+    }
+    g_musicBuffer->Stop();
+    g_musicBuffer->SetCurrentPosition(0);
+    g_62df28 = 0;
+    g_62df2c = 0;
+    g_62df30 = 0;
+    g_62df34 = 0;
+    g_62e084 = 0;
+    if (g_musicFile)
+    {
+        mmioSeek(g_musicFile, g_musicDataOffset + 4, SEEK_SET);
+    }
+    g_62f5ac = 0;
+    g_musicResult = DS_OK;
+    return DS_OK;
 }
 
 // FUNCTION: STUNTGP_D3D 0x460bc0

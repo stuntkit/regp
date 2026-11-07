@@ -10,7 +10,8 @@
 void FUN_45fab0();
 void FUN_45fb40();
 void Music_Stop();
-int FUN_460330();
+BOOL Music_IsStreaming();
+HRESULT Music_StopStream();
 void Sound_ApplyVolumes();
 void Sound_SetVolumes(DWORD master, DWORD sfx, DWORD music, DWORD quality);
 void Sound_Shutdown();
