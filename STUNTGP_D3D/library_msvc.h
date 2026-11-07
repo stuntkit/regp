@@ -86,9 +86,11 @@
 // _atof
 
 // LIBRARY: LEGO1 0x1008b730
+// LIBRARY: STUNTGP_D3D 0x462a1b
 // _fprintf
 
 // LIBRARY: LEGO1 0x1008b780
+// LIBRARY: STUNTGP_D3D 0x463811
 // _fwrite
 
 // LIBRARY: LEGO1 0x1008b7c0
@@ -261,9 +263,11 @@
 // __unlock_file2
 
 // LIBRARY: LEGO1 0x1008efa0
+// LIBRARY: STUNTGP_D3D 0x4663bc
 // __stbuf
 
 // LIBRARY: LEGO1 0x1008f040
+// LIBRARY: STUNTGP_D3D 0x466449
 // __ftbuf
 
 // LIBRARY: LEGO1 0x1008f080
@@ -1386,5 +1390,32 @@
 
 // LIBRARY: STUNTGP_D3D 0x46aef6
 // __atoflt
+
+// LIBRARY: STUNTGP_D3D 0x463aff
+// __mkdir
+
+// LIBRARY: STUNTGP_D3D 0x4634d8
+// __findclose
+
+// LIBRARY: STUNTGP_D3D 0x4634f7
+// ___timet_from_ft
+
+// LIBRARY: STUNTGP_D3D 0x46355b
+// __findfirsti64
+
+// LIBRARY: STUNTGP_D3D 0x463646
+// __findnexti64
+
+// LIBRARY: STUNTGP_D3D 0x46de1c
+// _remove
+
+// LIBRARY: STUNTGP_D3D 0x463e1b
+// _localtime
+
+// LIBRARY: STUNTGP_D3D 0x46a069
+// _gmtime
+
+// LIBRARY: STUNTGP_D3D 0x46de46
+// __unlink
 
 #endif

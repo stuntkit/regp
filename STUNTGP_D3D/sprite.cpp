@@ -983,7 +983,7 @@ int FUN_4406e0(int ghost)
     {
         return 6;
     }
-    return remove(path) < 0 ? 6 : 0;
+    return _unlink(path) < 0 ? 6 : 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x441170
