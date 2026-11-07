@@ -116,6 +116,27 @@ void FUN_44f4c0()
     Matrix_Identity(g_61c468);
 }
 
+struct Mat4
+{
+    float m[16];
+};
+
+// Matrix_Multiply3 with b passed by value.
+// FUNCTION: STUNTGP_D3D 0x44eeb0
+void FUN_44eeb0(float *a, Mat4 b)
+{
+    float t[16];
+    for (int i = 0; i < 3; i++)
+    {
+        t[i * 4 + 0] = a[i * 4 + 0] * b.m[0] + a[i * 4 + 1] * b.m[4] + a[i * 4 + 2] * b.m[8];
+        t[i * 4 + 1] = a[i * 4 + 0] * b.m[1] + a[i * 4 + 1] * b.m[5] + a[i * 4 + 2] * b.m[9];
+        t[i * 4 + 2] = a[i * 4 + 0] * b.m[2] + a[i * 4 + 1] * b.m[6] + a[i * 4 + 2] * b.m[10];
+        a[i * 4 + 0] = t[i * 4 + 0];
+        a[i * 4 + 1] = t[i * 4 + 1];
+        a[i * 4 + 2] = t[i * 4 + 2];
+    }
+}
+
 // Multiplies the 3x3 part of a in place by b.
 // FUNCTION: STUNTGP_D3D 0x44ef40
 void Matrix_Multiply3(float *a, float *b)
@@ -359,6 +380,23 @@ void Matrix_Transpose(float *out, float *m)
     out[13] = m[7];
     out[14] = m[11];
     out[15] = m[15];
+}
+
+// 3x3 product a * b into out. When out aliases an input the result goes to a scratch matrix and is lost.
+// FUNCTION: STUNTGP_D3D 0x44efd0
+void FUN_44efd0(float *out, float *a, float *b)
+{
+    float t[16];
+    if (out == a || out == b)
+    {
+        out = t;
+    }
+    for (int i = 0; i < 3; i++)
+    {
+        out[i * 4 + 0] = a[i * 4 + 0] * b[0] + a[i * 4 + 1] * b[4] + a[i * 4 + 2] * b[8];
+        out[i * 4 + 1] = a[i * 4 + 0] * b[1] + a[i * 4 + 1] * b[5] + a[i * 4 + 2] * b[9];
+        out[i * 4 + 2] = a[i * 4 + 0] * b[2] + a[i * 4 + 1] * b[6] + a[i * 4 + 2] * b[10];
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x44f050
