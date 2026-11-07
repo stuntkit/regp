@@ -94,6 +94,12 @@ void FUN_44e5d0()
     g_61c388 = g_61c37c;
 }
 
+// FUNCTION: STUNTGP_D3D 0x44e600
+void FUN_44e600(float *value)
+{
+    *value *= g_61c36c;
+}
+
 // FUNCTION: STUNTGP_D3D 0x44e610
 void FUN_44e610()
 {

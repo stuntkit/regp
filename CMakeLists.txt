@@ -208,7 +208,7 @@ if (MSVC_FOR_DECOMP)
   # game was originally built with) and tweaked slightly to produce more debugging info for reccmp.
   # They ensure a recompilation that can be byte/instruction accurate to the original binaries.
   
-  target_link_options(StuntGP_D3D PRIVATE "/OPT:REF")
+  target_link_options(StuntGP_D3D PRIVATE "/OPT:NOREF")
   # set_property(TARGET STUNTGP_D3D PROPERTY MSVC_RUNTIME_LIBRARY "$<$<CONFIG:Release>:Release>")
   if (TARGET StuntGP)
     set_property(TARGET StuntGP PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
