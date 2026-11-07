@@ -237,6 +237,8 @@ void FUN_437eb0();
 void FUN_441e20();
 int FUN_43d730(int id);
 int FeCsv_ReadInt(int *value, char *text, int *pos);
+int FeCsv_SkipLine(char *text, int *pos);
+int FUN_43c600(const char *expected, char *text, int *pos);
 int FUN_43d760(int id);
 void FUN_442ad0(int type, int duration, int delay, int end, int from, int to, float scale);
 int FUN_43efc0();
@@ -281,6 +283,91 @@ void FUN_424bd0(float x, float y)
 // STUB: STUNTGP_D3D 0x434b50
 void FUN_434b50()
 {
+}
+
+// Reads the championship settings rows of the front-end csv.
+// FUNCTION: STUNTGP_D3D 0x435b60
+int FUN_435b60(char *text, int *pos)
+{
+    char key[64];
+    int i;
+    int j;
+
+    // STRING: STUNTGP_D3D 0x4791b4
+    FUN_43c600("NumberOfRounds", text, pos);
+    FeCsv_ReadInt(&g_menuState.numberOfRounds, text, pos);
+    FeCsv_SkipLine(text, pos);
+    for (i = 0; i < 4; i++)
+    {
+        // STRING: STUNTGP_D3D 0x4791c4
+        sprintf(key, "BonusRound%d", i + 1);
+        FUN_43c600(key, text, pos);
+        FeCsv_ReadInt(&g_menuState.bonusRounds[i], text, pos);
+        FeCsv_SkipLine(text, pos);
+    }
+    for (i = 0; i < 6; i++)
+    {
+        // STRING: STUNTGP_D3D 0x4791d4
+        sprintf(key, "SaveRound%d", i + 1);
+        FUN_43c600(key, text, pos);
+        FeCsv_ReadInt(&g_menuState.saveRounds[i], text, pos);
+        FeCsv_SkipLine(text, pos);
+    }
+    // STRING: STUNTGP_D3D 0x4791e0
+    FUN_43c600("SponsorDiscountPercent", text, pos);
+    FeCsv_ReadInt(&g_menuState.sponsorDiscountPercent, text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x4791f8
+    FUN_43c600("UsedItemDiscountPercent", text, pos);
+    FeCsv_ReadInt(&g_menuState.usedItemDiscountPercent, text, pos);
+    FeCsv_SkipLine(text, pos);
+    FeCsv_SkipLine(text, pos);
+    for (i = 1; i < 7; i++)
+    {
+        // STRING: STUNTGP_D3D 0x479210
+        sprintf(key, "Sponsor%d", i);
+        FUN_43c600(key, text, pos);
+        FeCsv_ReadInt(&g_menuState.sponsors[i].unk00, text, pos);
+        FeCsv_ReadInt(&g_menuState.sponsors[i].id, text, pos);
+        FeCsv_SkipLine(text, pos);
+    }
+    FeCsv_SkipLine(text, pos);
+    for (i = 0; i < 6; i++)
+    {
+        // STRING: STUNTGP_D3D 0x47921c
+        sprintf(key, "Position%d", i + 1);
+        FUN_43c600(key, text, pos);
+        FeCsv_ReadInt(&g_menuState.positions[i][0], text, pos);
+        FeCsv_ReadInt(&g_menuState.positions[i][1], text, pos);
+        FeCsv_ReadInt(&g_menuState.positions[i][2], text, pos);
+        FeCsv_ReadInt(&g_menuState.positions[i][3], text, pos);
+        FeCsv_SkipLine(text, pos);
+    }
+    FeCsv_SkipLine(text, pos);
+    for (i = 0; i < 21; i++)
+    {
+        // STRING: STUNTGP_D3D 0x479228
+        sprintf(key, "Round%dTrack", i + 1);
+        FUN_43c600(key, text, pos);
+        FeCsv_ReadInt(&g_menuState.rounds[i].track, text, pos);
+        FeCsv_ReadInt(&g_menuState.rounds[i].unk04, text, pos);
+        FeCsv_SkipLine(text, pos);
+    }
+    FeCsv_SkipLine(text, pos);
+    for (i = 0; i < 21; i++)
+    {
+        for (j = 0; j < 5; j++)
+        {
+            // STRING: STUNTGP_D3D 0x479238
+            sprintf(key, "Round%dCar%d", i + 1, j + 1);
+            FUN_43c600(key, text, pos);
+            FeCsv_ReadInt(&g_menuState.rounds[i].cars[j].unk00, text, pos);
+            FeCsv_ReadInt(&g_menuState.rounds[i].cars[j].unk04, text, pos);
+            FeCsv_ReadInt(&g_menuState.rounds[i].cars[j].unk08, text, pos);
+            FeCsv_SkipLine(text, pos);
+        }
+    }
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x435f60
