@@ -317,6 +317,11 @@ int size_of_file(char *path)
     return disk_size_of_file(buffer);
 }
 
+// STUB: STUNTGP_D3D 0x4623c0
+void FUN_4623c0(char *path, void *buffer, void *arg)
+{
+}
+
 // FUNCTION: STUNTGP_D3D 0x44b470
 void tolower(char *out, char *in)
 {

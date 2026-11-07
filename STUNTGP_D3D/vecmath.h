@@ -1,6 +1,7 @@
 #ifndef VECMATH_H
 #define VECMATH_H
 #define WIN32_LEAN_AND_MEAN
+#include "sintable.h"
 #include <windows.h>
 
 struct Camera;
@@ -15,4 +16,9 @@ void FUN_44eb70(DWORD yaw, DWORD pitch, DWORD roll, float *x, float *y, float *z
 
 extern float g_61c3e8[16];
 extern float g_61c468[16];
+
+void Matrix_Set(float *m, float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13,
+                float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33);
+void Matrix_RotationZ(float *m, float degrees);
+
 #endif /* VECMATH_H */

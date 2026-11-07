@@ -1,8 +1,8 @@
 #include "sintable.h"
 
-// Sine of a 13-bit angle; the trailing quarter lets cosine index from g_4945d8.
+// Sine of a 13-bit angle; the trailing quarter lets cosine index from g_cosTable.
 // GLOBAL: STUNTGP_D3D 0x48a5d8
-float g_48a5d8[0x2800] = {
+float g_sinTable[0x2800] = {
     0.0f, 0.000767f, 0.001534f, 0.002301f, 0.003068f, 0.003835f, 0.004602f, 0.005369f,
     0.006136f, 0.006903f, 0.00767f, 0.008437f, 0.009204f, 0.009971f, 0.010738f, 0.011505f,
     0.012272f, 0.013038f, 0.013805f, 0.014572f, 0.015339f, 0.016106f, 0.016873f, 0.01764f,
@@ -1286,4 +1286,4 @@ float g_48a5d8[0x2800] = {
 };
 
 // GLOBAL: STUNTGP_D3D 0x4945d8
-float *g_4945d8 = &g_48a5d8[0x800];
+float *g_cosTable = &g_sinTable[0x800];

@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "../../d3drender.h"
 #include "../../sprite.h"
+#include "../../font.h"
 #include "game_state.h"
 
 // GLOBAL: STUNTGP_D3D 0x612984
@@ -322,16 +323,6 @@ void FUN_449d60()
 {
 }
 
-// STUB: STUNTGP_D3D 0x428f70
-void FUN_428f70(DWORD font)
-{
-}
-
-// STUB: STUNTGP_D3D 0x4291f0
-void FUN_4291f0(const char *text, int align, float x, float y, float z, DWORD color, float scale, int flags)
-{
-}
-
 // STUB: STUNTGP_D3D 0x42e870
 void FUN_42e870()
 {
@@ -354,11 +345,6 @@ void FUN_401b00()
 
 // STUB: STUNTGP_D3D 0x431830
 void FUN_431830(int a)
-{
-}
-
-// STUB: STUNTGP_D3D 0x430d40
-void FUN_430d40(int a, int b)
 {
 }
 
@@ -529,7 +515,7 @@ void FUN_40df90()
 {
     DWORD color;
 
-    FUN_428f70(1);
+    Font_Select(1);
     color = g_612990 % 60 < 20 ? 0xff404000 : 0xffffff00;
     FUN_4291f0(g_6127a0[95], 1, g_6244fc + 320.0f, 448.0f - g_624500, 0.99f, color, 2.0f, 6);
     FUN_4291f0(g_6127a0[104], 1, g_6244fc + 320.0f, g_624500, 0.99f, color, 2.0f, 6);
@@ -639,7 +625,7 @@ void FUN_449fb0()
     FUN_447fa0();
     y = 0.0f;
     row = &g_61b740->faders[12];
-    FUN_428f70(1);
+    Font_Select(1);
     pad = 5.0f;
     place = g_4722d0->data->unk24e4;
     for (i = 0; i < 6; i++)
@@ -688,7 +674,7 @@ void FUN_449fb0()
     height = FUN_4290d0(text, 1.6f);
     FUN_4476c0(0x44, rowX, rowY - 12.0f, 0.96f, height, 51.2f);
     FUN_4291f0(text, 2, rowX, rowY, 0.99f, 0xffffff00, 1.6f, 6);
-    FUN_428f70(0);
+    Font_Select(0);
 
     if (race->unk24 > 30 && !g_61b740->faders[11].active)
     {
@@ -716,21 +702,21 @@ void FUN_442500()
 // FUNCTION: STUNTGP_D3D 0x442520
 void FUN_442520()
 {
-    FUN_428f70(1);
+    Font_Select(1);
     // STRING: STUNTGP_D3D 0x4826cc
     FUN_4291f0("GAMEOVER!", 1, 320.0f, 208.0f, 0.98f, 0xffffff, 2.0f, 0);
     // STRING: STUNTGP_D3D 0x4826d8
     FUN_4291f0("PLEASE WAIT FOR RACE TO FINISH...", 1, 320.0f, 272.0f, 0.98f, 0xffffff, 2.0f, 0);
-    FUN_428f70(0);
+    Font_Select(0);
 }
 
 // FUNCTION: STUNTGP_D3D 0x442590
 void FUN_442590()
 {
-    FUN_428f70(1);
+    Font_Select(1);
     // STRING: STUNTGP_D3D 0x4826fc
     FUN_4291f0("NO PLAYER AVAILABLE...", 1, 320.0f, 240.0f, 0.98f, 0xffffff, 2.0f, 0);
-    FUN_428f70(0);
+    Font_Select(0);
 }
 
 // FUNCTION: STUNTGP_D3D 0x4425d0

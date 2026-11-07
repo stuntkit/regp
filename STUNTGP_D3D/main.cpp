@@ -12,6 +12,8 @@
 
 #include "globals.h"
 #include "surface.h"
+#include "d3drender.h"
+#include "font.h"
 
 #include "common.h"
 // #include "pure.h"
@@ -275,9 +277,20 @@ BOOL surfaceSlotsRestore()
     return TRUE;
 }
 
-// STUB: STUNTGP_D3D 0x42bf00
+// Reloads every registered texture and font after the surfaces were restored.
+// FUNCTION: STUNTGP_D3D 0x42bf00
 void FUN_42bf00()
 {
+    int i;
+    for (i = 0; g_textureFiles[i].name; i++)
+    {
+        FUN_4316f0(g_textureFiles[i].slot, g_textureFiles[i].name);
+    }
+    for (i = 0; g_fontFiles[i].name; i++)
+    {
+        Font_Select(i);
+        Font_Load(g_fontFiles[i].name);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x44ea10

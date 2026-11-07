@@ -49,8 +49,8 @@ void FUN_402ad0()
     g_4722d0->cam.target.y = dir.y + g_4722d0->cam.pos.y;
     g_4722d0->cam.target.z = dir.z + g_4722d0->cam.pos.z;
     roll = (g_4722d0->angZ >> 12) & 0x1fff;
-    g_4722d0->cam.up.x = g_48a5d8[roll];
-    g_4722d0->cam.up.y = g_4945d8[roll];
+    g_4722d0->cam.up.x = g_sinTable[roll];
+    g_4722d0->cam.up.y = g_cosTable[roll];
     g_4722d0->cam.up.z = 0.0f;
 }
 

@@ -147,6 +147,7 @@ if(STUNTGP_BUILD_D3D)
     STUNTGP_D3D/soundsys.cpp
     STUNTGP_D3D/gametext.cpp
     STUNTGP_D3D/sintable.cpp
+    STUNTGP_D3D/font.cpp
   )
   reccmp_add_target(StuntGP_D3D ID STUNTGP_D3D)
 
