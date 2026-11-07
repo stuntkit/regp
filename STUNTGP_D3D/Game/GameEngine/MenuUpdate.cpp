@@ -65,15 +65,15 @@ struct BitReader
     BYTE carry;  // 0x0d
 };
 
-// Byte-oriented compressor output; flags points at the current flag byte.
+// Byte-oriented compressor output; flag bits for the following bytes are packed into buffer[flagPos].
 struct BitWriter
 {
-    int count;   // 0x00
-    int unk04;   // 0x04
-    int unk08;   // 0x08
-    BYTE *flags; // 0x0c
-    int size;    // 0x10
-    BYTE *start; // 0x14
+    int count;    // 0x00
+    int flagPos;  // 0x04
+    int bit;      // 0x08
+    BYTE *buffer; // 0x0c
+    int size;     // 0x10
+    BYTE *start;  // 0x14
 };
 
 void FUN_437eb0();
@@ -575,17 +575,32 @@ void FUN_43b270(BitWriter *writer, BYTE *buffer, int size)
 {
     writer->start = buffer;
     writer->size = size;
-    writer->flags = buffer;
-    writer->unk04 = 0;
+    writer->buffer = buffer;
+    writer->flagPos = 0;
     writer->count = 1;
     *buffer = 0;
-    writer->unk08 = 0;
+    writer->bit = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43b2a0
 void FUN_43b2a0(BitWriter *writer, BYTE value)
 {
-    writer->flags[writer->count++] = value;
+    writer->buffer[writer->count++] = value;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43b2b0
+void FUN_43b2b0(BitWriter *writer, int bit)
+{
+    if (bit)
+    {
+        writer->buffer[writer->flagPos] |= 0x80 >> writer->bit;
+    }
+    if (++writer->bit == 8)
+    {
+        writer->bit = 0;
+        writer->flagPos = writer->count++;
+        writer->buffer[writer->flagPos] = 0;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x43b370

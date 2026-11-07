@@ -1080,6 +1080,21 @@ void FUN_426c70(AnimObject *obj, ObjectDef *def)
     Vec3_Normalize(&m[2].x);
 }
 
+// FUNCTION: STUNTGP_D3D 0x426ca0
+void FUN_426ca0(AnimObject *obj, ObjectDef *def)
+{
+    Vec4 *m = def->matrix;
+    int angle = obj->angleA;
+    m[3].x = g_sinTable[angle];
+    m[3].y = 64.0f;
+    m[3].z = 0.0f;
+    Vec3_Normalize(&m[3].x);
+    m[2].x = g_sinTable[angle];
+    m[2].y = 0.0f;
+    m[2].z = 128.0f;
+    Vec3_Normalize(&m[2].x);
+}
+
 // FUNCTION: STUNTGP_D3D 0x426db0
 void FUN_426db0(AnimObject *obj, ObjectDef *def)
 {

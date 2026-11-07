@@ -48,6 +48,21 @@ void FUN_43d460()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x43d470
+void *Pool_Alloc(int size)
+{
+    PoolBlockHeader *block = g_pool.freeBlocks[--g_pool.freeCount];
+    g_pool.allocCount++;
+    block->size = size;
+    block->magic = 0xac1dcafe;
+    g_pool.usedBytes += size;
+    if (g_pool.usedBytes > g_pool.peakBytes)
+    {
+        g_pool.peakBytes = g_pool.usedBytes;
+    }
+    return block + 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43d4c0
 void Pool_Free(void *ptr)
 {

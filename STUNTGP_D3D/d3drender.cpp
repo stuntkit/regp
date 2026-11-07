@@ -107,6 +107,21 @@ struct DisplayDevices
 // GLOBAL: STUNTGP_D3D 0x5ba788
 DisplayDevices g_5ba788;
 
+// Display modes collected by FUN_42f3c0.
+struct DisplayModeList
+{
+    BYTE unk000[0x360];
+    DWORD count;                // 0x360
+    DDSURFACEDESC2 modes[64];   // 0x364
+};
+
+// Name storage for g_textureFiles.
+// GLOBAL: STUNTGP_D3D 0x57eb0c
+char g_57eb0c[0x1fe0];
+
+// GLOBAL: STUNTGP_D3D 0x582710
+ResourceFile *g_582710;
+
 // GLOBAL: STUNTGP_D3D 0x58332c
 int g_58332c = 0;
 
@@ -829,6 +844,19 @@ void FUN_42f380()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x42f3c0
+HRESULT WINAPI FUN_42f3c0(LPDDSURFACEDESC2 desc, LPVOID context)
+{
+    DisplayModeList *list = (DisplayModeList *)context;
+    if (list->count >= 64)
+    {
+        return DDENUMRET_CANCEL;
+    }
+    list->modes[list->count] = *desc;
+    list->count++;
+    return DDENUMRET_OK;
+}
+
 // STUB: STUNTGP_D3D 0x42f530
 BOOL WINAPI FUN_42f530(GUID *guid, LPSTR description, LPSTR name, LPVOID context, HMONITOR monitor)
 {
@@ -1209,6 +1237,17 @@ void FUN_42bc00()
     g_583990[0] = 0;
     g_587994 = 0;
     g_5895b8 = &g_587990;
+}
+
+// FUNCTION: STUNTGP_D3D 0x42bdd0
+void FUN_42bdd0()
+{
+    memset(g_textureFiles, 0, sizeof(g_textureFiles));
+    memset(g_57eb0c, 0, sizeof(g_57eb0c));
+    memset(g_fontFiles, 0, sizeof(g_fontFiles));
+    g_582710 = g_textureFiles;
+    g_580aec = g_57eb0c;
+    g_5895bc = g_fontFiles;
 }
 
 // STUB: STUNTGP_D3D 0x433290
