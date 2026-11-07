@@ -58,9 +58,8 @@ char g_62ddfc = 0;
 // GLOBAL: STUNTGP_D3D 0x61c374
 WPARAM g_61c374 = 0;
 
-// TODO: is this a pointer? might be!
 // GLOBAL: STUNTGP_D3D 0x62d480
-PBYTE g_62d480[10];
+BYTE g_62d480[256];
 
 // GLOBAL: STUNTGP_D3D 0x61c368
 LPDIRECTDRAWSURFACE4 g_surface;

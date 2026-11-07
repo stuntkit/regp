@@ -21,6 +21,8 @@ void FUN_44e490()
     g_612994 = 0;
 }
 
+void FUN_44ea10();
+
 // FUNCTION: STUNTGP_D3D 0x44e4b0
 void FUN_44e4b0(BOOL windowMessage)
 {
@@ -45,7 +47,7 @@ void FUN_44e4b0(BOOL windowMessage)
     else
     {
         g_WindowMessage = 0;
-        // FUN_44ea10();
+        FUN_44ea10();
         // FUN_4411c0();
         // g_6244f4 = 0;
         // FUN_4320c0(1.0);
@@ -149,14 +151,12 @@ exit:
 
 // unused: STUNTGP_D3D 0x44e7a0
 
-// TODO: is this even correct? check assembly
-// STUB: STUNTGP_D3D 0x44e870
+// FUNCTION: STUNTGP_D3D 0x44e870
 void m_keyboard()
 {
-    int i = 10;
-    for (i = 10; i >= 0; i--)
+    for (int i = 10; i != 0; i--)
     {
-        GetKeyboardState(g_62d480[i]);
+        GetKeyboardState(g_62d480);
     }
 }
 
@@ -208,24 +208,23 @@ BOOL windowCreate(HINSTANCE hInstance, HINSTANCE hPrevInstance)
 }
 
 // FUNCTION: STUNTGP_D3D 0x44e9b0
-int surfaceExists(LPDIRECTDRAWSURFACE4 surface)
+HRESULT surfaceIsLost(LPDIRECTDRAWSURFACE4 *surface)
 {
-    if (surface)
+    if (*surface)
     {
-        int res = surface->IsLost();
-        return res;
+        return (*surface)->IsLost();
     }
-    return 0;
+    return DD_OK;
 }
 
 // FUNCTION: STUNTGP_D3D 0x44e9c0
-int *FUN_44e9c0(int *param_1)
+HRESULT surfaceRestore(LPDIRECTDRAWSURFACE4 *surface)
 {
-    if (param_1)
+    if (*surface)
     {
-        // TODO: objects
+        return (*surface)->Restore();
     }
-    return NULL;
+    return DD_OK;
 }
 
 // STUB: STUNTGP_D3D 0x4314c0
@@ -240,22 +239,34 @@ BOOL FUN_4314c0()
 // FUNCTION: STUNTGP_D3D 0x44e9d0
 void FUN_44e9d0()
 {
-    if (surfaceExists(g_surface) == DD_OK)
+    if (surfaceIsLost(&g_surface) == DD_OK && surfaceIsLost(&g_surface2) == DD_OK && FUN_4314c0() == TRUE)
     {
-        if (surfaceExists(g_surface2) == DD_OK)
-        {
-            if (FUN_4314c0())
-            {
-                return;
-            }
-        }
+        return;
     }
     FUN_44e4b0(1);
+}
 
-    return;
+// STUB: STUNTGP_D3D 0x431510
+BOOL FUN_431510()
+{
+    return TRUE;
+}
+
+// STUB: STUNTGP_D3D 0x42bf00
+void FUN_42bf00()
+{
 }
 
 // FUNCTION: STUNTGP_D3D 0x44ea10
+void FUN_44ea10()
+{
+    if (surfaceRestore(&g_surface) != DD_OK || surfaceRestore(&g_surface2) != DD_OK || FUN_431510() != TRUE)
+    {
+        FUN_44e4b0(1);
+        return;
+    }
+    FUN_42bf00();
+}
 
 // FUNCTION: STUNTGP_D3D 0x44ea50
 void FUN_44ea50()

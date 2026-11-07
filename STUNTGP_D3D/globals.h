@@ -33,7 +33,7 @@ extern DWORD g_61c39c;
 extern char g_62ddfc;
 extern WPARAM g_61c374;
 
-extern PBYTE g_62d480[10];
+extern BYTE g_62d480[256];
 
 extern LPDIRECTDRAWSURFACE4 g_surface;
 extern LPDIRECTDRAWSURFACE4 g_surface2;
