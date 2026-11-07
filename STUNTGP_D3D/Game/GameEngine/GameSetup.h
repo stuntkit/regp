@@ -3,6 +3,9 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+extern int g_589e08;
+extern int g_624984;
+
 void FUN_401de0();
 void FUN_40a2f0();
 void FUN_40d500();

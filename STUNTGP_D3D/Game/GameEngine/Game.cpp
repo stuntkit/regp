@@ -536,12 +536,6 @@ void FUN_4476c0(int type, float x, float y, float z, float width, float height)
 {
 }
 
-// STUB: STUNTGP_D3D 0x4290d0
-float FUN_4290d0(const char *text, float scale)
-{
-    return 0.0f;
-}
-
 // STUB: STUNTGP_D3D 0x443770
 int FUN_443770()
 {

@@ -1,10 +1,12 @@
 #include "d3drender.h"
 #include "common.h"
 #include "sprite.h"
+#include "font.h"
 #include "globals.h"
 #include "windowInit.h"
 #include "vecmath.h"
 #include "Game/GameEngine/io_wad.h"
+#include "Game/GameEngine/GameSetup.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -53,6 +55,9 @@ OverlayPoly *g_61c5f0 = NULL;
 
 // GLOBAL: STUNTGP_D3D 0x61c604
 DWORD g_61c604 = 0;
+
+// GLOBAL: STUNTGP_D3D 0x592050
+int g_592050 = 0;
 
 // GLOBAL: STUNTGP_D3D 0x61c5e4
 int g_61c5e4 = 0;
@@ -327,6 +332,28 @@ void FUN_431a80()
     FUN_423430();
 }
 
+// FUNCTION: STUNTGP_D3D 0x42f340
+void FUN_42f340()
+{
+    if (g_589e08 != 1)
+    {
+        g_592050 = 1;
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, TRUE);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 1);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42f380
+void FUN_42f380()
+{
+    if (g_589e08 != 1)
+    {
+        g_592050 = 0;
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, FALSE);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 0xa0);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x432190
 void FUN_432190(int mode)
 {
@@ -366,6 +393,118 @@ void FUN_432190(int mode)
         break;
     }
     g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+}
+
+// FUNCTION: STUNTGP_D3D 0x432300
+void FUN_432300(Font *font, D3DCOLOR color, DWORD flags)
+{
+    int texture;
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 1);
+    if (!(flags & 0x14))
+    {
+        int mode;
+        if (flags & 8)
+        {
+            mode = 0x60;
+        }
+        else
+        {
+            mode = 0x28;
+        }
+        FUN_432190(mode);
+        texture = font->glyphs[0].texture;
+    }
+    else
+    {
+        FUN_432190(0x70);
+        texture = font->glyphs[0].textureAlt;
+    }
+    if (g_61c5e4 != texture)
+    {
+        g_d3dDevice->SetTexture(0, g_6227d4[texture].texture);
+        g_61c5e4 = texture;
+    }
+    FUN_42f380();
+}
+
+// FUNCTION: STUNTGP_D3D 0x432380
+void FUN_432380()
+{
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_ONE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ZERO);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, FALSE);
+    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 0xa0);
+    if (g_624984 == 1)
+    {
+        FUN_42f340();
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x4323f0
+float FUN_4323f0(Font *font, char c, float x, float y, float z, D3DCOLOR color, float scale, DWORD flags)
+{
+    D3DTLVERTEX2 v[4];
+    Glyph *glyph = &font->glyphs[g_57b318[(BYTE)c]];
+    float w = glyph->width * scale;
+    float h = glyph->height * scale;
+
+    v[0].sx = x;
+    v[0].sy = y;
+    v[0].sz = z;
+    v[0].rhw = z;
+    v[0].tu1 = glyph->u0;
+    v[0].tv1 = glyph->v0;
+    v[0].color = color | 0xff000000;
+    v[0].specular = 0;
+
+    v[1].sx = x + w;
+    v[1].sy = y;
+    v[1].sz = z;
+    v[1].rhw = z;
+    v[1].tu1 = glyph->u1;
+    v[1].tv1 = glyph->v0;
+    v[1].color = color | 0xff000000;
+    v[1].specular = 0;
+
+    v[2].sx = x + w;
+    v[2].sy = y + h;
+    v[2].sz = z;
+    v[2].rhw = z;
+    v[2].tu1 = glyph->u1;
+    v[2].tv1 = glyph->v1;
+    v[2].color = color | 0xff000000;
+    v[2].specular = 0;
+
+    v[3].sx = x;
+    v[3].sy = y + h;
+    v[3].sz = z;
+    v[3].rhw = z;
+    v[3].tu1 = glyph->u0;
+    v[3].tv1 = glyph->v1;
+    v[3].color = color | 0xff000000;
+    v[3].specular = 0;
+
+    D3DTLVERTEX2 *p = v;
+    for (int i = 0; i < 4; i++)
+    {
+        p->sx = (p->sx - 320.0f) * g_624990 + g_576b94;
+        p->sy = (p->sy - 240.0f) * g_624994 + g_576b98;
+        p++;
+    }
+    if (flags & 2)
+    {
+        v[0].sx = v[0].sx + font->slantScale * font->slant * h;
+        v[1].sx = v[1].sx + font->slantScale * font->slant * h;
+        v[2].sx = v[2].sx - font->slantScale * font->slant * h;
+        v[3].sx = v[3].sx - font->slantScale * font->slant * h;
+    }
+    g_d3dDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, FVF_TLVERTEX2, v, 4, D3DDP_DONOTCLIP | D3DDP_DONOTLIGHT);
+    if (g_57b418 != 0.0f && c >= '0' && c <= '9')
+    {
+        return g_57b418 * scale + 1.0f;
+    }
+    return glyph->width * scale + 1.0f;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4328c0
