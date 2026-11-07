@@ -667,7 +667,10 @@ struct ObjectDef
     Vec4 *matrix;     // 0x08
     BYTE unk0c[0x18]; // 0x0c
     WORD unk24;       // 0x24
-    BYTE unk26[0xe];  // 0x26
+    WORD unk26;       // 0x26, vertex count
+    BYTE unk28[0x4];  // 0x28
+    BYTE *unk2c;      // 0x2c, vertices, 16 bytes each
+    BYTE unk30[0x4];  // 0x30
     int unk34;        // 0x34
     BYTE unk38[0x8];  // 0x38
 };

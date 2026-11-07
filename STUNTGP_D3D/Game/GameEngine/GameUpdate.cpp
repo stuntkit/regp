@@ -1095,6 +1095,35 @@ void FUN_426ca0(AnimObject *obj, ObjectDef *def)
     Vec3_Normalize(&m[2].x);
 }
 
+// FUNCTION: STUNTGP_D3D 0x426cf0
+void FUN_426cf0(AnimObject *obj, ObjectDef *def, DWORD scale)
+{
+    BYTE *color = (BYTE *)&obj->unk44;
+    DWORD r = color[2] * scale >> 8;
+    DWORD g = color[1] * scale >> 8;
+    DWORD b = color[0] * scale >> 8;
+    BYTE *vertex = def->unk2c;
+    for (DWORD i = 0; i < def->unk26; i++)
+    {
+        vertex[14] = r;
+        vertex[13] = g;
+        vertex[12] = b;
+        vertex += 16;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x426d50
+void FUN_426d50(AnimObject *obj, ObjectDef *def)
+{
+    FUN_426cf0(obj, def, (int)(g_sinTable[obj->angleA] * 96.0f + 159.0f));
+}
+
+// FUNCTION: STUNTGP_D3D 0x426d80
+void FUN_426d80(AnimObject *obj, ObjectDef *def)
+{
+    FUN_426cf0(obj, def, (int)(g_sinTable[obj->angleA] * 128.0f));
+}
+
 // FUNCTION: STUNTGP_D3D 0x426db0
 void FUN_426db0(AnimObject *obj, ObjectDef *def)
 {

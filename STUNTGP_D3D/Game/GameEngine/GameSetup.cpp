@@ -157,6 +157,10 @@ int g_6244a4;
 // GLOBAL: STUNTGP_D3D 0x62497c
 int g_62497c;
 
+// NULL-terminated name list; the count is unknown.
+// GLOBAL: STUNTGP_D3D 0x582b28
+char *g_582b28[64];
+
 // GLOBAL: STUNTGP_D3D 0x6244a0
 int g_6244a0;
 
@@ -679,6 +683,17 @@ int FUN_42b8b0(Scene *scene, DWORD index, int lod)
         object++;
     }
     return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x42b9a0
+int FUN_42b9a0(const char *name)
+{
+    int result = 1;
+    for (int i = 0; g_582b28[i] && result; i++)
+    {
+        result = strcmp(g_582b28[i], name);
+    }
+    return result;
 }
 
 // Camera height for the race scene list.

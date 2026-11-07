@@ -635,6 +635,22 @@ int FUN_43b3b0(BitReader *reader)
     return bit;
 }
 
+// FUNCTION: STUNTGP_D3D 0x43b3f0
+int FUN_43b3f0(BitReader *reader, int count)
+{
+    int value = 0;
+    while (count >= 8)
+    {
+        value = (value << 8) | FUN_43b370(reader);
+        count -= 8;
+    }
+    while (count--)
+    {
+        value = value * 2 + FUN_43b3b0(reader);
+    }
+    return value;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43bb90
 int FUN_43bb90(BitReader *reader)
 {
@@ -803,6 +819,14 @@ void FUN_43c130()
         memcpy(g_menuState.unk1dac[i].name, g_479450, 3);
         g_menuState.unk1dac[i].time = 0;
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x43c310
+void FUN_43c310(char value)
+{
+    memset(&g_menuState.unlocked[1], value, 21);
+    memset(&g_menuState.unlocked[25], value, 24);
+    g_menuState.unk0074 = 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43c370

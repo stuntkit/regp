@@ -58,6 +58,10 @@ OverlayPoly *g_61c5f0 = NULL;
 // GLOBAL: STUNTGP_D3D 0x61c604
 DWORD g_61c604 = 0;
 
+// Set when the device offers an ARGB1555 texture format.
+// GLOBAL: STUNTGP_D3D 0x5d91c4
+int g_5d91c4;
+
 // GLOBAL: STUNTGP_D3D 0x592068
 int g_592068;
 
@@ -877,6 +881,41 @@ void FUN_42f6a0()
     memset(&g_5ba788, 0, sizeof(g_5ba788));
     g_5ba788.count = 0;
     DirectDrawEnumerateEx(FUN_42f530, &g_5ba788, DDENUM_ATTACHEDSECONDARYDEVICES | DDENUM_NONDISPLAYDEVICES);
+}
+
+// FUNCTION: STUNTGP_D3D 0x42f6d0
+int FUN_42f6d0(DDPIXELFORMAT *format)
+{
+    if (format->dwRGBBitCount != 16)
+    {
+        return 0;
+    }
+    if (!(format->dwFlags & DDPF_ALPHAPIXELS))
+    {
+        return 0;
+    }
+    if (!(format->dwFlags & DDPF_RGB))
+    {
+        return 0;
+    }
+    if (format->dwRBitMask != 0x7c00)
+    {
+        return 0;
+    }
+    if (format->dwGBitMask != 0x3e0)
+    {
+        return 0;
+    }
+    if (format->dwBBitMask != 0x1f)
+    {
+        return 0;
+    }
+    if (format->dwRGBAlphaBitMask != 0x8000)
+    {
+        return 0;
+    }
+    g_5d91c4 = 1;
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42f7f0
