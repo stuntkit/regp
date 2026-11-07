@@ -477,6 +477,12 @@ void FUN_462200()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x462260
+int FUN_462260()
+{
+    return 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x462270
 void FUN_462270(int a)
 {

@@ -1,6 +1,7 @@
 #include "GameUpdate.h"
 #include "MenuUpdate.h"
 
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 #include "../../globals.h"
@@ -91,8 +92,23 @@ int FUN_43efc0();
 void FUN_441210();
 int FUN_452d70(int id);
 void FUN_462270(int a);
+int FUN_462260();
+int FUN_424a80();
+void FUN_424a90(int mode);
+extern Unk4d5cc0 *g_60df90;
 float FUN_43d9e0(float value);
 int FUN_4407a0(int id);
+
+// FUNCTION: STUNTGP_D3D 0x424a80
+int FUN_424a80()
+{
+    return 2;
+}
+
+// FUNCTION: STUNTGP_D3D 0x424a90
+void FUN_424a90(int mode)
+{
+}
 
 // FUNCTION: STUNTGP_D3D 0x424bd0
 void FUN_424bd0(float x, float y)
@@ -297,9 +313,40 @@ void FUN_43c000()
     Sound_ApplyVolumes();
 }
 
-// STUB: STUNTGP_D3D 0x43c060
+// FUNCTION: STUNTGP_D3D 0x43c060
 void FUN_43c060()
 {
+    memset(&g_menuState, 0, offsetof(MenuState, saved));
+    g_menuState.unk00d4 = 0;
+    g_menuState.sfx = 100;
+    g_menuState.unk0084 = 100;
+    g_menuState.unk00d8 = 0;
+    g_menuState.unk00dc = 0;
+    g_menuState.unk00e0 = 0;
+    g_menuState.unk00e4 = 0;
+    g_menuState.unk00e8 = 0;
+    g_menuState.unk0070 = 0;
+    g_menuState.unk0074 = 0;
+    g_menuState.unk0078 = 1;
+    g_menuState.music = 80;
+    g_menuState.offsetX = 0;
+    g_menuState.offsetY = 0;
+    g_menuState.unk0090 = 0;
+    for (int i = 0; i < 5; i++)
+    {
+        g_menuState.unk0098[i].unk00 = 0;
+        g_menuState.unk0098[i].unk04 = 0;
+        g_menuState.unk0098[i].unk08 = 0;
+    }
+    g_menuState.unk13148 = g_60df90;
+    g_menuState.unk4240 = FUN_462260();
+    if (!g_menuState.unk4240)
+    {
+        g_menuState.unk4240 = 1;
+    }
+    FUN_462270(g_menuState.unk4240);
+    g_menuState.unk0094 = FUN_424a80();
+    FUN_424a90(g_menuState.unk0094);
 }
 
 // STUB: STUNTGP_D3D 0x43c130
