@@ -59,9 +59,43 @@ void FUN_402b90()
 {
 }
 
-// STUB: STUNTGP_D3D 0x402c80
+// FUNCTION: STUNTGP_D3D 0x402c80
 void FUN_402c80()
 {
+    Vec4 v;
+    Vec4 *m = g_4722d0->cam.matrix;
+
+    v.x = -g_4722d0->fov;
+    v.y = 0.0f;
+    v.z = -g_4722d0->unk0bc;
+    Vec3_Normalize(&v.x);
+    g_4722d0->planeLeft.x = v.x * m[0].x + v.y * m[1].x + v.z * m[2].x;
+    g_4722d0->planeLeft.y = v.x * m[0].y + v.y * m[1].y + v.z * m[2].y;
+    g_4722d0->planeLeft.z = v.x * m[0].z + v.y * m[1].z + v.z * m[2].z;
+
+    v.x = g_4722d0->fov;
+    v.y = 0.0f;
+    v.z = -g_4722d0->unk0bc;
+    Vec3_Normalize(&v.x);
+    g_4722d0->planeRight.x = v.x * m[0].x + v.y * m[1].x + v.z * m[2].x;
+    g_4722d0->planeRight.y = v.x * m[0].y + v.y * m[1].y + v.z * m[2].y;
+    g_4722d0->planeRight.z = v.x * m[0].z + v.y * m[1].z + v.z * m[2].z;
+
+    v.x = 0.0f;
+    v.y = g_4722d0->fov;
+    v.z = -g_4722d0->unk0c0;
+    Vec3_Normalize(&v.x);
+    g_4722d0->planeTop.x = v.x * m[0].x + v.y * m[1].x + v.z * m[2].x;
+    g_4722d0->planeTop.y = v.x * m[0].y + v.y * m[1].y + v.z * m[2].y;
+    g_4722d0->planeTop.z = v.x * m[0].z + v.y * m[1].z + v.z * m[2].z;
+
+    v.x = 0.0f;
+    v.y = -g_4722d0->fov;
+    v.z = -g_4722d0->unk0c0;
+    Vec3_Normalize(&v.x);
+    g_4722d0->planeBottom.x = v.x * m[0].x + v.y * m[1].x + v.z * m[2].x;
+    g_4722d0->planeBottom.y = v.x * m[0].y + v.y * m[1].y + v.z * m[2].y;
+    g_4722d0->planeBottom.z = v.x * m[0].z + v.y * m[1].z + v.z * m[2].z;
 }
 
 // FUNCTION: STUNTGP_D3D 0x402e90

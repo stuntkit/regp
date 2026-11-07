@@ -37,7 +37,7 @@ void Vec3_Normalize(float *v)
         v[0] = v[1] = v[2] = 0.0f;
         return;
     }
-    len = 1.0f / sqrt(len);
+    len = 1.0f / (float)sqrt(len);
     v[0] *= len;
     v[1] *= len;
     v[2] *= len;
