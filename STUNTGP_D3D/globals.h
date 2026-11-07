@@ -60,4 +60,9 @@ struct SurfaceSlot
 
 extern DWORD g_surfaceSlotCount;
 extern SurfaceSlot g_surfaceSlots[255];
+
+// --- agent D (io_wad / Engine_LevelScript) ---
+void *Mem_Alloc(int size, int type);
+int Mem_Free(void *ptr);
+// --- end agent D ---
 #endif /* GLOBALS_H */

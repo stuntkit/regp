@@ -6,4 +6,6 @@
 #include "../../globals.h"
 #include "io_wad.h"
 
+void FUN_42d060(char *script, char *key);
+void Script_ParseGameConfigBuffer(char *script);
 void Script_ParseGameConfig();

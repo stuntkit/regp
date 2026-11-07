@@ -97,3 +97,19 @@ DWORD g_surfaceSlotCount = 0;
 // size inferred: next referenced address is 0x5da1c0
 // GLOBAL: STUNTGP_D3D 0x5d91d0
 SurfaceSlot g_surfaceSlots[255];
+
+// --- agent D (io_wad / Engine_LevelScript) ---
+
+// zero-filled, 32-byte aligned allocation tracked in a 0x180-slot table at 0x589e2c
+// STUB: STUNTGP_D3D 0x42e8d0
+void *Mem_Alloc(int size, int type)
+{
+    return NULL;
+}
+
+// STUB: STUNTGP_D3D 0x42e980
+int Mem_Free(void *ptr)
+{
+    return 0;
+}
+// --- end agent D ---
