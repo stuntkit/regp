@@ -195,6 +195,31 @@ MenuItem g_486800[5] = {
 // GLOBAL: STUNTGP_D3D 0x4868a0
 MenuDef g_4868a0 = {0xb, 1.0f, 0, 510.0f, 240.0f, 1.0f, 2, 1.25f, 4, 0xaa, g_486800, 0};
 
+// GLOBAL: STUNTGP_D3D 0x487a58
+MenuItem g_487a58[4] = {
+    {-1, 0xffffffff, 0xffffffff, 0x14, 0, 4, 0, 0},
+    {0, 0xffc8c8ff, 0xffffffff, 0x15, 0, 1, 0, 0},
+    {1, 0xffc8c8ff, 0xffffffff, 0x16, 0, 1, 0, 0},
+    {0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x487ad8
+MenuDef g_487ad8 = {0xb, -1.0f, 0, 130.0f, 240.0f, 1.0f, 2, 1.25f, 1, 0x78, g_487a58, 0};
+
+// GLOBAL: STUNTGP_D3D 0x487b08
+MenuItem g_487b08[7] = {
+    {0, 0xffc8c8ff, 0xffffffff, 0x3f, 0x40, 1, 0x160, 0x16d},
+    {1, 0xffc8c8ff, 0xffffffff, 0x41, 0x42, 1, 0x15f, 0x16c},
+    {2, 0xffc8c8ff, 0xffffffff, 0x43, 0x44, 1, 0x15a, 0x167},
+    {3, 0xffc8c8ff, 0xffffffff, 0x45, 0x46, 1, 0x157, 0x164},
+    {4, 0xffc8c8ff, 0xffffffff, 0x47, 0x48, 1, 0x158, 0x165},
+    {5, 0xffc8c8ff, 0xffffffff, 0x19, 0x2d8, 1, 0, 0},
+    {0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x487be8
+MenuDef g_487be8 = {0xb, 1.0f, 0, 400.0f, 240.0f, 1.0f, 2, 1.25f, 4, 0xc8, g_487b08, 0};
+
 // GLOBAL: STUNTGP_D3D 0x487938
 MenuItem g_487938[2] = {
     {0, 0xffc8c8ff, 0xffffffff, 0x17, 0, 1, 0, 0},
@@ -2801,6 +2826,68 @@ int FUN_452fc0(MenuObject *object)
     return 1;
 }
 
+void FUN_4531a0(Unk4516c0 *object);
+
+// FUNCTION: STUNTGP_D3D 0x4530b0
+int FUN_4530b0(Unk4516c0 *object)
+{
+    MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
+    memset(list, 0, sizeof(MenuList));
+    // The two handlers are copied as one block.
+    *(PoolClass *)&list->base.destroy = g_menuListClass;
+    list->base.type = 0x29;
+    // STRING: STUNTGP_D3D 0x487c20
+    list->base.name = "MenuText";
+    list->base.unk08 = 0;
+    if (!FUN_43c860(list, &g_487be8))
+    {
+        Pool_Free(list);
+        object->unk14 = NULL;
+    }
+    else
+    {
+        object->unk14 = &list->base;
+    }
+    PoolObject *child = object->unk14;
+    child->message(child, 0x18, 0);
+    child->message(child, 0x16, 0);
+    object->unk1c = 0;
+    list = (MenuList *)Pool_Alloc(sizeof(MenuList));
+    memset(list, 0, sizeof(MenuList));
+    *(PoolClass *)&list->base.destroy = g_menuListClass;
+    list->base.type = 0x29;
+    // STRING: STUNTGP_D3D 0x487c2c
+    list->base.name = "MenuText";
+    list->base.unk08 = 0;
+    if (!FUN_43c860(list, &g_487ad8))
+    {
+        Pool_Free(list);
+        object->unk18 = NULL;
+    }
+    else
+    {
+        object->unk18 = &list->base;
+    }
+    object->unk18->message(object->unk18, 0x18, 0);
+    FUN_4531a0(object);
+    return 1;
+}
+
+int FUN_456000();
+
+// FUNCTION: STUNTGP_D3D 0x4531a0
+void FUN_4531a0(Unk4516c0 *object)
+{
+    if (FUN_456000() < 2)
+    {
+        g_487be8.items[1].id = -1;
+    }
+    else
+    {
+        g_487be8.items[1].id = 1;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x4531d0
 void FUN_4531d0(Unk4516c0 *object)
 {
@@ -3120,6 +3207,12 @@ void FUN_455fc0(Unk455fc0 *object)
     g_menuState.unk00e0 = object->unk24;
     g_menuState.unk00e4 = object->unk28;
     g_menuState.unk00e8 = object->unk2c;
+}
+
+// FUNCTION: STUNTGP_D3D 0x456000
+int FUN_456000()
+{
+    return FUN_437100();
 }
 
 // FUNCTION: STUNTGP_D3D 0x456010
