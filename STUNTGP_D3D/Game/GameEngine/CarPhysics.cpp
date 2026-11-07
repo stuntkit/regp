@@ -117,6 +117,91 @@ void FUN_40d790()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x40e470
+void FUN_40e470()
+{
+    Car *car = g_4d5bb8;
+    if (car->unk1f14 < 1.0f)
+    {
+        car->unk1f14 += 1.0f / (car->unkca0 * 60.0f);
+        if (car->unk1f14 >= 1.0f)
+        {
+            car->unk1f14 = 1.0f;
+        }
+        if (car->unk1f14 < 0.5f && car->unk1cf8 > 0.0f)
+        {
+            car->unk1cf8 = 0.0f;
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x40ead0
+void FUN_40ead0()
+{
+    Car *car = g_4d5bb8;
+    if (car->unk2570 < car->unk2574 * car->unkf74)
+    {
+        car->unk2250 = 0;
+    }
+    if (car->unk2250 == 1)
+    {
+        car->unk2254 += car->unkd60;
+        if (car->unk2254 >= car->unkd64)
+        {
+            car->unk2254 = car->unkd64 - 1.0f;
+        }
+    }
+    else
+    {
+        car->unk2254 *= car->unkd68;
+        if (car->unk2254 < 50.0f)
+        {
+            car->unk2254 = 0.0f;
+            car->unk2258 = 0.0f;
+            return;
+        }
+    }
+    unsigned int i = (int)(car->unk2254 * 128.0f / car->unkd64);
+    if (i >= 128)
+    {
+        i = 127;
+    }
+    car->unk2258 = car->unkd70[i] * car->unkd6c;
+}
+
+// FUNCTION: STUNTGP_D3D 0x40ee70
+void FUN_40ee70()
+{
+    Car *car = g_4d5bb8;
+    g_4d5bb8->unk2894 = (((g_4d5bb8->unk2240[0] + g_4d5bb8->unk2240[2]) * 0.5f -
+                          (g_4d5bb8->unk2240[1] + g_4d5bb8->unk2240[3]) * 0.5f) *
+                             (1.0f / ((g_4d5bb8->unk238 + g_4d5bb8->unk234) * 0.5f)) +
+                         g_4d5bb8->unk2894) *
+                        0.5f;
+    float roll = -1.0f / g_4d5bb8->unk230 * ((g_4d5bb8->unk2240[1] + g_4d5bb8->unk2240[0]) * 0.5f -
+                                             (g_4d5bb8->unk2240[3] + g_4d5bb8->unk2240[2]) * 0.5f);
+    if (g_4d5bb8->unk2250 == 1 && (float)fabs(g_4d5bb8->unk1cf0) < 50.0f && roll < 0.0f)
+    {
+        roll *= g_4d5bb8->unk2254 * 16.0f / g_4d5bb8->unkd64 / (g_4d5bb8->unk1cf0 * 0.1f + 1.0f);
+    }
+    g_4d5bb8->unk2890 = (roll * 0.125f + g_4d5bb8->unk2890) * 0.95f;
+    if (g_4d5bb8->unk2890 > 0.3f)
+    {
+        g_4d5bb8->unk2890 = 0.3f;
+    }
+    else if (g_4d5bb8->unk2890 < -0.3f)
+    {
+        g_4d5bb8->unk2890 = -0.3f;
+    }
+    g_4d5bb8->unk288c = 0.0f;
+    for (int i = 0; i < 4; i++)
+    {
+        car->unk288c += car->unk2240[i];
+    }
+    g_4d5bb8->unk288c *= -0.25f;
+    g_4d5bb8->unk288c += g_4d5bb8->unk248;
+}
+
 // STUB: STUNTGP_D3D 0x40fc90
 void FUN_40fc90()
 {

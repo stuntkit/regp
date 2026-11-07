@@ -123,11 +123,22 @@ struct Car
     float unk230;            // 0x0230
     float unk234;            // 0x0234
     float unk238;            // 0x0238
-    BYTE unk023c[0x18];      // 0x023c
+    BYTE unk023c[0xc];       // 0x023c
+    float unk248;            // 0x0248
+    BYTE unk024c[0x8];       // 0x024c
     float unk254;            // 0x0254
-    BYTE unk0258[0xa60];     // 0x0258
+    BYTE unk0258[0xa48];     // 0x0258
+    float unkca0;            // 0x0ca0
+    BYTE unk0ca4[0x14];      // 0x0ca4
     Vector4 unkcb8[4];       // 0x0cb8
-    BYTE unk0cf8[0x280];     // 0x0cf8
+    BYTE unk0cf8[0x68];      // 0x0cf8
+    float unkd60;            // 0x0d60
+    float unkd64;            // 0x0d64
+    float unkd68;            // 0x0d68
+    float unkd6c;            // 0x0d6c
+    float unkd70[128];       // 0x0d70
+    BYTE unk0f70[0x4];       // 0x0f70
+    float unkf74;            // 0x0f74
     float unkf78;            // 0x0f78
     float unkf7c;            // 0x0f7c
     BYTE unk0f80[0xc28];     // 0x0f80
@@ -140,18 +151,23 @@ struct Car
     BYTE unk1c98[0x58];      // 0x1c98
     float unk1cf0;           // 0x1cf0
     BYTE unk1cf4[0x4];       // 0x1cf4
-    int unk1cf8;             // 0x1cf8
+    float unk1cf8;           // 0x1cf8
     BYTE unk1cfc[0x20c];     // 0x1cfc
     float unk1f08;           // 0x1f08
     BYTE unk1f0c[0x4];       // 0x1f0c
     int unk1f10;             // 0x1f10
-    BYTE unk1f14[0xbc];      // 0x1f14
+    float unk1f14;           // 0x1f14
+    BYTE unk1f18[0xb8];      // 0x1f18
     float unk1fd0;           // 0x1fd0
     BYTE unk1fd4[0x4];       // 0x1fd4
     int unk1fd8;             // 0x1fd8
     BYTE unk1fdc[0x4];       // 0x1fdc
     Wheel wheels[4];         // 0x1fe0
-    BYTE unk2240[0x30];      // 0x2240
+    float unk2240[4];        // 0x2240
+    int unk2250;             // 0x2250
+    float unk2254;           // 0x2254
+    float unk2258;           // 0x2258
+    BYTE unk225c[0x14];      // 0x225c
     float unk2270;           // 0x2270
     BYTE unk2274[0x4];       // 0x2274
     int unk2278;             // 0x2278
@@ -239,7 +255,13 @@ struct Car
     BYTE unk2644[0x6c];      // 0x2644
     int unk26b0;             // 0x26b0
     int unk26b4;             // 0x26b4
-    BYTE unk26b8[0x4bb0];    // 0x26b8
+    BYTE unk26b8[0x1d4];     // 0x26b8
+    float unk288c;           // 0x288c
+    float unk2890;           // 0x2890
+    float unk2894;           // 0x2894
+    BYTE unk2898[0x108c];    // 0x2898
+    int unk3924;             // 0x3924
+    BYTE unk3928[0x3940];    // 0x3928
     unsigned short *unk7268; // 0x7268
     BYTE unk726c[0x3c0];     // 0x726c
     int unk762c;             // 0x762c
