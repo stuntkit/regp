@@ -2,6 +2,7 @@
 
 #include "../../input.h"
 #include "../../mem.h"
+#include "../../objects.h"
 #include "../../sound.h"
 #include "../../surface.h"
 #include "../../windowInit.h"
@@ -52,11 +53,6 @@ void FUN_441f00()
 
 // STUB: STUNTGP_D3D 0x442120
 void FUN_442120()
-{
-}
-
-// STUB: STUNTGP_D3D 0x43d180
-void FUN_43d180()
 {
 }
 

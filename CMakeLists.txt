@@ -131,6 +131,7 @@ if(STUNTGP_BUILD_D3D)
     STUNTGP_D3D/surface.cpp
     STUNTGP_D3D/sound.cpp
     STUNTGP_D3D/input.cpp
+    STUNTGP_D3D/objects.cpp
   )
   reccmp_add_target(StuntGP_D3D ID STUNTGP_D3D)
 
