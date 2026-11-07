@@ -188,7 +188,7 @@ Unk62a078 g_62a078[0x40];
 int g_62d478;
 
 // GLOBAL: STUNTGP_D3D 0x60f02c
-int g_60f02c[0x96];
+Driver g_60f02c[6];
 
 // GLOBAL: STUNTGP_D3D 0x61b634
 int g_61b634;
@@ -398,8 +398,8 @@ void FUN_413670()
         g_49a1f8[i] = g_49a1f8[0];
         g_49a1f8[i].posX += 500.0f;
         FUN_408640(&g_49a1f8[i], &g_49a1f8[i].posX);
-        g_49a1f8[i].unk26b0 = g_60f050[i - 1].unk40;
-        g_49a1f8[i].unk26b4 = g_60f050[i - 1].unk44;
+        g_49a1f8[i].unk26b0 = g_60f02c[i].model;
+        g_49a1f8[i].unk26b4 = g_60f02c[i].unk04;
     }
     FUN_413500();
     FUN_417e10();

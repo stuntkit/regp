@@ -96,9 +96,6 @@ Car g_49a1f8[6];
 // GLOBAL: STUNTGP_D3D 0x4d5bb8
 Car *g_4d5bb8;
 
-// GLOBAL: STUNTGP_D3D 0x60f050
-Driver g_60f050[6];
-
 // GLOBAL: STUNTGP_D3D 0x60f2b0
 DWORD g_60f2b0;
 
@@ -794,7 +791,7 @@ void FUN_41e2d0()
         {
             int index = g_612d14[0] - g_49a1f8;
             // STRING: STUNTGP_D3D 0x474924
-            sprintf(text, "%s %s", g_60f050[index].name, g_6127a0[24]);
+            sprintf(text, "%s %s", g_60f02c[index].name, g_6127a0[24]);
             FUN_442cf0(180, text, &g_49a1f8[index], 1, 100);
         }
         g_612d14[i]->unk24ac = i;
