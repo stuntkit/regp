@@ -2,8 +2,6 @@
 
 #include <stdlib.h>
 
-extern int g_5ff3e8;
-extern int g_5ff4ac;
 void FUN_45f8f0(int track, int loop);
 int FUN_43eee0(int screen);
 void FUN_43dc30(int track);
@@ -13,24 +11,6 @@ int g_5fd250;
 
 // GLOBAL: STUNTGP_D3D 0x5fd258
 Pool g_pool;
-
-// GLOBAL: STUNTGP_D3D 0x5ff3f0
-PoolObject *g_5ff3f0;
-
-// GLOBAL: STUNTGP_D3D 0x5ff3f4
-BOOL g_5ff3f4;
-
-// GLOBAL: STUNTGP_D3D 0x5ff3f8
-PoolObject *g_5ff3f8;
-
-// GLOBAL: STUNTGP_D3D 0x5ff3fc
-BOOL g_5ff3fc;
-
-// GLOBAL: STUNTGP_D3D 0x5ff400
-PoolObject *g_5ff400[16];
-
-// GLOBAL: STUNTGP_D3D 0x5ff440
-int g_5ff440;
 
 // Music track per front-end screen.
 // GLOBAL: STUNTGP_D3D 0x5fcab0
@@ -85,13 +65,13 @@ int FUN_43ef10(int a, int screen)
     {
         return 0;
     }
-    for (int i = 0; i < g_5ff440; i++)
+    for (int i = 0; i < g_frontEnd.objectCount; i++)
     {
-        g_5ff400[i]->destroy(g_5ff400[i]);
-        Pool_Free(g_5ff400[i]);
-        g_5ff400[i] = NULL;
+        g_frontEnd.objects[i]->destroy(g_frontEnd.objects[i]);
+        Pool_Free(g_frontEnd.objects[i]);
+        g_frontEnd.objects[i] = NULL;
     }
-    g_5ff440 = 0;
+    g_frontEnd.objectCount = 0;
     return FUN_43ee40(FUN_43e000(a, screen));
 }
 
@@ -105,32 +85,32 @@ PoolObject *FUN_43e000(int a, int screen)
 // FUNCTION: STUNTGP_D3D 0x43ee40
 int FUN_43ee40(PoolObject *object)
 {
-    if (g_5ff3f8 && !g_5ff3fc)
+    if (g_frontEnd.nextScreen && !g_frontEnd.nextScreenStatic)
     {
-        g_5ff3f8->destroy(g_5ff3f8);
-        Pool_Free(g_5ff3f8);
+        g_frontEnd.nextScreen->destroy(g_frontEnd.nextScreen);
+        Pool_Free(g_frontEnd.nextScreen);
     }
-    g_5ff3f8 = NULL;
-    if (g_5ff3e8 <= 0 || g_5ff3e8 > 3)
+    g_frontEnd.nextScreen = NULL;
+    if (g_frontEnd.state <= 0 || g_frontEnd.state > 3)
     {
         return 0;
     }
     if (object->unk00[2])
     {
         int track = FUN_43eee0(object->unk00[2]);
-        if (track != g_5ff4ac)
+        if (track != g_frontEnd.musicTrack)
         {
             FUN_43dc30(track);
-            g_5ff4ac = track;
+            g_frontEnd.musicTrack = track;
         }
     }
-    g_5ff3f8 = object;
-    g_5ff3fc = FALSE;
-    if (g_5ff3f0)
+    g_frontEnd.nextScreen = object;
+    g_frontEnd.nextScreenStatic = FALSE;
+    if (g_frontEnd.screen)
     {
-        g_5ff3f0->message(g_5ff3f0, 0x14, 0);
+        g_frontEnd.screen->message(g_frontEnd.screen, 0x14, 0);
     }
-    g_5ff3e8 = 2;
+    g_frontEnd.state = 2;
     return 1;
 }
 
@@ -149,23 +129,23 @@ void FUN_43dc30(int track)
 // FUNCTION: STUNTGP_D3D 0x43de50
 void FUN_43de50()
 {
-    if (g_5ff3f0 && !g_5ff3f4)
+    if (g_frontEnd.screen && !g_frontEnd.screenStatic)
     {
-        g_5ff3f0->destroy(g_5ff3f0);
-        Pool_Free(g_5ff3f0);
-        g_5ff3f0 = NULL;
+        g_frontEnd.screen->destroy(g_frontEnd.screen);
+        Pool_Free(g_frontEnd.screen);
+        g_frontEnd.screen = NULL;
     }
-    if (g_5ff3f8 && !g_5ff3fc)
+    if (g_frontEnd.nextScreen && !g_frontEnd.nextScreenStatic)
     {
-        g_5ff3f8->destroy(g_5ff3f8);
-        Pool_Free(g_5ff3f8);
-        g_5ff3f8 = NULL;
+        g_frontEnd.nextScreen->destroy(g_frontEnd.nextScreen);
+        Pool_Free(g_frontEnd.nextScreen);
+        g_frontEnd.nextScreen = NULL;
     }
-    for (int i = 0; i < g_5ff440; i++)
+    for (int i = 0; i < g_frontEnd.objectCount; i++)
     {
-        g_5ff400[i]->destroy(g_5ff400[i]);
-        Pool_Free(g_5ff400[i]);
-        g_5ff400[i] = NULL;
+        g_frontEnd.objects[i]->destroy(g_frontEnd.objects[i]);
+        Pool_Free(g_frontEnd.objects[i]);
+        g_frontEnd.objects[i] = NULL;
     }
 }
 

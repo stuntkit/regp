@@ -35,63 +35,7 @@ DWORD g_5ff4b8;
 int g_5ff8c0;
 
 // GLOBAL: STUNTGP_D3D 0x5ff3e8
-int g_5ff3e8;
-
-// Screen fade in 16.16 fixed point.
-// GLOBAL: STUNTGP_D3D 0x5ff3ec
-int g_5ff3ec;
-
-// GLOBAL: STUNTGP_D3D 0x5ff444
-int g_5ff444;
-
-// GLOBAL: STUNTGP_D3D 0x5ff44c
-float g_5ff44c;
-
-// GLOBAL: STUNTGP_D3D 0x5ff450
-float g_5ff450;
-
-// GLOBAL: STUNTGP_D3D 0x5ff454
-float g_5ff454;
-
-// GLOBAL: STUNTGP_D3D 0x5ff458
-float g_5ff458;
-
-// GLOBAL: STUNTGP_D3D 0x5ff45c
-int g_5ff45c;
-
-// GLOBAL: STUNTGP_D3D 0x5ff460
-int g_5ff460;
-
-// GLOBAL: STUNTGP_D3D 0x5ff464
-int g_5ff464;
-
-// GLOBAL: STUNTGP_D3D 0x5ff468
-float g_5ff468;
-
-// GLOBAL: STUNTGP_D3D 0x5ff470
-float g_5ff470[6];
-
-// GLOBAL: STUNTGP_D3D 0x5ff488
-float g_5ff488[6];
-
-// GLOBAL: STUNTGP_D3D 0x5ff4a4
-int g_5ff4a4;
-
-// Player locked to the menu, or 0 for any.
-// GLOBAL: STUNTGP_D3D 0x5ff4a0
-int g_5ff4a0;
-
-// GLOBAL: STUNTGP_D3D 0x5ff4a8
-int g_5ff4a8;
-
-// GLOBAL: STUNTGP_D3D 0x5ff4b0
-int g_5ff4b0;
-
-// GLOBAL: STUNTGP_D3D 0x5ff4ac
-int g_5ff4ac;
-
-// GLOBAL: STUNTGP_D3D 0x5ff4b4
-int g_5ff4b4;
+FrontEnd g_frontEnd;
 
 // GLOBAL: STUNTGP_D3D 0x61297c
 DWORD g_61297c;
@@ -521,147 +465,172 @@ void FUN_43dd10(DWORD color)
 // FUNCTION: STUNTGP_D3D 0x43dd70
 int FUN_43dd70()
 {
-    g_5ff460 = 0;
-    return g_5ff464 != 0;
+    g_frontEnd.unk78 = 0;
+    return g_frontEnd.unk7c != 0;
 }
 
-// STUB: STUNTGP_D3D 0x43dda0
+// FUNCTION: STUNTGP_D3D 0x43dda0
 void FUN_43dda0()
 {
+    memset(&g_frontEnd, 0, sizeof(g_frontEnd));
+    g_frontEnd.fade = 0x10000;
+    g_frontEnd.state = 1;
+    g_frontEnd.screen = NULL;
+    g_frontEnd.screenStatic = FALSE;
+    g_frontEnd.nextScreen = NULL;
+    g_frontEnd.nextScreenStatic = FALSE;
+    g_frontEnd.objectCount = 0;
+    g_frontEnd.unk5c = 1;
+    g_frontEnd.unk60 = 0;
+    g_frontEnd.unk64 = 0.0f;
+    g_frontEnd.unk68 = 0.0f;
+    g_frontEnd.unk6c = 0.0f;
+    g_frontEnd.unk70 = 0.0f;
+    g_frontEnd.unk74 = 0;
+    g_frontEnd.unk78 = 0;
+    g_frontEnd.unk7c = 0;
+    g_frontEnd.unk80 = 0.0f;
+    g_frontEnd.unk84 = 0;
+    g_frontEnd.lockedPlayer = 0;
+    g_frontEnd.unkbc = 0;
+    g_frontEnd.unkc0 = 0;
+    g_frontEnd.musicTrack = 0;
+    g_frontEnd.unkcc = 0;
+    FUN_43dee0();
 }
 
 // FUNCTION: STUNTGP_D3D 0x43de40
 void FUN_43de40()
 {
-    g_5ff4ac = 0;
+    g_frontEnd.musicTrack = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43dee0
 void FUN_43dee0()
 {
-    g_5ff470[0] = 0.0f;
-    g_5ff470[1] = 0.0f;
-    g_5ff470[2] = 0.0f;
-    g_5ff470[3] = 0.0f;
-    g_5ff470[4] = 0.0f;
-    g_5ff470[5] = 0.0f;
-    g_5ff488[0] = 0.0f;
-    g_5ff488[1] = 0.0f;
-    g_5ff488[2] = 0.0f;
-    g_5ff488[3] = 0.0f;
-    g_5ff488[4] = 0.0f;
-    g_5ff488[5] = 0.0f;
+    g_frontEnd.unk88[0] = 0.0f;
+    g_frontEnd.unk88[1] = 0.0f;
+    g_frontEnd.unk88[2] = 0.0f;
+    g_frontEnd.unk88[3] = 0.0f;
+    g_frontEnd.unk88[4] = 0.0f;
+    g_frontEnd.unk88[5] = 0.0f;
+    g_frontEnd.unka0[0] = 0.0f;
+    g_frontEnd.unka0[1] = 0.0f;
+    g_frontEnd.unka0[2] = 0.0f;
+    g_frontEnd.unka0[3] = 0.0f;
+    g_frontEnd.unka0[4] = 0.0f;
+    g_frontEnd.unka0[5] = 0.0f;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43efc0
 int FUN_43efc0()
 {
-    return g_5ff3ec * 100 / 0x10000 > 95;
+    return g_frontEnd.fade * 100 / 0x10000 > 95;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43eff0
 void FUN_43eff0()
 {
-    int fade = g_5ff3ec * 100 / 0x10000;
-    if (g_5ff4b4)
+    int fade = g_frontEnd.fade * 100 / 0x10000;
+    if (g_frontEnd.unkcc)
     {
         FUN_43dd70();
         FUN_440880(2);
         FUN_4411c0();
         FUN_43de40();
         FUN_43ef10(1, 1);
-        g_5ff4b4 = 0;
+        g_frontEnd.unkcc = 0;
         return;
     }
-    g_5ff4a4 = 0;
-    g_5ff444 = 1;
-    g_5ff454 += g_5ff44c * (1.0f / 60.0f);
-    g_5ff458 += g_5ff450 * (1.0f / 60.0f);
+    g_frontEnd.unkbc = 0;
+    g_frontEnd.unk5c = 1;
+    g_frontEnd.unk6c += g_frontEnd.unk64 * (1.0f / 60.0f);
+    g_frontEnd.unk70 += g_frontEnd.unk68 * (1.0f / 60.0f);
     FUN_43f610();
-    g_5ff444 = 0;
-    if (fade < g_5ff464)
+    g_frontEnd.unk5c = 0;
+    if (fade < g_frontEnd.unk7c)
     {
-        fade = g_5ff464;
+        fade = g_frontEnd.unk7c;
     }
     FUN_442ad0(2, 1, 0, 0, fade, fade, 1.0f);
-    g_5ff444 = 1;
-    if (g_5ff3f8)
+    g_frontEnd.unk5c = 1;
+    if (g_frontEnd.nextScreen)
     {
-        FUN_43f310(g_5ff3f8);
+        FUN_43f310(g_frontEnd.nextScreen);
     }
-    else if (g_5ff3f0)
+    else if (g_frontEnd.screen)
     {
-        FUN_43f310(g_5ff3f0);
+        FUN_43f310(g_frontEnd.screen);
     }
-    g_5ff444 = 0;
-    switch (g_5ff3e8)
+    g_frontEnd.unk5c = 0;
+    switch (g_frontEnd.state)
     {
     case 3:
-        if (g_5ff3ec > 0)
+        if (g_frontEnd.fade > 0)
         {
-            g_5ff3ec = FUN_43d790(g_5ff3ec - 0x2492, 0, 0x10000);
+            g_frontEnd.fade = FUN_43d790(g_frontEnd.fade - 0x2492, 0, 0x10000);
         }
         else
         {
-            g_5ff3e8 = 1;
+            g_frontEnd.state = 1;
         }
         break;
     case 2:
-        if (g_5ff3ec < 0x10000)
+        if (g_frontEnd.fade < 0x10000)
         {
-            g_5ff3ec = FUN_43d790(g_5ff3ec + 0x2492, 0, 0x10000);
+            g_frontEnd.fade = FUN_43d790(g_frontEnd.fade + 0x2492, 0, 0x10000);
         }
         else
         {
-            if (g_5ff3f0 && !g_5ff3f4)
+            if (g_frontEnd.screen && !g_frontEnd.screenStatic)
             {
-                g_5ff3f0->destroy(g_5ff3f0);
-                Pool_Free(g_5ff3f0);
+                g_frontEnd.screen->destroy(g_frontEnd.screen);
+                Pool_Free(g_frontEnd.screen);
             }
-            g_5ff3f0 = g_5ff3f8;
-            g_5ff3f4 = g_5ff3fc;
-            g_5ff3f8 = NULL;
-            g_5ff3fc = FALSE;
+            g_frontEnd.screen = g_frontEnd.nextScreen;
+            g_frontEnd.screenStatic = g_frontEnd.nextScreenStatic;
+            g_frontEnd.nextScreen = NULL;
+            g_frontEnd.nextScreenStatic = FALSE;
             FUN_43dee0();
-            g_5ff3f0->message(g_5ff3f0, 0x13, 0);
-            g_5ff3e8 = 3;
-            g_5ff468 = 0.0f;
+            g_frontEnd.screen->message(g_frontEnd.screen, 0x13, 0);
+            g_frontEnd.state = 3;
+            g_frontEnd.unk80 = 0.0f;
         }
         break;
     }
-    g_5ff468 = FUN_43d810(g_5ff468, 1.0f, 0.005f);
-    if (!g_5ff4a4)
+    g_frontEnd.unk80 = FUN_43d810(g_frontEnd.unk80, 1.0f, 0.005f);
+    if (!g_frontEnd.unkbc)
     {
-        if (g_5ff3f0)
+        if (g_frontEnd.screen)
         {
-            g_5ff3f0->message(g_5ff3f0, 2, 0);
+            g_frontEnd.screen->message(g_frontEnd.screen, 2, 0);
         }
-        if (g_5ff3f8)
+        if (g_frontEnd.nextScreen)
         {
-            g_5ff3f8->message(g_5ff3f8, 2, 0);
+            g_frontEnd.nextScreen->message(g_frontEnd.nextScreen, 2, 0);
         }
-        g_5ff444 = 1;
-        if (g_5ff3f0)
+        g_frontEnd.unk5c = 1;
+        if (g_frontEnd.screen)
         {
-            if (g_5ff3f8)
+            if (g_frontEnd.nextScreen)
             {
-                g_5ff3f8->message(g_5ff3f8, 1, 0);
+                g_frontEnd.nextScreen->message(g_frontEnd.nextScreen, 1, 0);
             }
             else
             {
-                g_5ff3f0->message(g_5ff3f0, 1, 0);
+                g_frontEnd.screen->message(g_frontEnd.screen, 1, 0);
             }
         }
-        g_5ff444 = 0;
+        g_frontEnd.unk5c = 0;
     }
-    g_5ff470[0] = FUN_43d810(g_5ff470[0], g_5ff488[0], 0.001f);
-    g_5ff470[1] = FUN_43d810(g_5ff470[1], g_5ff488[1], 0.001f);
-    g_5ff470[2] = FUN_43d810(g_5ff470[2], g_5ff488[2], 0.001f);
-    g_5ff470[3] = FUN_43d810(g_5ff470[3], g_5ff488[3], 0.001f);
-    g_5ff470[4] = FUN_43d810(g_5ff470[4], g_5ff488[4], 0.001f);
-    g_5ff470[5] = FUN_43d810(g_5ff470[5], g_5ff488[5], 0.001f);
-    g_5ff45c++;
-    g_5ff460++;
+    g_frontEnd.unk88[0] = FUN_43d810(g_frontEnd.unk88[0], g_frontEnd.unka0[0], 0.001f);
+    g_frontEnd.unk88[1] = FUN_43d810(g_frontEnd.unk88[1], g_frontEnd.unka0[1], 0.001f);
+    g_frontEnd.unk88[2] = FUN_43d810(g_frontEnd.unk88[2], g_frontEnd.unka0[2], 0.001f);
+    g_frontEnd.unk88[3] = FUN_43d810(g_frontEnd.unk88[3], g_frontEnd.unka0[3], 0.001f);
+    g_frontEnd.unk88[4] = FUN_43d810(g_frontEnd.unk88[4], g_frontEnd.unka0[4], 0.001f);
+    g_frontEnd.unk88[5] = FUN_43d810(g_frontEnd.unk88[5], g_frontEnd.unka0[5], 0.001f);
+    g_frontEnd.unk74++;
+    g_frontEnd.unk78++;
 }
 
 // Routes menu input to the screen: from the locked player, or from every active one.
@@ -670,11 +639,11 @@ void FUN_43f310(PoolObject *screen)
 {
     int i;
     int count = 0;
-    if (g_5ff4b0)
+    if (g_frontEnd.unkc8)
     {
-        if (g_5ff4a0)
+        if (g_frontEnd.lockedPlayer)
         {
-            if (FUN_43f5e0(g_5ff4a0))
+            if (FUN_43f5e0(g_frontEnd.lockedPlayer))
             {
                 return;
             }
@@ -689,17 +658,17 @@ void FUN_43f310(PoolObject *screen)
                 }
             }
         }
-        g_5ff4b0 = 0;
+        g_frontEnd.unkc8 = 0;
     }
-    if (g_5ff4a0)
+    if (g_frontEnd.lockedPlayer)
     {
-        if (FUN_437090(g_5ff4a0))
+        if (FUN_437090(g_frontEnd.lockedPlayer))
         {
-            FUN_43f3e0(screen, g_5ff4a0);
+            FUN_43f3e0(screen, g_frontEnd.lockedPlayer);
         }
         else
         {
-            g_5ff4a4 = 1;
+            g_frontEnd.unkbc = 1;
         }
     }
     else
@@ -714,12 +683,12 @@ void FUN_43f310(PoolObject *screen)
         }
         if (!count)
         {
-            g_5ff4a4 = 1;
+            g_frontEnd.unkbc = 1;
         }
     }
-    if (g_5ff4a4 != g_5ff4a8)
+    if (g_frontEnd.unkbc != g_frontEnd.unkc0)
     {
-        if (g_5ff4a4)
+        if (g_frontEnd.unkbc)
         {
             FUN_440880(7);
         }
@@ -728,7 +697,7 @@ void FUN_43f310(PoolObject *screen)
             FUN_440880(8);
         }
     }
-    g_5ff4a8 = g_5ff4a4;
+    g_frontEnd.unkc0 = g_frontEnd.unkbc;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43f3e0
@@ -768,8 +737,8 @@ void FUN_43f3e0(PoolObject *screen, int player)
     }
     if (key)
     {
-        g_5ff460 = 0;
-        if (g_5ff464)
+        g_frontEnd.unk78 = 0;
+        if (g_frontEnd.unk7c)
         {
             return;
         }
@@ -812,9 +781,9 @@ void FUN_43f3e0(PoolObject *screen, int player)
     }
     if (action || pressed)
     {
-        g_5ff460 = 0;
+        g_frontEnd.unk78 = 0;
     }
-    if (!g_5ff464 && pressed)
+    if (!g_frontEnd.unk7c && pressed)
     {
         screen->message(screen, pressed, player);
     }
@@ -837,9 +806,9 @@ int FUN_43f5e0(int player)
 // FUNCTION: STUNTGP_D3D 0x43f610
 void FUN_43f610()
 {
-    if (g_5ff3f0)
+    if (g_frontEnd.screen)
     {
-        switch (g_5ff3f0->unk00[1])
+        switch (g_frontEnd.screen->unk00[1])
         {
         case 2:
         case 3:
@@ -857,7 +826,7 @@ void FUN_43f610()
         case 20:
         case 27:
         case 29:
-            if (g_5ff460 > 3600)
+            if (g_frontEnd.unk78 > 3600)
             {
                 FUN_440880(2);
                 FUN_43ef10(1, 1);
@@ -865,15 +834,15 @@ void FUN_43f610()
             }
         }
     }
-    if (g_5ff460 > 18000)
+    if (g_frontEnd.unk78 > 18000)
     {
-        g_5ff464++;
+        g_frontEnd.unk7c++;
     }
     else
     {
-        g_5ff464 = 0;
+        g_frontEnd.unk7c = 0;
     }
-    g_5ff464 = FUN_43d790(g_5ff464, 0, 70);
+    g_frontEnd.unk7c = FUN_43d790(g_frontEnd.unk7c, 0, 70);
 }
 
 // STUB: STUNTGP_D3D 0x440c40
