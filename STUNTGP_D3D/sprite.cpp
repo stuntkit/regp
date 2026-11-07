@@ -63,6 +63,10 @@ int g_4793e4 = 62;
 // GLOBAL: STUNTGP_D3D 0x4793e8
 float g_4793e8 = 13.0f;
 
+// Scroll bar end cap length.
+// GLOBAL: STUNTGP_D3D 0x4793ec
+float g_4793ec = 5.0f;
+
 // Per-frame arena the sprite nodes are carved from.
 // GLOBAL: STUNTGP_D3D 0x5da374
 BYTE g_spriteArena[20000];
@@ -585,14 +589,113 @@ void FUN_4398a0(float x0, float y0, float x1, float y1, int layer, int def, int 
     }
 }
 
-// STUB: STUNTGP_D3D 0x4399b0
-void FUN_4399b0(int def, float x0, float x1, float y, float a0, float a1, float a2, int layer)
+// Horizontal scroll bar: track in three pieces, then the thumb.
+// FUNCTION: STUNTGP_D3D 0x4399b0
+void FUN_4399b0(int def, float x0, float x1, float y, float total, float visible, float pos, int layer)
 {
+    SpriteData s;
+    float u;
+
+    FUN_441320(&s, def);
+    u = s.u0;
+    s.flags = 2;
+    s.x = x0;
+    s.y = y;
+    s.width = g_4793ec;
+    s.u1 = g_4793ec * 4.0f + s.u0;
+    s.blendMode = 0x70;
+    s.alpha = 0xff;
+    FUN_438370(&s, layer, 1);
+
+    s.x = s.width + s.x;
+    s.u0 = s.u1;
+    s.u1 = (g_4793e8 - g_4793ec) * 4.0f + u;
+    x1 -= x0;
+    s.width = x1 - g_4793ec * 2.0f;
+    FUN_438370(&s, layer, 1);
+
+    s.x = s.width + s.x;
+    s.u0 = s.u1;
+    s.width = g_4793ec;
+    s.u1 = g_4793e8 * 4.0f + u;
+    FUN_438370(&s, layer, 1);
+
+    u = (g_4793e8 + 2.0f) * 4.0f + u;
+    s.y = y;
+    s.u0 = u;
+    s.x = x1 * pos / total + x0;
+    s.u1 = g_4793ec * 4.0f + u;
+    s.width = g_4793ec;
+    s.blendMode = 0x58;
+    FUN_438370(&s, layer, 0);
+
+    s.x = s.width + s.x;
+    s.u0 = s.u1;
+    s.u1 = (g_4793e8 - g_4793ec) * 4.0f + u;
+    s.width = x1 * visible / total - g_4793ec * 2.0f;
+    FUN_438370(&s, layer, 0);
+
+    s.x = s.width + s.x;
+    s.u0 = s.u1;
+    s.width = g_4793ec;
+    s.u1 = g_4793e8 * 4.0f + u;
+    FUN_438370(&s, layer, 0);
 }
 
-// STUB: STUNTGP_D3D 0x439b80
-void FUN_439b80(int def, float x, float y0, float y1, float b0, float b1, float b2, int layer)
+// FUNCTION: STUNTGP_D3D 0x439b80
+void FUN_439b80(int def, float x, float y0, float y1, float total, float visible, float pos, int layer)
 {
+    SpriteData s;
+    float u;
+    float v;
+
+    FUN_441320(&s, def);
+    v = s.v0;
+    u = s.u0;
+    s.flags = 2;
+    s.x = x;
+    s.y = y0;
+    s.height = g_4793ec;
+    s.v1 = g_4793ec * 4.0f + s.v0;
+    s.blendMode = 0x70;
+    s.alpha = 0xff;
+    FUN_438370(&s, layer, 1);
+
+    s.y = s.height + s.y;
+    s.v0 = s.v1;
+    s.v1 = (g_4793e8 - g_4793ec) * 4.0f + v;
+    y1 -= y0;
+    s.height = y1 - g_4793ec * 2.0f;
+    FUN_438370(&s, layer, 1);
+
+    s.y = s.height + s.y;
+    s.v0 = s.v1;
+    s.height = g_4793ec;
+    s.v1 = g_4793e8 * 4.0f + v;
+    FUN_438370(&s, layer, 1);
+
+    s.x = x;
+    u = (g_4793e8 + 2.0f) * 8.0f + u;
+    s.y = y1 * pos / total + y0;
+    s.u0 = u;
+    s.u1 = g_4793e8 * 4.0f + u;
+    s.height = g_4793ec;
+    s.v0 = v;
+    s.v1 = g_4793ec * 4.0f + v;
+    s.blendMode = 0x58;
+    FUN_438370(&s, layer, 0);
+
+    s.y = s.height + s.y;
+    s.v0 = s.v1;
+    s.v1 = (g_4793e8 - g_4793ec) * 4.0f + v;
+    s.height = y1 * visible / total - g_4793ec * 2.0f;
+    FUN_438370(&s, layer, 0);
+
+    s.y = s.height + s.y;
+    s.v0 = s.v1;
+    s.height = g_4793ec;
+    s.v1 = g_4793e8 * 4.0f + v;
+    FUN_438370(&s, layer, 0);
 }
 
 // FUNCTION: STUNTGP_D3D 0x43d7b0
