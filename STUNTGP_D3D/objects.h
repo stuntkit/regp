@@ -23,7 +23,14 @@ struct PoolObject
 {
     DWORD unk00[3];
     void (*destroy)(PoolObject *object);
+    int (*message)(PoolObject *object, int msg, int arg);
 };
+
+// Current and pending front-end screens; the flags mark screens not owned by the pool.
+extern PoolObject *g_5ff3f0;
+extern BOOL g_5ff3f4;
+extern PoolObject *g_5ff3f8;
+extern BOOL g_5ff3fc;
 
 void Pool_Init();
 void Pool_Free(void *ptr);

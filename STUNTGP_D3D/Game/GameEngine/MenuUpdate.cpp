@@ -4,6 +4,8 @@
 #include <string.h>
 #include "../../sound.h"
 #include "../../d3drender.h"
+#include "../../objects.h"
+#include "../../sprite.h"
 
 // Menu button state per player, indexed 1..4.
 struct MenuInput
@@ -29,13 +31,60 @@ DWORD g_5ff4b8;
 // GLOBAL: STUNTGP_D3D 0x5ff8c0
 int g_5ff8c0;
 
+// GLOBAL: STUNTGP_D3D 0x5ff3e8
+int g_5ff3e8;
+
+// Screen fade in 16.16 fixed point.
 // GLOBAL: STUNTGP_D3D 0x5ff3ec
 int g_5ff3ec;
+
+// GLOBAL: STUNTGP_D3D 0x5ff444
+int g_5ff444;
+
+// GLOBAL: STUNTGP_D3D 0x5ff44c
+float g_5ff44c;
+
+// GLOBAL: STUNTGP_D3D 0x5ff450
+float g_5ff450;
+
+// GLOBAL: STUNTGP_D3D 0x5ff454
+float g_5ff454;
+
+// GLOBAL: STUNTGP_D3D 0x5ff458
+float g_5ff458;
+
+// GLOBAL: STUNTGP_D3D 0x5ff45c
+int g_5ff45c;
+
+// GLOBAL: STUNTGP_D3D 0x5ff460
+int g_5ff460;
+
+// GLOBAL: STUNTGP_D3D 0x5ff464
+int g_5ff464;
+
+// GLOBAL: STUNTGP_D3D 0x5ff468
+float g_5ff468;
+
+// GLOBAL: STUNTGP_D3D 0x5ff470
+float g_5ff470[6];
+
+// GLOBAL: STUNTGP_D3D 0x5ff488
+float g_5ff488[6];
+
+// GLOBAL: STUNTGP_D3D 0x5ff4a4
+int g_5ff4a4;
+
+// GLOBAL: STUNTGP_D3D 0x5ff4ac
+int g_5ff4ac;
+
+// GLOBAL: STUNTGP_D3D 0x5ff4b4
+int g_5ff4b4;
 
 // GLOBAL: STUNTGP_D3D 0x61297c
 int g_61297c;
 
 void FUN_437eb0();
+void FUN_442ad0(int type, int duration, int delay, int end, int from, int to, float scale);
 int FUN_43efc0();
 void FUN_441210();
 int FUN_452d70(int id);
@@ -272,6 +321,26 @@ void FUN_43d200()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x43d790
+int FUN_43d790(int value, int min, int max)
+{
+    if (value < min)
+    {
+        return min;
+    }
+    if (value > max)
+    {
+        return max;
+    }
+    return value;
+}
+
+// STUB: STUNTGP_D3D 0x43d810
+float FUN_43d810(float current, float target, float rate)
+{
+    return current;
+}
+
 // STUB: STUNTGP_D3D 0x43d280
 void FUN_43d280()
 {
@@ -286,8 +355,26 @@ void FUN_43dd10(DWORD color)
     g_5ff4b8 = b | (r << 16) | g;
 }
 
+// FUNCTION: STUNTGP_D3D 0x43dd70
+int FUN_43dd70()
+{
+    g_5ff460 = 0;
+    return g_5ff464 != 0;
+}
+
 // STUB: STUNTGP_D3D 0x43dda0
 void FUN_43dda0()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x43de40
+void FUN_43de40()
+{
+    g_5ff4ac = 0;
+}
+
+// STUB: STUNTGP_D3D 0x43dee0
+void FUN_43dee0()
 {
 }
 
@@ -297,8 +384,118 @@ int FUN_43efc0()
     return g_5ff3ec * 100 / 0x10000 > 95;
 }
 
-// STUB: STUNTGP_D3D 0x43eff0
+// FUNCTION: STUNTGP_D3D 0x43eff0
 void FUN_43eff0()
+{
+    int fade = g_5ff3ec * 100 / 0x10000;
+    if (g_5ff4b4)
+    {
+        FUN_43dd70();
+        FUN_440880(2);
+        FUN_4411c0();
+        FUN_43de40();
+        FUN_43ef10(1, 1);
+        g_5ff4b4 = 0;
+        return;
+    }
+    g_5ff4a4 = 0;
+    g_5ff444 = 1;
+    g_5ff454 += g_5ff44c * (1.0f / 60.0f);
+    g_5ff458 += g_5ff450 * (1.0f / 60.0f);
+    FUN_43f610();
+    g_5ff444 = 0;
+    if (fade < g_5ff464)
+    {
+        fade = g_5ff464;
+    }
+    FUN_442ad0(2, 1, 0, 0, fade, fade, 1.0f);
+    g_5ff444 = 1;
+    if (g_5ff3f8)
+    {
+        FUN_43f310(g_5ff3f8);
+    }
+    else if (g_5ff3f0)
+    {
+        FUN_43f310(g_5ff3f0);
+    }
+    g_5ff444 = 0;
+    switch (g_5ff3e8)
+    {
+    case 3:
+        if (g_5ff3ec > 0)
+        {
+            g_5ff3ec = FUN_43d790(g_5ff3ec - 0x2492, 0, 0x10000);
+        }
+        else
+        {
+            g_5ff3e8 = 1;
+        }
+        break;
+    case 2:
+        if (g_5ff3ec < 0x10000)
+        {
+            g_5ff3ec = FUN_43d790(g_5ff3ec + 0x2492, 0, 0x10000);
+        }
+        else
+        {
+            if (g_5ff3f0 && !g_5ff3f4)
+            {
+                g_5ff3f0->destroy(g_5ff3f0);
+                Pool_Free(g_5ff3f0);
+            }
+            g_5ff3f0 = g_5ff3f8;
+            g_5ff3f4 = g_5ff3fc;
+            g_5ff3f8 = NULL;
+            g_5ff3fc = FALSE;
+            FUN_43dee0();
+            g_5ff3f0->message(g_5ff3f0, 0x13, 0);
+            g_5ff3e8 = 3;
+            g_5ff468 = 0.0f;
+        }
+        break;
+    }
+    g_5ff468 = FUN_43d810(g_5ff468, 1.0f, 0.005f);
+    if (!g_5ff4a4)
+    {
+        if (g_5ff3f0)
+        {
+            g_5ff3f0->message(g_5ff3f0, 2, 0);
+        }
+        if (g_5ff3f8)
+        {
+            g_5ff3f8->message(g_5ff3f8, 2, 0);
+        }
+        g_5ff444 = 1;
+        if (g_5ff3f0)
+        {
+            if (g_5ff3f8)
+            {
+                g_5ff3f8->message(g_5ff3f8, 1, 0);
+            }
+            else
+            {
+                g_5ff3f0->message(g_5ff3f0, 1, 0);
+            }
+        }
+        g_5ff444 = 0;
+    }
+    g_5ff470[0] = FUN_43d810(g_5ff470[0], g_5ff488[0], 0.001f);
+    g_5ff470[1] = FUN_43d810(g_5ff470[1], g_5ff488[1], 0.001f);
+    g_5ff470[2] = FUN_43d810(g_5ff470[2], g_5ff488[2], 0.001f);
+    g_5ff470[3] = FUN_43d810(g_5ff470[3], g_5ff488[3], 0.001f);
+    g_5ff470[4] = FUN_43d810(g_5ff470[4], g_5ff488[4], 0.001f);
+    g_5ff470[5] = FUN_43d810(g_5ff470[5], g_5ff488[5], 0.001f);
+    g_5ff45c++;
+    g_5ff460++;
+}
+
+// STUB: STUNTGP_D3D 0x43f310
+void FUN_43f310(PoolObject *screen)
+{
+}
+
+// STUB: STUNTGP_D3D 0x43f610
+void FUN_43f610()
 {
 }
 
@@ -312,6 +509,17 @@ int FUN_440c40(int id)
 void FUN_4408e0()
 {
     g_5ff8c0 = 1;
+}
+
+// STUB: STUNTGP_D3D 0x440770
+void FUN_440770(int a, int b)
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x440880
+void FUN_440880(int a)
+{
+    FUN_440770(a, 0);
 }
 
 // STUB: STUNTGP_D3D 0x440ae0

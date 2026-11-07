@@ -24,7 +24,18 @@ struct MenuState
 
 extern MenuState g_menuState;
 
+struct PoolObject;
+
 void FUN_424bd0(float x, float y);
+int FUN_43d790(int value, int min, int max);
+float FUN_43d810(float current, float target, float rate);
+int FUN_43dd70();
+void FUN_43de40();
+void FUN_43dee0();
+void FUN_43f310(PoolObject *screen);
+void FUN_43f610();
+void FUN_440770(int a, int b);
+void FUN_440880(int a);
 void FUN_434b50();
 int FUN_437360(int track);
 int FUN_437da0(int track);
