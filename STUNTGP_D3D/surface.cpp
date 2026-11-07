@@ -24,20 +24,21 @@ void FUN_4300f0(IUnknown *object)
 // FUNCTION: STUNTGP_D3D 0x431790
 void FUN_431790()
 {
-    for (int i = g_surfaceSlotCount; i > 0; i--)
+    int i = g_surfaceSlotCount;
+    while (i > 0)
     {
-        SurfaceSlot *slot = &g_surfaceSlots[i - 1];
-        if (slot->surface2 != slot->surface)
+        i--;
+        if (g_surfaceSlots[i].surface2 != g_surfaceSlots[i].surface)
         {
-            ddReleaseSurface(&slot->surface2);
+            ddReleaseSurface(&g_surfaceSlots[i].surface2);
         }
         else
         {
-            slot->surface2 = NULL;
+            g_surfaceSlots[i].surface2 = NULL;
         }
-        ddReleaseSurface(&slot->surface);
-        FUN_4300f0((IUnknown *)slot->unk04);
-        FUN_4300f0((IUnknown *)slot->unk0c);
+        ddReleaseSurface(&g_surfaceSlots[i].surface);
+        FUN_4300f0((IUnknown *)g_surfaceSlots[i].unk04);
+        FUN_4300f0((IUnknown *)g_surfaceSlots[i].unk0c);
     }
     g_surfaceSlotCount = 0;
     memset(g_surfaceSlots, 0, sizeof(g_surfaceSlots));
@@ -72,11 +73,16 @@ void FUN_4320c0(float gamma)
         {
             scale = 0.98f;
         }
-        DWORD level = scale * scale * 65280.0f;
-        DWORD step = ((level >> 6) - level + 0xff00) >> 8;
+        DWORD start = scale * scale * 65280.0f;
+        DWORD step = ((start >> 6) - start + 0xff00) >> 8;
+        DWORD level = start;
         for (int i = 0; i < 256; i++)
         {
-            WORD value = level > 0xfffe ? 0xfffe : level;
+            WORD value = level;
+            if (level > 0xfffe)
+            {
+                value = 0xfffe;
+            }
             g_gammaRamp.red[i] = value;
             g_gammaRamp.green[i] = value;
             g_gammaRamp.blue[i] = value;

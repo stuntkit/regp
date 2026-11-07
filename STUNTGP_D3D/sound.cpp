@@ -91,9 +91,9 @@ int FUN_460330()
 void Sound_ApplyVolumes()
 {
     g_60d734 = g_musicSetting;
-    g_musicVolume = g_masterVolume * g_musicSetting * 255 / 10000;
     g_60d738 = g_sfxSetting;
-    g_sfxVolume = g_sfxVolumeTarget = g_masterVolume * g_sfxSetting * 255 / 10000;
+    g_musicVolume = g_masterVolume * g_musicSetting * 255 / 10000;
+    g_sfxVolumeTarget = g_sfxVolume = g_masterVolume * g_sfxSetting * 255 / 10000;
 }
 
 // FUNCTION: STUNTGP_D3D 0x460c20

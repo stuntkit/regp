@@ -113,22 +113,24 @@ void Mem_FreeAll()
         int count = 0;
         DWORD kept = 0;
         DWORD freed = 0;
-        for (int id = 0x180; id > 0; id--)
+        int id = 0x180;
+        while (id > 0)
         {
-            MemSlot *slot = g_Mem.slots;
-            for (; slot < &g_Mem.slots[0x180]; slot++)
+            id--;
+            for (int i = 0; i < 0x180; i++)
             {
-                if (slot->data != NULL && slot->id == g_Mem.unk10 + id - 1)
+                if (g_Mem.slots[i].data != NULL && g_Mem.slots[i].id == g_Mem.unk10 + id)
                 {
-                    if (slot->type == 1 && g_Mem.freeType1 == FALSE)
+                    if (g_Mem.slots[i].type == 1 && g_Mem.freeType1 == FALSE)
                     {
-                        kept += slot->total;
+                        kept += g_Mem.slots[i].total;
+                        count++;
                     }
                     else
                     {
-                        freed += Mem_Free(slot->data);
+                        freed += Mem_Free(g_Mem.slots[i].data);
+                        count++;
                     }
-                    count++;
                 }
             }
         }
