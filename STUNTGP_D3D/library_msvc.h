@@ -42,6 +42,7 @@
 // __CIacos
 
 // LIBRARY: LEGO1 0x1008b400
+// LIBRARY: STUNTGP_D3D 0x4631f4
 // _atol
 
 // LIBRARY: LEGO1 0x1008b4b0
@@ -82,12 +83,14 @@
 // __fwrite_lk
 
 // LIBRARY: LEGO1 0x1008b950
+// LIBRARY: STUNTGP_D3D 0x463729
 // _fread
 
 // LIBRARY: LEGO1 0x1008b990
 // __fread_lk
 
 // LIBRARY: LEGO1 0x1008bbd0
+// LIBRARY: STUNTGP_D3D 0x462a4d
 // _fclose
 
 // LIBRARY: LEGO1 0x1008bc10
@@ -103,21 +106,25 @@
 // __cexit
 
 // LIBRARY: LEGO1 0x1008bdd0
+// LIBRARY: STUNTGP_D3D 0x46391b
 // _ftell
 
 // LIBRARY: LEGO1 0x1008be00
 // __ftell_lk
 
 // LIBRARY: LEGO1 0x1008bfb0
+// LIBRARY: STUNTGP_D3D 0x462aa3
 // __fsopen
 
 // LIBRARY: LEGO1 0x1008bff0
+// LIBRARY: STUNTGP_D3D 0x462ac3
 // _fopen
 
 // LIBRARY: STUNTGP_D3D 0x463390
 // _strncpy
 
 // LIBRARY: LEGO1 0x1008c110
+// LIBRARY: STUNTGP_D3D 0x46dd90
 // __strcmpi
 
 // LIBRARY: LEGO1 0x1008c1e0
@@ -142,6 +149,7 @@
 // _access
 
 // LIBRARY: LEGO1 0x1008c5c0
+// LIBRARY: STUNTGP_D3D 0x463a73
 // _fseek
 
 // LIBRARY: LEGO1 0x1008c600
@@ -244,12 +252,15 @@
 // __write_lk
 
 // LIBRARY: LEGO1 0x1008f340
+// LIBRARY: STUNTGP_D3D 0x46659f
 // __flush
 
 // LIBRARY: LEGO1 0x1008f490
+// LIBRARY: STUNTGP_D3D 0x468fe0
 // __filbuf
 
 // LIBRARY: LEGO1 0x1008f590
+// LIBRARY: STUNTGP_D3D 0x4690b9
 // __read
 
 // LIBRARY: LEGO1 0x1008f610
@@ -262,18 +273,21 @@
 // __ioterm
 
 // LIBRARY: LEGO1 0x1008fb20
+// LIBRARY: STUNTGP_D3D 0x466486
 // __close
 
 // LIBRARY: LEGO1 0x1008fb90
 // __close_lk
 
 // LIBRARY: LEGO1 0x1008fc20
+// LIBRARY: STUNTGP_D3D 0x466539
 // __freebuf
 
 // LIBRARY: LEGO1 0x1008fc90
 // __chkstk
 
 // LIBRARY: LEGO1 0x1008fcc0
+// LIBRARY: STUNTGP_D3D 0x46993d
 // __lseek
 
 // LIBRARY: LEGO1 0x1008fd40
@@ -494,6 +508,7 @@
 // __CIpow
 
 // LIBRARY: LEGO1 0x100d21f0
+// LIBRARY: STUNTGP_D3D 0x462890
 // _strstr
 
 // LIBRARY: LEGO1 0x100d2270
@@ -876,5 +891,11 @@
 
 // GLOBAL: STUNTGP_D3D 0x63687c
 // ___ismbcodepage
+
+// LIBRARY: STUNTGP_D3D 0x46aa6c
+// _tolower
+
+// LIBRARY: STUNTGP_D3D 0x464f66
+// ___from_strstr_to_strchr
 
 #endif

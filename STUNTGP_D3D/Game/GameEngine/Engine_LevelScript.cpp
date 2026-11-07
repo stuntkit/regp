@@ -82,7 +82,7 @@ void Script_ReadInt(char *pos, char **next, int *out)
     {
         pos++;
     }
-    *out = atoi(pos);
+    *out = atol(pos);
     if (next != NULL)
     {
         int len = 0;
