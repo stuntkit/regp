@@ -7,10 +7,10 @@ DWORD g_masterVolume = 255;
 DWORD g_soundQuality = 22050;
 
 // GLOBAL: STUNTGP_D3D 0x489798
-DWORD g_sfxVolume = 255;
+int g_sfxVolume = 255;
 
 // GLOBAL: STUNTGP_D3D 0x48979c
-DWORD g_sfxVolumeTarget = 255;
+int g_sfxVolumeTarget = 255;
 
 // GLOBAL: STUNTGP_D3D 0x62df08
 LPDIRECTSOUNDBUFFER g_musicBuffer;

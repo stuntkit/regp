@@ -138,6 +138,12 @@ void Mem_FreeAll()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x42eaa0
+void FUN_42eaa0()
+{
+    Mem_FreeAll();
+}
+
 // FUNCTION: STUNTGP_D3D 0x42eaf0
 void Mem_Shutdown()
 {
