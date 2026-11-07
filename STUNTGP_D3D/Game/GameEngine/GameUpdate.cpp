@@ -132,6 +132,7 @@ Car *g_612d14[6];
 Car *g_474630 = g_49a1f8;
 
 void FUN_41af50();
+void FUN_418830();
 void FUN_41e2d0();
 
 // --- per-tick game logic ---
@@ -284,11 +285,6 @@ void FUN_40e340()
     {
         g_49a1f8[i].unk1fd0 = 1.0f;
     }
-}
-
-// STUB: STUNTGP_D3D 0x418830
-void FUN_418830()
-{
 }
 
 // STUB: STUNTGP_D3D 0x418970
@@ -858,7 +854,7 @@ void FUN_41bdd0()
             for (int j = 0; j < 4; j++)
             {
                 g_49a1f8[i].unk233c[j] = 0;
-                g_49a1f8[i].wheels[j].unk24 = 0;
+                g_49a1f8[i].wheels[j].unk2c = 0;
             }
             g_49a1f8[i].unk234c = 0;
             g_49a1f8[i].unk2350 = 0;
