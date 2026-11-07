@@ -24,6 +24,12 @@ struct ScoreTable
     ScoreEntry entries[10];
 };
 
+struct MenuRecord
+{
+    int unk00;
+    BYTE unk04[0x80];
+};
+
 struct MenuLanguage
 {
     char name[0x20];
@@ -73,7 +79,9 @@ struct MenuState
     int languageCount;          // 0x437c
     BYTE unk4380[0x13148 - 0x4380];
     Unk4d5cc0 *unk13148; // 0x13148
-    BYTE unk1314c[0x1dae8 - 0x1314c];
+    BYTE unk1314c[0x1a6b0 - 0x1314c];
+    MenuRecord unk1a6b0[64]; // 0x1a6b0, count unknown
+    BYTE unk1c7b0[0x1dae8 - 0x1c7b0];
 };
 
 extern MenuState g_menuState;

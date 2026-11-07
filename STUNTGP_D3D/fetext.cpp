@@ -1614,6 +1614,104 @@ char *FeCsv_Load(char *name)
     return text;
 }
 
+// Menu entry; entries with a negative id are skipped, a NULL unk0c ends the list.
+struct MenuItem
+{
+    int id;     // 0x00
+    int unk04;  // 0x04
+    int unk08;  // 0x08
+    void *unk0c; // 0x0c
+    int unk10;  // 0x10
+    int unk14;  // 0x14
+    int unk18;  // 0x18
+    int unk1c;  // 0x1c
+};
+
+struct MenuDef
+{
+    BYTE unk00[0xc];
+    int unk0c;       // 0x0c
+    int unk10;       // 0x10
+    BYTE unk14[0x14];
+    MenuItem *items; // 0x28
+};
+
+struct MenuList
+{
+    BYTE unk00[0x14];
+    int count;       // 0x14
+    MenuDef *def;    // 0x18
+    float unk1c;     // 0x1c
+    float unk20;     // 0x20
+    float unk24[32]; // 0x24
+    int selected;    // 0xa4
+    int unka8;       // 0xa8
+    int unkac;       // 0xac
+    int unkb0;       // 0xb0
+    int unkb4;       // 0xb4
+    int unkb8;       // 0xb8
+    int unkbc;       // 0xbc
+    float unkc0;     // 0xc0
+    int unkc4;       // 0xc4
+};
+
+// FUNCTION: STUNTGP_D3D 0x43c900
+int FUN_43c900(MenuDef *def)
+{
+    for (int i = 0; def->items[i].unk0c; i++)
+    {
+        if (def->items[i].id >= 0)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43c930
+void FUN_43c930(MenuList *list, int index)
+{
+    list->unkc0 = 1.0f;
+    list->unkc4 = 0;
+    list->selected = index;
+    if (list->def->items[index].unk18)
+    {
+        FUN_440880(0x11);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x43cef0
+int FUN_43cef0(MenuDef *def, int index)
+{
+    if (index == 0)
+    {
+        return 0;
+    }
+    index--;
+    while (index >= 0)
+    {
+        if (def->items[index].id >= 0)
+        {
+            return index;
+        }
+        index--;
+    }
+    return -1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43cf20
+int FUN_43cf20(MenuDef *def, int index)
+{
+    for (index++; def->items[index].unk0c; index++)
+    {
+        if (def->items[index].id >= 0)
+        {
+            return index;
+        }
+    }
+    return -1;
+}
+
 // Word-wraps text in place by turning spaces into 0xff; returns the line count, or 0 if it does not fit.
 // FUNCTION: STUNTGP_D3D 0x4409c0
 int FUN_4409c0(char *text, int width, float size, int maxLines)

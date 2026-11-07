@@ -673,13 +673,19 @@ struct SceneView
     int unk34;        // 0x34
 };
 
+struct SceneEntry
+{
+    DWORD unk00[4];
+};
+
 struct Scene
 {
     BYTE unk00[0xc];    // 0x00
     Camera *camera;     // 0x0c
     BYTE unk10[0x14];   // 0x10
     DWORD objectCount;  // 0x24
-    BYTE unk28[0x1c];   // 0x28
+    SceneEntry *unk28;  // 0x28
+    BYTE unk2c[0x18];   // 0x2c
     SceneView *view;    // 0x44
     ObjectDef *objects; // 0x48
 };

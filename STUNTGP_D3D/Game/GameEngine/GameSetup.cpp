@@ -18,6 +18,7 @@
 #include "../../d3drender.h"
 #include "../../surface.h"
 #include "Engine_LevelScript.h"
+#include "../../common.h"
 
 struct CameraPath;
 
@@ -90,6 +91,41 @@ struct RenderMaterial
 
 // GLOBAL: STUNTGP_D3D 0x62447c
 RenderMaterial *g_62447c;
+
+// Loaded track file; the offsets are relative to data.
+struct TrackHeader
+{
+    BYTE unk000[0x58];
+    int unk058;               // 0x058
+    int unk05c;               // 0x05c
+    int unk060;               // 0x060
+    BYTE unk064[0xe4 - 0x64];
+    int unk0e4;               // 0x0e4
+    int unk0e8;               // 0x0e8
+    BYTE unk0ec[0x148 - 0xec];
+    BYTE data[1];             // 0x148
+};
+
+// GLOBAL: STUNTGP_D3D 0x58c800
+Scene *g_58c800;
+
+// GLOBAL: STUNTGP_D3D 0x58d810
+TrackHeader *g_58d810;
+
+// GLOBAL: STUNTGP_D3D 0x624478
+BYTE *g_624478;
+
+// GLOBAL: STUNTGP_D3D 0x62448c
+SceneEntry *g_62448c;
+
+// GLOBAL: STUNTGP_D3D 0x624490
+SceneEntry *g_624490;
+
+// GLOBAL: STUNTGP_D3D 0x6244a4
+int g_6244a4;
+
+struct AnimDef;
+extern AnimDef *g_624484;
 
 // GLOBAL: STUNTGP_D3D 0x62449c
 DWORD g_62449c;
@@ -795,6 +831,27 @@ void FUN_42e820()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x42ef20
+void FUN_42ef20()
+{
+    g_6244a4 = g_58d810->unk0e8;
+    g_624478 = &g_58d810->data[g_58d810->unk058];
+}
+
+// FUNCTION: STUNTGP_D3D 0x42ef50
+void FUN_42ef50()
+{
+    g_624484 = (AnimDef *)&g_58d810->data[g_58d810->unk060];
+    g_624488 = (Unk624488 *)&g_58d810->data[g_58d810->unk05c];
+}
+
+// FUNCTION: STUNTGP_D3D 0x42ef80
+void FUN_42ef80()
+{
+    g_62448c = g_58c800->unk28;
+    g_624490 = g_58c800->unk28 + g_58d810->unk0e4;
+}
+
 // STUB: STUNTGP_D3D 0x425ad0
 void FUN_425ad0()
 {
@@ -893,9 +950,6 @@ SceneLoad g_58c540[24];
 // GLOBAL: STUNTGP_D3D 0x58c600
 BYTE g_58c600[0x200];
 
-// GLOBAL: STUNTGP_D3D 0x58c800
-Scene *g_58c800;
-
 // GLOBAL: STUNTGP_D3D 0x58c808
 int g_58c808;
 
@@ -904,9 +958,6 @@ BYTE *g_58c80c;
 
 // GLOBAL: STUNTGP_D3D 0x58c810
 BYTE g_58c810[0x1000];
-
-// GLOBAL: STUNTGP_D3D 0x58d810
-void *g_58d810;
 
 // Scene slots of each car's two models.
 // GLOBAL: STUNTGP_D3D 0x477c4c
@@ -965,6 +1016,14 @@ void FUN_431300()
     FUN_430690();
 }
 
+// FUNCTION: STUNTGP_D3D 0x431330
+void FUN_431330()
+{
+    // STRING: STUNTGP_D3D 0x478874
+    exitError("There was an error Initializing D3D!\n");
+    exit(1);
+}
+
 // FUNCTION: STUNTGP_D3D 0x431350
 void FUN_431350()
 {
@@ -1018,6 +1077,21 @@ void FUN_4311c0(Scene *scene)
 // STUB: STUNTGP_D3D 0x4342c0
 void FUN_4342c0()
 {
+}
+
+struct ObjectHolder
+{
+    BYTE unk00[0x14];
+    PoolObject *object; // 0x14
+};
+
+// FUNCTION: STUNTGP_D3D 0x43d070
+void FUN_43d070(ObjectHolder *holder)
+{
+    PoolObject *object = holder->object;
+    object->destroy(object);
+    Pool_Free(object);
+    holder->object = NULL;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43d0a0

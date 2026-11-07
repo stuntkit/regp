@@ -58,6 +58,17 @@ void Pool_Free(void *ptr)
     g_pool.allocCount--;
 }
 
+// FUNCTION: STUNTGP_D3D 0x43d5d0
+unsigned int FUN_43d5d0(BYTE *data, int len)
+{
+    unsigned int hash = 0;
+    for (int i = 0; i < len; i++)
+    {
+        hash = ((hash >> 29) | (hash << 3)) + *data++;
+    }
+    return hash;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43ef10
 int FUN_43ef10(int a, int screen)
 {

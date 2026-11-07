@@ -14,6 +14,8 @@
 
 extern int g_61b634;
 
+void FUN_436400(const char *name, int *value);
+
 // GLOBAL: STUNTGP_D3D 0x576c38
 SpriteDesc g_spriteDesc;
 
@@ -712,6 +714,16 @@ float FUN_43d7b0(float value, float lo, float hi)
     return value;
 }
 
+// FUNCTION: STUNTGP_D3D 0x43d940
+char FUN_43d940(char c)
+{
+    if (c >= 'a' && c <= 'z')
+    {
+        return c - 0x20;
+    }
+    return c;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43d960
 void FUN_43d960(ScreenRect *dst, ScreenRect *from, ScreenRect *to, float t)
 {
@@ -1021,7 +1033,7 @@ struct ImageEntry
 };
 
 // GLOBAL: STUNTGP_D3D 0x583594
-int g_583594[256];
+int g_583594[255];
 
 // GLOBAL: STUNTGP_D3D 0x587998
 ImageEntry g_587998[256];
@@ -1094,5 +1106,15 @@ void FUN_430d40(int slot, int id)
         g_6243b8->unk04[0] = (DWORD)target;
         FUN_4300f0(texture);
         ddReleaseSurface(&surface);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x437e20
+void FUN_437e20(int *settings)
+{
+    if (settings[6])
+    {
+        // STRING: STUNTGP_D3D 0x4793c0
+        FUN_436400("Campaign Settings", &settings[5]);
     }
 }

@@ -5,12 +5,26 @@
 
 #include "globals.h"
 #include "windowInit.h"
+#include "common.h"
+
+// GLOBAL: STUNTGP_D3D 0x5ba780
+LPDIRECTDRAWSURFACE4 g_5ba780;
 
 // GLOBAL: STUNTGP_D3D 0x592180
 DDGAMMARAMP g_gammaRamp;
 
 // GLOBAL: STUNTGP_D3D 0x5da1dc
 LPDIRECTDRAWGAMMACONTROL g_gammaControl;
+
+// FUNCTION: STUNTGP_D3D 0x42fff0
+void FUN_42fff0()
+{
+    int res = (*g_61c358)->AddAttachedSurface(g_5ba780);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+}
 
 // FUNCTION: STUNTGP_D3D 0x4300f0
 void FUN_4300f0(IUnknown *object)
@@ -49,6 +63,16 @@ void FUN_431800()
 {
     FUN_4320a0();
     FUN_431790();
+}
+
+// FUNCTION: STUNTGP_D3D 0x432070
+void FUN_432070()
+{
+    int res = g_surface->QueryInterface(IID_IDirectDrawGammaControl, (void **)&g_gammaControl);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x4320a0

@@ -58,6 +58,37 @@ OverlayPoly *g_61c5f0 = NULL;
 // GLOBAL: STUNTGP_D3D 0x61c604
 DWORD g_61c604 = 0;
 
+// GLOBAL: STUNTGP_D3D 0x577660
+int g_577660[10];
+
+// GLOBAL: STUNTGP_D3D 0x583990
+char g_583990[0x4000];
+
+// GLOBAL: STUNTGP_D3D 0x587990
+int g_587990;
+
+// GLOBAL: STUNTGP_D3D 0x587994
+int g_587994;
+
+// GLOBAL: STUNTGP_D3D 0x5895b0
+int g_5895b0;
+
+// GLOBAL: STUNTGP_D3D 0x5895b4
+char *g_5895b4;
+
+// GLOBAL: STUNTGP_D3D 0x5895b8
+int *g_5895b8;
+
+// DirectDraw devices collected by FUN_42f530.
+struct DisplayDevices
+{
+    int count;
+    BYTE unk04[0x1fa38 - 4];
+};
+
+// GLOBAL: STUNTGP_D3D 0x5ba788
+DisplayDevices g_5ba788;
+
 // GLOBAL: STUNTGP_D3D 0x58332c
 int g_58332c = 0;
 
@@ -780,6 +811,20 @@ void FUN_42f380()
     }
 }
 
+// STUB: STUNTGP_D3D 0x42f530
+BOOL WINAPI FUN_42f530(GUID *guid, LPSTR description, LPSTR name, LPVOID context, HMONITOR monitor)
+{
+    return TRUE;
+}
+
+// FUNCTION: STUNTGP_D3D 0x42f6a0
+void FUN_42f6a0()
+{
+    memset(&g_5ba788, 0, sizeof(g_5ba788));
+    g_5ba788.count = 0;
+    DirectDrawEnumerateEx(FUN_42f530, &g_5ba788, DDENUM_ATTACHEDSECONDARYDEVICES | DDENUM_NONDISPLAYDEVICES);
+}
+
 // FUNCTION: STUNTGP_D3D 0x42fa00
 void FUN_42fa00()
 {
@@ -1084,6 +1129,16 @@ void FUN_4277d0()
     {
         FUN_4277b0((RenderItem *)g_6243e0[6].unk08, g_6243e0[6].unk0c);
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42bc00
+void FUN_42bc00()
+{
+    g_5895b4 = g_583990;
+    g_5895b0 = 0;
+    g_583990[0] = 0;
+    g_587994 = 0;
+    g_5895b8 = &g_587990;
 }
 
 // STUB: STUNTGP_D3D 0x433290
@@ -1551,8 +1606,30 @@ void FUN_425870()
     g_61c604 = 0;
 }
 
+// FUNCTION: STUNTGP_D3D 0x425880
+void FUN_425880()
+{
+    memset(g_577660, 0, sizeof(g_577660));
+}
+
 // FUNCTION: STUNTGP_D3D 0x42e420
 void FUN_42e420()
 {
     g_61c5e4 = -1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x42f2e0
+void FUN_42f2e0(char *dst, const char *src)
+{
+    char c;
+    while ((c = *src) != 0)
+    {
+        src++;
+        if (c >= 'A' && c <= 'Z')
+        {
+            c += 0x20;
+        }
+        *dst++ = c;
+    }
+    *dst = 0;
 }

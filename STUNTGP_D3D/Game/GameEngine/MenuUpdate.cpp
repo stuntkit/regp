@@ -9,6 +9,8 @@
 #include "../../d3drender.h"
 #include "../../objects.h"
 #include "../../sprite.h"
+#include "Game.h"
+#include "GameSetup.h"
 
 // Menu button state per player, indexed 1..4.
 struct MenuInput
@@ -40,7 +42,32 @@ FrontEnd g_frontEnd;
 // GLOBAL: STUNTGP_D3D 0x61297c
 DWORD g_61297c;
 
+struct Rgb
+{
+    BYTE r;
+    BYTE g;
+    BYTE b;
+};
+
+// GLOBAL: STUNTGP_D3D 0x47966c
+Rgb g_47966c = {0x21, 0x21, 0x21};
+
+// GLOBAL: STUNTGP_D3D 0x479668
+Rgb *g_479668 = &g_47966c;
+
+// Byte-oriented compressor output; flags points at the current flag byte.
+struct BitWriter
+{
+    int count;   // 0x00
+    int unk04;   // 0x04
+    int unk08;   // 0x08
+    BYTE *flags; // 0x0c
+    int size;    // 0x10
+    BYTE *start; // 0x14
+};
+
 void FUN_437eb0();
+void FUN_441e20();
 void FUN_442ad0(int type, int duration, int delay, int end, int from, int to, float scale);
 int FUN_43efc0();
 void FUN_441210();
@@ -83,6 +110,11 @@ void FUN_424bd0(float x, float y)
 
 // STUB: STUNTGP_D3D 0x434b50
 void FUN_434b50()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x436400
+void FUN_436400(const char *name, int *value)
 {
 }
 
@@ -219,6 +251,20 @@ int FUN_437090(int player)
     return 0;
 }
 
+// FUNCTION: STUNTGP_D3D 0x437100
+int FUN_437100()
+{
+    int count = 0;
+    for (int i = 1; i < 5; i++)
+    {
+        if (FUN_437090(i))
+        {
+            count++;
+        }
+    }
+    return count;
+}
+
 // FUNCTION: STUNTGP_D3D 0x437360
 int FUN_437360(int track)
 {
@@ -283,6 +329,30 @@ void FUN_437870()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x437880
+void FUN_437880(int index)
+{
+    if (!g_menuState.unlocked[index])
+    {
+        g_menuState.unlocked[index] = 2;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x4378a0
+void FUN_4378a0(int index)
+{
+    if (!g_menuState.unlocked[index + 0x18])
+    {
+        g_menuState.unlocked[index + 0x18] = 2;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x437920
+int FUN_437920(int index)
+{
+    return g_menuState.unk1a6b0[index].unk00;
+}
+
 // FUNCTION: STUNTGP_D3D 0x437da0
 int FUN_437da0(int track)
 {
@@ -307,6 +377,15 @@ void FUN_437eb0()
     FUN_441210();
 }
 
+// FUNCTION: STUNTGP_D3D 0x439e10
+void FUN_439e10()
+{
+    FUN_43d420();
+    FUN_441e20();
+    Timer_Reset();
+    FUN_43d420();
+}
+
 // FUNCTION: STUNTGP_D3D 0x439e30
 void FUN_439e30()
 {
@@ -317,6 +396,24 @@ void FUN_439e30()
 short FUN_43b210(short a, short b)
 {
     return a - b;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43b270
+void FUN_43b270(BitWriter *writer, BYTE *buffer, int size)
+{
+    writer->start = buffer;
+    writer->size = size;
+    writer->flags = buffer;
+    writer->unk04 = 0;
+    writer->count = 1;
+    *buffer = 0;
+    writer->unk08 = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43b2a0
+void FUN_43b2a0(BitWriter *writer, BYTE value)
+{
+    writer->flags[writer->count++] = value;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43b370
@@ -596,6 +693,26 @@ float FUN_43d9e0(float value)
     return value < 0.0f ? -value : value;
 }
 
+// FUNCTION: STUNTGP_D3D 0x43da00
+float FUN_43da00(float a, float b)
+{
+    if (a < b)
+    {
+        return a;
+    }
+    return b;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43da20
+float FUN_43da20(float a, float b)
+{
+    if (a > b)
+    {
+        return a;
+    }
+    return b;
+}
+
 // Reads the detail level and language overrides next to the executable.
 // FUNCTION: STUNTGP_D3D 0x43d280
 void FUN_43d280()
@@ -628,6 +745,45 @@ void FUN_43d280()
         }
         fclose(file);
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d690
+Rgb *FUN_43d690(Rgb *color)
+{
+    *g_479668 = *color;
+    return g_479668;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d730
+int FUN_43d730(int id)
+{
+    switch (id)
+    {
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 9:
+    case 10:
+        return 1;
+    }
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43d760
+int FUN_43d760(int id)
+{
+    switch (id)
+    {
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 16:
+    case 17:
+        return 1;
+    }
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43dd10
