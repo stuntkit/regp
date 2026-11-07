@@ -1,5 +1,7 @@
 #include "Engine_LevelScript.h"
 
+#include "../../sound.h"
+
 // GLOBAL: STUNTGP_D3D 0x48491c
 char g_GraphicsDirectory[128] = "D:\\Game\\Graphics24\\";
 
@@ -96,12 +98,6 @@ void Script_ReadInt(char *pos, char **next, int *out)
 
 // FUNCTION: STUNTGP_D3D 0x42d060
 void FUN_42d060(char *script, char *key)
-{
-}
-
-// clamps volumes to 0..100 and quality to 5512..44100 Hz, then applies them
-// STUB: STUNTGP_D3D 0x460c20
-void Sound_SetVolumes(DWORD master, DWORD sfx, DWORD music, DWORD quality)
 {
 }
 

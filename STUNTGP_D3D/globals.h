@@ -18,7 +18,7 @@ extern BOOL g_WindowMessage;
 
 extern HWND g_Hwnd;
 
-extern int g_6244f4;
+extern float g_6244f4;
 
 extern DWORD g_61c37c;
 extern DWORD g_61c394;

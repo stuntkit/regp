@@ -24,7 +24,7 @@ BOOL g_WindowMessage = 0;
 HWND g_Hwnd = 0;
 
 // GLOBAL: STUNTGP_D3D 0x6244f4
-int g_6244f4 = 0;
+float g_6244f4 = 0;
 
 // Timing stuff
 
