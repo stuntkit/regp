@@ -96,6 +96,20 @@ void FUN_401220(int type, int mode, unsigned int points)
 {
 }
 
+// Returns the player slot driving this car, or NULL for AI cars.
+// FUNCTION: STUNTGP_D3D 0x402590
+GameSlot *FUN_402590(Car *car)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        if (g_498248[i].active == 1 && g_498248[i].data == car)
+        {
+            return &g_498248[i];
+        }
+    }
+    return NULL;
+}
+
 // Adds the scaled gravity vector unless the velocity is already above the cap.
 // STUB: STUNTGP_D3D 0x405c80
 void FUN_405c80()
@@ -157,9 +171,93 @@ void FUN_410b30()
 {
 }
 
-// STUB: STUNTGP_D3D 0x410df0
+// FUNCTION: STUNTGP_D3D 0x410cd0
+void FUN_410cd0()
+{
+    if (FUN_402590(g_4d5bb8))
+    {
+        FUN_401220(5, 0, g_60d688[36]);
+        FUN_442cf0(180, g_6127a0[48], g_4d5bb8, 2, 0);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x410d10
+void FUN_410d10()
+{
+    if (FUN_402590(g_4d5bb8))
+    {
+        FUN_401220(5, 0, g_60d688[35]);
+        FUN_442cf0(180, g_6127a0[47], g_4d5bb8, 2, 0);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x410d50
+void FUN_410d50()
+{
+    if (FUN_402590(g_4d5bb8))
+    {
+        FUN_401220(5, 0, g_60d688[34]);
+        FUN_442cf0(180, g_6127a0[50], g_4d5bb8, 2, 0);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x410d90
+void FUN_410d90()
+{
+    if (FUN_402590(g_4d5bb8))
+    {
+        FUN_401220(5, 0, g_60d688[33]);
+        FUN_442cf0(180, g_6127a0[49], g_4d5bb8, 2, 0);
+    }
+}
+
+// Counts airborne ticks per wheel pair and awards the matching stunt on landing.
+// FUNCTION: STUNTGP_D3D 0x410df0
 void FUN_410df0()
 {
+    if (g_4d5bb8->unk1fd8 == 0)
+    {
+        if (g_4d5bb8->unk71c0 > 30.0f)
+        {
+            FUN_410cd0();
+        }
+        else if (g_4d5bb8->unk71bc > 30.0f)
+        {
+            FUN_410d10();
+        }
+        else if (g_4d5bb8->unk71b8 > 60)
+        {
+            FUN_410d50();
+        }
+        else if (g_4d5bb8->unk71b4 > 60)
+        {
+            FUN_410d90();
+        }
+        g_4d5bb8->unk71b4 = 0;
+        g_4d5bb8->unk71b8 = 0;
+        g_4d5bb8->unk71c0 = 0;
+        g_4d5bb8->unk71bc = 0;
+    }
+    else if (g_4d5bb8->unk1cf0 >= 200.0f / 60.0f)
+    {
+        Wheel *w = g_4d5bb8->wheels;
+        if (w[2].unk70 <= 0 && w[3].unk70 <= 0 && w[0].unk70 > 2 && w[1].unk70 > 2)
+        {
+            g_4d5bb8->unk71c0++;
+        }
+        if (w[0].unk70 <= 0 && w[1].unk70 <= 0 && w[2].unk70 > 2 && w[3].unk70 > 2)
+        {
+            g_4d5bb8->unk71bc++;
+        }
+        if (w[0].unk70 <= 0 && w[2].unk70 <= 0 && w[1].unk70 > 2 && w[3].unk70 > 2)
+        {
+            g_4d5bb8->unk71b8++;
+        }
+        if (w[1].unk70 <= 0 && w[3].unk70 <= 0 && w[0].unk70 > 2 && w[2].unk70 > 2)
+        {
+            g_4d5bb8->unk71b4++;
+        }
+    }
 }
 
 // STUB: STUNTGP_D3D 0x410f80
@@ -282,13 +380,13 @@ void FUN_413da0()
 // FUNCTION: STUNTGP_D3D 0x414370
 void FUN_414370()
 {
+    Wheel *wheel = g_4d5bb8->wheels;
     for (int i = 0; i < 4; i++)
     {
-        float angle = -(g_4d5bb8->wheels[i].unk04 * 180.0f / (g_4d5bb8->unkcb8[i].x * 3.1415927f)) +
-                      g_4d5bb8->wheels[i].unk94;
-        g_4d5bb8->wheels[i].unk90 = g_4d5bb8->wheels[i].unk94;
-        g_4d5bb8->wheels[i].unk94 = angle;
-        Matrix_RotationX(g_4d5bb8->wheelMatrix[i], angle);
+        wheel->unk90 = wheel->unk94;
+        wheel->unk94 += -(wheel->unk04 * 180.0f / (g_4d5bb8->unkcb8[i].x * 3.1415927f));
+        Matrix_RotationX(g_4d5bb8->wheelMatrix[i], wheel->unk94);
+        wheel++;
     }
 }
 
@@ -307,19 +405,65 @@ void FUN_414b30()
 {
 }
 
-// STUB: STUNTGP_D3D 0x414c60
+// GLOBAL: STUNTGP_D3D 0x474c08
+TrailParams g_474c08 = {1, 16, 2, 8};
+
+// GLOBAL: STUNTGP_D3D 0x474d18
+TrailParams g_474d18 = {0, 5, 1, 4};
+
+// GLOBAL: STUNTGP_D3D 0x474e28
+TrailParams g_474e28 = {0, 9, 2, 4};
+
+// STUB: STUNTGP_D3D 0x41e510
+void FUN_41e510(Vec4 *ring, DWORD *head, DWORD *count, Vec4 *pos, TrailParams *params)
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x414c60
 void FUN_414c60()
 {
+    if (g_61297c < 20)
+    {
+        return;
+    }
+    if (g_4d5bb8->unk1cf0 - 4000.0f / 60.0f < 0.0f)
+    {
+        FUN_414c50(g_4d5bb8);
+        return;
+    }
+    Vec4 pos;
+    pos.x = 0.0f;
+    pos.y = g_4d5bb8->unk244;
+    pos.z = g_4d5bb8->unk26b0->parts[0]->meshes[23].matrix->z;
+    FUN_41e510(g_4d5bb8->unk351c, &g_4d5bb8->unk391c, &g_4d5bb8->unk3920, &pos, &g_474c08);
 }
 
-// STUB: STUNTGP_D3D 0x414f90
+// FUNCTION: STUNTGP_D3D 0x414f90
 void FUN_414f90()
 {
+    if (g_61297c >= 60 && g_4d5bb8->unk28a0)
+    {
+        Car *car = g_4d5bb8;
+        Vec4 pos = car->unk2d04.pos;
+        FUN_41e510(car->unk2d04.points, &car->unk2d04.head, &car->unk2d04.count, &pos, &g_474d18);
+        pos = car->unk2f1c.pos;
+        FUN_41e510(car->unk2f1c.points, &car->unk2f1c.head, &car->unk2f1c.count, &pos, &g_474d18);
+    }
 }
 
-// STUB: STUNTGP_D3D 0x4152d0
+// FUNCTION: STUNTGP_D3D 0x4152d0
 void FUN_4152d0()
 {
+    if (g_61297c >= 60 && g_4d5bb8->unk28a0)
+    {
+        Car *car = g_4d5bb8;
+        Vec4 pos = car->unk28c0.pos;
+        pos.y -= 20.0f;
+        FUN_41e510(car->unk28c0.points, &car->unk28c0.head, &car->unk28c0.count, &pos, &g_474e28);
+        pos = car->unk2adc.pos;
+        pos.y -= 20.0f;
+        FUN_41e510(car->unk2adc.points, &car->unk2adc.head, &car->unk2adc.count, &pos, &g_474e28);
+    }
 }
 
 // Fades the light mesh brightness down by 32 a tick, holding at 120 while lit.
@@ -940,7 +1084,25 @@ void FUN_41d180()
     }
 }
 
-// STUB: STUNTGP_D3D 0x41d300
+// FUNCTION: STUNTGP_D3D 0x41d300
 void FUN_41d300()
 {
+    memset(g_4d5bb8->unk23dc, 0xff, sizeof(g_4d5bb8->unk23dc));
+    g_4d5bb8->unk23c4 = -1;
+    g_4d5bb8->unk23c8 = -1;
+    g_4d5bb8->unk23cc = -1;
+    g_4d5bb8->unk23d0 = 0;
+    g_4d5bb8->unk23d4 = 0x34bc0;
+    g_4d5bb8->unk23d8 = 0;
+    g_4d5bb8->unk26a8 = 0;
+    g_4d5bb8->unk23a4 = 0;
+    g_4d5bb8->unk23bc = -1;
+    g_4d5bb8->unk23a8 = -2;
+    g_4d5bb8->unk23ac = -1;
+    g_4d5bb8->unk23b8 = -1.0f;
+    g_4d5bb8->unk24a4 = 0;
+    g_4d5bb8->unk24a8 = 0;
+    g_4d5bb8->unk7678 = 0;
+    g_4d5bb8->unk24e0 = 0;
+    g_4d5bb8->unk24e4 = 0;
 }
