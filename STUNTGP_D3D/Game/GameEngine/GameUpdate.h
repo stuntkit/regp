@@ -380,7 +380,9 @@ struct Car
     float unk1cf4;            // 0x1cf4
     float unk1cf8;            // 0x1cf8
     float unk1cfc;            // 0x1cfc
-    BYTE unk1d00[0x208];      // 0x1d00
+    BYTE unk1d00[0x4];        // 0x1d00
+    float unk1d04;            // 0x1d04, peak power
+    float unk1d08[128];       // 0x1d08, power curve
     float unk1f08;            // 0x1f08
     int unk1f0c;              // 0x1f0c
     unsigned int unk1f10;     // 0x1f10
@@ -526,7 +528,7 @@ struct Car
     float unk2650;            // 0x2650
     int unk2654;              // 0x2654
     float unk2658;            // 0x2658
-    BYTE unk265c[0x4];        // 0x265c
+    float unk265c;            // 0x265c
     float unk2660;            // 0x2660
     unsigned int unk2664;     // 0x2664
     BYTE unk2668[0xc];        // 0x2668

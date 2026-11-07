@@ -529,6 +529,34 @@ void FUN_40a160()
     }
 }
 
+// Builds the power curve from the current torque curve and records its peak below the rev limit.
+// FUNCTION: STUNTGP_D3D 0x40a1d0
+void FUN_40a1d0()
+{
+    Car *car = g_4d5bb8;
+    float maxTorque = 0.0f;
+    car->unk1d04 = 0.0f;
+    float *torque = car->unk470[car->unk1f0c];
+    for (DWORD i = 0; i < 128; i++)
+    {
+        float rpm = (float)i * car->unk045c * 0.0078125f;
+        float power = ((rpm * 0.10471976f) * torque[i]) * 0.0013404826f;
+        car->unk1d08[i] = power;
+        if (rpm <= car->unk464)
+        {
+            if (power > car->unk1d04)
+            {
+                car->unk1d04 = power;
+            }
+            if (torque[i] > maxTorque)
+            {
+                maxTorque = torque[i];
+            }
+        }
+    }
+    car->unk1d04 = car->unk46c * car->unk1d04;
+}
+
 // FUNCTION: STUNTGP_D3D 0x40a2c0
 void FUN_40a2c0(float (*m)[16])
 {
@@ -816,6 +844,29 @@ void FUN_40b3c0()
 }
 
 void Script_GetFloat(char *section, char *key, float *out);
+void Script_GetInt(char *section, char *key, int *out);
+void Script_GetFloatArray(char *section, char *key, float *out, DWORD count);
+
+// FUNCTION: STUNTGP_D3D 0x40b690
+void FUN_40b690(char *text)
+{
+    // STRING: STUNTGP_D3D 0x47356c
+    char *section = strstr(text, "-GEARBOX[] =");
+    // STRING: STUNTGP_D3D 0x47357c
+    Script_GetInt(section, "DriveMode", &g_4d5bb8->unkc70);
+    // STRING: STUNTGP_D3D 0x473588
+    Script_GetInt(section, "NrOfGears", (int *)&g_4d5bb8->unkc74);
+    // STRING: STUNTGP_D3D 0x473594
+    Script_GetFloat(section, "FinalDrive", &g_4d5bb8->unkc7c[0]);
+    // STRING: STUNTGP_D3D 0x4735a0
+    Script_GetFloat(section, "ShiftTime", &g_4d5bb8->unkca0);
+    // STRING: STUNTGP_D3D 0x4735ac
+    Script_GetFloat(section, "Efficiency", &g_4d5bb8->unkca4);
+    // STRING: STUNTGP_D3D 0x4735b8
+    Script_GetFloat(section, "4WDPowerSplit", &g_4d5bb8->unkca8);
+    // STRING: STUNTGP_D3D 0x4735c8
+    Script_GetFloatArray(section, "Ratios[]", &g_4d5bb8->unkc7c[1], 8);
+}
 
 // FUNCTION: STUNTGP_D3D 0x40b750
 void FUN_40b750(char *text)
@@ -893,6 +944,27 @@ void FUN_40bac0(char *text)
 }
 
 void Script_GetInt(char *section, char *key, int *out);
+
+// FUNCTION: STUNTGP_D3D 0x40bb60
+void FUN_40bb60(char *text)
+{
+    // STRING: STUNTGP_D3D 0x4737d8
+    char *section = strstr(text, "-TURBO[] =");
+    // STRING: STUNTGP_D3D 0x4737e4
+    Script_GetFloat(section, "RpmAcc", &g_4d5bb8->unkd60);
+    // STRING: STUNTGP_D3D 0x4737ec
+    Script_GetFloat(section, "RpmMax", &g_4d5bb8->unkd64);
+    // STRING: STUNTGP_D3D 0x4737f4
+    Script_GetFloat(section, "Cm", &g_4d5bb8->unkd68);
+    // STRING: STUNTGP_D3D 0x4737f8
+    Script_GetFloat(section, "PowerMultiplier", &g_4d5bb8->unkd6c);
+    // STRING: STUNTGP_D3D 0x473808
+    Script_GetFloat(section, "MaxConsumption", &g_4d5bb8->unkf70);
+    // STRING: STUNTGP_D3D 0x473818
+    Script_GetFloat(section, "FuelCutoffPoint", &g_4d5bb8->unkf74);
+    // STRING: STUNTGP_D3D 0x473828
+    Script_GetFloatArray(section, "PowerEnv", g_4d5bb8->unkd70, 128);
+}
 
 // FUNCTION: STUNTGP_D3D 0x40bc30
 void FUN_40bc30(char *text)
@@ -1735,6 +1807,36 @@ void FUN_40d790()
             }
         }
         FUN_40d6b0();
+    }
+}
+
+// Splits drive torque between the axles by drive mode (0 front, 1 rear, 2 4WD).
+// FUNCTION: STUNTGP_D3D 0x40e3a0
+void FUN_40e3a0(float torque)
+{
+    if (torque > 0.0f && g_4d5bb8->unk2254 != 0.0f && g_4d5bb8->unk1fd8 == 0)
+    {
+        float boost = torque * g_4d5bb8->unk2258;
+        torque += boost;
+    }
+    torque *= 4.0f;
+    switch (g_4d5bb8->unkc70)
+    {
+    case 2:
+    {
+        float rear = torque * g_4d5bb8->unkca8;
+        g_4d5bb8->wheels[2].unk00 += rear;
+        g_4d5bb8->wheels[3].unk00 += rear;
+        torque *= 1.0f - g_4d5bb8->unkca8;
+    }
+    case 0:
+        g_4d5bb8->wheels[0].unk00 += torque;
+        g_4d5bb8->wheels[1].unk00 += torque;
+        break;
+    case 1:
+        g_4d5bb8->wheels[2].unk00 += torque;
+        g_4d5bb8->wheels[3].unk00 += torque;
+        break;
     }
 }
 
@@ -2631,6 +2733,48 @@ void FUN_4137b0()
     {
         g_4d5bb8->unk2240[i] += speed;
     }
+}
+
+// One of the 32 entries of g_612da4.
+struct Unk612da4
+{
+    int life;            // 0x000
+    int unk04;           // 0x004
+    Vec4 pos;            // 0x008
+    Vec4 vel;            // 0x018
+    float unk28;         // 0x028
+    float unk2c;         // 0x02c
+    BYTE unk030[0x400];  // 0x030
+    int unk430;          // 0x430
+    int unk434;          // 0x434
+    float unk438;        // 0x438
+    int unk43c;          // 0x43c
+};
+
+extern int g_612d98;
+extern int g_612d9c;
+extern int g_612da4[0x2200];
+
+// FUNCTION: STUNTGP_D3D 0x416590
+void FUN_416590(Vec4 *pos, Vec4 *vel)
+{
+    if ((DWORD)g_612d9c >= 32)
+    {
+        g_612d9c = 0;
+    }
+    Unk612da4 *p = &((Unk612da4 *)g_612da4)[g_612d9c];
+    p->pos = *pos;
+    p->unk04 = 8;
+    p->life = FUN_42f1f0(15) + 30;
+    p->unk28 = 0.95f;
+    p->unk438 = 0.25f;
+    p->unk43c = p->life;
+    p->unk430 = 0;
+    p->unk434 = 0;
+    p->unk2c = 2.5f;
+    p->vel = *vel;
+    g_612d9c++;
+    g_612d98++;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4166f0

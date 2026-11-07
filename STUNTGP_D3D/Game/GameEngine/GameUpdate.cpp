@@ -1925,6 +1925,37 @@ void FUN_4058f0()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x405a80
+void FUN_405a80()
+{
+    for (int i = 0; i < 6; i++)
+    {
+        if (g_4d5bb8 != &g_49a1f8[i] && g_4d5bb8->active == 1)
+        {
+            Car *car = g_4d5bb8;
+            float gap = car->leaderGap - g_49a1f8[i].leaderGap;
+            if (gap > 0.0f && gap < 7500.0f)
+            {
+                float f = gap * 0.00013333333f;
+                f *= f;
+                if (f < 0.1f)
+                {
+                    f = 0.0f;
+                }
+                f = 1.0f - f + car->unk265c;
+                if (f > 1.0f)
+                {
+                    f = 1.0f;
+                }
+                if (f > car->unk265c)
+                {
+                    car->unk265c = f;
+                }
+            }
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x405b50
 void FUN_405b50()
 {
