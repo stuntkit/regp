@@ -1048,14 +1048,6 @@ void FUN_445530()
     }
 }
 
-struct GhostRecord
-{
-    int unk00;
-    int unk04;
-    Unk4d5cc0 *ghost;
-    unsigned int time;
-};
-
 // GLOBAL: STUNTGP_D3D 0x60d628
 GhostRecord g_60d628[4];
 

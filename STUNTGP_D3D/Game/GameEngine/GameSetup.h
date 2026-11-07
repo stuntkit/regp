@@ -6,7 +6,9 @@
 struct Unk4d5cc0
 {
     short unk00;
-    BYTE unk02[0x3a];
+    BYTE unk02[0x1a];
+    DWORD unk1c;
+    BYTE unk20[0x1c];
     int unk3c;
     BYTE unk40[0x19d00 - 0x40];
 };

@@ -55,3 +55,13 @@ struct RaceEntry
 };
 
 extern RaceEntry g_60d78c[6];
+
+struct GhostRecord
+{
+    int unk00;
+    int unk04;
+    Unk4d5cc0 *ghost;
+    unsigned int time;
+};
+
+extern GhostRecord g_60d628[4];

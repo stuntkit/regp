@@ -1,4 +1,5 @@
 #include "GameUpdate.h"
+#include "Game.h"
 
 #include <cstring>
 #include <stdio.h>
@@ -1384,9 +1385,6 @@ DWORD g_60eff8;
 // GLOBAL: STUNTGP_D3D 0x60effc
 DWORD g_60effc;
 
-// GLOBAL: STUNTGP_D3D 0x60d630
-DWORD *g_60d630;
-
 // GLOBAL: STUNTGP_D3D 0x60d66c
 int g_60d66c;
 
@@ -1400,7 +1398,7 @@ int FUN_442fb0()
     {
         return 0;
     }
-    return g_60f000[0] < g_60d630[7];
+    return g_60f000[0] < g_60d628[0].ghost->unk1c;
 }
 
 // FUNCTION: STUNTGP_D3D 0x443de0
