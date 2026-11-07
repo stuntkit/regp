@@ -229,6 +229,8 @@ extern int g_DisableFramerateCorrection;
 extern int g_60f2c0;
 extern DWORD g_60f2c4;
 extern int g_61294c;
+extern int g_61299c;
+extern int g_61b634;
 extern DWORD g_612954;
 extern int g_612958;
 extern int g_612970;
@@ -262,7 +264,9 @@ void FUN_40dad0();
 void FUN_45f8f0(int a, int b);
 
 // per-tick game logic
+void FUN_4023d0();
 void FUN_4023f0();
+void FUN_4028d0(int mode);
 void FUN_43d200();
 void FUN_405210();
 void FUN_427140();

@@ -2,10 +2,12 @@
 
 #include <cstring>
 #include <float.h>
+#include <math.h>
 
 #include "../../globals.h"
 #include "../../surface.h"
 #include "../../timer.h"
+#include "../../vecmath.h"
 
 // GLOBAL: STUNTGP_D3D 0x60d618
 int g_60d618;
@@ -134,24 +136,122 @@ void FUN_4023f0()
     slot->angAccelZ = 0;
 }
 
-// STUB: STUNTGP_D3D 0x402950
+// GLOBAL: STUNTGP_D3D 0x4864e8
+Camera g_4864e8 = {
+    {0.0f, 0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, -1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.0f}, 0, NULL, NULL, 2,
+};
+
+// FUNCTION: STUNTGP_D3D 0x4023d0
+void FUN_4023d0()
+{
+    GameSlot *slot = g_4722d0;
+    slot->velX = 0;
+    slot->velY = 0;
+    slot->velZ = 0;
+    slot->speed = 0;
+}
+
+// STUB: STUNTGP_D3D 0x412910
+void FUN_412910()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x4028d0
+void FUN_4028d0(int mode)
+{
+    GameSlot *slot = g_4722d0;
+    slot->camMode = mode;
+    slot->roll = 0;
+    slot->unk1a4 = 300;
+    FUN_412910();
+}
+
+// FUNCTION: STUNTGP_D3D 0x402950
 void FUN_402950()
 {
+    if (g_4722d0->preset)
+    {
+        g_4722d0->camMode = g_4722d0->presetMode;
+        g_4722d0->cam = g_4864e8;
+        g_4722d0->cam.pos = g_4722d0->preset->pos;
+        g_4722d0->cam.target = g_4722d0->preset->target;
+        g_4722d0->cam.up = g_4722d0->preset->up;
+        g_4722d0->fov = g_4722d0->preset->fov;
+        g_4722d0->fov2 = g_4722d0->preset->fov;
+        g_4722d0->roll = g_4722d0->preset->roll;
+        FUN_4023d0();
+        FUN_4023f0();
+        FUN_44f4c0();
+        if (g_4722d0->presetMode == 4)
+        {
+            g_4722d0->cam.target.x = g_4722d0->data->unk22dc + g_4722d0->data->posX;
+            g_4722d0->cam.target.y = g_4722d0->data->unk22e0 + g_4722d0->data->posY;
+            g_4722d0->cam.target.z = g_4722d0->data->unk22e4 + g_4722d0->data->posZ;
+        }
+        g_4722d0->preset = NULL;
+    }
 }
 
-// STUB: STUNTGP_D3D 0x402a80
+// FUNCTION: STUNTGP_D3D 0x402a80
 void FUN_402a80()
 {
+    if (g_4722d0->fovPending)
+    {
+        g_4722d0->fov = g_4722d0->fovNext;
+        g_4722d0->fovPending = 0;
+        FUN_44f4c0();
+    }
 }
 
-// STUB: STUNTGP_D3D 0x402f60
+// FUNCTION: STUNTGP_D3D 0x402f60
 void FUN_402f60()
 {
+    g_4722d0->angVelX += g_4722d0->angAccelX;
+    g_4722d0->angVelY += g_4722d0->angAccelY;
+    g_4722d0->angVelZ += g_4722d0->angAccelZ;
+    g_4722d0->angX = (g_4722d0->angX - (int)(g_4722d0->angVelX * -93206.75555555556)) & 0x1ffffff;
+    g_4722d0->angY = (g_4722d0->angY - (int)(g_4722d0->angVelY * -93206.75555555556)) & 0x1ffffff;
+    g_4722d0->angZ = (int)(g_4722d0->angVelZ * 93206.75555555556) & 0x1ffffff;
+    g_4722d0->angVelX *= 0.95f;
+    g_4722d0->angVelY *= 0.95f;
+    if ((float)fabs(g_4722d0->angVelX) < 0.1f)
+    {
+        g_4722d0->angVelX = 0;
+    }
+    if ((float)fabs(g_4722d0->angVelY) < 0.1f)
+    {
+        g_4722d0->angVelY = 0;
+    }
+    if ((float)fabs(g_4722d0->angVelZ) < 0.1f)
+    {
+        g_4722d0->angVelZ = 0;
+    }
 }
 
-// STUB: STUNTGP_D3D 0x403080
+// FUNCTION: STUNTGP_D3D 0x403080
 void FUN_403080()
 {
+    g_4722d0->velX += g_4722d0->accelX;
+    g_4722d0->velY += g_4722d0->accelY;
+    g_4722d0->velZ += g_4722d0->accelZ;
+    g_4722d0->velX *= 0.95f;
+    g_4722d0->velY *= 0.95f;
+    g_4722d0->velZ *= 0.95f;
+    g_4722d0->speed = (float)sqrt(
+        g_4722d0->velX * g_4722d0->velX + g_4722d0->velY * g_4722d0->velY + g_4722d0->velZ * g_4722d0->velZ
+    );
+    if ((float)fabs(g_4722d0->velX) < 0.1f)
+    {
+        g_4722d0->velX = 0;
+    }
+    if ((float)fabs(g_4722d0->velY) < 0.1f)
+    {
+        g_4722d0->velY = 0;
+    }
+    if ((float)fabs(g_4722d0->velZ) < 0.1f)
+    {
+        g_4722d0->velZ = 0;
+    }
 }
 
 // STUB: STUNTGP_D3D 0x4039b0

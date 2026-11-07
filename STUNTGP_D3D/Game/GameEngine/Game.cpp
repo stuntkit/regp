@@ -302,9 +302,251 @@ int FUN_4421f0()
     return 0;
 }
 
-// STUB: STUNTGP_D3D 0x442640
+// STUB: STUNTGP_D3D 0x418180
+void FUN_418180()
+{
+}
+
+// STUB: STUNTGP_D3D 0x45e4f0
+void FUN_45e4f0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x416050
+void FUN_416050()
+{
+}
+
+// STUB: STUNTGP_D3D 0x449d60
+void FUN_449d60()
+{
+}
+
+// STUB: STUNTGP_D3D 0x428f70
+void FUN_428f70(DWORD font)
+{
+}
+
+// STUB: STUNTGP_D3D 0x4291f0
+void FUN_4291f0(const char *text, int align, float x, float y, float z, DWORD color, float scale, int flags)
+{
+}
+
+// STUB: STUNTGP_D3D 0x42e870
+void FUN_42e870()
+{
+}
+
+// STUB: STUNTGP_D3D 0x433f40
+void FUN_433f40()
+{
+}
+
+// STUB: STUNTGP_D3D 0x44ae40
+void FUN_44ae40()
+{
+}
+
+// STUB: STUNTGP_D3D 0x401b00
+void FUN_401b00()
+{
+}
+
+// STUB: STUNTGP_D3D 0x431830
+void FUN_431830(int a)
+{
+}
+
+// STUB: STUNTGP_D3D 0x4473f0
+void FUN_4473f0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x449fb0
+void FUN_449fb0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x40de80
+void FUN_40de80()
+{
+}
+
+// STUB: STUNTGP_D3D 0x40df90
+void FUN_40df90()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x442500
+void FUN_442500()
+{
+    FUN_418180();
+    FUN_45e4f0();
+    FUN_416050();
+    FUN_449d60();
+}
+
+// FUNCTION: STUNTGP_D3D 0x442520
+void FUN_442520()
+{
+    FUN_428f70(1);
+    // STRING: STUNTGP_D3D 0x4826cc
+    FUN_4291f0("GAMEOVER!", 1, 320.0f, 208.0f, 0.98f, 0xffffff, 2.0f, 0);
+    // STRING: STUNTGP_D3D 0x4826d8
+    FUN_4291f0("PLEASE WAIT FOR RACE TO FINISH...", 1, 320.0f, 272.0f, 0.98f, 0xffffff, 2.0f, 0);
+    FUN_428f70(0);
+}
+
+// FUNCTION: STUNTGP_D3D 0x442590
+void FUN_442590()
+{
+    FUN_428f70(1);
+    // STRING: STUNTGP_D3D 0x4826fc
+    FUN_4291f0("NO PLAYER AVAILABLE...", 1, 320.0f, 240.0f, 0.98f, 0xffffff, 2.0f, 0);
+    FUN_428f70(0);
+}
+
+// FUNCTION: STUNTGP_D3D 0x4425d0
+void FUN_4425d0()
+{
+    if (g_61299c && !g_4722d0->active)
+    {
+        if (g_4722d0->data->unk76a0 == 1)
+        {
+            FUN_442520();
+        }
+        else
+        {
+            FUN_442590();
+        }
+        return;
+    }
+    FUN_402e90();
+    FUN_442500();
+    FUN_42e870();
+    FUN_433f40();
+    FUN_42e420();
+    FUN_442a00();
+    FUN_44ae40();
+    FUN_442a20();
+    FUN_401b00();
+    FUN_432f60();
+    FUN_431830(0);
+}
+
+// FUNCTION: STUNTGP_D3D 0x449b50
+void FUN_449b50()
+{
+    DWORD t;
+    DWORD alpha;
+
+    if (g_61294c == 1)
+    {
+        return;
+    }
+    t = g_498248[0].data->unk7688;
+    if (t == 0 || t >= 240)
+    {
+        return;
+    }
+    if (g_61b634 != 0x10 && g_61b634 != 0x11 && g_61b634 != 0x12 && g_61b634 != 0x13)
+    {
+        return;
+    }
+    if ((t <= 30 || t >= 120) && t % 60 < 30)
+    {
+        alpha = t % 60 * 192 / 30;
+    }
+    else
+    {
+        alpha = 192;
+    }
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.x = 217.6f;
+    g_spriteDesc.y = 73.6f;
+    g_spriteDesc.z = 0.98f;
+    g_spriteDesc.u0 = 0.0f;
+    g_spriteDesc.v0 = 0.0f;
+    g_spriteDesc.u1 = 1024.0f;
+    g_spriteDesc.v1 = 1024.0f;
+    g_spriteDesc.width = 204.8f;
+    g_spriteDesc.height = 204.8f;
+    g_spriteDesc.texture = 15;
+    g_spriteDesc.color = 0;
+    g_spriteDesc.blendMode = 0x48;
+    g_spriteDesc.alpha = alpha;
+    FUN_432e00(&g_spriteDesc);
+}
+
+// FUNCTION: STUNTGP_D3D 0x40e030
+void FUN_40e030()
+{
+    if (g_61299c == 1)
+    {
+        FUN_40de80();
+        FUN_40df90();
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x442640
 void FUN_442640()
 {
+    switch (g_576be0)
+    {
+    case 0:
+        FUN_424c30(1);
+        FUN_4425d0();
+        break;
+    case 1:
+        g_4722d0 = &g_498248[0];
+        FUN_424c30(6);
+        FUN_4425d0();
+        g_4722d0 = &g_498248[1];
+        FUN_424c30(7);
+        FUN_4425d0();
+        break;
+    case 2:
+        g_4722d0 = &g_498248[0];
+        FUN_424c30(8);
+        FUN_4425d0();
+        g_4722d0 = &g_498248[1];
+        FUN_424c30(9);
+        FUN_4425d0();
+        break;
+    case 3:
+        g_4722d0 = &g_498248[0];
+        FUN_424c30(10);
+        FUN_4425d0();
+        g_4722d0 = &g_498248[1];
+        FUN_424c30(11);
+        FUN_4425d0();
+        g_4722d0 = &g_498248[2];
+        FUN_424c30(12);
+        FUN_4425d0();
+        break;
+    case 4:
+        g_4722d0 = &g_498248[0];
+        FUN_424c30(13);
+        FUN_4425d0();
+        g_4722d0 = &g_498248[1];
+        FUN_424c30(14);
+        FUN_4425d0();
+        g_4722d0 = &g_498248[2];
+        FUN_424c30(15);
+        FUN_4425d0();
+        g_4722d0 = &g_498248[3];
+        FUN_424c30(16);
+        FUN_4425d0();
+        break;
+    }
+    FUN_424c30(1);
+    FUN_402580();
+    g_61b740 = &g_4722d0->fx;
+    FUN_4473f0();
+    FUN_449fb0();
+    FUN_449b50();
+    FUN_40e030();
+    FUN_442200();
 }
 
 // FUNCTION: STUNTGP_D3D 0x4427b0
