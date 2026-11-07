@@ -672,6 +672,28 @@ void FUN_4051e0()
     FUN_4028f0(g_4722d8, 10);
 }
 
+// GLOBAL: STUNTGP_D3D 0x498128
+Vec4 g_498128;
+
+// GLOBAL: STUNTGP_D3D 0x4981c8
+float g_4981c8;
+
+// FUNCTION: STUNTGP_D3D 0x41ff30
+int FUN_41ff30(Vec4 *p)
+{
+    Vec4 v;
+    v.x = p->x - g_4980c4.x;
+    v.y = p->y - g_4980c4.y;
+    v.z = p->z - g_4980c4.z;
+    float d = g_498128.z * v.z + g_498128.y * v.y + g_498128.x * v.x;
+    if (d >= -0.01f && d < g_4981c8)
+    {
+        g_4981c8 = d;
+        return 1;
+    }
+    return 0;
+}
+
 // Uniform cubic B-spline basis weights, written to m[0], m[4], m[8], m[12].
 // FUNCTION: STUNTGP_D3D 0x4282a0
 void FUN_4282a0(float *m, float t)
