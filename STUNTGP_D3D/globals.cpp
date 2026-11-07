@@ -108,3 +108,6 @@ int g_612bec = 0;
 
 // GLOBAL: STUNTGP_D3D 0x612948
 int g_612948 = 0;
+
+// GLOBAL: STUNTGP_D3D 0x61c38c
+HINSTANCE g_hInstance = NULL;

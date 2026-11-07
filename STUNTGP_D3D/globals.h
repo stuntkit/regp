@@ -65,4 +65,5 @@ extern SurfaceSlot g_surfaceSlots[255];
 extern int g_612be8;
 extern int g_612bec;
 extern int g_612948;
+extern HINSTANCE g_hInstance;
 #endif /* GLOBALS_H */
