@@ -1104,10 +1104,10 @@ void FUN_446840(char *script)
     Script_GetInt(p, "G", &green);
     // STRING: STUNTGP_D3D 0x484ff8
     Script_GetInt(p, "B", &blue);
-    g_624504 = intensity * (1.0f / 255.0f);
-    g_624508 = red;
-    g_62450c = green;
-    g_624510 = blue;
+    g_624504.intensity = intensity * (1.0f / 255.0f);
+    g_624504.red = red;
+    g_624504.green = green;
+    g_624504.blue = blue;
     FUN_42d7e0();
     // STRING: STUNTGP_D3D 0x484ffc
     p = strstr(script, "-FogColour[] =");

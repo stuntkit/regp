@@ -269,34 +269,7 @@ void Script_ParseGameConfig()
 }
 
 // GLOBAL: STUNTGP_D3D 0x624504
-float g_624504;
-
-// GLOBAL: STUNTGP_D3D 0x624508
-float g_624508;
-
-// GLOBAL: STUNTGP_D3D 0x62450c
-float g_62450c;
-
-// GLOBAL: STUNTGP_D3D 0x624510
-float g_624510;
-
-// GLOBAL: STUNTGP_D3D 0x624514
-float g_624514;
-
-// GLOBAL: STUNTGP_D3D 0x624518
-float g_624518;
-
-// GLOBAL: STUNTGP_D3D 0x62451c
-float g_62451c;
-
-// GLOBAL: STUNTGP_D3D 0x624520
-int g_624520;
-
-// GLOBAL: STUNTGP_D3D 0x624524
-int g_624524;
-
-// GLOBAL: STUNTGP_D3D 0x624528
-int g_624528;
+Ambience g_624504;
 
 // GLOBAL: STUNTGP_D3D 0x5da264
 char g_5da264[0x100];
@@ -304,18 +277,18 @@ char g_5da264[0x100];
 // FUNCTION: STUNTGP_D3D 0x42d7e0
 void FUN_42d7e0()
 {
-    float r = g_624508 * g_624504;
-    float g = g_62450c * g_624504;
-    float b = g_624510 * g_624504;
-    g_624514 = r;
-    g_624518 = g;
-    g_62451c = b;
+    float r = g_624504.red * g_624504.intensity;
+    float g = g_624504.green * g_624504.intensity;
+    float b = g_624504.blue * g_624504.intensity;
+    g_624504.r = r;
+    g_624504.g = g;
+    g_624504.b = b;
     int ir = (int)r;
     int ig = (int)g;
     int ib = (int)b;
-    g_624520 = ir << 8;
-    g_624524 = ig << 8;
-    g_624528 = ib << 8;
+    g_624504.ir = ir << 8;
+    g_624504.ig = ig << 8;
+    g_624504.ib = ib << 8;
 }
 
 // FUNCTION: STUNTGP_D3D 0x434980
