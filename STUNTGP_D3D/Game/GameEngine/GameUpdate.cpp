@@ -103,6 +103,25 @@ AnimObject g_576cd0[32];
 // GLOBAL: STUNTGP_D3D 0x636448
 Scene *g_636448;
 
+// 6 entries at 0x49a1f8, 0x7724 bytes each
+struct Car
+{
+    BYTE unk0000[0x1ba8]; // 0x0000
+    int active;           // 0x1ba8
+    BYTE unk1bac[0x56bc]; // 0x1bac
+    short *unk7268;       // 0x7268
+    BYTE unk726c[0x4b8];  // 0x726c
+};
+
+// GLOBAL: STUNTGP_D3D 0x49a1f8
+Car g_49a1f8[6];
+
+// GLOBAL: STUNTGP_D3D 0x4d5bb8
+Car *g_4d5bb8;
+
+void FUN_41af50();
+void FUN_41e2d0();
+
 // --- per-tick game logic ---
 
 // STUB: STUNTGP_D3D 0x401770
@@ -122,9 +141,53 @@ void FUN_4023f0()
     slot->unk10c = 0;
 }
 
-// STUB: STUNTGP_D3D 0x405210
+// STUB: STUNTGP_D3D 0x402950
+void FUN_402950()
+{
+}
+
+// STUB: STUNTGP_D3D 0x402a80
+void FUN_402a80()
+{
+}
+
+// STUB: STUNTGP_D3D 0x402f60
+void FUN_402f60()
+{
+}
+
+// STUB: STUNTGP_D3D 0x403080
+void FUN_403080()
+{
+}
+
+// STUB: STUNTGP_D3D 0x4039b0
+void FUN_4039b0()
+{
+}
+
+// STUB: STUNTGP_D3D 0x404450
+void FUN_404450()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x405210
 void FUN_405210()
 {
+    for (int i = 0; i < 4; i++)
+    {
+        g_4722d0 = &g_498248[i];
+        if (g_498248[i].active == 1)
+        {
+            FUN_402950();
+            FUN_4039b0();
+            FUN_402a80();
+            FUN_404450();
+            FUN_403080();
+            FUN_402f60();
+        }
+    }
+    g_4722d0 = g_498248;
 }
 
 // STUB: STUNTGP_D3D 0x40dad0
@@ -192,8 +255,60 @@ void FUN_415df0()
 {
 }
 
-// STUB: STUNTGP_D3D 0x418a90
+// STUB: STUNTGP_D3D 0x40e340
+void FUN_40e340()
+{
+}
+
+// STUB: STUNTGP_D3D 0x418830
+void FUN_418830()
+{
+}
+
+// STUB: STUNTGP_D3D 0x418970
+void FUN_418970()
+{
+}
+
+// STUB: STUNTGP_D3D 0x4189e0
+void FUN_4189e0()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x418a90
 void FUN_418a90()
+{
+    g_4d5bb8 = g_49a1f8;
+    FUN_4189e0();
+    FUN_40e340();
+    g_4d5bb8 = g_49a1f8;
+    for (int i = 0; i < 6; i++)
+    {
+        if (g_4d5bb8->active == 1)
+        {
+            FUN_41af50();
+            if (g_4d5bb8->unk7268 && *g_4d5bb8->unk7268 == 1)
+            {
+                FUN_418970();
+            }
+            else
+            {
+                FUN_418830();
+            }
+        }
+        g_4d5bb8++;
+    }
+    FUN_41e2d0();
+    g_4d5bb8 = g_49a1f8;
+}
+
+// STUB: STUNTGP_D3D 0x41af50
+void FUN_41af50()
+{
+}
+
+// STUB: STUNTGP_D3D 0x41e2d0
+void FUN_41e2d0()
 {
 }
 
