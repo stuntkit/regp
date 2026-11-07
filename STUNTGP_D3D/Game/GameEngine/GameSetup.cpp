@@ -72,10 +72,18 @@ SceneSlot g_636418[16];
 
 struct RenderMaterial
 {
-    DWORD unk00;    // 0x00
-    DWORD unk04;    // 0x04
-    float alpha;    // 0x08
-    BYTE unk0c[0x84];
+    DWORD unk00;      // 0x00
+    DWORD unk04;      // 0x04
+    float alpha;      // 0x08
+    BYTE unk0c[0x5c]; // 0x0c
+    float unk68;      // 0x68
+    float unk6c;      // 0x6c
+    float unk70;      // 0x70
+    int unk74;        // 0x74
+    int unk78;        // 0x78
+    int unk7c;        // 0x7c
+    int unk80;        // 0x80
+    BYTE unk84[0xc];  // 0x84
 };
 
 // GLOBAL: STUNTGP_D3D 0x62447c
@@ -505,9 +513,76 @@ void FUN_42d070()
 {
 }
 
-// STUB: STUNTGP_D3D 0x42d700
+struct Unk624488
+{
+    int unk00;   // 0x00
+    int unk04;   // 0x04
+    int unk08;   // 0x08
+    int unk0c;   // 0x0c
+    float unk10; // 0x10
+};
+
+// GLOBAL: STUNTGP_D3D 0x589628
+RenderMaterial g_589628;
+
+// GLOBAL: STUNTGP_D3D 0x5898d0
+Ambience g_5898d0;
+
+// No reference lands between this and 0x589df8, so the count is the size of that gap.
+// GLOBAL: STUNTGP_D3D 0x5898f8
+Unk624488 g_5898f8[64];
+
+// GLOBAL: STUNTGP_D3D 0x589e04
+int g_589e04;
+
+// GLOBAL: STUNTGP_D3D 0x624488
+Unk624488 *g_624488;
+
+// GLOBAL: STUNTGP_D3D 0x624494
+Ambience *g_624494;
+
+// GLOBAL: STUNTGP_D3D 0x62452c
+int g_62452c;
+
+// STUB: STUNTGP_D3D 0x42d970
+void FUN_42d970()
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x42d700
 void FUN_42d700()
 {
+    if (g_612be8 == 2)
+    {
+        g_589e04 = 0;
+        g_62447c = &g_589628;
+        g_62449c = 0;
+        g_62452c = 0;
+        g_624494 = &g_5898d0;
+        g_624488 = g_5898f8;
+    }
+    RenderMaterial *material = g_62447c;
+    for (DWORD i = 0; i < g_62449c; i++)
+    {
+        if (material->unk00 == 1 && material->unk04 == 1)
+        {
+            float alpha = material->alpha * 4.75f;
+            material->alpha = alpha * alpha;
+        }
+        else
+        {
+            float g = material->unk6c * material->alpha;
+            float b = material->unk70 * material->alpha;
+            float r = material->unk68 * material->alpha;
+            material->unk78 = (int)r;
+            material->unk7c = (int)g;
+            material->unk80 = (int)b;
+        }
+        material++;
+    }
+    g_624504 = *g_624494;
+    FUN_42d7e0();
+    FUN_42d970();
 }
 
 // STUB: STUNTGP_D3D 0x42e240
