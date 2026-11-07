@@ -3,6 +3,7 @@
 #include "sprite.h"
 #include "globals.h"
 #include "windowInit.h"
+#include "vecmath.h"
 
 // GLOBAL: STUNTGP_D3D 0x5da1c4
 LPDIRECT3DDEVICE3 g_d3dDevice = NULL;
@@ -71,10 +72,119 @@ float g_576b94 = 0.0f;
 // GLOBAL: STUNTGP_D3D 0x576b98
 float g_576b98 = 0.0f;
 
-// STUB: STUNTGP_D3D 0x4251a0
+// Sprite clip rectangle in virtual 640x480 space.
+// GLOBAL: STUNTGP_D3D 0x576c04
+float g_clipLeft = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x576c08
+float g_clipRight = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x576c0c
+float g_clipTop = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x576c10
+float g_clipBottom = 0.0f;
+
+// FUNCTION: STUNTGP_D3D 0x4251a0
 int FUN_4251a0(SpriteDesc *desc)
 {
-    return 0;
+    float x;
+    float y;
+    float t;
+    float w;
+    float x2;
+    float y2;
+    float u1;
+    float h;
+    float u0;
+    float v0;
+    float v1;
+    if (desc->flags & 8)
+    {
+        desc->x = desc->x - desc->originX * desc->scaleX + desc->originX;
+        desc->originX = 0.0f;
+        desc->y = desc->y - desc->originY * desc->scaleY + desc->originY;
+        desc->originY = 0.0f;
+        w = desc->width * desc->scaleX;
+        h = desc->scaleY * desc->height;
+    }
+    else
+    {
+        w = desc->width;
+        h = desc->height;
+    }
+    x = desc->x;
+    y = desc->y;
+    x2 = x + w;
+    y2 = y + h;
+
+    // Sign tests on the float bit pattern.
+    t = x2 - g_clipLeft;
+    if (*(int *)&t <= 0)
+    {
+        return 0;
+    }
+    t = x - g_clipRight;
+    if (*(int *)&t >= 0)
+    {
+        return 0;
+    }
+    t = y2 - g_clipTop;
+    if (*(int *)&t <= 0)
+    {
+        return 0;
+    }
+    t = y - g_clipBottom;
+    if (*(int *)&t >= 0)
+    {
+        return 0;
+    }
+    if (x >= g_clipLeft && x2 < g_clipRight && y >= g_clipTop && y2 < g_clipBottom)
+    {
+        return 1;
+    }
+
+    u0 = desc->u0;
+    v0 = desc->v0;
+    v1 = desc->v1;
+    u1 = desc->u1;
+    if (x < g_clipLeft)
+    {
+        t = g_clipLeft - x;
+        u0 += (u1 - u0) * t / w;
+        w -= t;
+        x += t;
+    }
+    if (x2 > g_clipRight)
+    {
+        float d = x2 - g_clipRight;
+        u1 -= (u1 - u0) * d / w;
+        w -= d;
+    }
+    if (y < g_clipTop)
+    {
+        float d = g_clipTop - y;
+        v0 += (v1 - v0) * d / h;
+        h -= d;
+        y += d;
+    }
+    if (y2 > g_clipBottom)
+    {
+        float d = y2 - g_clipBottom;
+        v1 -= (v1 - v0) * d / h;
+        h -= d;
+    }
+    desc->width = w;
+    desc->height = h;
+    desc->u0 = u0;
+    desc->u1 = u1;
+    desc->v0 = v0;
+    desc->y = y;
+    desc->v1 = v1;
+    desc->scaleY = 1.0f;
+    desc->scaleX = 1.0f;
+    desc->x = x;
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x431a80
@@ -203,14 +313,155 @@ void FUN_432a90()
     }
 }
 
-// STUB: STUNTGP_D3D 0x432af0
+// FUNCTION: STUNTGP_D3D 0x432af0
 void FUN_432af0(D3DTLVERTEX2 *verts, SpriteDesc *desc)
 {
+    float m[16];
+    float x;
+    float y;
+    float rx;
+    float ry;
+    float dx;
+    float dy;
+    int i;
+    DWORD flags = desc->flags;
+    DWORD rotate = flags & 1;
+    if (rotate)
+    {
+        Matrix_RotationZ(m, desc->angle);
+    }
+    D3DCOLOR color;
+    if (flags & 0x20)
+    {
+        color = desc->color;
+    }
+    else
+    {
+        color = 0xffffffff;
+    }
+    DWORD scale = flags & 8;
+    for (i = 0; i < 4; i++)
+    {
+        x = desc->points[i].x;
+        verts[i].sx = x;
+        y = desc->points[i].y;
+        verts[i].sy = y;
+        if (rotate)
+        {
+            dx = x - desc->originX;
+            dy = y - desc->originY;
+            rx = dx * m[0] + dy * m[4] + m[12];
+            ry = dx * m[1] + dy * m[5] + m[13];
+            verts[i].sx = rx + desc->originX;
+            verts[i].sy = ry + desc->originY;
+        }
+        if (scale)
+        {
+            verts[i].sx = (verts[i].sx - desc->originX) * desc->scaleX + desc->originX;
+            verts[i].sy = (verts[i].sy - desc->originY) * desc->scaleY + desc->originY;
+        }
+        verts[i].sx = verts[i].sx + desc->x;
+        verts[i].sy = verts[i].sy + desc->y;
+        verts[i].sz = desc->z;
+        verts[i].rhw = desc->z;
+        verts[i].color = color;
+        verts[i].specular = 0;
+        verts[i].tu1 = desc->points[i].u * (1.0f / 1024.0f);
+        verts[i].tv1 = desc->points[i].v * (1.0f / 1024.0f);
+    }
 }
 
-// STUB: STUNTGP_D3D 0x432c00
+// FUNCTION: STUNTGP_D3D 0x432c00
 void FUN_432c00(D3DTLVERTEX2 *verts, SpriteDesc *desc)
 {
+    float m[16];
+    int i;
+    D3DTLVERTEX2 *v;
+    float z = desc->z;
+    D3DCOLOR color;
+    if (desc->flags & 0x20)
+    {
+        color = desc->color;
+    }
+    else
+    {
+        color = 0xffffffff;
+    }
+    float u0 = (desc->u0 + 1.0f) * (1.0f / 1024.0f);
+    float v0 = (desc->v0 + 1.0f) * (1.0f / 1024.0f);
+    float u1 = (desc->u1 - 1.0f) * (1.0f / 1024.0f);
+    float v1 = (desc->v1 - 1.0f) * (1.0f / 1024.0f);
+    verts[0].sx = 0.0f;
+    verts[0].sy = 0.0f;
+    verts[1].sx = desc->width;
+    verts[1].sy = 0.0f;
+    verts[2].sx = desc->width;
+    verts[2].sy = desc->height;
+    verts[3].sx = 0.0f;
+    verts[3].sy = desc->height;
+    if (desc->flags & 1)
+    {
+        Matrix_RotationZ(m, desc->angle);
+        v = verts;
+        for (i = 4; i > 0; i--)
+        {
+            float dx = v->sx - desc->originX;
+            float dy = v->sy - desc->originY;
+            float rx = dy * m[4] + dx * m[0] + m[12];
+            float ry = dy * m[5] + dx * m[1] + m[13];
+            v->sx = rx + desc->originX;
+            v->sy = ry + desc->originY;
+            v++;
+        }
+    }
+    if (desc->flags & 8)
+    {
+        v = verts;
+        for (i = 4; i > 0; i--)
+        {
+            v->sx = (v->sx - desc->originX) * desc->scaleX + desc->originX;
+            v->sy = (v->sy - desc->originY) * desc->scaleY + desc->originY;
+            v++;
+        }
+    }
+    float x = desc->x;
+    float y = desc->y;
+    v = verts;
+    v->sx = x + v->sx;
+    v->sy = y + v->sy;
+    v->sz = z;
+    v->rhw = z;
+    v->color = color;
+    v->specular = 0;
+    v->tu1 = u0;
+    v->tv1 = v0;
+    v++;
+    v->sx = x + v->sx;
+    v->sy = y + v->sy;
+    v->sz = z;
+    v->rhw = z;
+    v->color = color;
+    v->specular = 0;
+    v->tu1 = u1;
+    v->tv1 = v0;
+    v++;
+    v->sx = x + v->sx;
+    v->sy = y + v->sy;
+    v->sz = z;
+    v->rhw = z;
+    v->color = color;
+    v->specular = 0;
+    v->tu1 = u1;
+    v->tv1 = v1;
+    v++;
+    v->sx = x + v->sx;
+    v->sy = y + v->sy;
+    v->sz = z;
+    v->rhw = z;
+    v->color = color;
+    v->specular = 0;
+    v->tu1 = u0;
+    v->tv1 = v1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x432e00
