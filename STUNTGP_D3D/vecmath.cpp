@@ -1,5 +1,7 @@
 #include "vecmath.h"
 
+#include "Game/GameEngine/GameUpdate.h"
+
 #include <math.h>
 #include <string.h>
 
@@ -50,9 +52,52 @@ float g_61c3e8[16];
 // GLOBAL: STUNTGP_D3D 0x61c468
 float g_61c468[16];
 
-// STUB: STUNTGP_D3D 0x44f4e0
+// Multiplies m in place by the matrix given row by row.
+// FUNCTION: STUNTGP_D3D 0x44f1a0
+void Matrix_Multiply(float *m, float b00, float b01, float b02, float b03, float b10, float b11, float b12, float b13,
+                     float b20, float b21, float b22, float b23, float b30, float b31, float b32, float b33)
+{
+    float t[16];
+    for (int i = 0; i < 4; i++)
+    {
+        t[i * 4 + 0] = m[i * 4 + 0] * b00 + m[i * 4 + 1] * b10 + m[i * 4 + 2] * b20 + m[i * 4 + 3] * b30;
+        t[i * 4 + 1] = m[i * 4 + 0] * b01 + m[i * 4 + 1] * b11 + m[i * 4 + 2] * b21 + m[i * 4 + 3] * b31;
+        t[i * 4 + 2] = m[i * 4 + 0] * b02 + m[i * 4 + 1] * b12 + m[i * 4 + 2] * b22 + m[i * 4 + 3] * b32;
+        t[i * 4 + 3] = m[i * 4 + 0] * b03 + m[i * 4 + 1] * b13 + m[i * 4 + 2] * b23 + m[i * 4 + 3] * b33;
+        m[i * 4 + 0] = t[i * 4 + 0];
+        m[i * 4 + 1] = t[i * 4 + 1];
+        m[i * 4 + 2] = t[i * 4 + 2];
+        m[i * 4 + 3] = t[i * 4 + 3];
+    }
+}
+
+// GLOBAL: STUNTGP_D3D 0x61c534
+float g_61c534;
+
+// GLOBAL: STUNTGP_D3D 0x61c538
+float g_61c538;
+
+// Builds the current view's perspective projection.
+// FUNCTION: STUNTGP_D3D 0x44f4e0
 void FUN_44f4e0(float *m)
 {
+    float w = g_4722d0->fov;
+    float n = g_4722d0->unk0b4;
+    float f = g_4722d0->unk0b8 * 4096.0f;
+    float l = -g_4722d0->unk0bc;
+    float r = g_4722d0->unk0bc;
+    float b = -g_4722d0->unk0c0;
+    float t = g_4722d0->unk0c0;
+    Matrix_Identity(m);
+    w += w;
+    Matrix_Multiply(m, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, (r + l) / w, (t + b) / w, 1.0f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f);
+    Matrix_Multiply(m, w / (r - l), 0.0f, 0.0f, 0.0f, 0.0f, w / (t - b), 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f);
+    Matrix_Multiply(m, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, f / (f - n), 1.0f, 0.0f, 0.0f,
+                    -(f * n) / (f - n), 0.0f);
+    g_61c534 = 1.0f / m[10];
+    g_61c538 = m[14];
 }
 
 // FUNCTION: STUNTGP_D3D 0x44f4c0
