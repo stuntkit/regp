@@ -33,6 +33,7 @@ void FUN_4229e0();
 void FUN_422a00(LPDIRECTDRAWSURFACE4 *surface);
 int FUN_422a80(LPDIRECTDRAW4 dd, LPDIRECTDRAWSURFACE4 *surface, LPDDSURFACEDESC2 desc, int fatal);
 int FUN_422ac0(LPDIRECTDRAW4 dd, LPDIRECTDRAWSURFACE4 *surface, int width, int height, DWORD memCaps);
+void FUN_422ba0(LPDIRECTDRAWSURFACE4 surface);
 void FUN_422bb0(DWORD mask, int *bits, int *shift);
 void FUN_422bf0();
 int FUN_422c60(LPDIRECTDRAW4 dd, LPDIRECTDRAWSURFACE4 *surface, LPDIRECTDRAWSURFACE4 *surface2, int width, int height,
@@ -44,5 +45,6 @@ int FUN_422f30(LPDIRECTDRAW4 dd, LPDIRECTDRAWSURFACE4 *surface, LPDIRECTDRAWSURF
                int depth);
 void FUN_423070(BYTE *src);
 int FUN_4230b0(LPDIRECTDRAWPALETTE *palette, BYTE *src);
+void FUN_423430();
 
 extern int DAT_CAPS;
