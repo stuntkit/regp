@@ -1,7 +1,5 @@
 #include "GameSetup.h"
 
-#include <mmsystem.h>
-#include <dsound.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -68,33 +66,6 @@ struct Unk4a1460
 
 // GLOBAL: STUNTGP_D3D 0x4a1460
 Unk4a1460 g_4a1460[6];
-
-// GLOBAL: STUNTGP_D3D 0x489798
-int g_489798 = 0xff;
-
-// GLOBAL: STUNTGP_D3D 0x48979c
-int g_48979c = 0xff;
-
-// GLOBAL: STUNTGP_D3D 0x62e0ac
-int g_62e0ac;
-
-// GLOBAL: STUNTGP_D3D 0x62e0f8
-int g_62e0f8;
-
-// GLOBAL: STUNTGP_D3D 0x62f5ac
-int g_62f5ac;
-
-// GLOBAL: STUNTGP_D3D 0x62f5b4
-int g_62f5b4;
-
-struct SoundChannel
-{
-    LPDIRECTSOUNDBUFFER buffer;
-    BYTE unk04[0x20 - 4];
-};
-
-// GLOBAL: STUNTGP_D3D 0x62e118
-SoundChannel g_62e118[0x80];
 
 struct Unk497f20
 {
@@ -170,11 +141,6 @@ void FUN_4199a0()
     {
         g_4a1460[i].unk00 = 0;
     }
-}
-
-// STUB: STUNTGP_D3D 0x422420
-void FUN_422420()
-{
 }
 
 // STUB: STUNTGP_D3D 0x424c30
@@ -317,59 +283,4 @@ void FUN_45ec30()
         g_62d580[i].unk24 = 0;
         g_62d580[i].unk28 = 0;
     }
-}
-
-// FUNCTION: STUNTGP_D3D 0x45f9d0
-void FUN_45f9d0()
-{
-    if (g_62f5ac && g_62e0f8)
-    {
-        FUN_460330();
-        g_62f5ac = 0;
-    }
-}
-
-// STUB: STUNTGP_D3D 0x460330
-void FUN_460330()
-{
-}
-
-// FUNCTION: STUNTGP_D3D 0x460c90
-void FUN_460c90()
-{
-    g_489798 = 0xff;
-    g_48979c = 0xff;
-}
-
-// FUNCTION: STUNTGP_D3D 0x460d60
-void FUN_460d60(unsigned int channel)
-{
-    if (g_62e0ac)
-    {
-        LPDIRECTSOUNDBUFFER buffer = g_62e118[channel].buffer;
-        if (buffer)
-        {
-            buffer->Stop();
-        }
-        g_62f5b4--;
-    }
-}
-
-// FUNCTION: STUNTGP_D3D 0x460dd0
-void FUN_460dd0()
-{
-    for (unsigned int i = 0; i < 0x80; i++)
-    {
-        FUN_460d60(i);
-    }
-}
-
-// STUB: STUNTGP_D3D 0x462090
-void FUN_462090()
-{
-}
-
-// FUNCTION: STUNTGP_D3D 0x4624b0
-void FUN_4624b0()
-{
 }

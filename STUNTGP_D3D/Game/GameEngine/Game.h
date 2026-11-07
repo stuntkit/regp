@@ -7,6 +7,8 @@
 #include "../../input.h"
 #include "../../mem.h"
 #include "../../random.h"
+#include "../../soundsys.h"
+#include "../../tables.h"
 #include "../../timer.h"
 #include "Engine_LevelScript.h"
 #include "GameSetup.h"
