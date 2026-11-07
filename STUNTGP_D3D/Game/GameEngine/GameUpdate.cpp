@@ -523,6 +523,44 @@ void FUN_40d410(Car *car)
     }
 }
 
+void FUN_444c40(Car *car);
+void FUN_443e10(Car *car);
+void FUN_40e360(Car *sub);
+void FUN_40e380(Car *sub);
+
+// FUNCTION: STUNTGP_D3D 0x40d430
+void FUN_40d430()
+{
+    Car *car = g_49a1f8;
+    for (int i = 0; i < 6; i++, car++)
+    {
+        car->unk7640 = 0;
+        car->unk260c = 1.0f;
+        car->unk2614 = 1.0f;
+        car->unk2610 = 0;
+        car->unk2278 = 1;
+        car->unk1f10 = 1;
+        car->unk2250 = 0;
+        car->unk2254 = 0;
+        car->unk2258 = 0;
+        car->unk225c = 0;
+        car->unk2260 = 0;
+        car->unk2264 = 0;
+        car->unk2268 = 0;
+        car->race.unk74 = 0;
+        car->unk226c = 0;
+        car->unk1cf4 = 0;
+        for (int j = 0; j < 4; j++)
+        {
+            car->wheels[j].unk84 = 1.0f;
+        }
+        FUN_444c40(car);
+        FUN_443e10(car);
+        FUN_40e360(car);
+        FUN_40e380(car);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x4039b0
 void FUN_4039b0()
 {
@@ -970,6 +1008,24 @@ void FUN_41a430()
             car->wheels[i].unk80 = g_482670 * g_4d5bb8->unk2618 * 3.5f;
         }
     }
+}
+
+void FUN_408640(Car *car, float *pos);
+
+// FUNCTION: STUNTGP_D3D 0x41a4c0
+void FUN_41a4c0()
+{
+    Car *car = g_4d5bb8;
+    Vec4 pos;
+    pos.x = g_570ac4->pos[0];
+    pos.y = g_570ac4->pos[1];
+    pos.z = g_570ac4->pos[2];
+    car->unk1c9c = car->unk1c8c;
+    car->unk1c8c.x = pos.x - car->posX;
+    car->unk1c8c.y = pos.y - car->posY;
+    car->unk1c8c.z = pos.z - car->posZ;
+    car->unk1cf0 = car->axisZ.y * car->unk1c8c.y + car->axisZ.x * car->unk1c8c.x + car->axisZ.z * car->unk1c8c.z;
+    FUN_408640(car, &pos.x);
 }
 
 void FUN_40c160();
@@ -1973,6 +2029,37 @@ void FUN_4058f0()
             else
             {
                 g_49a1f8[i].unk2640 = 0;
+            }
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x405a80
+void FUN_405a80()
+{
+    for (int i = 0; i < 6; i++)
+    {
+        if (g_4d5bb8 != &g_49a1f8[i] && g_4d5bb8->active == 1)
+        {
+            Car *car = g_4d5bb8;
+            float gap = car->leaderGap - g_49a1f8[i].leaderGap;
+            if (gap > 0.0f && gap < 7500.0f)
+            {
+                float f = gap * 0.00013333333f;
+                f *= f;
+                if (f < 0.1f)
+                {
+                    f = 0.0f;
+                }
+                f = 1.0f - f + car->unk265c;
+                if (f > 1.0f)
+                {
+                    f = 1.0f;
+                }
+                if (f > car->unk265c)
+                {
+                    car->unk265c = f;
+                }
             }
         }
     }

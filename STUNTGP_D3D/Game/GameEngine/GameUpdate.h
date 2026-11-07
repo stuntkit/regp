@@ -95,7 +95,10 @@ struct CarRace
     BYTE unk34[0x10]; // 0x34
     int unk44;        // 0x44
     DWORD unk48;      // 0x48
-    DWORD unk4c[12];   // 0x4c ([7] 0x68, [8] 0x6c)
+    DWORD unk4c[9];    // 0x4c ([7] 0x68, [8] 0x6c)
+    float unk70;       // 0x70
+    DWORD unk74;       // 0x74
+    DWORD unk78;       // 0x78
     int unk7c;         // 0x7c
     DWORD unk80[7];    // 0x80 ([5] 0x94, [6] 0x98)
 };
@@ -116,7 +119,9 @@ struct Wheel
     BYTE unk0008[0x4];  // 0x0008
     float unk0c;        // 0x000c
     float unk10;        // 0x0010
-    BYTE unk0014[0x1c]; // 0x0014
+    BYTE unk0014[0x8];  // 0x0014
+    float unk1c;        // 0x001c
+    BYTE unk0020[0x10]; // 0x0020
     float unk30;        // 0x0030
     float unk34;        // 0x0034
     float unk38;        // 0x0038
@@ -127,7 +132,9 @@ struct Wheel
     int unk78;          // 0x0078
     BYTE unk007c[0x4];  // 0x007c
     float unk80;        // 0x0080
-    BYTE unk0084[0xc];  // 0x0084
+    float unk84;        // 0x0084
+    BYTE unk0088[0x4];  // 0x0088
+    float unk8c;        // 0x008c
     float unk90;        // 0x0090
     float unk94;        // 0x0094
 };
@@ -218,7 +225,8 @@ struct Body
 // One recorded frame of car state.
 struct ReplayFrame
 {
-    BYTE unk00[0x14];     // 0x00
+    int pos[3];           // 0x00
+    BYTE unk0c[0x8];      // 0x0c
     short unk14[4];       // 0x14
     char unk1c[4];        // 0x1c
     unsigned short unk20; // 0x20
@@ -283,6 +291,30 @@ struct Suspension
     float maxTravelOut;    // 0x0c
     float maxDampingOut;   // 0x10
     float maxStiffnessOut; // 0x14
+};
+
+// One of the 32 effect slots in g_612da4.
+struct Unk612da4
+{
+    int life;           // 0x000
+    int unk04;          // 0x004
+    Vec4 pos;           // 0x008
+    Vec4 vel;           // 0x018
+    float unk28;        // 0x028
+    float unk2c;        // 0x02c
+    BYTE unk030[0x400]; // 0x030
+    int unk430;         // 0x430
+    int unk434;         // 0x434
+    float unk438;       // 0x438
+    int unk43c;         // 0x43c
+};
+
+// Stunt marker along the track path (CarAI_StuntKnotList).
+struct StuntKnot
+{
+    float pathPosition; // 0x00
+    float width;        // 0x04
+    int grade;          // 0x08
 };
 
 struct Car
@@ -366,14 +398,18 @@ struct Car
     float unk1cf4;            // 0x1cf4
     float unk1cf8;            // 0x1cf8
     float unk1cfc;            // 0x1cfc
-    BYTE unk1d00[0x208];      // 0x1d00
+    BYTE unk1d00[0x4];        // 0x1d00
+    float unk1d04;            // 0x1d04, peak power
+    float unk1d08[128];       // 0x1d08, power curve
     float unk1f08;            // 0x1f08
     int unk1f0c;              // 0x1f0c
     unsigned int unk1f10;     // 0x1f10
     float unk1f14;            // 0x1f14
     BYTE unk1f18[0x4];        // 0x1f18
     int unk1f1c;              // 0x1f1c
-    BYTE unk1f20[0xc];        // 0x1f20
+    float unk1f20;            // 0x1f20
+    float unk1f24;            // 0x1f24
+    float unk1f28;            // 0x1f28
     PosHistory unk1f2c;       // 0x1f2c
     float unk1fd0;            // 0x1fd0
     int unk1fd4;              // 0x1fd4
@@ -384,7 +420,7 @@ struct Car
     int unk2250;              // 0x2250
     float unk2254;            // 0x2254
     float unk2258;            // 0x2258
-    BYTE unk225c[0x4];        // 0x225c
+    float unk225c;            // 0x225c
     int unk2260;              // 0x2260
     float unk2264;            // 0x2264
     int unk2268;              // 0x2268
@@ -485,13 +521,14 @@ struct Car
     float unk257c;            // 0x257c
     int unk2580;              // 0x2580
     Stat unk2584;             // 0x2584
-    BYTE unk2594[0x20];       // 0x2594
+    Stat unk2594[2];          // 0x2594
     Stat unk25b4;             // 0x25b4
     DWORD unk25c4[6];         // 0x25c4
     DWORD unk25dc[6];         // 0x25dc
     int unk25f4[6];           // 0x25f4
     float unk260c;            // 0x260c
-    BYTE unk2610[0x8];        // 0x2610
+    int unk2610;              // 0x2610
+    float unk2614;            // 0x2614
     float unk2618;            // 0x2618
     float unk261c;            // 0x261c
     BYTE unk2620[0x4];        // 0x2620
@@ -507,7 +544,9 @@ struct Car
     float unk2648;            // 0x2648
     int unk264c;              // 0x264c path knot
     float unk2650;            // 0x2650
-    BYTE unk2654[0xc];        // 0x2654
+    int unk2654;              // 0x2654
+    float unk2658;            // 0x2658
+    float unk265c;            // 0x265c
     float unk2660;            // 0x2660
     unsigned int unk2664;     // 0x2664
     BYTE unk2668[0xc];        // 0x2668
@@ -516,7 +555,7 @@ struct Car
     BYTE unk267c[0x28];       // 0x267c
     int unk26a4;              // 0x26a4
     int unk26a8;              // 0x26a8
-    BYTE unk26ac[0x4];        // 0x26ac
+    int unk26ac;              // 0x26ac
     Scene *unk26b0;        // 0x26b0
     Scene *unk26b4;        // 0x26b4
     BYTE unk26b8[0x54];       // 0x26b8
@@ -591,15 +630,19 @@ struct Car
     int unk7244;              // 0x7244
     int unk7248;              // 0x7248
     int unk724c;              // 0x724c
-    BYTE unk7250[0x4];        // 0x7250
+    int unk7250;              // 0x7250
     int unk7254;              // 0x7254
-    BYTE unk7258[0x10];       // 0x7258
+    DWORD unk7258;            // 0x7258
+    int unk725c;              // 0x725c
+    int unk7260;              // 0x7260
+    int unk7264;              // 0x7264
     Replay *unk7268;          // 0x7268
     BYTE unk726c[0x4];        // 0x726c
     Body body;                // 0x7270
     int unk7614;              // 0x7614
     int unk7618;              // 0x7618
-    BYTE unk761c[0x10];       // 0x761c
+    BYTE unk761c[0xc];        // 0x761c
+    int unk7628;              // 0x7628
     int unk762c;              // 0x762c
     int unk7630;              // 0x7630
     unsigned int unk7634;     // 0x7634

@@ -155,6 +155,9 @@ CameraPath *g_49a158;
 // GLOBAL: STUNTGP_D3D 0x49a15c
 CameraPath *g_49a15c;
 
+// GLOBAL: STUNTGP_D3D 0x49a160
+CameraPath *g_49a160;
+
 // GLOBAL: STUNTGP_D3D 0x49a16c
 float g_49a16c;
 
@@ -166,6 +169,9 @@ float g_472b88[4] = {0.0f, 0.05f, 0.1f, 0.2f};
 
 // GLOBAL: STUNTGP_D3D 0x472b98
 float g_472b98 = 0.5f;
+
+// GLOBAL: STUNTGP_D3D 0x472c74
+int g_472c74 = 1;
 
 // Walks the knot index along the path until pos projects onto its segment, then returns the percentage covered.
 // FUNCTION: STUNTGP_D3D 0x405370
@@ -344,6 +350,29 @@ void FUN_406ff0()
     g_4d5bb8->unk2678 = 0;
 }
 
+// FUNCTION: STUNTGP_D3D 0x407f60
+void FUN_407f60()
+{
+    if (g_4722d0->data->race.unk00 != 0)
+    {
+        Car *car = g_4d5bb8;
+        if (car->active == 1 && g_60f02c[car - g_49a1f8].unk1c != 1 && car->unk26ac == 0)
+        {
+            int r = FUN_42f1f0(64);
+            car = g_4d5bb8;
+            if (r == 0)
+            {
+                car->unk26ac = 3;
+            }
+        }
+        if (car->unk26ac != 0)
+        {
+            car->unk26ac--;
+            car->unk1cf8 = 1.0f;
+        }
+    }
+}
+
 // STUB: STUNTGP_D3D 0x408000
 void FUN_408000()
 {
@@ -418,6 +447,36 @@ void FUN_408d80()
     {
         car->unk2580--;
         car->unk257c = 0.0f;
+    }
+}
+
+extern float g_60f2d0[31];
+void FUN_405820(Car *car, float *v);
+
+// FUNCTION: STUNTGP_D3D 0x408dc0
+void FUN_408dc0(float amount)
+{
+    if (g_4d5bb8->unk24e0 != 1 && g_4d5bb8->unk257c <= g_60f2d0[28])
+    {
+        amount = (float)fabs(amount) * g_60f2d0[27];
+        if (amount >= g_60f2d0[25])
+        {
+            if (amount > g_60f2d0[26])
+            {
+                amount = g_60f2d0[26];
+            }
+            if (g_4d5bb8->unk2640 == 1)
+            {
+                FUN_405820(g_4d5bb8, &amount);
+            }
+            g_4d5bb8->unk2570 -= amount;
+            g_4d5bb8->unk257c += amount;
+            g_4d5bb8->unk2580 = g_60f2d0[29];
+            if (g_4d5bb8->unk2570 < 0.0f)
+            {
+                g_4d5bb8->unk2570 = 0;
+            }
+        }
     }
 }
 
@@ -498,6 +557,34 @@ void FUN_40a160()
             }
         }
     }
+}
+
+// Builds the power curve from the current torque curve and records its peak below the rev limit.
+// FUNCTION: STUNTGP_D3D 0x40a1d0
+void FUN_40a1d0()
+{
+    Car *car = g_4d5bb8;
+    float maxTorque = 0.0f;
+    car->unk1d04 = 0.0f;
+    float *torque = car->unk470[car->unk1f0c];
+    for (DWORD i = 0; i < 128; i++)
+    {
+        float rpm = (float)i * car->unk045c * 0.0078125f;
+        float power = ((rpm * 0.10471976f) * torque[i]) * 0.0013404826f;
+        car->unk1d08[i] = power;
+        if (rpm <= car->unk464)
+        {
+            if (power > car->unk1d04)
+            {
+                car->unk1d04 = power;
+            }
+            if (torque[i] > maxTorque)
+            {
+                maxTorque = torque[i];
+            }
+        }
+    }
+    car->unk1d04 = car->unk46c * car->unk1d04;
 }
 
 // FUNCTION: STUNTGP_D3D 0x40a2c0
@@ -787,6 +874,53 @@ void FUN_40b3c0()
 }
 
 void Script_GetFloat(char *section, char *key, float *out);
+void Script_GetInt(char *section, char *key, int *out);
+void Script_GetFloatArray(char *section, char *key, float *out, DWORD count);
+
+// FUNCTION: STUNTGP_D3D 0x40b5b0
+void FUN_40b5b0(char *text)
+{
+    char key[16];
+    // STRING: STUNTGP_D3D 0x473528
+    char *section = strstr(text, "-ENGINE[] =");
+    // STRING: STUNTGP_D3D 0x473534
+    Script_GetFloat(section, "RpmIdle", &g_4d5bb8->unk460);
+    // STRING: STUNTGP_D3D 0x47353c
+    Script_GetFloat(section, "RpmLimit", &g_4d5bb8->unk464);
+    // STRING: STUNTGP_D3D 0x473548
+    Script_GetFloat(section, "RpmMax", &g_4d5bb8->unk045c);
+    // STRING: STUNTGP_D3D 0x473550
+    Script_GetFloat(section, "Cm", &g_4d5bb8->unk468);
+    // STRING: STUNTGP_D3D 0x473554
+    Script_GetFloat(section, "Torque", &g_4d5bb8->unk46c);
+    for (int i = 0; i < 4; i++)
+    {
+        // STRING: STUNTGP_D3D 0x47355c
+        sprintf(key, "TorqueEnv[%d]", i);
+        Script_GetFloatArray(section, key, g_4d5bb8->unk470[i], 128);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x40b690
+void FUN_40b690(char *text)
+{
+    // STRING: STUNTGP_D3D 0x47356c
+    char *section = strstr(text, "-GEARBOX[] =");
+    // STRING: STUNTGP_D3D 0x47357c
+    Script_GetInt(section, "DriveMode", &g_4d5bb8->unkc70);
+    // STRING: STUNTGP_D3D 0x473588
+    Script_GetInt(section, "NrOfGears", (int *)&g_4d5bb8->unkc74);
+    // STRING: STUNTGP_D3D 0x473594
+    Script_GetFloat(section, "FinalDrive", &g_4d5bb8->unkc7c[0]);
+    // STRING: STUNTGP_D3D 0x4735a0
+    Script_GetFloat(section, "ShiftTime", &g_4d5bb8->unkca0);
+    // STRING: STUNTGP_D3D 0x4735ac
+    Script_GetFloat(section, "Efficiency", &g_4d5bb8->unkca4);
+    // STRING: STUNTGP_D3D 0x4735b8
+    Script_GetFloat(section, "4WDPowerSplit", &g_4d5bb8->unkca8);
+    // STRING: STUNTGP_D3D 0x4735c8
+    Script_GetFloatArray(section, "Ratios[]", &g_4d5bb8->unkc7c[1], 8);
+}
 
 // FUNCTION: STUNTGP_D3D 0x40b750
 void FUN_40b750(char *text)
@@ -829,6 +963,23 @@ void FUN_40b990(char *text)
     Script_GetFloatArray(section, "AlignmentTorque", g_4d5bb8->unk258, 128);
 }
 
+// FUNCTION: STUNTGP_D3D 0x40ba10
+void FUN_40ba10(char *text)
+{
+    // STRING: STUNTGP_D3D 0x473700
+    char *section = strstr(text, "-CONTROL[] =");
+    // STRING: STUNTGP_D3D 0x473710
+    Script_GetFloatArray(section, "DigitalSteeringInputEnv", g_4d5bb8->unk1188[0], 128);
+    // STRING: STUNTGP_D3D 0x473728
+    Script_GetFloatArray(section, "DigitalBrakeInputEnv", g_4d5bb8->unk1188[1], 128);
+    // STRING: STUNTGP_D3D 0x473740
+    Script_GetFloatArray(section, "AnalogSteeringInputEnv", g_4d5bb8->unk1188[2], 128);
+    // STRING: STUNTGP_D3D 0x473758
+    Script_GetFloatArray(section, "AnalogBrakeInputEnv", g_4d5bb8->unk1188[3], 128);
+    // STRING: STUNTGP_D3D 0x47376c
+    Script_GetFloatArray(section, "AnalogVelocitySteeringInputEnv", g_4d5bb8->unk1188[4], 128);
+}
+
 // FUNCTION: STUNTGP_D3D 0x40bac0
 void FUN_40bac0(char *text)
 {
@@ -847,6 +998,27 @@ void FUN_40bac0(char *text)
 }
 
 void Script_GetInt(char *section, char *key, int *out);
+
+// FUNCTION: STUNTGP_D3D 0x40bb60
+void FUN_40bb60(char *text)
+{
+    // STRING: STUNTGP_D3D 0x4737d8
+    char *section = strstr(text, "-TURBO[] =");
+    // STRING: STUNTGP_D3D 0x4737e4
+    Script_GetFloat(section, "RpmAcc", &g_4d5bb8->unkd60);
+    // STRING: STUNTGP_D3D 0x4737ec
+    Script_GetFloat(section, "RpmMax", &g_4d5bb8->unkd64);
+    // STRING: STUNTGP_D3D 0x4737f4
+    Script_GetFloat(section, "Cm", &g_4d5bb8->unkd68);
+    // STRING: STUNTGP_D3D 0x4737f8
+    Script_GetFloat(section, "PowerMultiplier", &g_4d5bb8->unkd6c);
+    // STRING: STUNTGP_D3D 0x473808
+    Script_GetFloat(section, "MaxConsumption", &g_4d5bb8->unkf70);
+    // STRING: STUNTGP_D3D 0x473818
+    Script_GetFloat(section, "FuelCutoffPoint", &g_4d5bb8->unkf74);
+    // STRING: STUNTGP_D3D 0x473828
+    Script_GetFloatArray(section, "PowerEnv", g_4d5bb8->unkd70, 128);
+}
 
 // FUNCTION: STUNTGP_D3D 0x40bc30
 void FUN_40bc30(char *text)
@@ -878,6 +1050,37 @@ void FUN_40bcb0(char *text)
     Script_GetFloat(section, "MaxRotSpd_X", &g_4d5bb8->unk1ba0);
     // STRING: STUNTGP_D3D 0x4738b0
     Script_GetFloat(section, "MaxRotSpd_Y", &g_4d5bb8->unk1ba4);
+}
+
+extern char g_GameDirectory[128];
+void FUN_434890();
+
+// FUNCTION: STUNTGP_D3D 0x40bd40
+void FUN_40bd40()
+{
+    char path[128];
+    // STRING: STUNTGP_D3D 0x4738bc
+    sprintf(path, "%s\\Config\\Vehicles\\Vehicle%d.cfg", g_GameDirectory, g_472c74);
+    // STRING: STUNTGP_D3D 0x4738e0
+    g_5da2e4 = fopen(path, "wt");
+    if (g_5da2e4)
+    {
+        g_4d5bb8 = g_474630;
+        FUN_434890();
+        FUN_40ad50();
+        FUN_40a870();
+        FUN_40a990();
+        FUN_40b2b0();
+        FUN_40aae0();
+        FUN_40acc0();
+        FUN_40aef0();
+        FUN_40afb0();
+        FUN_40b0b0();
+        FUN_40b190();
+        FUN_40b320();
+        FUN_40b3c0();
+        fclose(g_5da2e4);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x40bf20
@@ -1661,6 +1864,36 @@ void FUN_40d790()
     }
 }
 
+// Splits drive torque between the axles by drive mode (0 front, 1 rear, 2 4WD).
+// FUNCTION: STUNTGP_D3D 0x40e3a0
+void FUN_40e3a0(float torque)
+{
+    if (torque > 0.0f && g_4d5bb8->unk2254 != 0.0f && g_4d5bb8->unk1fd8 == 0)
+    {
+        float boost = torque * g_4d5bb8->unk2258;
+        torque += boost;
+    }
+    torque *= 4.0f;
+    switch (g_4d5bb8->unkc70)
+    {
+    case 2:
+    {
+        float rear = torque * g_4d5bb8->unkca8;
+        g_4d5bb8->wheels[2].unk00 += rear;
+        g_4d5bb8->wheels[3].unk00 += rear;
+        torque *= 1.0f - g_4d5bb8->unkca8;
+    }
+    case 0:
+        g_4d5bb8->wheels[0].unk00 += torque;
+        g_4d5bb8->wheels[1].unk00 += torque;
+        break;
+    case 1:
+        g_4d5bb8->wheels[2].unk00 += torque;
+        g_4d5bb8->wheels[3].unk00 += torque;
+        break;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x40e470
 void FUN_40e470()
 {
@@ -1692,6 +1925,35 @@ void FUN_40e4f0()
             FUN_40c1a0();
         }
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x40e710
+float FUN_40e710(float v)
+{
+    switch (g_4d5bb8->unkc70)
+    {
+    case 0:
+        if (g_4d5bb8->wheels[1].unk70 + g_4d5bb8->wheels[0].unk70 < 8)
+        {
+            return v * 0.25f;
+        }
+        break;
+    case 1:
+        if (g_4d5bb8->wheels[3].unk70 + g_4d5bb8->wheels[2].unk70 < 8)
+        {
+            return v * 0.25f;
+        }
+        break;
+    case 2:
+        if (g_4d5bb8->wheels[3].unk70 + g_4d5bb8->wheels[2].unk70 + g_4d5bb8->wheels[1].unk70 +
+                g_4d5bb8->wheels[0].unk70 <
+            16)
+        {
+            return v * 0.25f;
+        }
+        break;
+    }
+    return v;
 }
 
 // FUNCTION: STUNTGP_D3D 0x40ead0
@@ -1744,6 +2006,29 @@ void FUN_40eba0()
 
 void FUN_4057e0(Car *car, float *v);
 
+void FUN_405800(Car *car, float *v);
+
+// FUNCTION: STUNTGP_D3D 0x40ec00
+void FUN_40ec00(float v)
+{
+    unsigned int i = v * 128.0f / g_4d5bb8->unk045c;
+    if (i >= 128)
+    {
+        i = 127;
+    }
+    v = g_4d5bb8->unkf84[i] * g_4d5bb8->unkf80;
+    if (g_4d5bb8->unk2640 == 1)
+    {
+        FUN_405800(g_4d5bb8, &v);
+    }
+    g_4d5bb8->unk2270 -= v;
+    g_4d5bb8->unk2570 -= v * g_4d5bb8->unk2574 / g_4d5bb8->unkf78;
+    if (g_4d5bb8->unk2570 < 0.0f)
+    {
+        g_4d5bb8->unk2570 = 0;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x40eca0
 void FUN_40eca0(float v)
 {
@@ -1761,6 +2046,36 @@ void FUN_40eca0(float v)
     if (g_4d5bb8->unk2570 < 0.0f)
     {
         g_4d5bb8->unk2570 = 0;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x40ed30
+void FUN_40ed30()
+{
+    if (g_60f2b4 != 3 && g_4d5bb8->unk24e0 != 1)
+    {
+        FUN_40ec00(g_4d5bb8->unk1cfc);
+        FUN_40eca0(g_4d5bb8->unk2254);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x40edd0
+void FUN_40edd0()
+{
+    if (g_4d5bb8->unk1fd8 == 0)
+    {
+        float v = g_4d5bb8->unk1cf0 * 0.6f;
+        v *= v;
+        float f = v * g_4d5bb8->unk1fd0 * g_4d5bb8->unkcb4 * g_4d5bb8->unkcb0 * -0.615f;
+        g_4d5bb8->unk1f24 = f;
+        f /= g_4d5bb8->unk2618 * 4.0f;
+        Vec4 d;
+        d.x = f * g_4d5bb8->axisY.x;
+        d.y = f * g_4d5bb8->axisY.y;
+        d.z = f * g_4d5bb8->axisY.z;
+        g_4d5bb8->unk1c8c.x += d.x;
+        g_4d5bb8->unk1c8c.y += d.y;
+        g_4d5bb8->unk1c8c.z += d.z;
     }
 }
 
@@ -1797,6 +2112,31 @@ void FUN_40ee70()
     g_4d5bb8->unk288c += g_4d5bb8->unk248;
 }
 
+// FUNCTION: STUNTGP_D3D 0x40f330
+void FUN_40f330(float *m, float scale)
+{
+    Vec4 r0;
+    Vec4 r1;
+    Vec4 r2;
+    r0.x = m[0];
+    r0.y = m[1];
+    r0.z = m[2];
+    r1.x = m[4];
+    r1.y = m[5];
+    r1.z = m[6];
+    r2.x = m[8];
+    r2.y = m[9];
+    r2.z = m[10];
+    float inv;
+    r0.x *= inv = 1.0f / scale;
+    r1.y *= inv;
+    r2.z *= inv;
+    Vec3_Normalize(&r0.x);
+    Vec3_Normalize(&r1.x);
+    Vec3_Normalize(&r2.x);
+    Matrix_FromRows(&r0.x, &r1.x, &r2.x, m);
+}
+
 extern float g_482670;
 
 // FUNCTION: STUNTGP_D3D 0x40f3c0
@@ -1804,6 +2144,49 @@ void FUN_40f3c0()
 {
     g_4d5bb8->wheels[3].unk10 = g_4d5bb8->wheels[2].unk10 = g_4d5bb8->wheels[1].unk10 = g_4d5bb8->wheels[0].unk10 =
         g_482670 * g_4d5bb8->unk2618 * 0.25f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x40f3f0
+void FUN_40f3f0(Vector4 *a, Wheel *wheel, float v, float *out, int index)
+{
+    v = (float)fabs(v);
+    float s = v * 1.3424487f;
+    float f = -(((s * s * 3.5000001e-05f + 0.15f) * (1.0f / a->y) + 0.005f) * wheel->unk0c /
+                (g_4d5bb8->unk2618 * 0.25f));
+    f = (f * g_4d5bb8->wheels[index].unk8c * 100.0f) * 0.00027777778f;
+    if ((float)fabs(f) > v)
+    {
+        f = -v;
+    }
+    if (wheel->unk04 < 0.0f)
+    {
+        f = -f;
+    }
+    wheel->unk1c = f;
+    wheel->unk04 += f;
+    *out += f * 0.5f;
+}
+
+void FUN_405860(Car *car, float *v);
+
+// FUNCTION: STUNTGP_D3D 0x40f4a0
+void FUN_40f4a0(float *a, float *b, int unused)
+{
+    float s = g_4d5bb8->unk1cf0 * 0.6f;
+    float f = (s * s) * g_4d5bb8->unk1fd0 * g_4d5bb8->unkcb4 * g_4d5bb8->unkcac * 0.61283678f;
+    if (g_4d5bb8->unk2640 == 1)
+    {
+        FUN_405860(g_4d5bb8, &f);
+    }
+    g_4d5bb8->unk1f20 = f;
+    float d = (f / g_4d5bb8->unk2618 * 100.0f) * 0.00027777778f;
+    g_4d5bb8->unk1f28 -= d;
+    *a -= d;
+    *b -= d;
+    g_4d5bb8->wheels[0].unk04 -= d;
+    g_4d5bb8->wheels[1].unk04 -= d;
+    g_4d5bb8->wheels[2].unk04 -= d;
+    g_4d5bb8->wheels[3].unk04 -= d;
 }
 
 // FUNCTION: STUNTGP_D3D 0x40f570
@@ -2131,7 +2514,7 @@ void FUN_411290()
 // FUNCTION: STUNTGP_D3D 0x411330
 void FUN_411330(Car *car)
 {
-    car->race.unk4c[11] = 0;
+    car->race.unk78 = 0;
     car->unk71e8 = 0;
 }
 
@@ -2248,6 +2631,58 @@ int FUN_411da0(int value, int offset)
     return g_474290[i];
 }
 
+void FUN_41d1f0(Stat *stat, float value);
+void FUN_41d230();
+
+// FUNCTION: STUNTGP_D3D 0x411fa0
+void FUN_411fa0()
+{
+    g_4d5bb8->unk724c = 0;
+    g_4d5bb8->unk7250 = 0;
+    g_4d5bb8->unk7248 = 0;
+    FUN_41d230();
+    FUN_41d1f0(&g_4d5bb8->unk2594[0], 0.0f);
+    FUN_41d1f0(&g_4d5bb8->unk2594[1], g_4d5bb8->unk260c - g_4d5bb8->unk2614);
+    g_4d5bb8->unk2594[1].mean = g_4d5bb8->unk260c / g_4d5bb8->unk2594[1].count;
+    g_4d5bb8->unk7254 = 0;
+    if (g_4d5bb8->unk7258 != 0)
+    {
+        g_4d5bb8->unk7258--;
+    }
+    FUN_406ff0();
+}
+
+// FUNCTION: STUNTGP_D3D 0x4121c0
+void FUN_4121c0()
+{
+    Car *car = g_4d5bb8;
+    if (car->unk71ec != 0 && car->unk7254 >= 0)
+    {
+        car->unk7254--;
+    }
+    if (car->unk7258 != 0 && car->unk7254 < 0)
+    {
+        if (car->unk7258 >= 1)
+        {
+            car->unk7260 = 1;
+            car->unk7264 = 0;
+        }
+        car->unk7254 = 0;
+        car->unk7258 = 0;
+    }
+    if (car->unk7260 == 1 && --car->unk7264 < 0)
+    {
+        if (car->unk725c == 0)
+        {
+            car->unk725c = 0;
+            car->unk7260 = 0;
+            return;
+        }
+        car->unk725c--;
+        car->unk7264 = 30;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x412260
 void FUN_412260()
 {
@@ -2274,10 +2709,10 @@ void FUN_412670()
     {
         return;
     }
-    if (g_4d5bb8->race.unk4c[10])
+    if (g_4d5bb8->race.unk74)
     {
-        g_4d5bb8->race.unk4c[10]--;
-        g_4d5bb8->unk2634 = (float)g_4d5bb8->race.unk4c[10] * 0.0055555556f + 1.0f;
+        g_4d5bb8->race.unk74--;
+        g_4d5bb8->unk2634 = (float)g_4d5bb8->race.unk74 * 0.0055555556f + 1.0f;
         g_4d5bb8->unk2250 = 1;
         FUN_40e360(g_4d5bb8);
         FUN_40e380(g_4d5bb8);
@@ -2286,7 +2721,7 @@ void FUN_412670()
     if (g_4d5bb8->race.unk00 && !g_4d5bb8->unk22b4 && g_4d5bb8->unk22bc == 1 &&
         g_4d5bb8->unk045c * 0.2f < g_4d5bb8->unk1cfc && abs((int)g_4d5bb8->race.unk00 - 60) < 10)
     {
-        g_4d5bb8->race.unk4c[10] = 180;
+        g_4d5bb8->race.unk74 = 180;
         g_4d5bb8->unk1cfc = g_4d5bb8->unk045c;
         FUN_442cf0(180, g_6127a0[55], g_4d5bb8, 2, 90);
         g_4d5bb8->unk260c += (float)(DWORD)g_60d688[25];
@@ -2354,6 +2789,33 @@ void FUN_4137b0()
     }
 }
 
+extern int g_612d98;
+extern int g_612d9c;
+extern int g_612da0;
+extern int g_612da4[0x2200];
+
+// FUNCTION: STUNTGP_D3D 0x416590
+void FUN_416590(Vec4 *pos, Vec4 *vel)
+{
+    if ((DWORD)g_612d9c >= 32)
+    {
+        g_612d9c = 0;
+    }
+    Unk612da4 *p = &((Unk612da4 *)g_612da4)[g_612d9c];
+    p->pos = *pos;
+    p->unk04 = 8;
+    p->life = FUN_42f1f0(15) + 30;
+    p->unk28 = 0.95f;
+    p->unk438 = 0.25f;
+    p->unk43c = p->life;
+    p->unk430 = 0;
+    p->unk434 = 0;
+    p->unk2c = 2.5f;
+    p->vel = *vel;
+    g_612d9c++;
+    g_612d98++;
+}
+
 // FUNCTION: STUNTGP_D3D 0x4166f0
 void FUN_4166f0()
 {
@@ -2384,6 +2846,86 @@ void FUN_4166f0()
             meshes[20].matrix[1].z = car->unk33cc.unk024.z;
         }
     }
+}
+
+// GLOBAL: STUNTGP_D3D 0x4d5b30
+float g_4d5b30[16];
+
+// FUNCTION: STUNTGP_D3D 0x413b60
+void FUN_413b60()
+{
+    Vec4 *m = g_4d5bb8->unk26b0->lods[0]->matrix;
+    Vec4 r0;
+    Vec4 r1;
+    r0.x = m[2].y * m[3].z - m[2].z * m[3].y;
+    r0.y = m[2].z * m[3].x - m[3].z * m[2].x;
+    r0.z = m[3].y * m[2].x - m[2].y * m[3].x;
+    r1.x = r0.y * m[2].z - r0.z * m[2].y;
+    r1.y = r0.z * m[2].x - r0.x * m[2].z;
+    r1.z = r0.x * m[2].y - r0.y * m[2].x;
+    Vec3_Normalize(&r0.x);
+    Vec3_Normalize(&r1.x);
+    Matrix_FromRows(&r0.x, &r1.x, &m[2].x, g_4d5b30);
+}
+
+void FUN_44efd0(float *out, float *a, float *b);
+
+// FUNCTION: STUNTGP_D3D 0x413c10
+void FUN_413c10()
+{
+    Vec4 *m = g_4d5bb8->unk26b0->lods[0]->matrix;
+    Vec4 r0;
+    Vec4 r1;
+    float flip[16];
+    float rot[16];
+    r0.x = m[2].y * m[3].z - m[2].z * m[3].y;
+    r0.y = m[2].z * m[3].x - m[3].z * m[2].x;
+    r0.z = m[3].y * m[2].x - m[2].y * m[3].x;
+    r1.x = r0.z * m[2].y - r0.y * m[2].z;
+    r1.y = r0.x * m[2].z - r0.z * m[2].x;
+    r1.z = r0.y * m[2].x - r0.x * m[2].y;
+    Vec3_Normalize(&r0.x);
+    Vec3_Normalize(&r1.x);
+    Matrix_FromRows(&r0.x, &r1.x, &m[2].x, rot);
+    Matrix_Identity(flip);
+    flip[0] *= -1.0f;
+    FUN_44efd0(g_4d5b30, flip, rot);
+}
+
+// FUNCTION: STUNTGP_D3D 0x413ce0
+void FUN_413ce0()
+{
+    Car *car = g_4d5bb8;
+    Scene *scene = car->unk26b0;
+    car->unk28a8 = 0;
+    car->unk2cf4[0] = 0.0f;
+    car->unk2cf4[1] = 0.0f;
+    car->unk2cf4[2] = 0.0f;
+    car->unk2cf4[3] = 0.0f;
+    ObjectDef *meshes = scene->lods[scene->lod];
+    meshes[5].visible = 0;
+    meshes[6].visible = 0;
+    meshes[7].visible = 0;
+    meshes[8].visible = 0;
+    meshes[9].visible = 0;
+    meshes[11].visible = 0;
+    meshes[12].visible = 0;
+    meshes[13].visible = 0;
+    meshes[14].visible = 0;
+    meshes[15].visible = 0;
+    meshes[16].visible = 0;
+    if (scene->objectCount > 19)
+    {
+        meshes[19].visible = 0;
+    }
+    if (scene->objectCount > 20)
+    {
+        meshes[20].visible = 0;
+    }
+    car->unk7628 = 0;
+    car->unk3928 = 0;
+    car->unk328c.unk13c = 0;
+    car->unk33cc.unk13c = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x413da0
@@ -2707,9 +3249,58 @@ void FUN_415770()
     }
 }
 
+extern float g_48266c;
+
+// FUNCTION: STUNTGP_D3D 0x4157f0
+void FUN_4157f0(Unk62a078 *p)
+{
+    p->unk98 = 0x60;
+    p->flags = 7;
+    p->texture = 7;
+    p->mode = 2;
+    p->gravity = g_48266c * -0.3f;
+    p->colors[0] = 0x406090;
+    p->lifetime = 30;
+    p->unk68 = 0.01f;
+    p->unk7c = 1;
+    p->anim = NULL;
+    p->sizeIn = 1.5f;
+    p->sizeOut = 6.0f;
+    p->size = 1.0f;
+    p->alphaIn = 0.0f;
+    p->alphaOut = 21.0f;
+    p->alpha = 255.0f;
+}
+
 // STUB: STUNTGP_D3D 0x415880
 void FUN_415880()
 {
+}
+
+// FUNCTION: STUNTGP_D3D 0x415d20
+void FUN_415d20(Vec4 *pos, Vec4 *vel, int unused)
+{
+    if (g_612da0 == 2)
+    {
+        g_612da0 = g_61297c < 80 ? 4 : 2;
+        if ((DWORD)g_612d9c >= 32)
+        {
+            g_612d9c = 0;
+        }
+        Unk612da4 *p = &((Unk612da4 *)g_612da4)[g_612d9c];
+        p->vel = *vel;
+        p->life = 60;
+        p->pos = *pos;
+        p->unk28 = 0.9f;
+        p->unk438 = 0;
+        p->unk43c = 0;
+        p->unk2c = 1.0f;
+        p->unk430 = 0;
+        p->unk434 = 0;
+        p->unk04 = 5;
+        g_612d9c++;
+        g_612d98++;
+    }
 }
 
 // Scrolls the second float of every unk2c entry of one mesh, wrapping at 1.
@@ -2734,9 +3325,53 @@ void FUN_416800()
 {
 }
 
+// GLOBAL: STUNTGP_D3D 0x4d5bc0
+Unk62a078 g_4d5bc0;
+
+// FUNCTION: STUNTGP_D3D 0x4169e0
+void FUN_4169e0()
+{
+    g_4d5bc0.unk68 = 0.01f;
+    g_4d5bc0.flags = 7;
+    g_4d5bc0.mode = 2;
+    g_4d5bc0.unk7c = 1;
+    g_4d5bc0.anim = NULL;
+    g_4d5bc0.gravity = g_48266c * -0.3f;
+    g_4d5bc0.size = 0.5f;
+    g_4d5bc0.sizeIn = 3.0f;
+    g_4d5bc0.sizeOut = 12.0f;
+    g_4d5bc0.alpha = 96.0f;
+    g_4d5bc0.alphaIn = 0.0f;
+    g_4d5bc0.alphaOut = 18.0f;
+    g_4d5bc0.colors[0] = 0x406090;
+    g_4d5bc0.texture = 7;
+    g_4d5bc0.unk98 = 0x60;
+}
+
 // STUB: STUNTGP_D3D 0x416a80
 void FUN_416a80()
 {
+}
+
+// FUNCTION: STUNTGP_D3D 0x416ea0
+void FUN_416ea0(Unk62a078 *p)
+{
+    p->flags = 3;
+    p->texture = 0;
+    p->anim = NULL;
+    p->unk98 = 0x60;
+    p->gravity = g_48266c * -0.15f;
+    p->mode = 2;
+    p->lifetime = 30;
+    p->unk68 = 0.01f;
+    p->unk7c = 1;
+    p->size = 0.5f;
+    p->sizeIn = 6.0f;
+    p->sizeOut = 12.0f;
+    p->alpha = 128.0f;
+    p->alphaIn = 0.59999996f;
+    p->alphaOut = 12.0f;
+    p->colors[0] = 0x182010;
 }
 
 // STUB: STUNTGP_D3D 0x416f30
@@ -3084,6 +3719,24 @@ void FUN_407000()
     g_4d5bb8->unk2674 = 0;
 }
 
+extern StuntKnot g_499fb8[33];
+
+// FUNCTION: STUNTGP_D3D 0x4077b0
+int FUN_4077b0()
+{
+    StuntKnot *knot = &g_499fb8[g_4d5bb8->unk2674];
+    if (knot->pathPosition != 0.0f &&
+        knot->pathPosition * g_49a160->unk18 * 0.01f -
+                g_4d5bb8->unk2658 * g_49a160->unk18 * 0.01f <
+            10000.0f &&
+        g_4d5bb8->unk2574 * 0.5f < g_4d5bb8->unk2570 && g_4d5bb8->unk1cf8 > 0.5f &&
+        g_4d5bb8->unk045c * 0.75f > g_4d5bb8->unk1cfc)
+    {
+        return 1;
+    }
+    return 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x407860
 int FUN_407860()
 {
@@ -3094,6 +3747,43 @@ int FUN_407860()
         return 1;
     }
     return 0;
+}
+
+// Nearest active car ahead within the 100-unit lap fraction, else the nearest behind.
+// FUNCTION: STUNTGP_D3D 0x407a70
+Car *FUN_407a70(Car *self)
+{
+    float mine = fmod(self->unk23b0, 100.0);
+    Car *car = g_49a1f8;
+    Car *ahead = NULL;
+    float aheadDist = 1000.0f;
+    Car *behind = NULL;
+    float behindDist = 1000.0f;
+    for (int i = 0; i < 6; i++, car++)
+    {
+        if (car != self && car->active == 1)
+        {
+            float d = fmod(car->unk23b0, 100.0) - mine;
+            if (d < 0.0f)
+            {
+                if (d < behindDist)
+                {
+                    behindDist = d;
+                    behind = car;
+                }
+            }
+            else if (d < aheadDist)
+            {
+                aheadDist = d;
+                ahead = car;
+            }
+        }
+    }
+    if (!ahead)
+    {
+        ahead = behind;
+    }
+    return ahead;
 }
 
 // FUNCTION: STUNTGP_D3D 0x407dd0
@@ -3570,6 +4260,35 @@ void FUN_4088b0(Body *body)
     *(Vec4 *)body->vel = g_4d5bb8->unk1c8c;
 }
 
+// FUNCTION: STUNTGP_D3D 0x408920
+void FUN_408920(Body *body)
+{
+    g_4d5bb8->unk1bbc = *(Vec4 *)&g_4d5bb8->posX;
+    memcpy(g_4d5bb8->matrix, body->mat0, sizeof(g_4d5bb8->matrix));
+    memcpy(g_4d5bb8->unk1c0c, body->mat1, sizeof(g_4d5bb8->unk1c0c));
+    *(Vec4 *)&g_4d5bb8->posX = body->pos;
+    g_4d5bb8->unk1c8c = *(Vec4 *)body->vel;
+}
+
+extern Vec4 g_498198;
+void FUN_413290(float *v);
+
+// FUNCTION: STUNTGP_D3D 0x408cb0
+void FUN_408cb0(float speed)
+{
+    float f = speed * 0.025f;
+    f = f * f;
+    if (f > 5.0f)
+    {
+        f = 5.0f;
+    }
+    Vec4 v;
+    v.x = g_498198.x * f;
+    v.y = g_498198.y * f;
+    v.z = g_498198.z * f;
+    FUN_413290(&v.x);
+}
+
 // FUNCTION: STUNTGP_D3D 0x408d10
 void FUN_408d10(float amount)
 {
@@ -3626,6 +4345,21 @@ void FUN_4130d0(int mode)
     case 2:
         FUN_412e80();
         break;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x413290
+void FUN_413290(float *v)
+{
+    if (g_60f2b4 == 2)
+    {
+        g_4d5bb8->race.unk70 += (float)sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+        v[0] *= 4.0f;
+        v[1] *= 4.0f;
+        v[2] *= 4.0f;
+        g_4d5bb8->unk2328 += v[0];
+        g_4d5bb8->unk232c += v[1];
+        g_4d5bb8->unk2330 += v[2];
     }
 }
 

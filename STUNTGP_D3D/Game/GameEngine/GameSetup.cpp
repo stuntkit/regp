@@ -39,13 +39,6 @@ struct Unk45c670
 
 void FUN_45c670(Unk45c670 *object);
 
-struct StuntKnot
-{
-    float pathPosition; // 0x00
-    float width;        // 0x04
-    int grade;          // 0x08
-};
-
 void FUN_4411c0();
 void FUN_401d40();
 void FUN_402420();
@@ -429,6 +422,44 @@ void FUN_401de0()
     Matrix_Identity(g_472290);
 }
 
+// Camera preset record in the level data (g_624478), 0x60 bytes each.
+struct CameraRecord
+{
+    int unk00;       // 0x00
+    float fov;       // 0x04
+    BYTE unk08[0x8]; // 0x08
+    Vec4 pos;        // 0x10
+    BYTE unk20[0x10]; // 0x20
+    Vec4 target;     // 0x30
+    Vec4 up;         // 0x40
+    BYTE unk50[0x10]; // 0x50
+};
+
+extern CameraPreset g_4722d8[32];
+extern int g_499f90;
+
+// GLOBAL: STUNTGP_D3D 0x499f94
+int g_499f94;
+
+// FUNCTION: STUNTGP_D3D 0x401e50
+void FUN_401e50()
+{
+    if (g_6244a4 != 0)
+    {
+        for (DWORD i = 0; i < g_6244a4; i++)
+        {
+            g_4722d8[i].pos = ((CameraRecord *)g_624478)[i].pos;
+            g_4722d8[i].target = ((CameraRecord *)g_624478)[i].target;
+            g_4722d8[i].up = ((CameraRecord *)g_624478)[i].up;
+            g_4722d8[i].fov = ((CameraRecord *)g_624478)[i].fov;
+            g_4722d8[i].unk34 = 0;
+            g_4722d8[i].roll = 0.0f;
+        }
+        g_499f90 = g_6244a4;
+        g_499f94 = 0;
+    }
+}
+
 // STUB: STUNTGP_D3D 0x40a2f0
 void FUN_40a2f0()
 {
@@ -610,6 +641,38 @@ int FUN_4199f0(char *name, char *buffer)
 int FUN_419a40(Replay *replay)
 {
     return replay->size = replay->count * sizeof(ReplayFrame) + sizeof(Replay);
+}
+
+void FUN_41aac0(Replay *replay);
+
+// Finalises a recorded replay: checksum, size and the driver it belongs to.
+// FUNCTION: STUNTGP_D3D 0x419a60
+void FUN_419a60(Car *car, Replay *replay)
+{
+    FUN_41aac0(replay);
+    unsigned int bytes = replay->count * sizeof(ReplayFrame);
+    int size = FUN_419a40(replay);
+    replay->unk14 = 1;
+    replay->checksum = FUN_4199d0((BYTE *)replay->frames, bytes);
+    replay->size = size;
+    int index = car - g_49a1f8;
+    strcpy(replay->name, g_60f02c[index].name);
+    replay->unk20 = g_60f02c[index].unk08;
+    replay->unk22 = g_60f02c[index].unk0c;
+    replay->unk26 = g_60f02c[index].unk10;
+    replay->unk24 = g_60f02c[index].unk14;
+}
+
+int FUN_44aff0(char *name, void *data, int size);
+
+// FUNCTION: STUNTGP_D3D 0x419b30
+void FUN_419b30(char *name, Car *car, Replay *replay)
+{
+    char path[128];
+    FUN_419a60(car, replay);
+    // STRING: STUNTGP_D3D 0x4746ac
+    sprintf(path, "%s\\Replays\\%s.RPL", g_GameDirectory, name);
+    FUN_44aff0(path, replay, replay->size);
 }
 
 void FUN_40fb30();
