@@ -59,8 +59,25 @@ struct SurfaceSlot
     DWORD unk0c;
 };
 
-extern DWORD g_surfaceSlotCount;
-extern SurfaceSlot g_surfaceSlots[255];
+// DirectDraw devices collected by FUN_42f530, the selected device's state and
+// the surface slots. FUN_42f6a0 clears all of it with one memset.
+struct DisplayDevices
+{
+    int count;                     // 0x00000
+    int unk04;                     // 0x00004
+    BYTE devices[8][0x3d44];       // 0x00008
+    int unk1ea28;                  // 0x1ea28
+    int *deviceDesc;               // 0x1ea2c
+    int unk1ea30;                  // 0x1ea30
+    int unk1ea34;                  // 0x1ea34
+    DDPIXELFORMAT *textureFormat;  // 0x1ea38
+    int hasArgb1555;               // 0x1ea3c
+    int unk1ea40;                  // 0x1ea40
+    DWORD surfaceSlotCount;        // 0x1ea44
+    SurfaceSlot surfaceSlots[255]; // 0x1ea48
+};
+
+extern DisplayDevices g_5ba788;
 
 // --- WinMain main loop state ---
 extern int g_612be8;

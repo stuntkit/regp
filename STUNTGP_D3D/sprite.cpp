@@ -1386,13 +1386,13 @@ void FUN_430d40(int slot, int id)
         {
             g_61b634 = id;
         }
-        surfaceSlot = &g_surfaceSlots[slot];
+        surfaceSlot = &g_5ba788.surfaceSlots[slot];
         memset(&desc, 0, sizeof(desc));
         desc.dwHeight = g_587998[image].height;
         desc.dwWidth = g_587998[image].width;
         desc.dwSize = sizeof(desc);
         desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
-        desc.ddpfPixelFormat = *g_5d91c0;
+        desc.ddpfPixelFormat = *g_5ba788.textureFormat;
         desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
         res = g_dd4->CreateSurface(&desc, &surface, NULL);
         if (res != DD_OK)

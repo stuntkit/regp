@@ -374,13 +374,13 @@ HRESULT surfaceRestore(LPDIRECTDRAWSURFACE4 *surface)
 // FUNCTION: STUNTGP_D3D 0x4314c0
 BOOL surfaceSlotsNoneLost()
 {
-    for (DWORD i = 0; i < g_surfaceSlotCount; i++)
+    for (DWORD i = 0; i < g_5ba788.surfaceSlotCount; i++)
     {
-        if (g_surfaceSlots[i].surface && g_surfaceSlots[i].surface->IsLost())
+        if (g_5ba788.surfaceSlots[i].surface && g_5ba788.surfaceSlots[i].surface->IsLost())
         {
             return FALSE;
         }
-        if (g_surfaceSlots[i].surface2 && g_surfaceSlots[i].surface2->IsLost())
+        if (g_5ba788.surfaceSlots[i].surface2 && g_5ba788.surfaceSlots[i].surface2->IsLost())
         {
             return FALSE;
         }
@@ -401,13 +401,13 @@ void FUN_44e9d0()
 // FUNCTION: STUNTGP_D3D 0x431510
 BOOL surfaceSlotsRestore()
 {
-    for (DWORD i = 0; i < g_surfaceSlotCount; i++)
+    for (DWORD i = 0; i < g_5ba788.surfaceSlotCount; i++)
     {
-        if (g_surfaceSlots[i].surface && g_surfaceSlots[i].surface->Restore())
+        if (g_5ba788.surfaceSlots[i].surface && g_5ba788.surfaceSlots[i].surface->Restore())
         {
             return FALSE;
         }
-        if (g_surfaceSlots[i].surface2 && g_surfaceSlots[i].surface2->Restore())
+        if (g_5ba788.surfaceSlots[i].surface2 && g_5ba788.surfaceSlots[i].surface2->Restore())
         {
             return FALSE;
         }

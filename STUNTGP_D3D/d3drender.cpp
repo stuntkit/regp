@@ -31,9 +31,6 @@ int g_576bd8 = 0;
 // GLOBAL: STUNTGP_D3D 0x576be0
 int g_576be0 = 0;
 
-// GLOBAL: STUNTGP_D3D 0x5d91b4
-int *g_5d91b4 = NULL;
-
 // GLOBAL: STUNTGP_D3D 0x592054
 int g_592054 = 0;
 
@@ -57,10 +54,6 @@ OverlayPoly *g_61c5f0 = NULL;
 
 // GLOBAL: STUNTGP_D3D 0x61c604
 DWORD g_61c604 = 0;
-
-// Set when the device offers an ARGB1555 texture format.
-// GLOBAL: STUNTGP_D3D 0x5d91c4
-int g_5d91c4;
 
 // GLOBAL: STUNTGP_D3D 0x592068
 int g_592068;
@@ -106,13 +99,6 @@ char *g_5895b4;
 
 // GLOBAL: STUNTGP_D3D 0x5895b8
 int *g_5895b8;
-
-// DirectDraw devices collected by FUN_42f530.
-struct DisplayDevices
-{
-    int count;
-    BYTE unk04[0x1fa38 - 4];
-};
 
 // GLOBAL: STUNTGP_D3D 0x5ba788
 DisplayDevices g_5ba788;
@@ -513,9 +499,6 @@ void FUN_430330(char *path, BYTE *dst)
 // GLOBAL: STUNTGP_D3D 0x46f080
 // IID_IDirect3DTexture2
 
-// GLOBAL: STUNTGP_D3D 0x5d91c0
-DDPIXELFORMAT *g_5d91c0;
-
 // STUB: STUNTGP_D3D 0x4234e0
 void FUN_4234e0(BYTE *dst, BYTE *src)
 {
@@ -541,7 +524,7 @@ void FUN_431560(int slot, BYTE *image)
     desc.dwHeight = g_489718;
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
-    desc.ddpfPixelFormat = *g_5d91c0;
+    desc.ddpfPixelFormat = *g_5ba788.textureFormat;
     desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
     res = g_dd4->CreateSurface(&desc, &surface, NULL);
     if (res != DD_OK)
@@ -1029,7 +1012,7 @@ int FUN_42f6d0(DDPIXELFORMAT *format)
     {
         return 0;
     }
-    g_5d91c4 = 1;
+    g_5ba788.hasArgb1555 = 1;
     return 1;
 }
 
@@ -1047,12 +1030,12 @@ HRESULT WINAPI FUN_42f780(LPDDPIXELFORMAT format, LPVOID context)
     {
         if (FUN_42f6d0(format) == 1)
         {
-            g_5d91c0 = slot;
+            g_5ba788.textureFormat = slot;
         }
     }
     else if (format->dwFlags & DDPF_PALETTEINDEXED8)
     {
-        g_5d91c0 = slot;
+        g_5ba788.textureFormat = slot;
     }
     *slot = *format;
     list->count = count + 1;
@@ -1078,7 +1061,7 @@ void FUN_42f930()
 {
     if (g_61c358)
     {
-        if (g_5d91b4[57] & ~0x81)
+        if (g_5ba788.deviceDesc[57] & ~0x81)
         {
             g_592068 = 1;
             g_59206c = 0;
@@ -1098,7 +1081,7 @@ void FUN_42f930()
 // FUNCTION: STUNTGP_D3D 0x42f9c0
 void FUN_42f9c0()
 {
-    if (g_5d91b4[60] & ~5)
+    if (g_5ba788.deviceDesc[60] & ~5)
     {
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAG, D3DFILTER_LINEAR);
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMIN, D3DFILTER_LINEAR);
@@ -1114,7 +1097,7 @@ void FUN_42fa00()
 // FUNCTION: STUNTGP_D3D 0x42fa10
 void FUN_42fa10()
 {
-    int caps = g_5d91b4[58];
+    int caps = g_5ba788.deviceDesc[58];
     if (!(caps & 0x5000))
     {
         if (caps & 0xa000)
@@ -1129,7 +1112,7 @@ void FUN_42fa10()
 void FUN_42fa40()
 {
     g_6244f0 = 0;
-    if (((WORD *)g_5d91b4)[0xb0] >= 2 && ((WORD *)g_5d91b4)[0xb1] >= 2)
+    if (((WORD *)g_5ba788.deviceDesc)[0xb0] >= 2 && ((WORD *)g_5ba788.deviceDesc)[0xb1] >= 2)
     {
         g_592074 = g_6244f0 = 1;
     }
@@ -1609,7 +1592,7 @@ void FUN_433f40()
 // FUNCTION: STUNTGP_D3D 0x432a90
 void FUN_432a90()
 {
-    if (g_5d91b4[25])
+    if (g_5ba788.deviceDesc[25])
     {
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZFUNC, D3DCMP_GREATEREQUAL);
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZENABLE, TRUE);
@@ -1641,7 +1624,7 @@ int FUN_4325e0(BYTE *image, DWORD width, DWORD height)
     LPDIRECT3DTEXTURE2 texture;
     LPDIRECTDRAWSURFACE4 staging;
     int res;
-    SurfaceSlot *slot = &g_surfaceSlots[g_surfaceSlotCount++];
+    SurfaceSlot *slot = &g_5ba788.surfaceSlots[g_5ba788.surfaceSlotCount++];
     memset(&desc, 0, sizeof(desc));
     staging = NULL;
     surface = NULL;
@@ -1651,7 +1634,7 @@ int FUN_4325e0(BYTE *image, DWORD width, DWORD height)
     desc.dwHeight = height;
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
-    desc.ddpfPixelFormat = *g_5d91c0;
+    desc.ddpfPixelFormat = *g_5ba788.textureFormat;
     desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
     res = g_dd4->CreateSurface(&desc, &staging, NULL);
     if (res != DD_OK)
