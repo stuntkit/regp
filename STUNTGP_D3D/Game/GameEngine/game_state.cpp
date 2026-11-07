@@ -1,5 +1,6 @@
 #include "game_state.h"
 
+#include "../../sintable.h"
 #include "../../vecmath.h"
 
 // FUNCTION: STUNTGP_D3D 0x402580
@@ -33,9 +34,24 @@ CameraPath *FUN_428800(int id)
     return NULL;
 }
 
-// STUB: STUNTGP_D3D 0x402ad0
+// FUNCTION: STUNTGP_D3D 0x402ad0
 void FUN_402ad0()
 {
+    Vec4 dir;
+    DWORD roll;
+
+    dir.x = 0.0f;
+    dir.y = 0.0f;
+    dir.z = -1.0f;
+    FUN_44eb70(g_4722d0->angX >> 12, g_4722d0->angY >> 12, 0, &dir.x, &dir.y, &dir.z);
+    g_4722d0->cam.target = g_4722d0->cam.pos;
+    g_4722d0->cam.target.x = dir.x + g_4722d0->cam.pos.x;
+    g_4722d0->cam.target.y = dir.y + g_4722d0->cam.pos.y;
+    g_4722d0->cam.target.z = dir.z + g_4722d0->cam.pos.z;
+    roll = (g_4722d0->angZ >> 12) & 0x1fff;
+    g_4722d0->cam.up.x = g_48a5d8[roll];
+    g_4722d0->cam.up.y = g_4945d8[roll];
+    g_4722d0->cam.up.z = 0.0f;
 }
 
 // STUB: STUNTGP_D3D 0x402b90

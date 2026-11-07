@@ -66,3 +66,8 @@ void FUN_44f4c0()
 void FUN_450190(Camera *cam)
 {
 }
+
+// STUB: STUNTGP_D3D 0x44eb70
+void FUN_44eb70(DWORD yaw, DWORD pitch, DWORD roll, float *x, float *y, float *z)
+{
+}
