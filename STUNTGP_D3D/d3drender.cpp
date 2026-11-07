@@ -1,5 +1,6 @@
 #include "d3drender.h"
 #include "common.h"
+#include "sprite.h"
 #include "globals.h"
 #include "windowInit.h"
 
@@ -53,6 +54,28 @@ int g_61c5e4 = 0;
 
 // GLOBAL: STUNTGP_D3D 0x6227d4
 TextureSlot g_6227d4[1];
+
+// GLOBAL: STUNTGP_D3D 0x58d818
+D3DTLVERTEX2 g_58d818[4];
+
+// Virtual 640x480 to display scale and offset.
+// GLOBAL: STUNTGP_D3D 0x624990
+float g_624990 = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x624994
+float g_624994 = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x576b94
+float g_576b94 = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x576b98
+float g_576b98 = 0.0f;
+
+// STUB: STUNTGP_D3D 0x4251a0
+int FUN_4251a0(SpriteDesc *desc)
+{
+    return 0;
+}
 
 // FUNCTION: STUNTGP_D3D 0x431a80
 void FUN_431a80()
@@ -177,6 +200,65 @@ void FUN_432a90()
         g_59205c = 1;
         g_592060 = 1;
         g_592064 = 0;
+    }
+}
+
+// STUB: STUNTGP_D3D 0x432af0
+void FUN_432af0(D3DTLVERTEX2 *verts, SpriteDesc *desc)
+{
+}
+
+// STUB: STUNTGP_D3D 0x432c00
+void FUN_432c00(D3DTLVERTEX2 *verts, SpriteDesc *desc)
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x432e00
+void FUN_432e00(SpriteDesc *desc)
+{
+    SpriteDesc d = *desc;
+    if (!(d.flags & 0x40) && !FUN_4251a0(&d))
+    {
+        return;
+    }
+    if (d.flags & 4)
+    {
+        FUN_432af0(g_58d818, &d);
+    }
+    else
+    {
+        FUN_432c00(g_58d818, &d);
+    }
+    FUN_432190(d.blendMode);
+    if (d.blendMode & 0x40)
+    {
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 1);
+    }
+    else
+    {
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 0xa0);
+    }
+    int tex = d.texture;
+    if (g_61c5e4 != tex)
+    {
+        g_d3dDevice->SetTexture(0, g_6227d4[tex].texture);
+        g_61c5e4 = tex;
+    }
+    for (int i = 0; i < 4; i++)
+    {
+        D3DTLVERTEX2 *v = &g_58d818[i];
+        v->sx = (v->sx - 320.0f) * g_624990 + g_576b94;
+        v->sy = (v->sy - 240.0f) * g_624994 + g_576b98;
+        if (d.blendMode & 0x40)
+        {
+            v->color = (v->color & 0xffffff) | (d.alpha << 24);
+        }
+        v->specular |= 0xff000000;
+    }
+    g_d3dDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, FVF_TLVERTEX2, g_58d818, 4, D3DDP_DONOTCLIP | D3DDP_DONOTLIGHT);
+    if (d.blendMode & 0x40)
+    {
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, FALSE);
     }
 }
 

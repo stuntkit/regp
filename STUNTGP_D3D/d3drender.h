@@ -71,6 +71,17 @@ extern DWORD g_61c604;
 extern int g_61c5e4;
 extern TextureSlot g_6227d4[];
 
+struct SpriteDesc;
+
+extern D3DTLVERTEX2 g_58d818[4];
+extern float g_624990;
+extern float g_624994;
+extern float g_576b94;
+extern float g_576b98;
+
+int FUN_4251a0(SpriteDesc *desc);
+void FUN_432af0(D3DTLVERTEX2 *verts, SpriteDesc *desc);
+void FUN_432c00(D3DTLVERTEX2 *verts, SpriteDesc *desc);
 void FUN_431a80();
 void FUN_432190(int mode);
 void FUN_4328c0(int color);

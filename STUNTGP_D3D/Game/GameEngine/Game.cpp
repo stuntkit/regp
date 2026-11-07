@@ -6,6 +6,18 @@
 // GLOBAL: STUNTGP_D3D 0x612984
 int g_frameCount = 0;
 
+// GLOBAL: STUNTGP_D3D 0x61294c
+int g_61294c = 0;
+
+// GLOBAL: STUNTGP_D3D 0x612954
+DWORD g_612954 = 0;
+
+// GLOBAL: STUNTGP_D3D 0x612958
+int g_612958 = 0;
+
+// GLOBAL: STUNTGP_D3D 0x61b630
+int g_61b630 = 0;
+
 // TODO: update this based on currrent date and a compile-time define?
 
 #if !defined(REGP_FIXES)
@@ -70,6 +82,33 @@ void FUN_442180()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x442200
+void FUN_442200()
+{
+    if (g_61294c == 1 && g_612954 >= 18000)
+    {
+        DWORD alpha = (g_612954 - 18000) >> 1;
+        if (alpha > 192)
+        {
+            alpha = 192;
+        }
+        g_spriteDesc.flags = 2;
+        g_spriteDesc.x = 0.0f;
+        g_spriteDesc.y = 0.0f;
+        g_spriteDesc.z = 1.0f;
+        g_spriteDesc.width = 640.0f;
+        g_spriteDesc.height = 480.0f;
+        g_spriteDesc.blendMode = 0x48;
+        g_spriteDesc.alpha = alpha;
+        g_spriteDesc.u0 = 128.0f;
+        g_spriteDesc.v0 = 128.0f;
+        g_spriteDesc.u1 = 128.0f;
+        g_spriteDesc.v1 = 128.0f;
+        g_spriteDesc.texture = 10;
+        FUN_432e00(&g_spriteDesc);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x4421f0
 int FUN_4421f0()
 {
@@ -109,9 +148,49 @@ void FUN_442810()
 {
 }
 
-// STUB: STUNTGP_D3D 0x4428a0
+// FUNCTION: STUNTGP_D3D 0x4428a0
 void FUN_4428a0()
 {
+    if (g_61294c == 1 && g_612958 == 1)
+    {
+        return;
+    }
+    GameState *gs = g_gameState;
+    if (gs->unk1e8 == 0 || gs->unk1f0 < 1)
+    {
+        return;
+    }
+    DWORD alpha = gs->unk1f0 * 265 / 100;
+    if (alpha > 255)
+    {
+        alpha = 255;
+    }
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.x = 0.0f;
+    g_spriteDesc.y = 0.0f;
+    g_spriteDesc.z = gs->unk20c;
+    g_spriteDesc.width = 640.0f;
+    g_spriteDesc.height = 480.0f;
+    g_spriteDesc.blendMode = 0x48;
+    g_spriteDesc.alpha = alpha;
+    switch (gs->unk1f4)
+    {
+    case 1:
+        g_spriteDesc.u0 = 384.0f;
+        g_spriteDesc.v0 = 128.0f;
+        g_spriteDesc.u1 = 384.0f;
+        g_spriteDesc.v1 = 128.0f;
+        g_spriteDesc.texture = g_61b630 == 1 ? 0 : 10;
+        break;
+    case 2:
+        g_spriteDesc.u0 = 128.0f;
+        g_spriteDesc.v0 = 128.0f;
+        g_spriteDesc.u1 = 128.0f;
+        g_spriteDesc.v1 = 128.0f;
+        g_spriteDesc.texture = g_61b630 == 1 ? 0 : 10;
+        break;
+    }
+    FUN_432e00(&g_spriteDesc);
 }
 
 // FUNCTION: STUNTGP_D3D 0x442a00

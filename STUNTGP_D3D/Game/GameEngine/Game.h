@@ -12,6 +12,7 @@ void FUN_442120();
 void FUN_442180();
 void FUN_4427b0();
 void FUN_442810();
+void FUN_442200();
 int FUN_4421f0();
 void FUN_442640();
 void FUN_4428a0();

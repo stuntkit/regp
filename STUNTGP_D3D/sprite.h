@@ -1,6 +1,7 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 #define WIN32_LEAN_AND_MEAN
+#include <d3dtypes.h>
 #include <windows.h>
 
 // Screen-space quad handed to FUN_432e00.
@@ -19,7 +20,13 @@ struct SpriteDesc
     int texture;     // 0x28
     DWORD blendMode; // 0x2c
     DWORD alpha;     // 0x30
-    BYTE unk34[0x58];
+    float angle;     // 0x34
+    float originX;   // 0x38
+    float originY;   // 0x3c
+    float scaleX;    // 0x40
+    float scaleY;    // 0x44
+    D3DCOLOR color;  // 0x48
+    BYTE unk4c[0x40];
 };
 
 struct SpriteNode
@@ -43,6 +50,7 @@ void FUN_437ec0();
 void FUN_437ed0();
 void FUN_437f40(SpriteNode *node, int depth);
 void FUN_441220();
+void FUN_432e00(SpriteDesc *desc);
 void FUN_43d250();
 void FUN_43f6b0();
 
