@@ -128,6 +128,7 @@ void FUN_432e00(SpriteDesc *desc);
 void FUN_43d250();
 void FUN_43f6b0();
 int FUN_438130(int style, float size);
+float FUN_438910(const char *text, float size);
 float FUN_438950(float size);
 int FUN_441240(SpriteData *sprite);
 int FUN_441270(int id);

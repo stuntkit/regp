@@ -1,6 +1,13 @@
 #ifndef GAMETEXT_H
 #define GAMETEXT_H
 
+// Maps a text key in a csv file to a string id.
+struct TextKey
+{
+    const char *name;
+    int id;
+};
+
 void Scores_Load();
 int Scores_Assign(char *key, char *value, int count);
 int Scores_Parse(char *str);

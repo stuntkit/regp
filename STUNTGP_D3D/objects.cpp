@@ -17,7 +17,7 @@ Pool g_pool;
 int g_5fcab0[64];
 
 // GLOBAL: STUNTGP_D3D 0x6087a0
-void *g_6087a0;
+char *g_6087a0;
 
 // FUNCTION: STUNTGP_D3D 0x43d180
 void FUN_43d180()

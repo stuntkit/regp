@@ -251,6 +251,13 @@ void FUN_438190(float left, float top, float right, float bottom)
     g_5da360[3] = (int)bottom;
 }
 
+// FUNCTION: STUNTGP_D3D 0x438910
+float FUN_438910(const char *text, float size)
+{
+    Font_Select(size > 1.0f ? 1 : 0);
+    return FUN_4290d0(text, size);
+}
+
 // FUNCTION: STUNTGP_D3D 0x438950
 float FUN_438950(float size)
 {

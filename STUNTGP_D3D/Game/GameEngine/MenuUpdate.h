@@ -12,6 +12,12 @@ struct MenuSlot
     int unk08;
 };
 
+struct MenuLanguage
+{
+    char name[0x20];
+    int id;
+};
+
 // Front-end state, cleared as a whole by FUN_43d0b0.
 struct MenuState
 {
@@ -40,10 +46,10 @@ struct MenuState
     BYTE unk4230[0x10];
     int unk4240; // 0x4240
     BYTE unk4244[0x4258 - 0x4244];
-    int unk4258; // 0x4258
-    BYTE unk425c[0x427c - 0x425c];
-    int unk427c; // 0x427c
-    BYTE unk4280[0x13148 - 0x4280];
+    int language;               // 0x4258, id of the loaded front-end language
+    MenuLanguage languages[8];  // 0x425c, from Setup\languagePC.csv
+    int languageCount;          // 0x437c
+    BYTE unk4380[0x13148 - 0x4380];
     Unk4d5cc0 *unk13148; // 0x13148
     BYTE unk1314c[0x1dae8 - 0x1314c];
 };

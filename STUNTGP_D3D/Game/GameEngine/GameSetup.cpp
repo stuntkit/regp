@@ -953,7 +953,7 @@ void FUN_43d0b0()
     FUN_43c130();
     if (FUN_440c40(FUN_445ad0()) < 0)
     {
-        FUN_440c40(g_menuState.unk427c);
+        FUN_440c40(g_menuState.languages[0].id);
     }
     FUN_43d280();
     FUN_43ef10(0, 5);

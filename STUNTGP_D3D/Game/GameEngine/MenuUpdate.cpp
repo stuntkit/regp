@@ -373,9 +373,9 @@ void FUN_43d200()
     FUN_43eff0();
     FUN_437eb0();
     FUN_43c000();
-    if (g_menuState.unk0090 && g_menuState.unk0090 != g_menuState.unk4258 && FUN_43efc0() && !FUN_452d70(g_menuState.unk0090))
+    if (g_menuState.unk0090 && g_menuState.unk0090 != g_menuState.language && FUN_43efc0() && !FUN_452d70(g_menuState.unk0090))
     {
-        g_menuState.unk0090 = g_menuState.unk4258;
+        g_menuState.unk0090 = g_menuState.language;
     }
 }
 
@@ -845,12 +845,6 @@ void FUN_43f610()
     g_frontEnd.unk7c = FUN_43d790(g_frontEnd.unk7c, 0, 70);
 }
 
-// STUB: STUNTGP_D3D 0x440c40
-int FUN_440c40(int id)
-{
-    return 0;
-}
-
 // FUNCTION: STUNTGP_D3D 0x4408e0
 void FUN_4408e0()
 {
@@ -921,11 +915,6 @@ int FUN_4407a0(int id)
 void FUN_440880(int a)
 {
     FUN_440770(a, 0);
-}
-
-// STUB: STUNTGP_D3D 0x440ae0
-void FUN_440ae0()
-{
 }
 
 // FUNCTION: STUNTGP_D3D 0x441210
