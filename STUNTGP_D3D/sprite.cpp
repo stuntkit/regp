@@ -14,6 +14,16 @@ int g_5da370 = 0;
 // GLOBAL: STUNTGP_D3D 0x5df194
 SpriteLists g_spriteLists;
 
+// Integer sprite clip rectangle set by FUN_438190.
+// GLOBAL: STUNTGP_D3D 0x5da360
+int g_5da360[4];
+
+// GLOBAL: STUNTGP_D3D 0x47f318
+SpriteFile g_47f318[1];
+
+// GLOBAL: STUNTGP_D3D 0x608d88
+SpriteDef g_spriteDefs[0x183];
+
 // GLOBAL: STUNTGP_D3D 0x5df518
 int g_5df518 = 0;
 
@@ -28,6 +38,19 @@ int g_5df524 = 0;
 
 // GLOBAL: STUNTGP_D3D 0x4793d4
 int g_4793d4 = -1;
+
+// FUNCTION: STUNTGP_D3D 0x437e40
+void FUN_437e40(char *name)
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x437e60
+void FUN_437e60()
+{
+    FUN_437e80();
+    FUN_441190();
+    FUN_438190(0.0f, 0.0f, 640.0f, 480.0f);
+}
 
 // FUNCTION: STUNTGP_D3D 0x437e80
 void FUN_437e80()
@@ -178,6 +201,31 @@ int FUN_438130(int style, float size)
     return flags;
 }
 
+// FUNCTION: STUNTGP_D3D 0x438190
+void FUN_438190(float left, float top, float right, float bottom)
+{
+    if (left < 0.0f)
+    {
+        left = 0.0f;
+    }
+    if (top < 0.0f)
+    {
+        top = 0.0f;
+    }
+    if (right > 640.0f)
+    {
+        right = 640.0f;
+    }
+    if (bottom > 480.0f)
+    {
+        bottom = 480.0f;
+    }
+    g_5da360[0] = (int)left;
+    g_5da360[1] = (int)top;
+    g_5da360[2] = (int)right;
+    g_5da360[3] = (int)bottom;
+}
+
 // FUNCTION: STUNTGP_D3D 0x438950
 float FUN_438950(float size)
 {
@@ -203,6 +251,31 @@ void FUN_43d250()
 {
     FUN_43f6b0();
     FUN_437ec0();
+}
+
+// FUNCTION: STUNTGP_D3D 0x441190
+void FUN_441190()
+{
+    for (SpriteFile *file = g_47f318; file->name; file++)
+    {
+    }
+    FUN_441340();
+    FUN_4411c0();
+}
+
+// FUNCTION: STUNTGP_D3D 0x441340
+void FUN_441340()
+{
+    memset(g_spriteDefs, 0, sizeof(g_spriteDefs));
+    for (int i = 1; i < 0x183; i++)
+    {
+        FUN_441380(&g_spriteDefs[i], i);
+    }
+}
+
+// STUB: STUNTGP_D3D 0x441380
+void FUN_441380(SpriteDef *def, int id)
+{
 }
 
 // FUNCTION: STUNTGP_D3D 0x441240

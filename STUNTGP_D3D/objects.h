@@ -25,7 +25,11 @@ struct PoolObject
     void (*destroy)(PoolObject *object);
 };
 
+void Pool_Init();
 void Pool_Free(void *ptr);
+int FUN_43ef10(int a, int screen);
+PoolObject *FUN_43e000(int a, int screen);
+int FUN_43ee40(PoolObject *object);
 void FUN_43d180();
 void FUN_43d460();
 void FUN_43de50();

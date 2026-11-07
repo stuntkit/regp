@@ -42,6 +42,17 @@ void FUN_43d180()
     FUN_437e50();
 }
 
+// FUNCTION: STUNTGP_D3D 0x43d430
+void Pool_Init()
+{
+    for (int i = 0; i < 16; i++)
+    {
+        g_pool.freeBlocks[i] = (PoolBlockHeader *)g_pool.blocks[i];
+    }
+    g_pool.freeCount = 16;
+    g_pool.allocCount = 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43d460
 void FUN_43d460()
 {
@@ -55,6 +66,35 @@ void Pool_Free(void *ptr)
     g_pool.freeBlocks[g_pool.freeCount] = block;
     g_pool.freeCount++;
     g_pool.allocCount--;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43ef10
+int FUN_43ef10(int a, int screen)
+{
+    if (screen <= 0 || screen >= 0x29)
+    {
+        return 0;
+    }
+    for (int i = 0; i < g_5ff440; i++)
+    {
+        g_5ff400[i]->destroy(g_5ff400[i]);
+        Pool_Free(g_5ff400[i]);
+        g_5ff400[i] = NULL;
+    }
+    g_5ff440 = 0;
+    return FUN_43ee40(FUN_43e000(a, screen));
+}
+
+// STUB: STUNTGP_D3D 0x43e000
+PoolObject *FUN_43e000(int a, int screen)
+{
+    return NULL;
+}
+
+// STUB: STUNTGP_D3D 0x43ee40
+int FUN_43ee40(PoolObject *object)
+{
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43de50

@@ -6,7 +6,9 @@
 
 struct Font
 {
-    BYTE unk00[0x1ba0];
+    DWORD unk00;
+    void *unk04;
+    BYTE unk08[0x1ba0 - 8];
 };
 
 extern Font g_fonts[2];
@@ -15,6 +17,8 @@ extern Font *g_currentFont;
 extern float g_57b418;
 
 void Font_Select(DWORD font);
+void Font_Load(char *name);
+void FUN_428c00(Font *font, BYTE *data, BYTE *texture);
 void FUN_4291a0(float value);
 void FUN_4291f0(char *text, int align, float x, float y, float z, D3DCOLOR color, float size, DWORD flags);
 

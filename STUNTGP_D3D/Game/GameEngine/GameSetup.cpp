@@ -10,8 +10,13 @@
 #include "../../timer.h"
 #include "../../vecmath.h"
 #include "io_wad.h"
+#include "MenuUpdate.h"
+#include "../../objects.h"
+#include "../../sprite.h"
 
 void FUN_4411c0();
+int FUN_445ad0();
+extern int g_5fd250;
 
 extern char g_LevelScript[32];
 extern float g_482668;
@@ -25,6 +30,9 @@ int g_5fd248;
 
 // GLOBAL: STUNTGP_D3D 0x5fd24c
 int g_5fd24c;
+
+// GLOBAL: STUNTGP_D3D 0x5fd254
+int g_5fd254;
 
 struct Unk4d5cc0
 {
@@ -270,9 +278,39 @@ void FUN_42e6e0()
 {
 }
 
-// STUB: STUNTGP_D3D 0x43d0b0
+// FUNCTION: STUNTGP_D3D 0x43d0b0
 void FUN_43d0b0()
 {
+    g_5fd248 = 0;
+    g_5fd250 = 1;
+    g_5fd254++;
+    // STRING: STUNTGP_D3D 0x4795ec
+    FUN_437e40("fe.log");
+    Pool_Init();
+    memset(&g_menuState, 0, sizeof(g_menuState));
+    FUN_43c060();
+    FUN_439e30();
+    FUN_4408e0();
+    FUN_437e60();
+    FUN_436eb0();
+    FUN_43dda0();
+    FUN_440ae0();
+    FUN_43dd10(0);
+    FUN_43c000();
+    FUN_434b50();
+    FUN_43c370();
+    FUN_43c130();
+    if (FUN_440c40(FUN_445ad0()) < 0)
+    {
+        FUN_440c40(g_menuState.unk427c);
+    }
+    FUN_43d280();
+    FUN_43ef10(0, 5);
+    for (int i = 1; i < 25; i++)
+    {
+        FUN_437360(i);
+        FUN_437da0(i);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x43d1b0
@@ -305,6 +343,12 @@ int FUN_43d420()
 void FUN_443050()
 {
     g_60df90 = &g_4d5cc0[2];
+}
+
+// FUNCTION: STUNTGP_D3D 0x445ad0
+int FUN_445ad0()
+{
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x445fa0

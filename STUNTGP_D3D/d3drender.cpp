@@ -4,6 +4,10 @@
 #include "globals.h"
 #include "windowInit.h"
 #include "vecmath.h"
+#include "Game/GameEngine/io_wad.h"
+
+#include <stdlib.h>
+#include <string.h>
 
 // GLOBAL: STUNTGP_D3D 0x5da1c4
 LPDIRECT3DDEVICE3 g_d3dDevice = NULL;
@@ -71,6 +75,36 @@ float g_576b94 = 0.0f;
 
 // GLOBAL: STUNTGP_D3D 0x576b98
 float g_576b98 = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x576b8c
+int g_576b8c = 0;
+
+// GLOBAL: STUNTGP_D3D 0x576b90
+int g_576b90 = 0;
+
+// GLOBAL: STUNTGP_D3D 0x576b9c
+float g_576b9c = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x576ba0
+float g_576ba0 = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x576be4
+float g_576be4 = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x576be8
+float g_576be8 = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x57e310
+ResourceFile g_textureFiles[255];
+
+// GLOBAL: STUNTGP_D3D 0x5895c0
+ResourceFile g_fontFiles[8];
+
+// GLOBAL: STUNTGP_D3D 0x489714
+int g_489714 = 320;
+
+// GLOBAL: STUNTGP_D3D 0x489718
+int g_489718 = 200;
 
 // Sprite clip rectangle in virtual 640x480 space.
 // GLOBAL: STUNTGP_D3D 0x576c04
@@ -184,6 +218,43 @@ int FUN_4251a0(SpriteDesc *desc)
     desc->scaleY = 1.0f;
     desc->scaleX = 1.0f;
     desc->x = x;
+    return 1;
+}
+
+// STUB: STUNTGP_D3D 0x430280
+void FUN_430280(BYTE *src, BYTE *dst, int width, int height)
+{
+}
+
+// STUB: STUNTGP_D3D 0x430330
+void FUN_430330(char *path, BYTE *dst)
+{
+}
+
+// STUB: STUNTGP_D3D 0x431560
+void FUN_431560(int slot, BYTE *image)
+{
+}
+
+// FUNCTION: STUNTGP_D3D 0x4316f0
+int FUN_4316f0(int slot, char *path)
+{
+    int size = size_of_file(path);
+    BYTE *image = (BYTE *)malloc(0x20000);
+    // STRING: STUNTGP_D3D 0x47889c
+    if (strstr(path, ".TGA"))
+    {
+        BYTE *data = (BYTE *)malloc(size + 16);
+        FUN_4623c0(path, data, &g_571fd4);
+        FUN_430280(data, image, g_489714, g_489718);
+        free(data);
+    }
+    else
+    {
+        FUN_430330(path, image);
+    }
+    FUN_431560(slot, image);
+    free(image);
     return 1;
 }
 
@@ -311,6 +382,11 @@ void FUN_432a90()
         g_592060 = 1;
         g_592064 = 0;
     }
+}
+
+// STUB: STUNTGP_D3D 0x432840
+void FUN_432840(BYTE *texture, Font *font, int arg)
+{
 }
 
 // FUNCTION: STUNTGP_D3D 0x432af0

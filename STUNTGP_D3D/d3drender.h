@@ -78,8 +78,33 @@ extern float g_624990;
 extern float g_624994;
 extern float g_576b94;
 extern float g_576b98;
+extern int g_576b8c;
+extern int g_576b90;
+extern float g_576b9c;
+extern float g_576ba0;
+extern float g_576be4;
+extern float g_576be8;
+
+struct Font;
+
+// Registered texture or font file, re-read when surfaces are lost.
+struct ResourceFile
+{
+    char *name;
+    int slot;
+};
+
+extern ResourceFile g_textureFiles[255];
+extern ResourceFile g_fontFiles[8];
+extern int g_489714;
+extern int g_489718;
 
 int FUN_4251a0(SpriteDesc *desc);
+void FUN_430280(BYTE *src, BYTE *dst, int width, int height);
+void FUN_430330(char *path, BYTE *dst);
+void FUN_431560(int slot, BYTE *image);
+int FUN_4316f0(int slot, char *path);
+void FUN_432840(BYTE *texture, Font *font, int arg);
 void FUN_432af0(D3DTLVERTEX2 *verts, SpriteDesc *desc);
 void FUN_432c00(D3DTLVERTEX2 *verts, SpriteDesc *desc);
 void FUN_431a80();

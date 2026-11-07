@@ -12,6 +12,7 @@ BOOL WAD_CacheNewWadFile(char *wad);
 int bload(char *path, char *buffer, int maxSize);
 int WAD_DirDiffers(char *a, char *b);
 int size_of_file(char *path);
+void FUN_4623c0(char *path, void *buffer, void *arg);
 void tolower(char *out, char *in);
 int WAD_FindFile(char *wad, char *name, unsigned int *size);
 int WAD_NameEquals(char *a, char *b);
