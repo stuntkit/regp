@@ -129,10 +129,14 @@ struct Unk457e70
 
 struct Unk458860
 {
-    BYTE unk000[0x1e8]; // 0x000
+    BYTE unk000[0x40];  // 0x000
+    PoolObject *unk40;  // 0x040
+    BYTE unk044[0x1a4]; // 0x044
     int unk1e8;         // 0x1e8
     int unk1ec;         // 0x1ec
     int unk1f0;         // 0x1f0
+    int unk1f4;         // 0x1f4
+    int unk1f8;         // 0x1f8
 };
 
 // Character grid for name entry, eight per row.
@@ -1314,6 +1318,18 @@ void FUN_4529c0(MenuHolder *object)
     object->child = NULL;
 }
 
+// FUNCTION: STUNTGP_D3D 0x452ac0
+void FUN_452ac0()
+{
+    float height = FUN_438950(1.25f);
+    float y = (480.0f - height * 16.0f) * 0.5f;
+    for (int id = 0x2b6; id < 0x2c6; id++)
+    {
+        FUN_438be0(320.0f, y, 12, 4, id, 1.25f, 0xffffffff, 3);
+        y += height;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x452b30
 int FUN_452b30(MenuObject *object)
 {
@@ -1834,6 +1850,25 @@ void FUN_458860(Unk458860 *object)
     object->unk1ec = 0;
     object->unk1e8 = 0;
     object->unk1f0 = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x458a60
+void FUN_458a60(Unk458860 *object, int a, int b, int c)
+{
+    object->unk1f4 = a;
+    object->unk1e8 = c;
+    object->unk1ec = b;
+    object->unk1f0 = 0;
+    object->unk1f8 = 10;
+    FUN_440880(3);
+    if (b == 1)
+    {
+        object->unk40->message(object->unk40, 0x1c, 1);
+    }
+    else
+    {
+        object->unk40->message(object->unk40, 0x1c, 0);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x458d00

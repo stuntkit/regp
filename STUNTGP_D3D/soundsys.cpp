@@ -8,6 +8,12 @@
 #include "mem.h"
 #include "Game/GameEngine/io_wad.h"
 
+extern int g_48971c;
+extern int g_489720;
+extern int g_489714;
+extern int g_489718;
+void FUN_4234d0(char *msg);
+
 #include <mmsystem.h>
 #include <dsound.h>
 
@@ -606,6 +612,27 @@ int FUN_462090()
     Sound_ApplyVolumes();
     g_4897b4 = g_4897b0;
     return 1;
+}
+
+// Reads the size of an uncompressed 24-bit TGA image.
+// FUNCTION: STUNTGP_D3D 0x462440
+void FUN_462440(char *path)
+{
+    BYTE header[0x54];
+    g_48971c = 0;
+    g_489720 = 0;
+    g_489714 = 0;
+    g_489718 = 0;
+    if (bload(path, (char *)header, 0x12))
+    {
+        if (header[2] != 2 || header[16] != 24)
+        {
+            // STRING: STUNTGP_D3D 0x48a5bc
+            FUN_4234d0("Unsupported TGA format...\n");
+        }
+        g_489714 = g_48971c = *(WORD *)&header[12];
+        g_489718 = g_489720 = *(WORD *)&header[14];
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x4624b0

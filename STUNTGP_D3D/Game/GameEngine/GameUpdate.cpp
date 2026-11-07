@@ -23,6 +23,9 @@ struct PcxHeader
 };
 
 extern int g_48971c;
+
+// GLOBAL: STUNTGP_D3D 0x5da2e4
+FILE *g_5da2e4;
 extern int g_489720;
 
 #include <cstring>
@@ -1935,6 +1938,23 @@ void FUN_446110()
         FUN_460af0(found->id);
         g_484898 = found;
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x446340
+void FUN_446340()
+{
+    // STRING: STUNTGP_D3D 0x484bbc
+    fprintf(g_5da2e4, "***********************************************************************\n");
+    // STRING: STUNTGP_D3D 0x484c08
+    fprintf(g_5da2e4, "*                                                                     *\n");
+    // STRING: STUNTGP_D3D 0x484c54
+    fprintf(g_5da2e4, "*               SGP Level Config File (Text Version)                  *\n");
+    // STRING: STUNTGP_D3D 0x484ca0
+    fprintf(g_5da2e4, "*                    (C) Pete Opdam                                   *\n");
+    // STRING: STUNTGP_D3D 0x484cec
+    fprintf(g_5da2e4, "*                                                                     *\n");
+    // STRING: STUNTGP_D3D 0x484d38
+    fprintf(g_5da2e4, "***********************************************************************\n");
 }
 
 // FUNCTION: STUNTGP_D3D 0x447ab0
