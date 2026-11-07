@@ -103,11 +103,69 @@ struct Wheel
     BYTE unk007c[0x1c]; // 0x007c
 };
 
+struct ModelMesh
+{
+    short visible;     // 0x00
+    BYTE unk02[0x6];   // 0x02
+    Vec4 *matrix;      // 0x08
+    BYTE unk0c[0x18];  // 0x0c
+    WORD vertCount;    // 0x24
+    BYTE unk26[0x2];   // 0x26
+    WORD pointCount;   // 0x28
+    BYTE unk2a[0x4];   // 0x2a
+    WORD unk2e;        // 0x2e
+    Vec4 *points;      // 0x30
+    BYTE *verts;       // 0x34 8 bytes per vertex
+    BYTE unk38[0x8];   // 0x38
+};
+
+struct ModelPart
+{
+    ModelMesh meshes[32]; // 0x00
+};
+
+struct CarModel
+{
+    BYTE unk00[0x24];     // 0x00
+    DWORD meshCount;      // 0x24
+    BYTE unk28[0x20];     // 0x28
+    ModelPart *parts[5];  // 0x48
+    int current;          // 0x5c
+};
+
+// Ring buffer of recent world positions, fed by FUN_41e510.
+struct Trail
+{
+    Vec4 pos;         // 0x000
+    Vec4 points[32];  // 0x010
+    DWORD head;       // 0x210
+    DWORD count;      // 0x214
+};
+
+struct CarFx
+{
+    int active;         // 0x000
+    Vec4 unk004;        // 0x004
+    Vec4 unk014;        // 0x014
+    Vec4 unk024;        // 0x024
+    BYTE unk034[0x104]; // 0x034
+    DWORD count;        // 0x138
+    int unk13c;         // 0x13c
+};
+
+struct SkidMark
+{
+    int unk00;          // 0x000
+    int unk04;          // 0x004
+    DWORD unk08;        // 0x008
+    BYTE unk0c[0xd04];  // 0x00c
+};
+
 // 6 entries at 0x60f050, one per car
 struct Driver
 {
     char name[0x40];  // 0x00
-    int unk40;        // 0x40
+    CarModel *unk40;  // 0x40
     int unk44;        // 0x44
     BYTE unk48[0x1c]; // 0x48
 };
@@ -237,9 +295,38 @@ struct Car
     BYTE unk2638[0x8];       // 0x2638
     int unk2640;             // 0x2640
     BYTE unk2644[0x6c];      // 0x2644
-    int unk26b0;             // 0x26b0
+    CarModel *unk26b0;       // 0x26b0
     int unk26b4;             // 0x26b4
-    BYTE unk26b8[0x4bb0];    // 0x26b8
+    BYTE unk26b8[0x1e8];     // 0x26b8
+    int unk28a0;             // 0x28a0
+    BYTE unk28a4[0x18];      // 0x28a4
+    int unk28bc;             // 0x28bc
+    Trail unk28c0;           // 0x28c0
+    int unk2ad8;             // 0x2ad8
+    Trail unk2adc;           // 0x2adc
+    BYTE unk2cf4[0x10];      // 0x2cf4
+    Trail unk2d04;           // 0x2d04
+    Trail unk2f1c;           // 0x2f1c
+    int unk3134;             // 0x3134
+    Vec4 unk3138;            // 0x3138
+    Vec4 unk3148;            // 0x3148
+    float unk3158;           // 0x3158
+    BYTE unk315c[0x130];     // 0x315c
+    CarFx unk328c;           // 0x328c
+    CarFx unk33cc;           // 0x33cc
+    BYTE unk350c[0x10];      // 0x350c
+    Vec4 unk351c[64];        // 0x351c
+    DWORD unk391c;           // 0x391c
+    DWORD unk3920;           // 0x3920
+    int unk3924;             // 0x3924
+    int unk3928;             // 0x3928
+    BYTE unk392c[0x38];      // 0x392c
+    SkidMark skids[4];       // 0x3964
+    BYTE unk6da4[0x43c];     // 0x6da4
+    DWORD unk71e0;           // 0x71e0
+    DWORD unk71e4;           // 0x71e4
+    int unk71e8;             // 0x71e8
+    BYTE unk71ec[0x7c];      // 0x71ec
     unsigned short *unk7268; // 0x7268
     BYTE unk726c[0x3c0];     // 0x726c
     int unk762c;             // 0x762c

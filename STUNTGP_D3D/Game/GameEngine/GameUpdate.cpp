@@ -152,9 +152,20 @@ void FUN_4023d0()
     slot->speed = 0;
 }
 
-// STUB: STUNTGP_D3D 0x412910
+void FUN_4128f0(Car *car);
+
+// FUNCTION: STUNTGP_D3D 0x412910
 void FUN_412910()
 {
+    Car *car = g_49a1f8;
+    for (int i = 0; i < 6; i++)
+    {
+        if (car->active == 1)
+        {
+            FUN_4128f0(car);
+        }
+        car++;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x4028d0

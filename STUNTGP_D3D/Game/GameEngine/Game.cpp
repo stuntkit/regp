@@ -79,7 +79,7 @@ float g_482690 = 0.0f;
 // GLOBAL: STUNTGP_D3D 0x612cf8
 int g_612cf8;
 
-extern int g_61297c;
+extern DWORD g_61297c;
 
 extern int g_60df9c;
 
