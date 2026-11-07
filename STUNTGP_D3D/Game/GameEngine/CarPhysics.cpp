@@ -337,7 +337,7 @@ void FUN_411150()
         FUN_44eda0(&dir.x, &speed);
         if (speed >= 1000.0f / 60.0f)
         {
-            if (dir.z * g_4d5bb8->axisZ.z + dir.y * g_4d5bb8->axisZ.y + dir.x * g_4d5bb8->axisZ.x < 0.9063077)
+            if (dir.x * g_4d5bb8->axisZ.x + dir.y * g_4d5bb8->axisZ.y + dir.z * g_4d5bb8->axisZ.z < 0.9063077)
             {
                 g_4d5bb8->unk71dc++;
                 return;
@@ -918,9 +918,67 @@ void FUN_41d140()
     FUN_41cd30(1);
 }
 
-// STUB: STUNTGP_D3D 0x41e210
+// STUB: STUNTGP_D3D 0x41d760
+void FUN_41d760()
+{
+}
+
+// STUB: STUNTGP_D3D 0x41dd60
+void FUN_41dd60()
+{
+}
+
+// STUB: STUNTGP_D3D 0x41de70
+void FUN_41de70()
+{
+}
+
+// STUB: STUNTGP_D3D 0x41ded0
+void FUN_41ded0(float *pos, CameraPath *path, int *index)
+{
+}
+
+// STUB: STUNTGP_D3D 0x41e0f0
+void FUN_41e0f0()
+{
+}
+
+// Tracks the car along the race path and fires the lap hook once at the 99 -> 0 wrap.
+// FUNCTION: STUNTGP_D3D 0x41e210
 void FUN_41e210()
 {
+    FUN_41de70();
+    if (g_571328->points)
+    {
+        FUN_41ded0(&g_4d5bb8->posX, g_571328, &g_4d5bb8->unk24a4);
+        int prev = g_4d5bb8->unk23a8 % 100;
+        int cur = g_4d5bb8->unk23ac % 100;
+        if (prev < 0)
+        {
+            prev = (prev + 100) % 100;
+        }
+        if (cur < 0)
+        {
+            cur = (cur + 100) % 100;
+        }
+        if (prev == 99 && cur == 0)
+        {
+            if (!g_4d5bb8->unk24a8)
+            {
+                g_4d5bb8->unk24a8 = 1;
+                FUN_41dd60();
+                FUN_41e0f0();
+                FUN_41d760();
+                return;
+            }
+        }
+        else
+        {
+            g_4d5bb8->unk24a8 = 0;
+        }
+        FUN_41e0f0();
+        FUN_41d760();
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x443700
