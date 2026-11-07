@@ -128,6 +128,9 @@ if(STUNTGP_BUILD_D3D)
     STUNTGP_D3D/Game/GameEngine/Game.cpp
     STUNTGP_D3D/Game/GameEngine/Engine_LevelScript.cpp
     STUNTGP_D3D/Game/GameEngine/io_wad.cpp
+    STUNTGP_D3D/timer.cpp
+    STUNTGP_D3D/random.cpp
+    STUNTGP_D3D/Game/GameEngine/GameSetup.cpp
   )
   reccmp_add_target(StuntGP_D3D ID STUNTGP_D3D)
 

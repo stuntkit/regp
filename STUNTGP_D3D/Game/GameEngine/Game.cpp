@@ -20,6 +20,21 @@ const char g_VERSION_FORMAT[] = "Version: %s - %s";
 // GLOBAL: STUNTGP_D3D 0x612bf8
 static char g_VERSION_STRING[255];
 
+// GLOBAL: STUNTGP_D3D 0x612cf8
+int g_612cf8;
+
+// GLOBAL: STUNTGP_D3D 0x61297c
+int g_61297c;
+
+// GLOBAL: STUNTGP_D3D 0x60df9c
+int g_60df9c;
+
+// GLOBAL: STUNTGP_D3D 0x4d5b20
+int g_4d5b20;
+
+// GLOBAL: STUNTGP_D3D 0x60d61c
+int g_60d61c;
+
 // FUNCTION: STUNTGP_D3D 0x442010
 void GetGameBuildVersion()
 {
@@ -40,9 +55,74 @@ void FUN_441f00()
 {
 }
 
-// STUB: STUNTGP_D3D 0x442120
+// FUNCTION: STUNTGP_D3D 0x442030
+void FUN_442030()
+{
+    g_4d5b20 = 0;
+    FUN_45f9d0();
+    FUN_460dd0();
+    FUN_460c90();
+    FUN_445fa0();
+    Mem_Reset();
+    FUN_42e6e0();
+    FUN_443d70();
+    FUN_4457e0();
+    if (g_612be8 == 1)
+    {
+        FUN_445f80();
+        FUN_4469f0();
+        FUN_40e050();
+        FUN_40a2f0();
+        FUN_401de0();
+        FUN_413670();
+        FUN_422420();
+        FUN_4199a0();
+        FUN_40d500();
+    }
+    if (g_612be8 == 2)
+    {
+        FUN_424c30(1);
+        if (g_60d61c == 0)
+        {
+            g_60d61c = 1;
+            FUN_43d0b0();
+        }
+        else
+        {
+            FUN_43d1d0();
+        }
+    }
+    if (g_612be8 == 1)
+    {
+        FUN_43d1b0();
+    }
+    Timer_Reset();
+}
+
+// FUNCTION: STUNTGP_D3D 0x442100
+void Timer_Reset()
+{
+    g_612d00 = Timer_GetCounter();
+    g_612d04 = Timer_GetCounter();
+}
+
+// FUNCTION: STUNTGP_D3D 0x442120
 void FUN_442120()
 {
+    g_612cf8 = 0;
+    g_61297c = 100;
+    FUN_429510();
+    Random_SeedFromTime();
+    Timer_Init();
+    Mem_Init();
+    FUN_4624b0();
+    Script_ParseGameConfig();
+    FUN_462090();
+    FUN_45ec30();
+    FUN_445f80();
+    FUN_4249b0();
+    g_60df9c = 0;
+    FUN_442030();
 }
 
 // STUB: STUNTGP_D3D 0x442180

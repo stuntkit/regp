@@ -4,10 +4,17 @@
 #include <windows.h>
 
 #include "../../globals.h"
+#include "../../mem.h"
+#include "../../random.h"
+#include "../../timer.h"
+#include "Engine_LevelScript.h"
+#include "GameSetup.h"
 
 void GetGameBuildVersion();
 void FUN_441d70();
 void FUN_441f00();
+void FUN_442030();
+void Timer_Reset();
 void FUN_442120();
 void FUN_442180();
 void FUN_4427b0();
