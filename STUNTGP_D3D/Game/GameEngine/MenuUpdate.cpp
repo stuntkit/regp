@@ -144,6 +144,25 @@ struct Unk457e70
 
 typedef Unk457e70 Unk458860;
 
+// GLOBAL: STUNTGP_D3D 0x4865a0
+MenuItem g_4865a0[2] = {
+    {0, 0xffc8c8ff, 0xffffffff, 0x17, 0, 1, 0, 0},
+    {0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x4865e0
+MenuDef g_4865e0 = {0xb, 0.0f, 0, 320.0f, 380.0f, 1.0f, 2, 1.25f, 1, 0x50, g_4865a0, 0};
+
+// GLOBAL: STUNTGP_D3D 0x486610
+MenuItem g_486610[3] = {
+    {0, 0xffc8c8ff, 0xffffffff, 0x15, 0, 1, 0, 0},
+    {1, 0xffc8c8ff, 0xffffffff, 0x16, 0, 1, 0, 0},
+    {0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x486670
+MenuDef g_486670 = {0xb, 0.0f, 0, 320.0f, 380.0f, 1.0f, 2, 1.25f, 1, 0x50, g_486610, 0};
+
 // GLOBAL: STUNTGP_D3D 0x4866c8
 MenuItem g_4866c8[2] = {
     {0, 0xffc8c8ff, 0xffffffff, 0x17, 0, 1, 0, 0},
@@ -2405,6 +2424,54 @@ void FUN_440880(int a)
 // FUNCTION: STUNTGP_D3D 0x441210
 void FUN_441210()
 {
+}
+
+// FUNCTION: STUNTGP_D3D 0x450400
+int FUN_450400(Unk4516c0 *object)
+{
+    object->unk1c = 0;
+    object->unk20 = 0x167;
+    MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
+    memset(list, 0, sizeof(MenuList));
+    // The two handlers are copied as one block.
+    *(PoolClass *)&list->base.destroy = g_menuListClass;
+    list->base.type = 0x29;
+    // STRING: STUNTGP_D3D 0x4866a8
+    list->base.name = "MenuText";
+    list->base.unk08 = 0;
+    if (!FUN_43c860(list, &g_4865e0))
+    {
+        Pool_Free(list);
+        object->unk14 = NULL;
+    }
+    else
+    {
+        object->unk14 = &list->base;
+    }
+    PoolObject *child = object->unk14;
+    child->message(child, 0x18, 0);
+    child->message(child, 0x16, 0);
+    list = (MenuList *)Pool_Alloc(sizeof(MenuList));
+    memset(list, 0, sizeof(MenuList));
+    *(PoolClass *)&list->base.destroy = g_menuListClass;
+    list->base.type = 0x29;
+    // STRING: STUNTGP_D3D 0x4866b4
+    list->base.name = "MenuText";
+    list->base.unk08 = 0;
+    if (!FUN_43c860(list, &g_486670))
+    {
+        Pool_Free(list);
+        object->unk18 = NULL;
+    }
+    else
+    {
+        object->unk18 = &list->base;
+    }
+    child = object->unk18;
+    child->message(child, 0x18, 0);
+    child->message(child, 0x16, 0);
+    child->message(child, 0x1c, 1);
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x450510
