@@ -10,6 +10,9 @@ struct SoundSlot
     BYTE unk08[0x18];               // 0x08
 };
 
+// GLOBAL: STUNTGP_D3D 0x489790
+DWORD g_489790 = 0xff;
+
 // GLOBAL: STUNTGP_D3D 0x489798
 int g_489798 = 0xff;
 
@@ -19,8 +22,20 @@ int g_48979c = 0xff;
 // GLOBAL: STUNTGP_D3D 0x4897b4
 int g_4897b4 = 1;
 
+// GLOBAL: STUNTGP_D3D 0x60d734
+int g_60d734;
+
+// GLOBAL: STUNTGP_D3D 0x60d738
+int g_60d738;
+
+// GLOBAL: STUNTGP_D3D 0x62e0a8
+int g_62e0a8;
+
 // GLOBAL: STUNTGP_D3D 0x62e0ac
 int g_62e0ac;
+
+// GLOBAL: STUNTGP_D3D 0x62e0f0
+int g_62e0f0;
 
 // GLOBAL: STUNTGP_D3D 0x62e0f8
 int g_62e0f8;
@@ -82,6 +97,15 @@ void FUN_45f880()
         }
         FUN_45f7d0(g_62e110, g_62e104);
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x460bc0
+void FUN_460bc0()
+{
+    g_60d734 = g_62e0a8;
+    g_62e0f8 = g_489790 * g_62e0a8 * 255 / 10000;
+    g_60d738 = g_62e0f0;
+    g_489798 = g_48979c = g_489790 * g_62e0f0 * 255 / 10000;
 }
 
 // FUNCTION: STUNTGP_D3D 0x460ce0
@@ -162,6 +186,11 @@ void FUN_462200()
             g_62f5b4++;
         }
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x462270
+void FUN_462270(int a)
+{
 }
 
 // FUNCTION: STUNTGP_D3D 0x462280

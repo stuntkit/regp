@@ -125,6 +125,8 @@ extern DWORD g_612954;
 extern int g_612958;
 extern int g_612970;
 extern int g_612bf4;
+extern int g_62e0a8;
+extern int g_62e0f0;
 extern int g_612950;
 extern int g_61295c;
 extern int g_612964;

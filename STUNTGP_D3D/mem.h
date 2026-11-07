@@ -5,4 +5,6 @@
 
 void *Mem_Alloc(int size, int type);
 int Mem_Free(void *ptr);
+void FUN_42ea00();
+void FUN_42eaa0();
 #endif /* MEM_H */

@@ -90,14 +90,15 @@ void FUN_429510()
     FUN_4294f0();
 }
 
-// STUB: STUNTGP_D3D 0x42eaa0
-void FUN_42eaa0()
+// STUB: STUNTGP_D3D 0x431790
+void FUN_431790()
 {
 }
 
-// STUB: STUNTGP_D3D 0x431810
+// FUNCTION: STUNTGP_D3D 0x431810
 void FUN_431810()
 {
+    FUN_431790();
 }
 
 // --- timer ---
@@ -108,11 +109,6 @@ DWORD FUN_434820()
     LARGE_INTEGER count;
     QueryPerformanceCounter(&count);
     return count.LowPart;
-}
-
-// STUB: STUNTGP_D3D 0x43d200
-void FUN_43d200()
-{
 }
 
 // STUB: STUNTGP_D3D 0x443a80

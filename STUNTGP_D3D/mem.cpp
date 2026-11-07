@@ -24,6 +24,9 @@ struct MemManager
     MemSlot slots[0x180];
 };
 
+// GLOBAL: STUNTGP_D3D 0x589e10
+BOOL g_589e10;
+
 // GLOBAL: STUNTGP_D3D 0x589e14
 MemManager g_Mem;
 
@@ -99,4 +102,44 @@ int Mem_Free(void *ptr)
         }
     }
     return 0;
+}
+
+// Frees every tracked block, newest allocation first.
+// FUNCTION: STUNTGP_D3D 0x42ea00
+void FUN_42ea00()
+{
+    if (g_589e10 == TRUE)
+    {
+        DWORD kept = 0;
+        DWORD freed = 0;
+        int count = 0;
+        int age = 0x180;
+        while (age > 0)
+        {
+            age--;
+            MemSlot *slot = g_Mem.slots;
+            for (int i = 0; i < 0x180; i++, slot++)
+            {
+                if (slot->data != NULL && slot->id == g_Mem.unk10 + age)
+                {
+                    if (slot->type == 1 && g_Mem.freeType1 == FALSE)
+                    {
+                        kept += slot->total;
+                    }
+                    else
+                    {
+                        freed += Mem_Free(slot->data);
+                    }
+                    count++;
+                }
+            }
+        }
+        g_589e10 = FALSE;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x42eaa0
+void FUN_42eaa0()
+{
+    FUN_42ea00();
 }
