@@ -77,6 +77,16 @@ float g_5ff488[6];
 // GLOBAL: STUNTGP_D3D 0x5ff4a4
 int g_5ff4a4;
 
+// Player locked to the menu, or 0 for any.
+// GLOBAL: STUNTGP_D3D 0x5ff4a0
+int g_5ff4a0;
+
+// GLOBAL: STUNTGP_D3D 0x5ff4a8
+int g_5ff4a8;
+
+// GLOBAL: STUNTGP_D3D 0x5ff4b0
+int g_5ff4b0;
+
 // GLOBAL: STUNTGP_D3D 0x5ff4ac
 int g_5ff4ac;
 
@@ -97,6 +107,10 @@ int FUN_424a80();
 void FUN_424a90(int mode);
 extern Unk4d5cc0 *g_60df90;
 float FUN_43d9e0(float value);
+int FUN_436fc0(int player, int button);
+int FUN_436fd0(int player, int button);
+void FUN_43f3e0(PoolObject *screen, int player);
+int FUN_43f5e0(int player);
 int FUN_4407a0(int id);
 
 // FUNCTION: STUNTGP_D3D 0x424a80
@@ -162,6 +176,22 @@ void FUN_436f00(int player)
     {
         memset(&in->held[1], 0, 7);
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x436fc0
+int FUN_436fc0(int player, int button)
+{
+    return (char)g_menuInput[player].held[button];
+}
+
+// FUNCTION: STUNTGP_D3D 0x436fd0
+int FUN_436fd0(int player, int button)
+{
+    if (g_menuInput[player].held[button] && !g_menuInput[player].prev[button])
+    {
+        return 1;
+    }
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x436f60
@@ -634,9 +664,173 @@ void FUN_43eff0()
     g_5ff460++;
 }
 
-// STUB: STUNTGP_D3D 0x43f310
+// Routes menu input to the screen: from the locked player, or from every active one.
+// FUNCTION: STUNTGP_D3D 0x43f310
 void FUN_43f310(PoolObject *screen)
 {
+    int i;
+    int count = 0;
+    if (g_5ff4b0)
+    {
+        if (g_5ff4a0)
+        {
+            if (FUN_43f5e0(g_5ff4a0))
+            {
+                return;
+            }
+        }
+        else
+        {
+            for (i = 1; i < 5; i++)
+            {
+                if (FUN_43f5e0(i))
+                {
+                    return;
+                }
+            }
+        }
+        g_5ff4b0 = 0;
+    }
+    if (g_5ff4a0)
+    {
+        if (FUN_437090(g_5ff4a0))
+        {
+            FUN_43f3e0(screen, g_5ff4a0);
+        }
+        else
+        {
+            g_5ff4a4 = 1;
+        }
+    }
+    else
+    {
+        for (i = 1; i < 5; i++)
+        {
+            if (FUN_437090(i))
+            {
+                FUN_43f3e0(screen, i);
+                count++;
+            }
+        }
+        if (!count)
+        {
+            g_5ff4a4 = 1;
+        }
+    }
+    if (g_5ff4a4 != g_5ff4a8)
+    {
+        if (g_5ff4a4)
+        {
+            FUN_440880(7);
+        }
+        else
+        {
+            FUN_440880(8);
+        }
+    }
+    g_5ff4a8 = g_5ff4a4;
+}
+
+// FUNCTION: STUNTGP_D3D 0x43f3e0
+void FUN_43f3e0(PoolObject *screen, int player)
+{
+    char key = g_62ddfc;
+    int action = 0;
+    int pressed = 0;
+    g_62ddfc = 0;
+    if (FUN_436fd0(player, 7))
+    {
+        pressed = 0x11;
+    }
+    else if (FUN_436fd0(player, 6))
+    {
+        pressed = 0x10;
+    }
+    else if (FUN_436fd0(player, 5))
+    {
+        pressed = 0xf;
+    }
+    else if (FUN_436fd0(player, 1))
+    {
+        pressed = 0xb;
+    }
+    else if (FUN_436fd0(player, 2))
+    {
+        pressed = 0xc;
+    }
+    else if (FUN_436fd0(player, 3))
+    {
+        pressed = 0xd;
+    }
+    else if (FUN_436fd0(player, 4))
+    {
+        pressed = 0xe;
+    }
+    if (key)
+    {
+        g_5ff460 = 0;
+        if (g_5ff464)
+        {
+            return;
+        }
+        screen->message(screen, 0x12, key);
+    }
+    if (FUN_436fc0(player, 7))
+    {
+        action = 10;
+        screen->message(screen, action, player);
+    }
+    if (FUN_436fc0(player, 6))
+    {
+        action = 9;
+        screen->message(screen, action, player);
+    }
+    if (FUN_436fc0(player, 1))
+    {
+        action = 4;
+        screen->message(screen, action, player);
+    }
+    if (FUN_436fc0(player, 2))
+    {
+        action = 5;
+        screen->message(screen, action, player);
+    }
+    if (FUN_436fc0(player, 3))
+    {
+        action = 6;
+        screen->message(screen, action, player);
+    }
+    if (FUN_436fc0(player, 4))
+    {
+        action = 7;
+        screen->message(screen, action, player);
+    }
+    if (FUN_436fc0(player, 5))
+    {
+        action = 8;
+        screen->message(screen, action, player);
+    }
+    if (action || pressed)
+    {
+        g_5ff460 = 0;
+    }
+    if (!g_5ff464 && pressed)
+    {
+        screen->message(screen, pressed, player);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x43f5e0
+int FUN_43f5e0(int player)
+{
+    for (int i = 1; i < 8; i++)
+    {
+        if (FUN_436fc0(player, i))
+        {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 // Idle timeouts: drop back to the title screen, and fade in the attract overlay.
