@@ -148,7 +148,7 @@ void m_keyboard()
 }
 
 // FUNCTION: STUNTGP_D3D 0x44e890
-BOOL windowCreate(HINSTANCE hInstance, HINSTANCE hPrevInstance)
+BOOL windowCreate(HINSTANCE hInstance, HINSTANCE hPrevInstance, int nCmdShow, PSTR lpCmdLine)
 {
     DWORD totalVideoMem;
     DWORD totalTextureMem;
@@ -291,7 +291,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 #endif
     Script_ParseGameConfig();
     GetGameBuildVersion();
-    if (!windowCreate(hInstance, hPrevInstance))
+    if (!windowCreate(hInstance, hPrevInstance, nCmdShow, lpCmdLine))
     {
         return FALSE;
     }
