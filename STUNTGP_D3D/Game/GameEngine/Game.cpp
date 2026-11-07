@@ -1007,7 +1007,7 @@ int g_60df8c;
 int g_60df94;
 
 // GLOBAL: STUNTGP_D3D 0x60f000
-int g_60f000[4];
+DWORD g_60f000[4];
 
 extern int g_60f020;
 

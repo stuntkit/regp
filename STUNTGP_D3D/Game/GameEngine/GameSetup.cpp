@@ -3,11 +3,13 @@
 #include "GameUpdate.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "../../globals.h"
 #include "../../mem.h"
 #include "../../timer.h"
+#include "../../random.h"
 #include "../../vecmath.h"
 #include "io_wad.h"
 #include "MenuUpdate.h"
@@ -451,14 +453,90 @@ void FUN_402420()
 {
 }
 
-// STUB: STUNTGP_D3D 0x413190
-void FUN_413190()
+// GLOBAL: STUNTGP_D3D 0x4d5b28
+char g_4d5b28[6];
+
+// GLOBAL: STUNTGP_D3D 0x4d5bb0
+BYTE g_4d5bb0[6];
+
+// Deals the six grid numbers 2..7 in random order; after 8 misses it walks to the next free one.
+// FUNCTION: STUNTGP_D3D 0x413110
+void FUN_413110()
 {
+    memset(g_4d5bb0, 0, sizeof(g_4d5bb0));
+    unsigned int n = 0;
+    unsigned int tries = 0;
+    do
+    {
+        unsigned int r = abs(FUN_42f1f0(10000)) % 6;
+        tries++;
+        if (tries > 8)
+        {
+            while (g_4d5bb0[r])
+            {
+                r = (r + 1) % 6;
+            }
+        }
+        if (!g_4d5bb0[r])
+        {
+            g_4d5bb0[r] = 1;
+            g_4d5b28[n] = r + 2;
+            n++;
+            tries = 0;
+        }
+    } while (n < 6);
 }
 
-// STUB: STUNTGP_D3D 0x413220
+// FUNCTION: STUNTGP_D3D 0x413190
+void FUN_413190()
+{
+    FUN_413110();
+    // STRING: STUNTGP_D3D 0x474640
+    int len = strlen("grid");
+    for (int i = 0; i < 6; i++)
+    {
+        if (g_60f02c[i].model)
+        {
+            for (char **names = g_60f02c[i].model->textures; *names; names++)
+            {
+                // STRING: STUNTGP_D3D 0x474648
+                char *p = strstr(*names, "grid");
+                if (p)
+                {
+                    int grid = g_60f02c[i].unk14;
+                    if (!grid)
+                    {
+                        grid = g_4d5b28[i];
+                    }
+                    // STRING: STUNTGP_D3D 0x474650
+                    sprintf(p + len, "%d", grid);
+                }
+            }
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x413220
 void FUN_413220()
 {
+    // STRING: STUNTGP_D3D 0x474654
+    int len = strlen("tyre");
+    for (int i = 0; i < 6; i++)
+    {
+        if (g_60f02c[i].model && g_60f02c[i].unk10)
+        {
+            for (char **names = g_60f02c[i].model->textures; *names; names++)
+            {
+                // STRING: STUNTGP_D3D 0x47465c
+                char *p = strstr(*names, "tyre");
+                if (p)
+                {
+                    // STRING: STUNTGP_D3D 0x474664
+                    sprintf(p + len, "%d", g_60f02c[i].unk10);
+                }
+            }
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x42b740

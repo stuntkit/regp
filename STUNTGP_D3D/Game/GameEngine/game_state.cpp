@@ -2,6 +2,8 @@
 
 #include "camera_path.h"
 
+#include <math.h>
+
 #include "../../sintable.h"
 #include "../../vecmath.h"
 
@@ -28,6 +30,37 @@ CameraPath *FUN_428800(int id)
         }
     }
     return NULL;
+}
+
+// Point on the closed path at the given distance along it, linear between knots.
+// FUNCTION: STUNTGP_D3D 0x4288d0
+void FUN_4288d0(CameraPath *path, Vec4 *out, float dist)
+{
+    DWORD count = path->count;
+    dist = (float)count * dist / path->unk18;
+    int i = (int)dist;
+    DWORD a;
+    if (i < 0)
+    {
+        a = count - (DWORD)-i % count;
+    }
+    else
+    {
+        a = (DWORD)i % count;
+    }
+    DWORD b = (a + 1) % count;
+    *out = path->points[a];
+    Vec4 d;
+    d.x = path->points[b].x - out->x;
+    d.y = path->points[b].y - out->y;
+    d.z = path->points[b].z - out->z;
+    double f = fmod(dist, 1.0);
+    d.x *= f;
+    d.y *= f;
+    d.z *= f;
+    out->x += d.x;
+    out->y += d.y;
+    out->z += d.z;
 }
 
 // FUNCTION: STUNTGP_D3D 0x402ad0

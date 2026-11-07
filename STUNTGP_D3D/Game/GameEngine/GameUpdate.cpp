@@ -1134,9 +1134,34 @@ int g_60d680;
 // GLOBAL: STUNTGP_D3D 0x60f01c
 int g_60f01c;
 
-// STUB: STUNTGP_D3D 0x41d9f0
+// FUNCTION: STUNTGP_D3D 0x41d9f0
 void FUN_41d9f0(int *a, int *b)
 {
+    int others = 0;
+    int count = 0;
+    for (int i = 0; i < 6; i++)
+    {
+        if (g_49a1f8[i].active == 1 && !g_49a1f8[i].unk24e0)
+        {
+            if (g_49a1f8[i].unk2640 == 1)
+            {
+                count++;
+            }
+            else
+            {
+                others++;
+            }
+        }
+    }
+    *a = count;
+    if (g_61299c == 1)
+    {
+        *b = 1;
+    }
+    else
+    {
+        *b = others;
+    }
 }
 
 // STUB: STUNTGP_D3D 0x444070
@@ -1149,19 +1174,122 @@ void FUN_444300()
 {
 }
 
-// STUB: STUNTGP_D3D 0x4058f0
+extern float g_60f2d0[31];
+
+// FUNCTION: STUNTGP_D3D 0x405880
+void FUN_405880(Car *car)
+{
+    if (car->unk1b8c > g_60f2d0[15])
+    {
+        car->unk1f0c = 3;
+        return;
+    }
+    if (car->unk1b8c > g_60f2d0[16])
+    {
+        car->unk1f0c = 2;
+        return;
+    }
+    if (car->unk1b8c > g_60f2d0[17])
+    {
+        car->unk1f0c = 1;
+        return;
+    }
+    car->unk1f0c = 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4058f0
 void FUN_4058f0()
 {
+    for (int i = 0; i < 6; i++)
+    {
+        if (g_49a1f8[i].active == 1)
+        {
+            g_49a1f8[i].unk26a4 = 300;
+            if (g_60f02c[i].unk1c != 1)
+            {
+                g_49a1f8[i].unk1b8c = (float)g_60f02c[i].unk1c;
+                g_49a1f8[i].unk1b90 = (float)g_60f02c[i].unk20;
+                g_49a1f8[i].unk2640 = 1;
+                FUN_405880(&g_49a1f8[i]);
+            }
+            else
+            {
+                g_49a1f8[i].unk2640 = 0;
+            }
+        }
+    }
 }
 
-// STUB: STUNTGP_D3D 0x41de40
+// FUNCTION: STUNTGP_D3D 0x41de40
 void FUN_41de40()
 {
+    for (int i = 0; i < 6; i++)
+    {
+        if (g_49a1f8[i].active == 1 && g_49a1f8[i].unk23cc == -1)
+        {
+            g_49a1f8[i].unk23cc = 0;
+        }
+    }
 }
 
-// STUB: STUNTGP_D3D 0x412780
+// GLOBAL: STUNTGP_D3D 0x60eff0
+int g_60eff0;
+
+// GLOBAL: STUNTGP_D3D 0x60eff8
+DWORD g_60eff8;
+
+// GLOBAL: STUNTGP_D3D 0x60effc
+DWORD g_60effc;
+
+// GLOBAL: STUNTGP_D3D 0x60d630
+DWORD *g_60d630;
+
+// GLOBAL: STUNTGP_D3D 0x60d66c
+int g_60d66c;
+
+extern DWORD g_60f000[4];
+
+// Whether the best lap beats the stored record.
+// FUNCTION: STUNTGP_D3D 0x442fb0
+int FUN_442fb0()
+{
+    if (!g_60d66c)
+    {
+        return 0;
+    }
+    return g_60f000[0] < g_60d630[7];
+}
+
+// FUNCTION: STUNTGP_D3D 0x443de0
+void FUN_443de0()
+{
+    if (g_4d5bb8->race.unk4c[7] != 1)
+    {
+        g_4d5bb8->race.unk4c[7] = 1;
+        g_4d5bb8->race.unk4c[8] = 0;
+    }
+}
+
+// Only steps while the car is active, so inactive slots shift the rest onto the wrong cars.
+// FUNCTION: STUNTGP_D3D 0x412780
 void FUN_412780()
 {
+    if (g_60f2b4 == 1 && g_60eff0 != 3)
+    {
+        Car *car = g_49a1f8;
+        for (int i = 0; i < 6; i++)
+        {
+            if (car->active == 1)
+            {
+                car->unk229c += 6;
+                car->wheels[0].unk04 = 0.0f;
+                car->wheels[1].unk04 = 0.0f;
+                car->wheels[2].unk04 = 0.0f;
+                car->wheels[3].unk04 = 0.0f;
+                car++;
+            }
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x4436e0
