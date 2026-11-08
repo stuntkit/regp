@@ -276,6 +276,13 @@ struct MenuLanguage
     int id;
 };
 
+// One line of a framed message, drawn by FUN_45be20.
+struct MenuLine
+{
+    DWORD color; // 0x00
+    char *text;  // 0x04
+};
+
 // Car slot of a race setup; car is the 1-based RaceState entry.
 struct RaceSetupCar
 {
@@ -447,7 +454,9 @@ struct MenuState
     float unk45e0; // 0x45e0
     float unk45e4; // 0x45e4
     int unk45e8; // 0x45e8
-    BYTE unk45ec[0x4694 - 0x45ec];
+    int unk45ec;           // 0x45ec, FUN_43dd40 id for the message page
+    MenuLine unk45f0[20];  // 0x45f0, message page lines
+    int unk4690;           // 0x4690, lines used in unk45f0
     ScoreList unk4694; // 0x4694, copied by FUN_459200
     int unk46a8; // 0x46a8
     int unk46ac[4]; // 0x46ac

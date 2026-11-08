@@ -77,6 +77,22 @@ void Pool_Free(void *ptr)
     g_pool.allocCount--;
 }
 
+int FUN_43c430();
+
+// Opens the save page after a settings change, if there is anything to save to.
+// FUNCTION: STUNTGP_D3D 0x43d500
+void FUN_43d500(int a)
+{
+    if (FUN_43c430())
+    {
+        g_menuState.unk46bc = g_menuState.unk0078;
+        g_menuState.unk46c0 = 1;
+        g_menuState.unk46c8 = 3;
+        g_menuState.unk46c4 = 0;
+        FUN_43dfa0(a, 0x1b);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x43d550
 char *FUN_43d550(int frames)
 {
