@@ -365,6 +365,45 @@ struct TrackPoly
     WORD surface;     // 0x6, into TrackOctree::surfaces
 };
 
+// Swept-sphere collision state used to keep the camera out of the scenery. One block in the original:
+// FUN_41feb0 saves and restores it with a single copy.
+struct CameraSweep
+{
+    float unk00; // 0x00
+    Vec4 unk04; // 0x04
+    Vec4 unk14; // 0x14
+    BYTE unk24[0x4]; // 0x24
+    Vec4 unk28; // 0x28
+    BYTE unk38[0x20]; // 0x38
+    Vec4 unk58; // 0x58
+    Vec4 unk68; // 0x68
+    BYTE unk78[0x10]; // 0x78
+    float unk88; // 0x88
+    float unk8c; // 0x8c
+    float unk90; // 0x90
+    float unk94; // 0x94
+    float unk98; // 0x98
+    // Point on and normal of the polygon plane being tested.
+    Vec4 *unk9c; // 0x9c
+    Vec4 *unka0; // 0xa0
+    // Polygon hit by the last ray cast.
+    TrackPoly *unka4; // 0xa4
+    // Signed distances of the sweep's end and start points from that plane.
+    float unka8; // 0xa8
+    float unkac; // 0xac
+    BYTE unkb0[0x18]; // 0xb0
+    Vec4 unkc8; // 0xc8
+    Vec4 unkd8; // 0xd8
+    Vec4 unke8; // 0xe8
+    Vec4 unkf8; // 0xf8
+    float unk108; // 0x108
+    // Body the camera sphere ignores.
+    Body *unk10c; // 0x10c
+    BYTE unk110[0x60]; // 0x110
+};
+
+extern CameraSweep g_cameraSweep;
+
 struct OctNode
 {
     float x;          // 0x00

@@ -1217,12 +1217,10 @@ void FUN_409180(int wheel)
     }
 }
 
-extern TrackPoly *g_498164;
-
 // FUNCTION: STUNTGP_D3D 0x4091e0
 void FUN_4091e0(int wheel)
 {
-    BYTE *s = (BYTE *)&g_renderState.unk7f98->surfaces[g_498164->surface];
+    BYTE *s = (BYTE *)&g_renderState.unk7f98->surfaces[g_cameraSweep.unka4->surface];
     g_4d5bb8->wheels[wheel].unk84 = s[1] * 0.015625f;
     g_4d5bb8->wheels[wheel].unk8c = s[2];
     g_4d5bb8->wheels[wheel].unk88 = s[3];
@@ -7117,7 +7115,6 @@ void FUN_421fa0(Body *body)
     }
 }
 
-extern Vec4 g_498198;
 void FUN_44f8e0(float *m);
 void FUN_44efd0(float *out, float *a, float *b);
 
@@ -7142,7 +7139,7 @@ void FUN_422020(Body *body, int i, float turns, float *m)
     n.y = t[1] * d.x + t[5] * d.y + t[9] * d.z;
     n.z = t[2] * d.x + t[6] * d.y + t[10] * d.z;
     Vec3_Normalize(&n.x);
-    up = g_498198;
+    up = g_cameraSweep.unkd8;
     s.x = up.y * n.z - up.z * n.y;
     s.y = up.z * n.x - up.x * n.z;
     s.z = up.x * n.y - up.y * n.x;
@@ -7432,7 +7429,6 @@ void FUN_408920(Body *body)
     g_4d5bb8->unk1c8c = *(Vec4 *)body->vel;
 }
 
-extern Vec4 g_498198;
 void FUN_413290(float *v);
 
 void FUN_40f760(Body *body, int i, float angle, float *m);
@@ -7453,10 +7449,10 @@ void FUN_4089b0(Body *body, float *m, int i, float limit)
     dv.x = w.x - p.x;
     dv.y = w.y - p.y;
     dv.z = w.z - p.z;
-    float a = g_498198.x * dv.x + g_498198.y * dv.y + g_498198.z * dv.z;
-    pr.x = g_498198.x * a;
-    pr.y = g_498198.y * a;
-    pr.z = g_498198.z * a;
+    float a = g_cameraSweep.unkd8.x * dv.x + g_cameraSweep.unkd8.y * dv.y + g_cameraSweep.unkd8.z * dv.z;
+    pr.x = g_cameraSweep.unkd8.x * a;
+    pr.y = g_cameraSweep.unkd8.y * a;
+    pr.z = g_cameraSweep.unkd8.z * a;
     p.x = dv.x - pr.x;
     p.y = dv.y - pr.y;
     p.z = dv.z - pr.z;
@@ -7481,11 +7477,11 @@ void FUN_4089b0(Body *body, float *m, int i, float limit)
 void FUN_408bc0(Body *body, float *out, int point, float limit)
 {
     Vec4 v = *(Vec4 *)body->vel;
-    float d = g_498198.x * v.x + g_498198.y * v.y + g_498198.z * v.z;
+    float d = g_cameraSweep.unkd8.x * v.x + g_cameraSweep.unkd8.y * v.y + g_cameraSweep.unkd8.z * v.z;
     Vec4 p;
-    p.x = g_498198.x * d;
-    p.y = g_498198.y * d;
-    p.z = g_498198.z * d;
+    p.x = g_cameraSweep.unkd8.x * d;
+    p.y = g_cameraSweep.unkd8.y * d;
+    p.z = g_cameraSweep.unkd8.z * d;
     Vec4 t;
     t.x = v.x - p.x;
     t.y = v.y - p.y;
@@ -7513,9 +7509,9 @@ void FUN_408cb0(float speed)
         f = 5.0f;
     }
     Vec4 v;
-    v.x = g_498198.x * f;
-    v.y = g_498198.y * f;
-    v.z = g_498198.z * f;
+    v.x = g_cameraSweep.unkd8.x * f;
+    v.y = g_cameraSweep.unkd8.y * f;
+    v.z = g_cameraSweep.unkd8.z * f;
     FUN_413290(&v.x);
 }
 
