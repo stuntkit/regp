@@ -1752,6 +1752,49 @@ void FUN_41e6e0(Vec4 *ring, DWORD *head, DWORD *count, Vec4 *pos, TrailParams *p
     }
 }
 
+void FUN_425830(OverlayPoly *src);
+
+// Draws the trail's head sprite as a screen-space quad scaled by depth; p is a projected point.
+// FUNCTION: STUNTGP_D3D 0x41ee10
+void FUN_41ee10(TrailParams *params, Vec4 *p, float scale, int unused)
+{
+    if (p->z >= 0.0f && p->z <= 1.0f)
+    {
+        OverlayPoly poly;
+        float dx = scale * params->unk100 * p->z * 100.0f;
+        float dy = scale * params->unk104 * p->z * 100.0f;
+        poly.numVerts = 4;
+        poly.flags = params->unkf0;
+        poly.alpha = params->unkf8;
+        poly.texture = params->unkf4;
+        poly.verts[0].x = p->x - dx;
+        poly.verts[0].y = p->y - dy;
+        poly.verts[0].z = p->z;
+        poly.verts[0].u = 0.0f;
+        poly.verts[0].v = 0.0f;
+        poly.verts[0].color = params->unkfc;
+        poly.verts[1].x = dx + p->x;
+        poly.verts[1].y = p->y - dy;
+        poly.verts[1].z = p->z;
+        poly.verts[1].u = 1.0f;
+        poly.verts[1].v = 0.0f;
+        poly.verts[1].color = params->unkfc;
+        poly.verts[2].x = dx + p->x;
+        poly.verts[2].y = dy + p->y;
+        poly.verts[2].z = p->z;
+        poly.verts[2].u = 1.0f;
+        poly.verts[2].v = 1.0f;
+        poly.verts[2].color = params->unkfc;
+        poly.verts[3].x = p->x - dx;
+        poly.verts[3].y = dy + p->y;
+        poly.verts[3].z = p->z;
+        poly.verts[3].u = 0.0f;
+        poly.verts[3].v = 1.0f;
+        poly.verts[3].color = params->unkfc;
+        FUN_425830(&poly);
+    }
+}
+
 // GLOBAL: STUNTGP_D3D 0x477658
 float g_477658[6][4] = {
     {-1.0f, 0.0f, 0.0f, 0.0f},

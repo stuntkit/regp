@@ -183,7 +183,15 @@ struct TrailParams
     int unk08;        // 0x008
     int unk0c;        // 0x00c
     void *unk10;      // 0x010
-    BYTE unk14[0xfc]; // 0x014
+    BYTE unk14[0xd8]; // 0x014
+    int unkec;        // 0x0ec, 1 to draw a sprite at the head
+    DWORD unkf0;      // 0x0f0, sprite: OverlayPoly flags
+    int unkf4;        // 0x0f4, sprite: texture
+    DWORD unkf8;      // 0x0f8, sprite: alpha
+    DWORD unkfc;      // 0x0fc, sprite: colour
+    float unk100;     // 0x100, sprite: half width
+    float unk104;     // 0x104, sprite: half height
+    BYTE unk108[0x8]; // 0x108
 };
 
 // Damped angular spring for a body panel, driven by FUN_417f10.
