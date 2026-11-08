@@ -3277,6 +3277,61 @@ void FUN_40f760(Body *body, int i, float angle, float *m)
     Matrix_Multiply3(m, rot);
 }
 
+extern float g_482674;
+
+// Turns body point i against the slip of its local offset under the car rotation, capped by
+// the wheel's grip.
+// FUNCTION: STUNTGP_D3D 0x40f880
+void FUN_40f880(int i)
+{
+    Vec4 s;
+    Vec4 d;
+    Vec4 r;
+    Vec4 p = g_4d5bb8->body.points[i].local;
+    float len = (float)sqrt(p.x * p.x + p.y * p.y + p.z * p.z);
+    float grip = g_482674 * g_4d5bb8->wheels[i].unk10;
+    float load = g_4d5bb8->wheels[i].unk0c;
+    if (load > g_4d5bb8->wheels[i].unk10)
+    {
+        load = g_4d5bb8->wheels[i].unk10;
+    }
+    r.x = p.x * g_4d5bb8->unk1c0c[0] + p.y * g_4d5bb8->unk1c0c[4] + p.z * g_4d5bb8->unk1c0c[8];
+    r.y = p.x * g_4d5bb8->unk1c0c[1] + p.y * g_4d5bb8->unk1c0c[5] + p.z * g_4d5bb8->unk1c0c[9];
+    r.z = p.x * g_4d5bb8->unk1c0c[2] + p.y * g_4d5bb8->unk1c0c[6] + p.z * g_4d5bb8->unk1c0c[10];
+    d.x = r.x - p.x;
+    d.y = r.y - p.y;
+    d.z = r.z - p.z;
+    float f = d.x * g_4d5bb8->wheels[0].unk4c.x + d.y * g_4d5bb8->wheels[0].unk4c.y +
+              d.z * g_4d5bb8->wheels[0].unk4c.z;
+    s.x = f * g_4d5bb8->wheels[0].unk4c.x;
+    s.y = f * g_4d5bb8->wheels[0].unk4c.y;
+    s.z = f * g_4d5bb8->wheels[0].unk4c.z;
+    Vec4 t;
+    t.x = d.x - s.x;
+    t.y = d.y - s.y;
+    t.z = d.z - s.z;
+    FUN_44eda0(&t.x, &f);
+    f = f * grip;
+    if (f > load * g_4d5bb8->wheels[i].unk34)
+    {
+        f = load * g_4d5bb8->wheels[i].unk38 * 0.5f;
+    }
+    f = f / (grip * len);
+    r.x = g_4d5bb8->axisY.y * g_4d5bb8->body.points[i].local.z - g_4d5bb8->axisY.z * g_4d5bb8->body.points[i].local.y;
+    r.y = g_4d5bb8->body.points[i].local.x * g_4d5bb8->axisY.z - g_4d5bb8->axisY.x * g_4d5bb8->body.points[i].local.z;
+    r.z = g_4d5bb8->axisY.x * g_4d5bb8->body.points[i].local.y - g_4d5bb8->body.points[i].local.x * g_4d5bb8->axisY.y;
+    Vec3_Normalize(&r.x);
+    if (g_4d5bb8->axisY.y < 0.0f)
+    {
+        f = -f;
+    }
+    if (t.x * r.x + t.y * r.y + t.z * r.z >= 0.0f)
+    {
+        f = -f;
+    }
+    FUN_40f760(&g_4d5bb8->body, i, f, g_4d5bb8->unk1c0c);
+}
+
 // FUNCTION: STUNTGP_D3D 0x40fb00
 void FUN_40fb00()
 {
