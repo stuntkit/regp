@@ -351,7 +351,8 @@ void FUN_459300(MenuHolder *object);
 int FUN_459320(PoolObject *object, int msg, int arg);
 int FUN_45db80(Unk45db80 *object, int arg);
 void FUN_45dde0(MenuHolder *object);
-int FUN_45de00(PoolObject *object, int msg, int arg);
+struct Unk45de00;
+int FUN_45de00(Unk45de00 *object, int msg, int arg);
 
 // One entry per language, built by FUN_452c00.
 // One entry per track, built by FUN_456fc0.
@@ -513,7 +514,7 @@ PoolClass g_489510 = {(void (*)(PoolObject *))FUN_45c640, FUN_45c6a0};
 PoolClass g_489670 = {(void (*)(PoolObject *))FUN_45d2e0, FUN_45d320};
 
 // GLOBAL: STUNTGP_D3D 0x489700
-PoolClass g_489700 = {(void (*)(PoolObject *))FUN_45dde0, FUN_45de00};
+PoolClass g_489700 = {(void (*)(PoolObject *))FUN_45dde0, (int (*)(PoolObject *, int, int))FUN_45de00};
 
 // GLOBAL: STUNTGP_D3D 0x4881f8
 MenuItem g_4881f8[6] = {
@@ -3562,9 +3563,91 @@ int FUN_45db80(Unk45db80 *object, int arg)
     return 1;
 }
 
-// STUB: STUNTGP_D3D 0x45de00
-int FUN_45de00(PoolObject *object, int msg, int arg)
+// PageUnlock while it runs: unk18 is the shown unlock, unk1c the scroll towards it.
+struct Unk45de00
 {
+    DWORD unk00[5];    // 0x00
+    PoolObject *child; // 0x14
+    int unk18;         // 0x18
+    float unk1c;       // 0x1c
+    float unk20;       // 0x20
+};
+
+float FUN_438a60(const char *text, float size);
+float FUN_438ab0(float x, float y, int layer, int style, char *text, float size, D3DCOLOR color, DWORD flags);
+
+// The unlock pictures side by side with their captions, scrolled by unk1c.
+// FUNCTION: STUNTGP_D3D 0x45dfa0
+void FUN_45dfa0(Unk45de00 *object)
+{
+    for (int i = 0; i < g_627ff8; i++)
+    {
+        Unlock *unlock = &g_627ffc[i];
+        float x = (i - object->unk1c) * 640.0f + 320.0f;
+        FUN_438710(x, 190.0f, 12, unlock->id, 1.0f, 3);
+        if (unlock->text[0])
+        {
+            float height = FUN_438a60(unlock->text, 1.25f) + 20.0f;
+            float left = x - 290.0f;
+            float right = x + 290.0f;
+            float top = 348.0f - height * 0.5f;
+            float bottom = height * 0.5f + 352.0f;
+            FUN_439450(left, top, right, bottom, 10, 0x6f, 0x40);
+            FUN_439380(left, top, right, bottom, 13, 2, 0, 0.0f);
+            FUN_438ab0(x, 348.0f, 12, 4, unlock->text, 1.25f, 0xffffffff, 3);
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45de00
+int FUN_45de00(Unk45de00 *object, int msg, int arg)
+{
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(1);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(0x5c, -0.4f, 0.3f);
+    case 0x14:
+        object->child->message(object->child, msg, 0);
+        return 0;
+    case 0x10:
+        if (object->unk18 < g_627ff8 - 1)
+        {
+            object->unk18++;
+            FUN_440890(msg);
+            FUN_440880(0x14);
+            return 0;
+        }
+        memcpy(g_menuState.unlockedSaved, g_menuState.unlocked, sizeof(g_menuState.unlocked));
+        object->child->message(object->child, msg, 0);
+        FUN_43eef0();
+        return 0;
+    case 1:
+        if (!g_627ff8)
+        {
+            FUN_43eef0();
+            return 0;
+        }
+        break;
+    case 2:
+    {
+        object->child->message(object->child, msg, 0);
+        float target = object->unk18;
+        object->unk20 = target;
+        object->unk1c = FUN_43d810(object->unk1c, target, 0.001f);
+        return 0;
+    }
+    case 3:
+        g_4896d0.items[0].text = object->unk18 < g_627ff8 - 1 ? 0x1a : 0x17;
+        object->child->message(object->child, msg, 0);
+        FUN_4392b0(0x1fe, 0);
+        if (g_627ff8)
+        {
+            FUN_45dfa0(object);
+        }
+        break;
+    }
     return 0;
 }
 
