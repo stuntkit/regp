@@ -171,7 +171,6 @@ int g_62497c;
 // GLOBAL: STUNTGP_D3D 0x582b28
 char *g_582b28[255];
 
-extern int g_582724;
 
 struct AnimDef;
 
@@ -1453,7 +1452,7 @@ int FUN_42b9a0(const char *name)
     return result;
 }
 
-// Offsets the texture index of every vertex by g_582724, once per shared vertex list.
+// Offsets the texture index of every vertex by g_582718.unk0c, once per shared vertex list.
 // FUNCTION: STUNTGP_D3D 0x42b900
 void FUN_42b900(Scene *scene)
 {
@@ -1469,7 +1468,7 @@ void FUN_42b900(Scene *scene)
                 BYTE *texture = verts + 1;
                 for (DWORD j = 0; j < def->vertCount; j++, texture += 8)
                 {
-                    *texture += g_582724;
+                    *texture += g_582718.unk0c;
                 }
             }
         }
