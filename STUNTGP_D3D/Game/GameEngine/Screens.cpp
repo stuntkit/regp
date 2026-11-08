@@ -365,6 +365,7 @@ void FUN_45c320(float x, float y);
 void FUN_45c3d0(float x, float y);
 void FUN_452830(float x, float y);
 void FUN_45cf10(int row);
+void FUN_45cd60(int table);
 // GLOBAL: STUNTGP_D3D 0x627b54
 GhostHeader g_627b54;
 
@@ -2688,6 +2689,25 @@ void FUN_45cf10(int row)
     // STRING: STUNTGP_D3D 0x489524
     sprintf(text, "%06d", g_menuState.unk1a1c[row][3].time);
     FUN_438a20(581.0f, 428.0f, 0xc, 0, 4, text, 1.25f, 0xffffffff, 6, 14.0f);
+}
+
+// FUNCTION: STUNTGP_D3D 0x45cd60
+void FUN_45cd60(int table)
+{
+    FUN_439450(423.0f, 366.0f, 591.0f, 442.0f, 0xa, 0x6f, 0x40);
+    FUN_439380(423.0f, 366.0f, 591.0f, 442.0f, 0xd, 2, 0, 0.0f);
+    FUN_438be0(507.0f, 370.0f, 0xc, 4, 0x24, 1.25f, 0xffff8080, 1);
+    FUN_438be0(433.0f, 404.0f, 0xc, 4, 0x22, 1.25f, 0xffffffff, 2);
+    FUN_438960(497.0f, 404.0f, 0xc, 0, 4, (char *)FUN_43d690((Initials *)g_menuState.unk0694[table].entries[0].name),
+               1.25f, g_menuState.unk0694[table].unk00 ? 0xffffe400 : 0xffffffff, 3);
+    FUN_438a20(581.0f, 404.0f, 0xc, 0, 4, FUN_43d550(g_menuState.unk0694[table].entries[0].time), 1.25f,
+               g_menuState.unk0694[table].unk00 ? 0xffffe400 : 0xffffffff, 6, 14.0f);
+    if (g_menuState.unk46e4 == table)
+    {
+        FUN_438be0(433.0f, 422.0f, 0xc, 4, 0x23, 1.25f, 0xffffffff, 2);
+        FUN_438960(497.0f, 422.0f, 0xc, 0, 4, g_menuState.unk4714, 1.25f, 0xffffffff, 3);
+        FUN_438a20(581.0f, 422.0f, 0xc, 0, 4, FUN_43d550(g_menuState.unk4704), 1.25f, 0xffffffff, 6, 14.0f);
+    }
 }
 
 typedef int (*ScreenInit)(PoolObject *object, int arg);

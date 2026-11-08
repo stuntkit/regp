@@ -364,7 +364,12 @@ struct MenuState
     int unk46d8; // 0x46d8
     int unk46dc; // 0x46dc
     int unk46e0; // 0x46e0
-    BYTE unk46e4[0x13148 - 0x46e4];
+    int unk46e4; // 0x46e4
+    BYTE unk46e8[0x4704 - 0x46e8];
+    int unk4704; // 0x4704
+    BYTE unk4708[0x4714 - 0x4708];
+    char unk4714[4]; // 0x4714
+    BYTE unk4718[0x13148 - 0x4718];
     Unk4d5cc0 *unk13148; // 0x13148
     ShopCar cars[21];    // 0x1314c, [1..20] used
     BYTE unk144a8[0x14594 - 0x144a8];
