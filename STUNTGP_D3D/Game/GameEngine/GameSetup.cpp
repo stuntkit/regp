@@ -3251,6 +3251,87 @@ void FUN_446290()
     }
 }
 
+void FUN_434900(float *values, DWORD count);
+void FUN_446180();
+
+// Writes the level settings script.
+// FUNCTION: STUNTGP_D3D 0x4463b0
+void FUN_4463b0()
+{
+    // STRING: STUNTGP_D3D 0x484d84
+    fprintf(g_5da2e4, "-VERSION = %s\n",
+            // STRING: STUNTGP_D3D 0x484a9c
+            "V1.0");
+    // STRING: STUNTGP_D3D 0x484d94
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484d98
+    fprintf(g_5da2e4, "-Ambience[] =\n");
+    // STRING: STUNTGP_D3D 0x484da8
+    fprintf(g_5da2e4, " I = %d\n", (int)(g_624504.intensity * 255.0f));
+    // STRING: STUNTGP_D3D 0x484db4
+    fprintf(g_5da2e4, " R = %d\n", (int)g_624504.red);
+    // STRING: STUNTGP_D3D 0x484dc0
+    fprintf(g_5da2e4, " G = %d\n", (int)g_624504.green);
+    // STRING: STUNTGP_D3D 0x484dcc
+    fprintf(g_5da2e4, " B = %d\n", (int)g_624504.blue);
+    // STRING: STUNTGP_D3D 0x484dd8
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484ddc
+    fprintf(g_5da2e4, "-FogColour[] =\n");
+    // STRING: STUNTGP_D3D 0x484dec
+    fprintf(g_5da2e4, " R = %d\n", g_5896b8);
+    // STRING: STUNTGP_D3D 0x484df8
+    fprintf(g_5da2e4, " G = %d\n", g_5896bc);
+    // STRING: STUNTGP_D3D 0x484e04
+    fprintf(g_5da2e4, " B = %d\n", g_5896c0);
+    // STRING: STUNTGP_D3D 0x484e10
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484e14
+    fprintf(g_5da2e4, "-FogEnvelope[] = \n");
+    FUN_434900(g_5896c8, 0x80);
+    // STRING: STUNTGP_D3D 0x484e28
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484e2c
+    fprintf(g_5da2e4, "-ColRestitutionTab[] = \n");
+    FUN_434900(g_497d20, 0x80);
+    // STRING: STUNTGP_D3D 0x484e48
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484e4c
+    fprintf(g_5da2e4, "-FarPlaneClipDistanceTab[] = \n");
+    FUN_434900(g_577688, 0x100);
+    // STRING: STUNTGP_D3D 0x484e6c
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484e70
+    fprintf(g_5da2e4, "-CarReplacementSplineMask[] = \n");
+    FUN_434900(g_60dff0, 0x80);
+    // STRING: STUNTGP_D3D 0x484e90
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484e94
+    fprintf(g_5da2e4, "-CarLightsMask[] = \n");
+    FUN_434900(g_60e1f0, 0x80);
+    // STRING: STUNTGP_D3D 0x484eac
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484eb0
+    fprintf(g_5da2e4, "-AmbienceEnvelope[] = \n");
+    FUN_434900(g_60e3f0, 0x80);
+    // STRING: STUNTGP_D3D 0x484ec8
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484ecc
+    fprintf(g_5da2e4, "-TrackWidthEnvelope_Left[] = \n");
+    FUN_434900(g_60e7f0, 0x100);
+    // STRING: STUNTGP_D3D 0x484eec
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484ef0
+    fprintf(g_5da2e4, "-TrackWidthEnvelope_Right[] = \n");
+    FUN_434900(g_60ebf0, 0x100);
+    // STRING: STUNTGP_D3D 0x484f10
+    fprintf(g_5da2e4, "\n");
+    FUN_446180();
+    FUN_446290();
+    // STRING: STUNTGP_D3D 0x484f14
+    fprintf(g_5da2e4, "-END\n\n");
+}
+
 // FUNCTION: STUNTGP_D3D 0x4467b0
 void FUN_4467b0(char *script)
 {

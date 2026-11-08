@@ -105,10 +105,10 @@ struct CarRace
     DWORD unk48;      // 0x48
     DWORD unk4c;      // 0x4c
     DWORD unk50;      // 0x50
-    float unk54;      // 0x54
+    DWORD unk54;      // 0x54
     float unk58;      // 0x58
     float unk5c;      // 0x5c
-    float unk60;      // 0x60
+    int unk60;        // 0x60
     DWORD unk64;      // 0x64
     DWORD unk68;      // 0x68
     DWORD unk6c;      // 0x6c

@@ -3194,10 +3194,10 @@ void FUN_444590()
     Car *car = g_4d5bb8;
     car->race.unk4c = 1;
     car->race.unk50 = 1;
-    car->race.unk54 = 0.0f;
+    car->race.unk54 = 0;
     car->race.unk58 = 0.0f;
     car->race.unk5c = (float)fabs(car->unk1cf0);
-    car->race.unk60 = 0.0f;
+    car->race.unk60 = 0;
     if (car->race.unk5c < 33.333332f)
     {
         car->race.unk5c = 33.333332f;
@@ -3235,9 +3235,130 @@ int FUN_444670()
     return finished == total;
 }
 
-// STUB: STUNTGP_D3D 0x4446d0
+extern DWORD g_62f5ac;
+
+// Finish line sequence: the crossing swing (unk58 by unk5c) with its sounds, the fade out and the
+// move on to the results or the next player.
+// FUNCTION: STUNTGP_D3D 0x4446d0
 void FUN_4446d0()
 {
+    if (g_4d5bb8->race.unk1c == 1 || g_4d5bb8->race.unk30 == 1)
+    {
+        return;
+    }
+    if (g_4d5bb8->race.unk64 == 1)
+    {
+        if (++g_4d5bb8->race.unk24 >= 60)
+        {
+            g_4d5bb8->race.unk24 = 0;
+        }
+        return;
+    }
+    if (g_4d5bb8->unk24e0 == 1 && !g_4d5bb8->race.unk4c)
+    {
+        FUN_444590();
+    }
+    if (!g_4d5bb8->race.unk4c)
+    {
+        return;
+    }
+    if (g_4d5bb8->race.unk50)
+    {
+        if (g_60f2b0 != 3 && g_4d5bb8->race.unk50 == 60)
+        {
+            if (g_4d5bb8->unk24e4 == 0)
+            {
+                FUN_461150(0x15, 0, 0, 255, 0, 0, 0);
+            }
+            else if (g_4d5bb8->unk24e4 == 1)
+            {
+                FUN_461150(0x14, 0, 0, 255, 0, 0, 0);
+            }
+            else if (g_4d5bb8->unk24e4 == 2)
+            {
+                FUN_461150(0x13, 0, 0, 255, 0, 0, 0);
+            }
+        }
+        int sound = 0;
+        g_4d5bb8->race.unk50++;
+        g_4d5bb8->race.unk58 = g_4d5bb8->race.unk5c * 0.5f + g_4d5bb8->race.unk58;
+        if (g_4d5bb8->race.unk58 >= 360.0f)
+        {
+            sound = 0x2e;
+            g_4d5bb8->race.unk58 -= 360.0f;
+        }
+        g_4d5bb8->race.unk5c *= 0.98f;
+        if (g_4d5bb8->race.unk5c < 4.0f)
+        {
+            g_4d5bb8->race.unk5c = 4.0f;
+        }
+        if (g_4d5bb8->race.unk5c <= 4.0f && g_4d5bb8->race.unk58 <= 10.0f)
+        {
+            if (!g_4d5bb8->race.unk60)
+            {
+                g_4d5bb8->race.unk60 = 1;
+                sound = 0x32;
+            }
+            g_4d5bb8->race.unk58 = 0.0f;
+            g_4d5bb8->race.unk5c = 0.0f;
+            if (g_4d5bb8->race.unk50 > 360 && !g_4d5bb8->race.unk54)
+            {
+                g_4d5bb8->race.unk54 = 1;
+                FUN_442ad0(2, 240, 0, 0, 0, 60, 0.96f);
+            }
+        }
+        if (sound)
+        {
+            FUN_461150(sound, 0, 0, 127, 0, 0, 0);
+        }
+        if (g_4d5bb8->race.unk50 > 30 && !g_612948.unk001c && g_612948.unk0020 == 1)
+        {
+            FUN_443d80();
+            FUN_461150(48, 0, 0, 255, 0, 0, 0);
+            if (!g_4d5bb8->race.unk54)
+            {
+                FUN_442ad0(2, 240, 0, 0, 0, 60, 0.96f);
+            }
+            g_4d5bb8->race.unk50 = 0;
+            g_4d5bb8->race.unk54 = 480;
+        }
+        if (g_4d5bb8->race.unk54)
+        {
+            if ((++g_4d5bb8->race.unk54 >= 120 && !g_62f5ac) || g_4d5bb8->race.unk54 >= 480)
+            {
+                if (g_60df98 == 3)
+                {
+                    FUN_441e20();
+                    return;
+                }
+                g_4d5bb8->race.unk4c = 0;
+                g_4d5bb8->race.unk50 = 0;
+                g_4d5bb8->race.unk54 = 0;
+                g_4d5bb8->race.unk1c = 0;
+                if (!g_576be0)
+                {
+                    if ((unsigned int)g_4d5bb8->unk24e4 <= 2)
+                    {
+                        FUN_4443c0();
+                        FUN_45f8f0(23, 1);
+                    }
+                    else
+                    {
+                        FUN_443ea0();
+                        FUN_45f8f0(23, 1);
+                    }
+                }
+                else
+                {
+                    g_4d5bb8->race.unk64 = 1;
+                }
+            }
+        }
+    }
+    if (g_576be0 && FUN_444670() == 1)
+    {
+        FUN_443ea0();
+    }
 }
 
 void FUN_442ad0(int type, int duration, int delay, int end, int from, int to, float scale);
@@ -3291,7 +3412,6 @@ int FUN_444a90()
 }
 
 extern int g_60d71c;
-extern DWORD g_62f5ac;
 
 // Finish sequence: once the car is done the camera swing (unk0c, a damped spring) settles and
 // the race ends after a timeout.
