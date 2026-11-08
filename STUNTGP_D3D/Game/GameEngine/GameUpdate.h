@@ -817,7 +817,7 @@ struct Car
     DWORD unk7234;            // 0x7234
     float unk7238;            // 0x7238
     float unk723c;            // 0x723c
-    float unk7240;            // 0x7240
+    int unk7240;              // 0x7240
     unsigned int unk7244;     // 0x7244
     int unk7248;              // 0x7248
     int unk724c;              // 0x724c

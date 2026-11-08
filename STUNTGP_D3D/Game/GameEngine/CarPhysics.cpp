@@ -3911,6 +3911,32 @@ void FUN_411330(Car *car)
     car->unk71e8 = 0;
 }
 
+// Upright landing: when the car comes down with its up axis within ~25 degrees of vertical, a one-off
+// bonus and message, at most every 300 ticks.
+// FUNCTION: STUNTGP_D3D 0x411340
+void FUN_411340()
+{
+    if (!g_4d5bb8->unk1fd8 &&
+        g_482688.x * g_4d5bb8->axisY.x + g_482688.y * g_4d5bb8->axisY.y + g_482688.z * g_4d5bb8->axisY.z >= 0.9f &&
+        !g_4d5bb8->race.unk78)
+    {
+        g_4d5bb8->race.unk78 = 1;
+        if (FUN_402590(g_4d5bb8))
+        {
+            if (!g_4d5bb8->unk71e8)
+            {
+                FUN_401220(5, 0, g_60d688[32]);
+                FUN_442cf0(180, g_6127a0[43], g_4d5bb8, 2, 100);
+            }
+            g_4d5bb8->unk71e8 = 300;
+        }
+    }
+    if (g_4d5bb8->unk71e8)
+    {
+        g_4d5bb8->unk71e8--;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x411410
 void FUN_411410(Car *car)
 {
@@ -4001,6 +4027,43 @@ void FUN_4115c0()
     g_4d5bb8->unk7238 = g_4d5bb8->posY;
     g_4d5bb8->unk723c = 0;
     g_4d5bb8->unk7240 = 0;
+}
+
+// Jump distance bands: the furthest band reached picks the popup and its score.
+struct ScoreBand
+{
+    char *name;
+    DWORD threshold;
+    int score;
+    int type;
+};
+
+// GLOBAL: STUNTGP_D3D 0x474350
+ScoreBand g_474350[5] = {
+    // STRING: STUNTGP_D3D 0x4743c0
+    {"Band 1", 250, 28, 0},
+    // STRING: STUNTGP_D3D 0x4743c8
+    {"Band 2", 400, 29, 1},
+    // STRING: STUNTGP_D3D 0x4743d0
+    {"Band 3", 800, 30, 2},
+    // STRING: STUNTGP_D3D 0x4743d8
+    {"Band 4", 1250, 31, 2},
+    // STRING: STUNTGP_D3D 0x4743e0
+    {"Dummy Band", 50000, 0, 0},
+};
+
+// FUNCTION: STUNTGP_D3D 0x4115e0
+void FUN_4115e0(float dist)
+{
+    g_4d5bb8->unk7240 = 1;
+    if (g_474350[0].threshold <= dist)
+    {
+        int i;
+        for (i = 0; g_474350[i + 1].threshold < dist && i < 4; i++)
+        {
+        }
+        FUN_401220(g_474350[i].type, 0, g_60d688[g_474350[i].score]);
+    }
 }
 
 void FUN_41d1f0(Stat *stat, float value);
@@ -4230,6 +4293,44 @@ int FUN_411da0(int value, int offset)
         i = 23;
     }
     return g_474290[i];
+}
+
+// GLOBAL: STUNTGP_D3D 0x4742f0
+int g_4742f0[24] = {17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21};
+
+void FUN_4190b0(Car *car, unsigned int percent);
+
+// Awards stunt n (1-based) from a stunt table: entries [0..2] are message ids, [3..5] score ids.
+// FUNCTION: STUNTGP_D3D 0x411de0
+void FUN_411de0(int *stunts, int n)
+{
+    int k = n - 1;
+    int id = stunts[k + 3];
+    int score = FUN_411da0(g_60d688[id], g_4d5bb8->unk725c);
+    if (FUN_402590(g_4d5bb8) && g_612948.unk0054 != 1)
+    {
+        int type;
+        if (id >= 5000)
+        {
+            type = 4;
+        }
+        else
+        {
+            type = id >= 10000 ? 5 : 3;
+        }
+        type += k;
+        if (type > 5)
+        {
+            type = 5;
+        }
+        FUN_442cf0(180, g_6127a0[stunts[k]], g_4d5bb8, 2, 0);
+        int kind = FUN_42f1f0(1) + 1;
+        FUN_401220(type, kind, score);
+        FUN_4190b0(g_4d5bb8, (int)(g_4d5bb8->unk2640 == 1 ? g_60f2d0[4] : g_60f2d0[2]));
+        FUN_461150(g_4742f0[g_4d5bb8->unk725c], 0, 0, 0xff, 0, 1, NULL);
+        return;
+    }
+    g_4d5bb8->unk260c += score;
 }
 
 void FUN_41d1f0(Stat *stat, float value);
