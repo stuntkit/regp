@@ -2074,6 +2074,17 @@ void FUN_439e90()
     g_5df528.mode = 0;
 }
 
+void FUN_43a4a0(DWORD *slot, DWORD *dst, DWORD *src, DWORD index, DWORD value);
+
+// Prices car (with no sponsor) and fills dst from the resulting item record.
+// FUNCTION: STUNTGP_D3D 0x43a430
+void FUN_43a430(DWORD *slot, DWORD *dst, int car, DWORD value)
+{
+    ShopEntry entry;
+    FUN_436490(0, &entry, &g_menuState.cars[car], &g_menuState.items[car], 1);
+    FUN_43a4a0(slot, dst, (DWORD *)&entry.item, car, value);
+}
+
 // The original copies field by field in source order, as if dst and src could alias.
 #pragma optimize("a", off)
 // Fills a 65-dword record from src (a differently laid out item record), then stores src[35],
