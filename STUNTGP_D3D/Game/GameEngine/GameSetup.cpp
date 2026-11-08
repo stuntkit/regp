@@ -114,12 +114,18 @@ struct TrackHeader
 {
     BYTE unk000[0x20];
     int unk020;               // 0x020
-    BYTE unk024[0x2c - 0x24];
+    int unk024;               // 0x024
+    int unk028;               // 0x028
     int unk02c;               // 0x02c
-    BYTE unk030[0x38 - 0x30];
+    int unk030;               // 0x030
+    int unk034;               // 0x034
     int unk038;               // 0x038
     int unk03c;               // 0x03c
-    BYTE unk040[0x58 - 0x40];
+    int unk040;               // 0x040
+    int unk044;               // 0x044
+    int unk048;               // 0x048
+    int unk04c;               // 0x04c
+    BYTE unk050[0x58 - 0x50];
     int unk058;               // 0x058
     int unk05c;               // 0x05c
     int unk060;               // 0x060
@@ -1166,6 +1172,47 @@ void FUN_42ebb0()
     for (DWORD i = 0; i < g_58d810->unk0d4 / 4; i++)
     {
         p[i] = (DWORD)&base[p[i] * 16];
+    }
+}
+
+// Resolves the scene header's file offsets into pointers.
+// FUNCTION: STUNTGP_D3D 0x42ebf0
+void FUN_42ebf0()
+{
+    TrackHeader *header = g_58d810;
+    Scene *scene = (Scene *)&header->data[header->unk04c];
+    g_58c800 = scene;
+    scene->unk28 = (SceneEntry *)&header->data[header->unk020];
+    scene->verts = &header->data[header->unk024];
+    scene->unk30 = &header->data[header->unk028];
+    scene->points = (Vec4 *)&header->data[header->unk02c];
+    scene->unk38 = &header->data[header->unk030];
+    scene->matrices = &header->data[header->unk044];
+    scene->unk40 = (DWORD *)&header->data[header->unk040];
+    scene->view = (SceneView *)&header->data[header->unk048];
+    scene->textures = (char **)&header->data[header->unk038];
+    for (int i = 0; i < 4; i++)
+    {
+        scene->lods[i] = (ObjectDef *)scene->view + (int)scene->lods[i];
+    }
+}
+
+// Resolves each mesh's indices into the scene's shared arrays.
+// FUNCTION: STUNTGP_D3D 0x42eca0
+void FUN_42eca0()
+{
+    Scene *scene = g_58c800;
+    DWORD lodCount = scene->maxLod + 1;
+    for (DWORD lod = 0; lod < lodCount; lod++)
+    {
+        ObjectDef *def = scene->lods[lod];
+        for (DWORD i = 0; i < scene->objectCount; i++, def++)
+        {
+            def->matrix = (Vec4 *)(scene->matrices + (int)def->matrix * 0x50);
+            def->unk2c = scene->unk30 + (int)def->unk2c * 16;
+            def->points = scene->points + (int)def->points;
+            def->verts = scene->verts + (int)def->verts * 8;
+        }
     }
 }
 

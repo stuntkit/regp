@@ -200,7 +200,7 @@ struct BodyPoint
     Vec4 world;       // 0x10
     Vec4 prev;        // 0x20
     BYTE unk30[0x10]; // 0x30
-    float unk40;      // 0x40
+    DWORD unk40;      // 0x40
     float unk44;      // 0x44
     float radius;     // 0x48
 };
@@ -887,10 +887,15 @@ struct Scene
     BYTE unk10[0x14];    // 0x10
     DWORD objectCount;   // 0x24
     SceneEntry *unk28;   // 0x28
-    BYTE unk2c[0x14];    // 0x2c
+    BYTE *verts;         // 0x2c, 8 bytes per entry
+    BYTE *unk30;         // 0x30, 16 bytes per entry
+    Vec4 *points;        // 0x34
+    BYTE *unk38;         // 0x38
+    BYTE *matrices;      // 0x3c, 0x50 bytes per entry
     DWORD *unk40;        // 0x40
     SceneView *view;     // 0x44
-    ObjectDef *lods[5];  // 0x48, object list per level of detail
+    ObjectDef *lods[4];  // 0x48, object list per level of detail
+    DWORD maxLod;        // 0x58, last valid index into lods
     int lod;             // 0x5c, current level of detail
     char **textures;     // 0x60, NULL-terminated
     int unk64;           // 0x64

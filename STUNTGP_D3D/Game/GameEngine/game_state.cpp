@@ -32,6 +32,25 @@ CameraPath *FUN_428800(int id)
     return NULL;
 }
 
+// Length of the path, summed over its knots.
+// FUNCTION: STUNTGP_D3D 0x428840
+float FUN_428840(CameraPath *path)
+{
+    Vec4 *points = path->points;
+    float len = 0.0f;
+    Vec4 prev = points[0];
+    for (DWORD i = 0; i < path->count; i++)
+    {
+        Vec4 cur = points[i];
+        float dx = cur.x - prev.x;
+        float dy = cur.y - prev.y;
+        float dz = cur.z - prev.z;
+        len += (float)sqrt(dx * dx + dy * dy + dz * dz);
+        prev = cur;
+    }
+    return len;
+}
+
 // Point on the closed path at the given distance along it, linear between knots.
 // FUNCTION: STUNTGP_D3D 0x4288d0
 void FUN_4288d0(CameraPath *path, Vec4 *out, float dist)

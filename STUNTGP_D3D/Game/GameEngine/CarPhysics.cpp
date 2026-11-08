@@ -22,6 +22,7 @@ extern DWORD g_60effc;
 extern DWORD g_60f000[4];
 extern int g_60f2b4;
 extern int g_576be0;
+extern float g_60f010;
 
 int FUN_442fb0();
 void FUN_443de0();
@@ -3785,6 +3786,12 @@ void FUN_407dd0()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x41d390
+void FUN_41d390()
+{
+    g_60f010 = FUN_428840(g_624474);
+}
+
 // FUNCTION: STUNTGP_D3D 0x41d3b0
 void FUN_41d3b0()
 {
@@ -4025,6 +4032,23 @@ void FUN_443700(Car *car)
     {
         car->unk2278 = 0;
         car->unk1cf8 = 0;
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x421fa0
+void FUN_421fa0(Body *body)
+{
+    for (unsigned int i = 0; i < 4; i++)
+    {
+        if (body->points[i].unk40 < 4)
+        {
+            return;
+        }
+    }
+    Vec4 up = *(Vec4 *)&body->mat1[8];
+    if ((float)fabs(up.x - 0.0f) <= 0.002f && (float)fabs(up.y - 0.0f) <= 0.002f)
+    {
+        Matrix_Identity(body->mat1);
     }
 }
 
