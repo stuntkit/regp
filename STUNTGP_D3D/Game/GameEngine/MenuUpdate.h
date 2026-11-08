@@ -671,7 +671,8 @@ struct Unk457e70Entry
 // PageSave
 struct Unk457e70
 {
-    BYTE unk000[0x18];         // 0x000
+    BYTE unk000[0x14];         // 0x000
+    int unk14;                 // 0x014
     int unk18;                 // 0x018
     int unk1c;                 // 0x01c
     int unk20;                 // 0x020, selected entry

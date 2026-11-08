@@ -354,6 +354,26 @@ void FUN_44ff90(ObjectDef *obj)
     g_6227cc = (BYTE *)m;
 }
 
+// Rotation matrices of the current level-of-detail objects; hidden objects get the identity.
+// FUNCTION: STUNTGP_D3D 0x450150
+void FUN_450150(Scene *scene)
+{
+    ObjectDef *obj = scene->lods[scene->lod];
+    for (DWORD i = 0; i < scene->objectCount; i++, obj++)
+    {
+        if (!obj->visible)
+        {
+            Camera *xf = (Camera *)obj->matrix;
+            xf->unk40 = (int)g_61c468;
+            xf->unk44 = (Vec4 *)g_61c468;
+        }
+        else
+        {
+            FUN_44ff90(obj);
+        }
+    }
+}
+
 // Builds the camera's view matrix and its transpose from pos, target, up and the view roll.
 // FUNCTION: STUNTGP_D3D 0x450190
 void FUN_450190(Camera *cam)

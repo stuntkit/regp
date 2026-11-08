@@ -5144,6 +5144,39 @@ void FUN_458860(Unk458860 *object)
     object->unk1f0 = 0;
 }
 
+void FUN_4588c0(Unk457e70 *object, int msg);
+void FUN_458c50(Unk457e70 *object, int msg);
+void FUN_458f30(Unk457e70 *object, int msg);
+void FUN_459160(Unk457e70 *object, int msg);
+
+// PageSave input: routed to the open prompt, if any, else to the card list.
+// FUNCTION: STUNTGP_D3D 0x458880
+void FUN_458880(Unk457e70 *object, int msg)
+{
+    if (object->unk14)
+    {
+        return;
+    }
+    if (object->unk1f0)
+    {
+        FUN_459160(object, msg);
+        return;
+    }
+    if (object->unk1ec)
+    {
+        if (object->unk1e8)
+        {
+            FUN_458f30(object, msg);
+        }
+        else
+        {
+            FUN_458c50(object, msg);
+        }
+        return;
+    }
+    FUN_4588c0(object, msg);
+}
+
 // FUNCTION: STUNTGP_D3D 0x458a60
 void FUN_458a60(Unk458860 *object, int a, int b, int c)
 {
@@ -5160,6 +5193,87 @@ void FUN_458a60(Unk458860 *object, int a, int b, int c)
     else
     {
         object->unk40->message(object->unk40, 0x1c, 0);
+    }
+}
+
+void FUN_440900();
+void FUN_440910();
+void FUN_458ad0(Unk457e70 *object, int a);
+void FUN_458b30(Unk457e70 *object, int a);
+void FUN_458b60(Unk457e70 *object, int a);
+void FUN_458bc0(Unk457e70 *object, int a);
+void FUN_458bf0(Unk457e70 *object, int a);
+
+// Card list input: pick, move the selection, act on the selected card or format.
+// FUNCTION: STUNTGP_D3D 0x4588c0
+void FUN_4588c0(Unk457e70 *object, int msg)
+{
+    int id;
+    switch (msg)
+    {
+    case 1:
+        if (g_menuState.unk46bc && !object->unk1ec && object->count)
+        {
+            FUN_440910();
+            id = object->entries[object->unk20].id;
+            switch (g_menuState.unk46c8)
+            {
+            case 5:
+                FUN_458a60(object, id, 4, 0);
+                break;
+            case 3:
+                FUN_458a60(object, id, 2, 0);
+                break;
+            case 1:
+                FUN_458a60(object, id, 3, 0);
+                break;
+            }
+            FUN_440900();
+        }
+        break;
+    case 0x11:
+        FUN_458a60(object, 0, 6, g_menuState.unk46c0);
+        break;
+    case 0x10:
+        if (object->count)
+        {
+            id = object->entries[object->unk20].id;
+            switch (g_menuState.unk46c8)
+            {
+            case 1:
+                FUN_458ad0(object, id);
+                return;
+            case 2:
+                FUN_458b30(object, id);
+                return;
+            case 3:
+                FUN_458b60(object, id);
+                return;
+            case 4:
+                FUN_458bc0(object, id);
+                return;
+            case 5:
+                FUN_458bf0(object, id);
+                return;
+            }
+        }
+        break;
+    case 0xb:
+        if (object->count && object->unk20 > 0)
+        {
+            object->unk1c = 0;
+            object->unk20--;
+            FUN_440890(msg);
+        }
+        break;
+    case 0xc:
+        if (object->count && object->unk20 < object->count - 1)
+        {
+            object->unk1c = 0;
+            object->unk20++;
+            FUN_440890(msg);
+        }
+        break;
     }
 }
 
