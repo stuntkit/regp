@@ -1849,9 +1849,36 @@ void FUN_4312c0()
     }
 }
 
-// STUB: STUNTGP_D3D 0x4311c0
+extern BYTE g_59207c[255];
+void FUN_4310a0(float *uv);
+
+// Nudges the texture coordinates of every face whose texture is flagged in g_59207c.
+// FUNCTION: STUNTGP_D3D 0x4311c0
 void FUN_4311c0(Scene *scene)
 {
+    for (DWORD lod = 0; lod < scene->maxLod + 1; lod++)
+    {
+        for (DWORD i = 0; i < scene->objectCount; i++)
+        {
+            if (!FUN_42b8b0(scene, i, lod))
+            {
+                DWORD count = scene->lods[lod][i].vertCount;
+                ObjectDef *def = &scene->lods[lod][i];
+                BYTE *face = def->verts;
+                for (DWORD j = 0; j < count; j++, face += 8)
+                {
+                    if (g_59207c[face[1]])
+                    {
+                        WORD *index = (WORD *)scene->unk38 + *(WORD *)(face + 6);
+                        for (DWORD k = 0; k < face[0]; k++)
+                        {
+                            FUN_4310a0((float *)(def->unk2c + index[k] * 16));
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 // STUB: STUNTGP_D3D 0x4342c0

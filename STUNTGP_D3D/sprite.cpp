@@ -582,6 +582,12 @@ float FUN_438ab0(float x, float y, int layer, int style, char *text, float size,
     return lines * height;
 }
 
+// FUNCTION: STUNTGP_D3D 0x438ba0
+float FUN_438ba0(float x, float y, int layer, int style, int textId, float size, D3DCOLOR color, DWORD flags)
+{
+    return FUN_438ab0(x, y, layer, style, FUN_441170(textId), size, color, flags);
+}
+
 // FUNCTION: STUNTGP_D3D 0x438be0
 void FUN_438be0(float x, float y, int layer, int style, int textId, float size, D3DCOLOR color, DWORD flags)
 {
