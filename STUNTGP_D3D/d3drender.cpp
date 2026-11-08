@@ -460,7 +460,7 @@ void FUN_430330(char *path, BYTE *dst)
     int size = size_of_file(path);
     BYTE *data = (BYTE *)malloc(size);
     bload(path, (char *)data, size);
-    FUN_4234e0(dst, data + 10);
+    FUN_4234e0((WORD *)dst, (WORD *)(data + 10));
     g_489714 = *(WORD *)(data + 6);
     g_489718 = *(WORD *)(data + 8);
     free(data);
@@ -470,9 +470,69 @@ void FUN_430330(char *path, BYTE *dst)
 // GLOBAL: STUNTGP_D3D 0x46f080
 // IID_IDirect3DTexture2
 
-// STUB: STUNTGP_D3D 0x4234e0
-void FUN_4234e0(BYTE *dst, BYTE *src)
+// One token of the image packing: a run of literal words (top bit set), then either a back reference of
+// 2..9 words (bit 14 set, 11 bit distance) or a run of zero words, a zero count ending the image.
+#define UNPACK_STEP()                                                                                                 \
+    w = *s;                                                                                                            \
+    while (w & 0x8000)                                                                                                 \
+    {                                                                                                                  \
+        s++;                                                                                                           \
+        *d++ = w;                                                                                                      \
+        w = *s;                                                                                                        \
+    }                                                                                                                  \
+    w = *s++;                                                                                                          \
+    if (w & 0x4000)                                                                                                    \
+    {                                                                                                                  \
+        WORD *from = d - ((w & 0x7ff) + 1);                                                                            \
+        switch (((w >> 11) & 7) + 1)                                                                                   \
+        {                                                                                                              \
+        case 8:                                                                                                        \
+            *d++ = *from++;                                                                                            \
+        case 7:                                                                                                        \
+            *d++ = *from++;                                                                                            \
+        case 6:                                                                                                        \
+            *d++ = *from++;                                                                                            \
+        case 5:                                                                                                        \
+            *d++ = *from++;                                                                                            \
+        case 4:                                                                                                        \
+            *d++ = *from++;                                                                                            \
+        case 3:                                                                                                        \
+            *d++ = *from++;                                                                                            \
+        case 2:                                                                                                        \
+            *d++ = *from++;                                                                                            \
+        case 1:                                                                                                        \
+            *d++ = *from++;                                                                                            \
+        case 0:                                                                                                        \
+            *d++ = *from;                                                                                              \
+        }                                                                                                              \
+    }                                                                                                                  \
+    else                                                                                                               \
+    {                                                                                                                  \
+        n = w & 0x3fff;                                                                                                \
+        if (!n)                                                                                                        \
+        {                                                                                                              \
+            break;                                                                                                     \
+        }                                                                                                              \
+        memset(d, 0, n << 1);                                                                                           \
+        d += n;                                                                                                        \
+    }
+
+// Unpacks an image into dst and returns its length in words.
+// FUNCTION: STUNTGP_D3D 0x4234e0
+int FUN_4234e0(WORD *d, WORD *s)
 {
+    WORD *start = d;
+    WORD w;
+    unsigned int n;
+    *d++ = *s++;
+    for (;;)
+    {
+        UNPACK_STEP()
+        UNPACK_STEP()
+        UNPACK_STEP()
+        UNPACK_STEP()
+    }
+    return d - start;
 }
 
 // Copies a packed image into a locked surface row by row, honouring its pitch.

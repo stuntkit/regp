@@ -159,7 +159,7 @@ void FUN_432840(BYTE *texture, Font *font, int arg);
 void FUN_4327e0(BYTE *texture, Font *font, int arg);
 int FUN_4325e0(BYTE *image, DWORD width, DWORD height);
 void FUN_42be90(char *path);
-void FUN_4234e0(BYTE *dst, BYTE *src);
+int FUN_4234e0(WORD *d, WORD *s);
 void FUN_430100(LPDIRECTDRAWSURFACE4 surface, BYTE *image, int width, int height, int bits);
 void FUN_42f340();
 void FUN_42f380();

@@ -2031,7 +2031,7 @@ void FUN_430d40(int slot, int id)
         if (g_587998[image].compressed == 1)
         {
             BYTE *buffer = (BYTE *)Mem_Alloc(*size * *size * 2 + 0x20, 0);
-            FUN_4234e0(buffer, g_587998[image].data + 10);
+            FUN_4234e0((WORD *)buffer, (WORD *)(g_587998[image].data + 10));
             FUN_430100(surface, buffer, g_587998[image].width, g_587998[image].height, 16);
             Mem_Free(buffer);
         }
