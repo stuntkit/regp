@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include "../../globals.h"
@@ -281,6 +282,8 @@ int FeCsv_ReadInt(int *value, char *text, int *pos);
 int FeCsv_SkipLine(char *text, int *pos);
 int FeCsv_ReadField(char *out, char *text, int *pos);
 int FUN_43c600(const char *expected, char *text, int *pos);
+int FeCsv_ReadFloat(float *value, char *text, int *pos);
+char *FeCsv_Load(char *name);
 int FUN_43d760(int id);
 void FUN_442ad0(int type, int duration, int delay, int end, int from, int to, float scale);
 int FUN_43efc0();
@@ -352,9 +355,118 @@ void FUN_424bd0(float x, float y)
     g_576b98 = y;
 }
 
-// STUB: STUNTGP_D3D 0x434b50
+int FUN_435fa0(const char *prefix, ShopItem *items, int count, char *text, int *pos);
+int FUN_435010(char *text, int *pos);
+int FUN_435e30(int id, ShopCar *car, char *text, int *pos);
+int FUN_435b60(char *text, int *pos);
+int FUN_435980(char *text, int *pos);
+int FUN_435860(char *text, int *pos);
+int FUN_435730(char *text, int *pos);
+int FUN_4356f0(char *text, int *pos);
+int FUN_434f60(char *text, int *pos);
+int FUN_434e90(char *text, int *pos);
+int FUN_434e10(char *text, int *pos);
+
+// FUNCTION: STUNTGP_D3D 0x434b50
 void FUN_434b50()
 {
+    char *text;
+    int pos;
+    int i;
+
+    pos = 0;
+    // STRING: STUNTGP_D3D 0x478b70
+    text = FeCsv_Load("Setup\\carsetup.csv");
+    FeCsv_SkipLine(text, &pos);
+    for (i = 1; i < 22; i++)
+    {
+        FUN_435e30(i, &g_menuState.cars[i], text, &pos);
+    }
+    free(text);
+
+    pos = 0;
+    // STRING: STUNTGP_D3D 0x478b84
+    text = FeCsv_Load("Setup\\dynamics.csv");
+    FeCsv_SkipLine(text, &pos);
+    // STRING: STUNTGP_D3D 0x478b98
+    FUN_435fa0("Car", &g_menuState.items[1], 21, text, &pos);
+    // STRING: STUNTGP_D3D 0x478b9c
+    FUN_435fa0("Engine", &g_menuState.items[22], 5, text, &pos);
+    // STRING: STUNTGP_D3D 0x478ba4
+    FUN_435fa0("Battery", &g_menuState.items[27], 5, text, &pos);
+    // STRING: STUNTGP_D3D 0x478bac
+    FUN_435fa0("Tyres", &g_menuState.items[32], 5, text, &pos);
+    // STRING: STUNTGP_D3D 0x478bb4
+    FUN_435fa0("Brakes", &g_menuState.items[37], 5, text, &pos);
+    // STRING: STUNTGP_D3D 0x478bbc
+    FUN_435fa0("Suspension", &g_menuState.items[42], 5, text, &pos);
+    // STRING: STUNTGP_D3D 0x478bc8
+    FUN_435fa0("Chassis", &g_menuState.items[47], 5, text, &pos);
+    // STRING: STUNTGP_D3D 0x478bd0
+    FUN_435fa0("Drive", &g_menuState.items[52], 3, text, &pos);
+    // STRING: STUNTGP_D3D 0x478bd8
+    FUN_435fa0("Horns", &g_menuState.items[55], 5, text, &pos);
+    // STRING: STUNTGP_D3D 0x478be0
+    FUN_435fa0("StuntBoost", &g_menuState.items[60], 5, text, &pos);
+    // STRING: STUNTGP_D3D 0x478bec
+    FUN_435fa0("Bms", &g_menuState.items[65], 5, text, &pos);
+    // STRING: STUNTGP_D3D 0x478bf0
+    FUN_435fa0("Gears", &g_menuState.items[70], 5, text, &pos);
+    free(text);
+
+    pos = 0;
+    // STRING: STUNTGP_D3D 0x478bf8
+    text = FeCsv_Load("Setup\\campaign.csv");
+    FUN_435b60(text, &pos);
+    free(text);
+
+    pos = 0;
+    // STRING: STUNTGP_D3D 0x478c0c
+    text = FeCsv_Load("Setup\\arcade.csv");
+    FUN_435980(text, &pos);
+    free(text);
+
+    pos = 0;
+    // STRING: STUNTGP_D3D 0x478c20
+    text = FeCsv_Load("Setup\\practice.csv");
+    FUN_435860(text, &pos);
+    free(text);
+
+    pos = 0;
+    // STRING: STUNTGP_D3D 0x478c34
+    text = FeCsv_Load("Setup\\demo.csv");
+    FUN_435730(text, &pos);
+    free(text);
+
+    pos = 0;
+    // STRING: STUNTGP_D3D 0x478c44
+    text = FeCsv_Load("Setup\\stunts.csv");
+    FUN_4356f0(text, &pos);
+    free(text);
+
+    pos = 0;
+    // STRING: STUNTGP_D3D 0x478c58
+    text = FeCsv_Load("Setup\\music.csv");
+    FUN_435010(text, &pos);
+    free(text);
+
+    pos = 0;
+    // STRING: STUNTGP_D3D 0x478c68
+    text = FeCsv_Load("Setup\\tracks.csv");
+    FUN_434f60(text, &pos);
+    free(text);
+
+    pos = 0;
+    // STRING: STUNTGP_D3D 0x478c7c
+    text = FeCsv_Load("Setup\\cpucars.csv");
+    FUN_434e90(text, &pos);
+    free(text);
+
+    pos = 0;
+    // STRING: STUNTGP_D3D 0x478c90
+    text = FeCsv_Load("Setup\\multi.csv");
+    FUN_434e10(text, &pos);
+    free(text);
 }
 
 // FUNCTION: STUNTGP_D3D 0x434e10
@@ -429,6 +541,210 @@ int FUN_434f60(char *text, int *pos)
         FeCsv_ReadInt(&g_menuState.unk1d630[i - 1][5], text, pos);
         FeCsv_SkipLine(text, pos);
     }
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x435010
+int FUN_435010(char *text, int *pos)
+{
+    memset(g_menuState.screenMusic, 0, sizeof(g_menuState.screenMusic));
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478cd4
+    FUN_43c600("feMusic_Title", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[1], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478ce4
+    FUN_43c600("feMusic_MenuMain", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[2], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478cf8
+    FUN_43c600("feMusic_MenuSingle", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[3], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478d0c
+    FUN_43c600("feMusic_MenuMulti", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[4], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478d20
+    FUN_43c600("feMusic_MenuCatalog", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[5], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478d34
+    FUN_43c600("feMusic_MenuRecords", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[6], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478d48
+    FUN_43c600("feMusic_MenuOptions", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[7], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478d5c
+    FUN_43c600("feMusic_ArcadeName", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[8], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478d70
+    FUN_43c600("feMusic_ArcadeCar", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[9], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478d84
+    FUN_43c600("feMusic_ArcadePreview", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[10], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478d9c
+    FUN_43c600("feMusic_ArcadeAwards", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[11], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478db4
+    FUN_43c600("feMusic_ArcadeUnlock", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[12], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478dcc
+    FUN_43c600("feMusic_ArcadeRoute", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[13], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478de0
+    FUN_43c600("feMusic_ArcadeComplete", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[14], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478df8
+    FUN_43c600("feMusic_ArcadeFailed", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[15], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478e10
+    FUN_43c600("feMusic_ArcadeScores", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[16], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478e28
+    FUN_43c600("feMusic_CampaignSlot", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[17], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478e40
+    FUN_43c600("feMusic_CampaignName", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[18], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478e58
+    FUN_43c600("feMusic_CampaignTeam", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[19], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478e70
+    FUN_43c600("feMusic_CampaignCar", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[20], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478e84
+    FUN_43c600("feMusic_CampaignMenu", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[21], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478e9c
+    FUN_43c600("feMusic_CampaignModify", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[22], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478eb4
+    FUN_43c600("feMusic_CampaignPreview", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[23], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478ecc
+    FUN_43c600("feMusic_QuickPads", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[24], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478ee0
+    FUN_43c600("feMusic_QuickCar", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[25], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478ef4
+    FUN_43c600("feMusic_QuickTrack", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[26], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478f08
+    FUN_43c600("feMusic_QuickScores", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[27], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478f1c
+    FUN_43c600("feMusic_TournamentOptions", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[28], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478f38
+    FUN_43c600("feMusic_TournamentPads", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[29], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478f50
+    FUN_43c600("feMusic_TournamentCar", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[30], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478f68
+    FUN_43c600("feMusic_TournamentTrack", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[31], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478f80
+    FUN_43c600("feMusic_TournamentScores", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[32], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478f9c
+    FUN_43c600("feMusic_PracticeCar", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[33], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478fb0
+    FUN_43c600("feMusic_PracticeTrack", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[34], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478fc8
+    FUN_43c600("feMusic_StuntName", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[35], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478fdc
+    FUN_43c600("feMusic_StuntInfo", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[36], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x478ff0
+    FUN_43c600("feMusic_StuntScores", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[37], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x479004
+    FUN_43c600("feMusic_StuntUnlock", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[38], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x479018
+    FUN_43c600("feMusic_TrialName", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[39], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x47902c
+    FUN_43c600("feMusic_TrialCar", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[40], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x479040
+    FUN_43c600("feMusic_TrialTrack", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[41], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x479054
+    FUN_43c600("feMusic_TrialScores", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[42], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x479068
+    FUN_43c600("feMusic_TrialUnlock", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[43], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x47907c
+    FUN_43c600("feMusic_CampaignPostRace", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[44], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x479098
+    FUN_43c600("feMusic_CampaignPreBonus", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[45], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x4790b4
+    FUN_43c600("feMusic_CampaignPostBonus", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[46], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x4790d0
+    FUN_43c600("feMusic_CampaignPreFinal", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[47], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x4790ec
+    FUN_43c600("feMusic_CampaignUnlock", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[48], text, pos);
+    FeCsv_SkipLine(text, pos);
+    // STRING: STUNTGP_D3D 0x479104
+    FUN_43c600("feMusic_CampaignScores", text, pos);
+    FeCsv_ReadInt(&g_menuState.screenMusic[49], text, pos);
+    FeCsv_SkipLine(text, pos);
     return 1;
 }
 
@@ -708,6 +1024,106 @@ void FUN_435f60(void *unused, int *out, char *text, int *pos)
     FeCsv_ReadInt(&out[1], text, pos);
     FeCsv_ReadInt(&out[2], text, pos);
     FeCsv_ReadInt(&out[3], text, pos);
+}
+
+int FUN_436010(const char *key, ShopItem *item, char *text, int *pos);
+
+// FUNCTION: STUNTGP_D3D 0x435fa0
+int FUN_435fa0(const char *prefix, ShopItem *items, int count, char *text, int *pos)
+{
+    char key[64];
+    int i;
+
+    for (i = 0; i < count; i++)
+    {
+        // STRING: STUNTGP_D3D 0x4792a8
+        sprintf(key, "%s%02d", prefix, i + 1);
+        FUN_436010(key, &items[i], text, pos);
+    }
+    return 1;
+}
+
+// FUNCTION: STUNTGP_D3D 0x436010
+int FUN_436010(const char *key, ShopItem *item, char *text, int *pos)
+{
+    FUN_43c600(key, text, pos);
+    FeCsv_ReadInt(&item->price, text, pos);
+    FeCsv_ReadFloat(&item->unk004, text, pos);
+    FeCsv_ReadFloat(&item->unk008, text, pos);
+    FeCsv_ReadFloat(&item->unk104, text, pos);
+    FeCsv_ReadFloat(&item->unk108, text, pos);
+    FeCsv_ReadFloat(&item->unk10c, text, pos);
+    FeCsv_ReadFloat(&item->unk110, text, pos);
+    FeCsv_ReadFloat(&item->unk114, text, pos);
+    FeCsv_ReadFloat(&item->unk118, text, pos);
+    FeCsv_ReadFloat(&item->unk00c, text, pos);
+    FeCsv_ReadFloat(&item->unk010, text, pos);
+    FeCsv_ReadFloat(&item->unk014, text, pos);
+    FeCsv_ReadFloat(&item->unk070, text, pos);
+    FeCsv_ReadFloat(&item->unk018, text, pos);
+    FeCsv_ReadFloat(&item->unk01c, text, pos);
+    FeCsv_ReadFloat(&item->unk020, text, pos);
+    FeCsv_ReadFloat(&item->unk024, text, pos);
+    FeCsv_ReadFloat(&item->unk028, text, pos);
+    FeCsv_ReadInt(&item->unk02c, text, pos);
+    FeCsv_ReadInt(&item->unk030, text, pos);
+    FeCsv_ReadFloat(&item->unk040, text, pos);
+    FeCsv_ReadInt(&item->unk034, text, pos);
+    FeCsv_ReadFloat(&item->unk038, text, pos);
+    FeCsv_ReadFloat(&item->unk03c, text, pos);
+    FeCsv_ReadFloat(&item->unk044, text, pos);
+    FeCsv_ReadFloat(&item->unk048, text, pos);
+    FeCsv_ReadFloat(&item->unk04c, text, pos);
+    FeCsv_ReadFloat(&item->unk050, text, pos);
+    FeCsv_ReadFloat(&item->unk054, text, pos);
+    FeCsv_ReadFloat(&item->unk058, text, pos);
+    FeCsv_ReadFloat(&item->unk05c, text, pos);
+    FeCsv_ReadFloat(&item->unk060, text, pos);
+    FeCsv_ReadFloat(&item->unk064, text, pos);
+    FeCsv_ReadFloat(&item->unk068, text, pos);
+    FeCsv_ReadFloat(&item->unk06c, text, pos);
+    FeCsv_ReadFloat(&item->unk11c, text, pos);
+    FeCsv_ReadFloat(&item->unk120, text, pos);
+    FeCsv_ReadFloat(&item->unk074, text, pos);
+    FeCsv_ReadFloat(&item->unk078, text, pos);
+    FeCsv_ReadFloat(&item->unk07c, text, pos);
+    FeCsv_ReadFloat(&item->unk080, text, pos);
+    FeCsv_ReadFloat(&item->unk084, text, pos);
+    FeCsv_ReadFloat(&item->unk088, text, pos);
+    FeCsv_ReadInt(&item->unk08c, text, pos);
+    FeCsv_ReadInt(&item->unk090, text, pos);
+    FeCsv_ReadFloat(&item->unk094, text, pos);
+    FeCsv_ReadFloat(&item->unk098, text, pos);
+    FeCsv_ReadFloat(&item->unk09c, text, pos);
+    FeCsv_ReadFloat(&item->unk0a0, text, pos);
+    FeCsv_ReadFloat(&item->unk0a4, text, pos);
+    FeCsv_ReadFloat(&item->unk0a8, text, pos);
+    FeCsv_ReadFloat(&item->unk0ac, text, pos);
+    FeCsv_ReadFloat(&item->unk0b0, text, pos);
+    FeCsv_ReadFloat(&item->unk0b4, text, pos);
+    FeCsv_ReadFloat(&item->unk0b8, text, pos);
+    FeCsv_ReadFloat(&item->unk100, text, pos);
+    FeCsv_ReadFloat(&item->unk0bc, text, pos);
+    FeCsv_ReadFloat(&item->unk0c0, text, pos);
+    FeCsv_ReadFloat(&item->unk0c4, text, pos);
+    FeCsv_ReadFloat(&item->unk0c8, text, pos);
+    FeCsv_ReadFloat(&item->unk0cc, text, pos);
+    FeCsv_ReadFloat(&item->unk0d0, text, pos);
+    FeCsv_ReadInt(&item->unk0e8, text, pos);
+    FeCsv_ReadInt(&item->unk0ec, text, pos);
+    FeCsv_ReadInt(&item->unk0f0, text, pos);
+    FeCsv_ReadInt(&item->unk0f4, text, pos);
+    FeCsv_ReadFloat(&item->unk0d4, text, pos);
+    FeCsv_ReadFloat(&item->unk0d8, text, pos);
+    FeCsv_ReadFloat(&item->unk0dc, text, pos);
+    FeCsv_ReadFloat(&item->unk0e0, text, pos);
+    FeCsv_ReadFloat(&item->unk0e4, text, pos);
+    FeCsv_ReadInt(&item->unk0f8, text, pos);
+    FeCsv_ReadInt(&item->unk0fc, text, pos);
+    FeCsv_ReadInt(&item->sponsor, text, pos);
+    FeCsv_ReadFloat(&item->unk128, text, pos);
+    FeCsv_SkipBlankLines(text, pos);
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x436400
