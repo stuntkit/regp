@@ -2712,9 +2712,9 @@ void FUN_432e00(SpriteDesc *desc)
     {
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 0xa0);
     }
-    int tex = d.texture;
-    if (g_renderState.unkfc != tex)
+    if (g_renderState.unkfc != d.texture)
     {
+        int tex = d.texture;
         g_d3dDevice->SetTexture(0, g_renderState.unk62ec[tex].texture);
         g_renderState.unkfc = tex;
     }
