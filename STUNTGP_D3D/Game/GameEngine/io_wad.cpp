@@ -491,7 +491,7 @@ RaceSetup2 g_61bf50;
 
 // Challenge mode state machine: pick a car, pick a track, then race unk447c AI cars.
 // FUNCTION: STUNTGP_D3D 0x44cd70
-void FUN_44cd70()
+void FUN_44cd70(PoolObject *object)
 {
     char name[0x40];
     int i;
@@ -632,7 +632,7 @@ RaceResults6 g_61c048;
 
 // Mode-6 party: the players pick a track, then race rounds until the results page is left.
 // FUNCTION: STUNTGP_D3D 0x44d100
-void FUN_44d100()
+void FUN_44d100(PoolObject *object)
 {
     int i;
     switch (g_menuState.unk4234)
@@ -866,4 +866,283 @@ int WAD_HashName(char *name)
         name++;
     }
     return hash;
+}
+
+int FUN_437790(ScoreEntry *table, int count, Initials *name, int score);
+void FUN_437880(int index);
+void FUN_4378a0(int index);
+void FUN_4378c0(int id);
+int FUN_437920(int index);
+void FUN_43a2a0(RaceSetup1 *src, RaceResults *dst);
+void FUN_43bf30();
+void FUN_43bfd0();
+
+// GLOBAL: STUNTGP_D3D 0x61b880
+RaceSetup1 g_61b880;
+
+// GLOBAL: STUNTGP_D3D 0x61b940
+RaceResults g_61b940;
+
+// Arcade state machine: pick a car, then race node after node of the arcade map.
+// FUNCTION: STUNTGP_D3D 0x44b5e0
+void FUN_44b5e0(PoolObject *object)
+{
+    int i;
+    int node;
+    switch (g_menuState.unk4234)
+    {
+    case 0:
+        g_menuState.unk423c = 1;
+        g_menuState.unk4234 = 1;
+        g_menuState.unk4238 = 0;
+        g_menuState.unk4488 = 0;
+        g_menuState.unk4484 = 0;
+        g_menuState.unk424c = 0;
+        g_menuState.unk4248 = 0;
+        g_menuState.unk4250 = 6;
+        g_menuState.unk43f4[0] = 0;
+        return;
+    case 1:
+        g_menuState.unk4234 = 2;
+        FUN_43dfa0(8, 9);
+        return;
+    case 2:
+        if (g_menuState.unk44d0)
+        {
+            FUN_43eef0();
+            return;
+        }
+        g_menuState.unk4398 = 0;
+        for (i = 1; i < 21; i++)
+        {
+            if (FUN_437230(i, g_menuState.unk4230) || g_menuState.unk0074)
+            {
+                g_menuState.unk439c[g_menuState.unk4398] = i;
+                g_menuState.unk4398++;
+            }
+        }
+        g_menuState.unk4234 = 3;
+        FUN_43dfa0(9, 10);
+        return;
+    case 3:
+        if (g_menuState.unk4394)
+        {
+            g_menuState.unk4234 = 1;
+            return;
+        }
+        g_menuState.unk448c = 1;
+        switch (FUN_437cc0(g_menuState.unk43f4[g_menuState.unk4238]))
+        {
+        case 1:
+            g_menuState.unk4490[0] = 0x10;
+            break;
+        case 2:
+        case 4:
+            g_menuState.unk4490[0] = 0x11;
+            break;
+        case 3:
+            g_menuState.unk4490[0] = 0x12;
+            break;
+        }
+        g_menuState.unk4408 = 0;
+        g_menuState.unk440c[g_menuState.unk4408] = FUN_437920(g_menuState.unk4490[0]);
+        g_menuState.unk4408++;
+        FUN_43dfa0(10, 11);
+        g_menuState.unk4234 = 4;
+        return;
+    case 4:
+    {
+        if (g_menuState.unk4404)
+        {
+            g_menuState.unk4234 = 2;
+            return;
+        }
+        if (g_menuState.unk4484)
+        {
+            g_menuState.unk4234 = 8;
+            return;
+        }
+        g_61b880.cars[0].unk00 = 1;
+        node = g_menuState.unk4490[g_menuState.unk448c - 1];
+        int score = g_menuState.nodes[node].unk00;
+        int car = g_menuState.unk43f4[g_menuState.unk4238];
+        g_61b880.cars[0].unk08 = car;
+        *(Initials *)&g_61b880.cars[0].unk04 = *(Initials *)g_menuState.unk44d4[g_menuState.unk4238];
+        g_61b880.cars[0].car = g_menuState.unk4250;
+        g_61b880.cars[0].unk10 = g_menuState.cars[car].unk08;
+        int pos = 1;
+        RaceSetupCar *dst = g_61b880.cars;
+        for (i = 0; i < 5; i++)
+        {
+            if (pos == g_menuState.unk4250)
+            {
+                pos++;
+            }
+            dst++;
+            *(Initials *)&dst->unk04 = *(Initials *)g_menuState.nodes[node].cars[i].name;
+            dst->unk00 = 0;
+            dst->unk10 = g_menuState.nodes[node].cars[i].unk0c;
+            dst->car = pos;
+            dst->unk08 = g_menuState.nodes[node].cars[i].unk08;
+            dst->unk14 = g_menuState.nodes[node].cars[i].unk10;
+            dst->unk18 = g_menuState.nodes[node].cars[i].unk14;
+            pos++;
+            if (pos == g_menuState.unk4250)
+            {
+                pos++;
+            }
+        }
+        g_61b880.track = FUN_437920(node);
+        g_61b880.unkac = score;
+        g_61b880.unkb0 = g_menuState.unk0114[node][0].time;
+        g_61b880.unkb4 = g_menuState.unk0114[node][1].time;
+        g_61b880.unkb8 = g_menuState.unk0114[node][2].time;
+        g_61b880.unkbc = g_menuState.unk0114[node][3].time;
+        FUN_43a2a0(&g_61b880, &g_61b940);
+        g_menuState.unk4234 = 5;
+        FUN_43dfa0(0, 25);
+        return;
+    }
+    case 5:
+        node = g_menuState.unk4490[g_menuState.unk448c - 1];
+        FUN_437920(node);
+        if (g_61b940.won)
+        {
+            g_menuState.unk4234 = 8;
+            return;
+        }
+        if (!g_61b940.results[0].position)
+        {
+            g_menuState.unk4234 = 8;
+            return;
+        }
+        g_menuState.unk1b078 = node;
+        *(RaceSetup1 *)g_menuState.unk1b07c = g_61b880;
+        *(RaceResults *)(g_menuState.unk1b128 + 0x14) = g_61b940;
+        FUN_43dfa0(11, 0x1f);
+        g_menuState.unk4234 = 6;
+        return;
+    case 6:
+    {
+        node = g_menuState.unk4490[g_menuState.unk448c - 1];
+        int track = FUN_437920(node);
+        if (g_61b940.results[0].position == 1)
+        {
+            FUN_4378a0(track);
+            switch (node)
+            {
+            case 1:
+                FUN_437880(2);
+                break;
+            case 3:
+                FUN_437880(3);
+                break;
+            case 6:
+                FUN_437880(5);
+                break;
+            case 2:
+                FUN_437880(6);
+                break;
+            case 4:
+                FUN_437880(14);
+                break;
+            case 5:
+                FUN_437880(16);
+                break;
+            }
+        }
+        g_menuState.unk4250 = FUN_43dc20(g_61b940.results[0].position, 6);
+        if (g_61b940.results[0].position > g_menuState.nodes[node].unk08)
+        {
+            g_menuState.unk4234 = 8;
+            return;
+        }
+        if (g_menuState.nodes[node].unk08 != 1)
+        {
+            g_menuState.unk4234 = 7;
+            FUN_43dfa0(12, 0x28);
+            return;
+        }
+        g_menuState.unk4248 = 1;
+        g_menuState.unk4234 = 8;
+        FUN_4378c0(node);
+        return;
+    }
+    case 7:
+        node = g_menuState.unk4490[g_menuState.unk448c - 1];
+        if (node <= 0 || node > 6)
+        {
+            g_menuState.unk4234 = 4;
+            FUN_43dfa0(13, 12);
+        }
+        return;
+    case 8:
+    {
+        int all = 1;
+        for (i = 1; i < 19; i++)
+        {
+            if (!FUN_4371c0(FUN_437920(i), g_menuState.unk4230))
+            {
+                all = 0;
+            }
+        }
+        for (i = 7; i < 19; i++)
+        {
+            if (!g_menuState.unk00ec[i * 2] || !g_menuState.unk00ec[i * 2 + 1])
+            {
+                all = 0;
+            }
+        }
+        if (all)
+        {
+            FUN_437880(12);
+            FUN_437880(13);
+            FUN_437880(17);
+        }
+        FUN_437790(g_menuState.unk0374, 100, (Initials *)g_menuState.unk44d4[g_menuState.unk4238],
+                   g_menuState.unk424c);
+        FUN_43bfd0();
+        g_menuState.unk45d4 = 0x5f;
+        if (g_menuState.unk4248)
+        {
+            g_menuState.unk45d8 = 0x3b;
+            g_menuState.unk45dc = 0x3c;
+            g_menuState.unk45e0 = 0.015f;
+            g_menuState.unk45e4 = 80.0f;
+            g_menuState.unk4234 = 9;
+            FUN_43dfa0(14, 0x25);
+        }
+        else
+        {
+            g_menuState.unk45d8 = 0x39;
+            g_menuState.unk45dc = 0x3a;
+            g_menuState.unk45e0 = 0.015f;
+            g_menuState.unk45e4 = 0.0f;
+            g_menuState.unk4234 = 9;
+            FUN_43dfa0(15, 0x25);
+        }
+        return;
+    }
+    case 9:
+        g_menuState.unk4694.unk00 = 0x1fb;
+        g_menuState.unk4694.unk04 = 0;
+        g_menuState.unk4694.unk08 = 2;
+        g_menuState.unk4694.count = 100;
+        g_menuState.unk4694.entries = g_menuState.unk0374;
+        g_menuState.unk4234 = 10;
+        FUN_43dfa0(0x10, 0x27);
+        return;
+    case 10:
+        FUN_43bf30();
+        g_menuState.unk4234 = 11;
+        FUN_43dfa0(12, 0x28);
+        return;
+    case 11:
+        g_menuState.unk4234 = 12;
+        FUN_43d500(0);
+        return;
+    case 12:
+        FUN_43eef0();
+        break;
+    }
 }

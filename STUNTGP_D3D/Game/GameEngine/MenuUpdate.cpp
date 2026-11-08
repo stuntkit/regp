@@ -2915,6 +2915,76 @@ int FUN_43bb90(BitReader *reader)
     return FUN_43b3b0(reader) ? 1 : -1;
 }
 
+// Inverse of FUN_43b640: rebuilds the replay frames into out and returns its size in bytes.
+// FUNCTION: STUNTGP_D3D 0x43bbb0
+int FUN_43bbb0(Replay *out, BYTE *in)
+{
+    BitReader reader;
+    ReplayFrame prev;
+    ReplayFrame frame;
+    int vx = 0;
+    int vy = 0;
+    int vz = 0;
+    int w0 = 0;
+    int w1 = 0;
+    int w2 = 0;
+    int w3 = 0;
+    ReplayFrame *dst;
+    memcpy(out, in, 0xac);
+    int count = 1;
+    FUN_43b380(&reader, in + 0xac, 0);
+    prev = out->frames[0];
+    dst = &out->frames[1];
+    while (!(prev.flags & 1))
+    {
+        vx += FUN_43bb00(5, &reader, 0);
+        vy += FUN_43bb00(5, &reader, 1);
+        vz += FUN_43bb00(5, &reader, 0);
+        prev.pos[0] += vx;
+        prev.pos[1] += vy;
+        prev.pos[2] += vz;
+        w0 += FUN_43bb00(5, &reader, 0);
+        w1 += FUN_43bb00(5, &reader, 0);
+        w2 += FUN_43bb00(5, &reader, 0);
+        w3 += FUN_43bb00(5, &reader, 0);
+        prev.wheelAngle[0] += w0;
+        prev.wheelAngle[1] += w1;
+        prev.wheelAngle[2] += w2;
+        prev.wheelAngle[3] += w3;
+        prev.unk14[0] += FUN_43bb00(4, &reader, 1) << 3;
+        prev.unk14[1] += FUN_43bb00(4, &reader, 1) << 3;
+        prev.unk14[2] += FUN_43bb00(4, &reader, 1) << 3;
+        prev.unk14[3] += FUN_43bb00(4, &reader, 1) << 3;
+        prev.unk1c[0] += FUN_43bb00(3, &reader, 1);
+        prev.unk1c[1] += FUN_43bb00(3, &reader, 1);
+        prev.unk1c[2] += FUN_43bb00(3, &reader, 1);
+        prev.unk1c[3] += FUN_43bb00(3, &reader, 1);
+        prev.axisZ[0] += FUN_43bb00(4, &reader, 1);
+        prev.axisZ[1] += FUN_43bb00(4, &reader, 1);
+        prev.axisZ[2] += FUN_43bb00(4, &reader, 1);
+        prev.axisY[0] += FUN_43bb00(4, &reader, 1);
+        prev.axisY[1] += FUN_43bb00(4, &reader, 1);
+        prev.axisY[2] += FUN_43bb00(4, &reader, 1);
+        prev.unk20 += FUN_43bb00(5, &reader, 0);
+        prev.unk22 += FUN_43bb90(&reader);
+        prev.unk23 += FUN_43bb90(&reader);
+        if (FUN_43b3b0(&reader))
+        {
+            prev.unk25 = FUN_43b370(&reader);
+        }
+        if (FUN_43b3b0(&reader))
+        {
+            prev.flags = FUN_43b370(&reader);
+        }
+        frame = prev;
+        FUN_43b470(&frame.axisZ[0], &frame.axisZ[1], &frame.axisZ[2]);
+        FUN_43b470(&frame.axisY[0], &frame.axisY[1], &frame.axisY[2]);
+        *dst++ = frame;
+        count++;
+    }
+    return count * sizeof(ReplayFrame) + 0x80;
+}
+
 // Clears the new-entry flag of every high score.
 // FUNCTION: STUNTGP_D3D 0x43bf30
 void FUN_43bf30()

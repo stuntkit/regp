@@ -479,9 +479,9 @@ struct MenuState
     int unk423c; // 0x423c, entries used in unk46ac
     int unk4240; // 0x4240
     int unk4244; // 0x4244
-    BYTE unk4248[0x424c - 0x4248];
+    int unk4248;                // 0x4248
     int unk424c;                // 0x424c, total score
-    BYTE unk4250[0x4254 - 0x4250];
+    int unk4250;                // 0x4250, player grid slot
     int unk4254;                // 0x4254
     int language;               // 0x4258, id of the loaded front-end language
     MenuLanguage languages[8];  // 0x425c, from Setup\languagePC.csv
