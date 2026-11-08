@@ -3769,6 +3769,60 @@ int FUN_45abb0(PoolObject *object, int msg, int arg)
     return 0;
 }
 
+// GLOBAL: STUNTGP_D3D 0x627ed8
+char g_627ed8[0x80];
+
+Initials *FUN_43d690(Initials *name);
+
+// Championship table: per slot its name, sponsor, money and points, with a pulsing bar on the
+// selected row.
+// FUNCTION: STUNTGP_D3D 0x45af60
+void FUN_45af60(Unk45a9c0 *object)
+{
+    float slide = (object->unk24 - 1.0f) * 640.0f;
+    float x0 = slide + 40.0f;
+    float x1 = slide + 600.0f;
+    FUN_439450(x0, 91.0f, x1, 299.0f, 10, 0x6e, 0x40);
+    FUN_439380(x0, 91.0f, x1, 299.0f, 13, 2, 0, 0.0f);
+    int selected = object->unk1c;
+    float y = 111.0f;
+    float x = x0 + 100.0f - 12.0f;
+    float xi = x + 4.0f;
+    MenuSlot160 *slot = g_menuState.unk0f1c;
+    for (int i = 0; i < 8; i++, slot++)
+    {
+        D3DCOLOR color = i != selected ? 0xffffffff : 0xffff8080;
+        FUN_438be0(xi, y, 12, 4, i + 0x2f, 1.5f, color, 6);
+        if (!slot->unk000)
+        {
+            FUN_438be0(x + 16.0f, y, 12, 4, 0x37, 1.5f, color, 2);
+        }
+        else
+        {
+            FUN_438960(x + 16.0f, y, 12, 0, 4, FUN_43d690(&slot->name)->c, 1.5f, color, 2);
+            // STRING: STUNTGP_D3D 0x4890d4
+            sprintf(g_627ed8, "(%s)", FUN_441170(slot->sponsor + 0x1ea));
+            FUN_438960(x + 64.0f, y, 12, 0, 4, g_627ed8, 1.5f, color, 2);
+            FUN_438be0(x + 192.0f - 24.0f, y, 12, 4, 0x1b, 1.5f, color, 3);
+            FUN_438a20(x + 264.0f, y, 12, 0, 4, g_627cd8[0][i], 1.5f, color, 6, 14.0f);
+            FUN_438be0(x + 352.0f - 16.0f, y, 12, 4, 0x39, 1.5f, color, 6);
+            FUN_438a20(x + 376.0f, y, 12, 0, 4, g_627cd8[1][i], 1.5f, color, 6, 14.0f);
+            FUN_438be0(x + 396.0f, y, 12, 4, 0x38, 1.5f, color, 2);
+            // STRING: STUNTGP_D3D 0x4890dc
+            sprintf(g_627ed8, "%d", slot->unk008);
+            FUN_438960(x + 460.0f, y, 12, 0, 4, g_627ed8, 1.5f, color, 6);
+        }
+        y += 24.0f;
+    }
+    int pulse = (object->unk20 - 32) & 0x3f;
+    float cy = object->unk2c * 24.0f + 111.0f;
+    if (pulse >= 32)
+    {
+        pulse = 64 - pulse;
+    }
+    FUN_439380(x0, cy - 16.0f, x1, cy + 16.0f, 11, 4, 0x400, (pulse + 32) * 0.015625f);
+}
+
 // Prompt box under the slot list; the text depends on whether the slot is in use.
 // FUNCTION: STUNTGP_D3D 0x45b2c0
 void FUN_45b2c0(Unk45a9c0 *object)
