@@ -622,6 +622,50 @@ GameSlot *FUN_461270(Vec4 *pos)
     return best;
 }
 
+// Moves a playing 3D sound; it is stopped once it is out of range of the nearest camera.
+// FUNCTION: STUNTGP_D3D 0x461730
+void FUN_461730(int *channel, DWORD frequency, int volume, Vec4 *pos, Vec4 *velocity)
+{
+    if (!g_soundInitialised)
+    {
+        return;
+    }
+    SoundChannel *ch = &g_62e118[*channel];
+    LPDIRECTSOUNDBUFFER buffer = ch->buffer;
+    if (!buffer)
+    {
+        return;
+    }
+    LPDIRECTSOUND3DBUFFER buffer3d = ch->buffer3d;
+    if (!buffer3d)
+    {
+        return;
+    }
+    GameSlot *slot = FUN_461270(pos);
+    float x = pos->x;
+    float y = pos->y;
+    float z = pos->z;
+    float dx = slot->cam.pos.x - x;
+    float dy = slot->cam.pos.y - y;
+    float dz = slot->cam.pos.z - z;
+    if (dz * dz + dy * dy + dx * dx > g_4897a4)
+    {
+        FUN_460d90(channel);
+        return;
+    }
+    buffer3d->SetPosition(x, y, z, DS3D_IMMEDIATE);
+    if (velocity)
+    {
+        buffer3d->SetVelocity(velocity->x, velocity->y, velocity->z, DS3D_IMMEDIATE);
+    }
+    if (!frequency)
+    {
+        frequency = ch->rate;
+    }
+    buffer->SetFrequency(frequency);
+    buffer->SetVolume(g_4897f8[(DWORD)(g_sfxVolume * volume) >> 9]);
+}
+
 // FUNCTION: STUNTGP_D3D 0x461ae0
 void FUN_461ae0(LPDIRECTSOUND3DLISTENER listener, GameSlot *slot)
 {
