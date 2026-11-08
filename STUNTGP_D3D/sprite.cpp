@@ -689,6 +689,78 @@ void FUN_438c60(float x, float y, int layer, int style, float scale, DWORD flags
     }
 }
 
+float FUN_438910(const char *text, float size);
+float FUN_438950(float size);
+void FUN_438960(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color, DWORD flags);
+
+// FUN_438c60 with a text label: width 0 sizes the button to the text, a negative width is a
+// minimum. Flags 1 and 4 centre or right-align the label.
+// FUNCTION: STUNTGP_D3D 0x439040
+void FUN_439040(float x, float y, int layer, int textStyle, const char *text, float size, D3DCOLOR color, int style, int row, float scale, DWORD flags, int width, float fade)
+{
+    int leftWidth;
+    int rowHeight;
+    int rightWidth;
+    float midWidth;
+    float h = FUN_438950(size);
+    float textW = -1.0f;
+    int def = FUN_438dc0(style, &leftWidth, &rightWidth, &rowHeight);
+    float bh = rowHeight * 28 / 32 * scale;
+    if (width == 0)
+    {
+        textW = FUN_438910(text, size);
+        midWidth = textW;
+    }
+    else if (width < 0)
+    {
+        width = -width;
+        textW = FUN_438910(text, size);
+        if (textW > (float)width)
+        {
+            midWidth = textW;
+        }
+        else
+        {
+            midWidth = (float)width;
+        }
+    }
+    else
+    {
+        midWidth = (float)width;
+    }
+    x -= ((leftWidth + rightWidth) * scale + midWidth) * 0.5f;
+    y -= bh * 0.5f;
+    float tx = leftWidth * scale + x;
+    float ty = (bh - h) * 0.5f + y + scale;
+    if (flags & 1)
+    {
+        if (textW < 0.0f)
+        {
+            textW = FUN_438910(text, size);
+        }
+        tx += (midWidth - textW) * 0.5f;
+    }
+    else if (flags & 4)
+    {
+        if (textW < 0.0f)
+        {
+            textW = FUN_438910(text, size);
+        }
+        tx += midWidth - textW;
+    }
+    if (flags & 0x40)
+    {
+        FUN_438eb0(x + 8.0f, y + 8.0f, 15, 0, def, leftWidth, rightWidth, rowHeight, 2, scale, midWidth, 0x200, 0.0f);
+    }
+    FUN_438eb0(x, y, layer, 3, def, leftWidth, rightWidth, rowHeight, 1, scale, midWidth, 0x200, 0.0f);
+    FUN_438eb0(x, y, layer, 2, def, leftWidth, rightWidth, rowHeight, row, scale, midWidth, 0x100, 0.0f);
+    FUN_438960(tx, ty, layer, 1, textStyle, text, size, color, 0);
+    if (fade > 0.0f)
+    {
+        FUN_438eb0(x, y, layer, 0, def, leftWidth, rightWidth, rowHeight, 3, scale, midWidth, 0x400, fade);
+    }
+}
+
 // Frame layout for an icon style; returns its sprite id, or 0 for an unknown style.
 // FUNCTION: STUNTGP_D3D 0x438dc0
 int FUN_438dc0(int style, int *a, int *b, int *c)
