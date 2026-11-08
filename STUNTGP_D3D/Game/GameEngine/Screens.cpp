@@ -14,6 +14,23 @@ int FUN_4375a0(int *tracks, int count);
 // PageSelectTrack
 // PageUnlock
 // PageCatalog
+// Header of a saved ghost, read by FUN_440660.
+struct GhostHeader
+{
+    BYTE unk00[0x1c]; // 0x00
+    int frames;       // 0x1c
+    BYTE unk20[0xc];  // 0x20
+    char name[0x54];  // 0x2c
+};
+
+int FUN_440160();
+int FUN_4402e0();
+int FUN_440660(void *buffer, int size, int ghost);
+char *FUN_43d550(int frames);
+int FUN_457a20(int value);
+int FUN_457bf0(int card, int *freeSpace);
+int FUN_457e70(Unk457e70 *object, int id);
+
 struct Unk4522c0
 {
     DWORD unk00[5];    // 0x00
@@ -220,7 +237,7 @@ int FUN_452b60(PoolObject *object, int msg, int arg);
 int FUN_45bba0(MenuObject *object, int arg);
 void FUN_45bbb0(PoolObject *object);
 int FUN_45bbc0(PoolObject *object, int msg, int arg);
-int FUN_457920(PoolObject *object, int arg);
+int FUN_457920(Unk457e70 *object, int arg);
 void FUN_457ea0(Unk457ea0 *object);
 int FUN_457ec0(PoolObject *object, int msg, int arg);
 int FUN_45a9c0(Unk45a9c0 *object, int arg);
@@ -267,6 +284,12 @@ int FUN_45de00(PoolObject *object, int msg, int arg);
 // One entry per track, built by FUN_456fc0.
 // Per save slot: money text, then the FUN_45a9c0 number.
 int FUN_45dc40(Unlock *unlock);
+int FUN_457a40(Unk457e70 *object);
+int FUN_457be0();
+int FUN_457cf0(Unk457e70 *object, int mode);
+// GLOBAL: STUNTGP_D3D 0x627b54
+GhostHeader g_627b54;
+
 // GLOBAL: STUNTGP_D3D 0x627ff8
 int g_627ff8;
 
@@ -693,6 +716,16 @@ MenuItem g_4869e8[13] = {
 
 // GLOBAL: STUNTGP_D3D 0x4878f0
 MenuDef g_4878f0 = {0xb, -1.0f, 0, 85.0f, 254.0f, 0.8f, 2, 1.1f, 1, 0x70, g_4869e8, 0};
+
+// GLOBAL: STUNTGP_D3D 0x488c00
+MenuItem g_488c00[3] = {
+    {0, 0xffc8c8ff, 0xffffffff, 0x15, 0, 1, 0, 0},
+    {1, 0xffc8c8ff, 0xffffffff, 0x16, 0, 1, 0, 0},
+    {0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x488c60
+MenuDef g_488c60 = {0xb, 0.0f, 0, 520.0f, 382.0f, 1.0f, 2, 1.25f, 1, 0x50, g_488c00, 0};
 
 // STUB: STUNTGP_D3D 0x450550
 int FUN_450550(PoolObject *object, int msg, int arg)
@@ -1321,10 +1354,52 @@ int FUN_4577e0(PoolObject *object, int msg, int arg)
     return 0;
 }
 
-// STUB: STUNTGP_D3D 0x457920
-int FUN_457920(PoolObject *object, int arg)
+// FUNCTION: STUNTGP_D3D 0x457920
+int FUN_457920(Unk457e70 *object, int arg)
 {
-    return 0;
+    object->unk18 = FUN_4402e0();
+    g_menuState.unk46e0 = 0;
+    object->unk1c = 0;
+    object->unk20 = 0;
+    object->unk24 = 0;
+    object->unk28 = 0;
+    object->unk2c = 0;
+    object->unk30 = 0;
+    object->unk34 = 0;
+    object->unk38 = 1.0f;
+    object->unk3c = 1.0f;
+    for (int i = 0; i < 8; i++)
+    {
+        object->unk044[i] = 1;
+    }
+    FUN_457a40(object);
+    int index = FUN_457cf0(object, g_menuState.unk46c8);
+    object->unk20 = index;
+    object->unk2c = object->unk28 = index;
+    MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
+    memset(list, 0, sizeof(MenuList));
+    *(PoolClass *)&list->base.destroy = g_menuListClass;
+    list->base.type = 0x29;
+    // STRING: STUNTGP_D3D 0x488c98
+    list->base.name = "MenuText";
+    list->base.unk08 = 0;
+    if (!FUN_43c860(list, &g_488c60))
+    {
+        Pool_Free(list);
+        object->unk40 = NULL;
+    }
+    else
+    {
+        object->unk40 = &list->base;
+    }
+    PoolObject *child = object->unk40;
+    child->message(child, 0x18, 0);
+    child->message(child, 0x13, 0);
+    if (FUN_457a20(g_menuState.unk46c8))
+    {
+        g_menuState.unk46bc = 1;
+    }
+    return 1;
 }
 
 // STUB: STUNTGP_D3D 0x457ec0
@@ -1900,6 +1975,177 @@ int FUN_45dc40(Unlock *unlock)
     return 0;
 }
 
+// FUNCTION: STUNTGP_D3D 0x457a40
+int FUN_457a40(Unk457e70 *object)
+{
+    int changed = 0;
+    int cards = FUN_457be0();
+    object->unk1fc = 0;
+    memset(object->entries, 0, sizeof(object->entries));
+    for (int i = 0; i < 8; i++)
+    {
+        object->entries[i].unk08 = 0;
+    }
+    object->count = 0;
+    for (int card = 0; card < cards; card++)
+    {
+        int freeSpace;
+        int state = FUN_457bf0(card, &freeSpace);
+        if (state != object->unk044[card])
+        {
+            changed = 1;
+        }
+        if (state)
+        {
+            object->unk044[card] = state;
+            object->entries[object->count].id = card;
+            object->entries[object->count].unk08 = state;
+            object->entries[object->count].unk04 = freeSpace;
+            object->entries[object->count].name = FUN_441170(card + 0x255);
+            if (object->entries[object->count].unk08 == 5)
+            {
+                switch (g_menuState.unk46c8)
+                {
+                case 1:
+                case 2:
+                case 3:
+                    object->unk1fc++;
+                    break;
+                case 4:
+                case 5:
+                    if (FUN_440660(&g_627b54, sizeof(g_627b54), g_menuState.unk46cc))
+                    {
+                        object->entries[object->count].unk08 = 1;
+                    }
+                    else
+                    {
+                        // STRING: STUNTGP_D3D 0x488ca4
+                        sprintf(object->entries[object->count].text, "%s-%s", g_627b54.name, FUN_43d550(g_627b54.frames));
+                    }
+                    break;
+                }
+            }
+            object->count++;
+        }
+    }
+    if (object->unk20 >= object->count)
+    {
+        object->unk20 = object->count - 1;
+    }
+    if (object->unk20 < 0)
+    {
+        object->unk20 = 0;
+    }
+    return changed;
+}
+
+// FUNCTION: STUNTGP_D3D 0x457be0
+int FUN_457be0()
+{
+    return FUN_440160();
+}
+
+// FUNCTION: STUNTGP_D3D 0x457cf0
+int FUN_457cf0(Unk457e70 *object, int mode)
+{
+    int index = -1;
+    int count = object->count;
+    int i;
+    switch (g_menuState.unk46c8)
+    {
+    case 1:
+    case 2:
+    case 3:
+        index = FUN_457e70(object, g_menuState.unk46d8);
+        if (index >= 0)
+        {
+            return index;
+        }
+        break;
+    case 4:
+    case 5:
+        index = FUN_457e70(object, g_menuState.unk46dc);
+        if (index >= 0)
+        {
+            return index;
+        }
+        break;
+    }
+    switch (g_menuState.unk46c8)
+    {
+    case 3:
+    case 5:
+        if (g_menuState.unk46bc)
+        {
+            g_menuState.unk46bc = 0;
+        }
+        break;
+    }
+    switch (mode)
+    {
+    case 1:
+        for (i = 0; i < count && index < 0; i++)
+        {
+            if (object->entries[i].unk08 == 5)
+            {
+                index = i;
+            }
+        }
+        for (i = 0; i < count && index < 0; i++)
+        {
+            if (object->entries[i].unk08 == 4)
+            {
+                index = i;
+            }
+        }
+        for (i = 0; i < count && index < 0; i++)
+        {
+            if (object->entries[i].unk08 == 2)
+            {
+                index = i;
+            }
+        }
+        break;
+    case 2:
+        for (i = 0; i < count && index < 0; i++)
+        {
+            if (object->entries[i].unk08 == 5)
+            {
+                index = i;
+            }
+        }
+        break;
+    case 3:
+        for (i = 0; i < count && index < 0; i++)
+        {
+            if (object->entries[i].unk08 == 4)
+            {
+                index = i;
+            }
+        }
+        for (i = 0; i < count && index < 0; i++)
+        {
+            if (object->entries[i].unk08 == 2)
+            {
+                index = i;
+            }
+        }
+        for (i = 0; i < count && index < 0; i++)
+        {
+            if (object->entries[i].unk08 == 5)
+            {
+                index = i;
+            }
+        }
+        break;
+    }
+    if (index < 0)
+    {
+        index = 0;
+    }
+    return index;
+}
+
 typedef int (*ScreenInit)(PoolObject *object, int arg);
 
 // Allocates one front-end screen and runs its init; NULL if the init fails.
@@ -2035,7 +2281,7 @@ PoolObject *FUN_43e000(int a, int screen)
         break;
     case 27:
         // STRING: STUNTGP_D3D 0x4797fc
-        object = NewScreen(0x200, 26, "PageSave", &g_488c90, FUN_457920);
+        object = NewScreen(0x200, 26, "PageSave", &g_488c90, (ScreenInit)FUN_457920);
         break;
     case 29:
         // STRING: STUNTGP_D3D 0x479808

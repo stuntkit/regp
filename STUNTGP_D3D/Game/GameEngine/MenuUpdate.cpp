@@ -111,30 +111,6 @@ struct Unk457ea0
     PoolObject *child; // 0x40
 };
 
-struct Unk457e70Entry
-{
-    int id;
-    int unk04;
-    int unk08;
-    BYTE unk0c[0x24];
-};
-
-struct Unk457e70
-{
-    BYTE unk000[0x20];         // 0x000
-    int unk20;                 // 0x020, selected entry
-    BYTE unk024[0x1c];         // 0x024
-    PoolObject *unk40;         // 0x040
-    BYTE unk044[0x20];         // 0x044
-    Unk457e70Entry entries[8]; // 0x064
-    int count;                 // 0x1e4
-    int unk1e8;                // 0x1e8
-    int unk1ec;                // 0x1ec
-    int unk1f0;                // 0x1f0
-    int unk1f4;                // 0x1f4
-    int unk1f8;                // 0x1f8
-};
-
 typedef Unk457e70 Unk458860;
 
 // GLOBAL: STUNTGP_D3D 0x4865a0

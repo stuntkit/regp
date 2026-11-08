@@ -338,7 +338,8 @@ struct MenuState
     ScoreList unk4694; // 0x4694, copied by FUN_459200
     int unk46a8; // 0x46a8
     int unk46ac[4]; // 0x46ac
-    BYTE unk46bc[0x46c4 - 0x46bc];
+    int unk46bc; // 0x46bc
+    int unk46c0; // 0x46c0
     int unk46c4; // 0x46c4
     int unk46c8; // 0x46c8
     int unk46cc; // 0x46cc
@@ -346,7 +347,8 @@ struct MenuState
     int unk46d4; // 0x46d4
     int unk46d8; // 0x46d8
     int unk46dc; // 0x46dc
-    BYTE unk46e0[0x13148 - 0x46e0];
+    int unk46e0; // 0x46e0
+    BYTE unk46e4[0x13148 - 0x46e4];
     Unk4d5cc0 *unk13148; // 0x13148
     ShopCar cars[21];    // 0x1314c, [1..20] used
     BYTE unk144a8[0x14594 - 0x144a8];
@@ -441,6 +443,42 @@ struct Unk486b88
 };
 
 extern Unk486b88 g_486b88[13];
+
+// One memory card slot listed by PageSave.
+struct Unk457e70Entry
+{
+    int id;         // 0x00, card
+    int unk04;      // 0x04, free space
+    int unk08;      // 0x08, FUN_457bf0 state
+    char text[0x20]; // 0x0c
+    char *name;     // 0x2c
+};
+
+// PageSave
+struct Unk457e70
+{
+    BYTE unk000[0x18];         // 0x000
+    int unk18;                 // 0x018
+    int unk1c;                 // 0x01c
+    int unk20;                 // 0x020, selected entry
+    int unk24;                 // 0x024
+    float unk28;               // 0x028
+    float unk2c;               // 0x02c
+    int unk30;                 // 0x030
+    int unk34;                 // 0x034
+    float unk38;               // 0x038
+    float unk3c;               // 0x03c
+    PoolObject *unk40;         // 0x040
+    int unk044[8];             // 0x044, last state per card
+    Unk457e70Entry entries[8]; // 0x064
+    int count;                 // 0x1e4
+    int unk1e8;                // 0x1e8
+    int unk1ec;                // 0x1ec
+    int unk1f0;                // 0x1f0
+    int unk1f4;                // 0x1f4
+    int unk1f8;                // 0x1f8
+    int unk1fc;                // 0x1fc
+};
 
 int FUN_43c860(MenuList *list, MenuDef *def);
 void FUN_424bd0(float x, float y);
