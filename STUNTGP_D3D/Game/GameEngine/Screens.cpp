@@ -2,6 +2,7 @@
 #include "Game/GameEngine/MenuUpdate.h"
 #include "sprite.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -34,6 +35,9 @@ int FUN_458e50();
 int FUN_458eb0();
 
 // PageArcadeScore
+int FUN_452d70(int id);
+void FUN_440880(int a);
+
 struct Unk459790
 {
     DWORD unk00[5];    // 0x00
@@ -304,7 +308,7 @@ void FUN_45ab70(Unk45ab70 *object);
 int FUN_45abb0(PoolObject *object, int msg, int arg);
 int FUN_452c00(Unk452c00 *object, int arg);
 void FUN_452d50(MenuHolder *object);
-int FUN_452d90(PoolObject *object, int msg, int arg);
+int FUN_452d90(Unk452c00 *object, int msg, int arg);
 int FUN_452940(MenuHolder *object, int arg);
 void FUN_4529c0(MenuHolder *object);
 int FUN_4529e0(PoolObject *object, int msg, int arg);
@@ -396,7 +400,7 @@ PoolClass g_4879a8 = {(void (*)(PoolObject *))FUN_4529c0, FUN_4529e0};
 PoolClass g_4879c0 = {FUN_452b50, FUN_452b60};
 
 // GLOBAL: STUNTGP_D3D 0x487a38
-PoolClass g_487a38 = {(void (*)(PoolObject *))FUN_452d50, FUN_452d90};
+PoolClass g_487a38 = {(void (*)(PoolObject *))FUN_452d50, (int (*)(PoolObject *, int, int))FUN_452d90};
 
 // GLOBAL: STUNTGP_D3D 0x487a50
 PoolClass g_487a50 = {FUN_452fd0, FUN_452fe0};
@@ -1021,9 +1025,69 @@ int FUN_452c00(Unk452c00 *object, int arg)
     return 1;
 }
 
-// STUB: STUNTGP_D3D 0x452d90
-int FUN_452d90(PoolObject *object, int msg, int arg)
+// FUNCTION: STUNTGP_D3D 0x452d90
+int FUN_452d90(Unk452c00 *object, int msg, int arg)
 {
+    PoolObject *child;
+    int i;
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(1);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(0x5d, 0.3f, -0.5f);
+    case 0xb:
+    case 0xc:
+    case 0x14:
+        object->child->message(object->child, msg, 0);
+        return 0;
+    case 0x11:
+        if (object->unk28 <= 0)
+        {
+            FUN_440880(9);
+            return 0;
+        }
+        FUN_452d70(object->unk28);
+        FUN_440890(msg);
+        FUN_43eef0();
+        return 0;
+    case 0x10:
+        child = object->child;
+        child->message(child, msg, 0);
+        object->unk18 = child->message(child, 0x1a, 0);
+        FUN_452d70(g_menuState.languages[object->unk18].id);
+        FUN_43eef0();
+        return 0;
+    case 2:
+    {
+        child = object->child;
+        child->message(child, msg, 0);
+        float target = child->message(child, 0x1a, 0);
+        object->unk24 = target;
+        object->unk20 = FUN_43d810(object->unk20, target, 0.001f);
+        return 0;
+    }
+    case 1:
+        if (object->unk1c)
+        {
+            FUN_452d70(g_menuState.languages[object->unk18].id);
+            FUN_43eef0();
+            return 0;
+        }
+        break;
+    case 3:
+        object->child->message(object->child, msg, 0);
+        for (i = 0; i < g_menuState.languageCount; i++)
+        {
+            float angle = (i - object->unk20) * 6.2831855f / g_menuState.languageCount;
+            int id = g_menuState.languages[i].id - 1;
+            float x = (float)cos(angle) * 200.0f + 68.0f;
+            float y = (float)sin(angle) * 130.0f + 240.0f;
+            FUN_438710(x, y, 0xd, id + 0x15, 1.0f, 0x203);
+            FUN_438710(x, y, 0xc, id + 0xd, 1.0f, 0x103);
+        }
+        break;
+    }
     return 0;
 }
 
