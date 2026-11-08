@@ -50,6 +50,25 @@ struct TextureSlot
     DWORD unk04[6];
 };
 
+// One Direct3D driver of a DirectDraw device, 0x478 bytes apart from devices[i] + 0x2274.
+struct D3DDriver
+{
+    GUID guid;                       // 0x000
+    char description[64];            // 0x010
+    char name[16];                   // 0x050
+    int hardware;                    // 0x060
+    int zbufferMode;                 // 0x064, 0 none, 1 z-buffer, 2 w-buffer
+    D3DDEVICEDESC desc;              // 0x068
+    LPDIRECT3DDEVICE3 device;        // 0x164
+    int perspective;                 // 0x168
+    BYTE unk16c[4];                  // 0x16c
+    DWORD textureFormatCount;        // 0x170
+    BYTE unk174[0x374 - 0x174];      // 0x174
+    DWORD zbufferFormatCount;        // 0x374
+    DDPIXELFORMAT zbufferFormats[8]; // 0x378
+};
+typedef char D3DDriverSizeCheck[sizeof(D3DDriver) == 0x478 ? 1 : -1];
+
 // Image table bookkeeping; the loaders append names and 0x18-byte entries.
 struct ImageLoader
 {
@@ -141,7 +160,7 @@ void FUN_4327e0(BYTE *texture, Font *font, int arg);
 int FUN_4325e0(BYTE *image, DWORD width, DWORD height);
 void FUN_42be90(char *path);
 void FUN_4234e0(BYTE *dst, BYTE *src);
-void FUN_430100(LPDIRECTDRAWSURFACE4 surface, BYTE *image, DWORD width, DWORD height, int bits);
+void FUN_430100(LPDIRECTDRAWSURFACE4 surface, BYTE *image, int width, int height, int bits);
 void FUN_42f340();
 void FUN_42f380();
 void FUN_432300(Font *font, D3DCOLOR color, DWORD flags);

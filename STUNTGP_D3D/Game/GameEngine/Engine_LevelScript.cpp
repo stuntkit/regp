@@ -1,14 +1,19 @@
 #include "Engine_LevelScript.h"
 
 #include "../../sound.h"
+#include "GameSetup.h"
 #include "GameUpdate.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 // GLOBAL: STUNTGP_D3D 0x48491c
 char g_GraphicsDirectory[128] = "D:\\Game\\Graphics24\\";
+
+// GLOBAL: STUNTGP_D3D 0x48499c
+char g_GraphicsDirectory24Max[128] = "D:\\Game\\Graphics24Max\\";
 
 // GLOBAL: STUNTGP_D3D 0x484a1c
 char g_SoundDirectory[128] = "D:\\Game\\Sound";
@@ -139,6 +144,80 @@ void FUN_42c6f0(char *text, char **end, char *value)
             i++;
         }
         *end = &text[i + 1];
+    }
+}
+
+extern int g_577660[10];
+extern int g_624460;
+void FUN_425880();
+
+// Queues the sky and track scenes; the animated sky gets its scroll speeds.
+// FUNCTION: STUNTGP_D3D 0x42c740
+void FUN_42c740(char *script)
+{
+    // STRING: STUNTGP_D3D 0x4777f4
+    if (Script_FindKey(script, &script, "L_SKY") == 1)
+    {
+        Script_ReadString(script, &script, (char *)g_58c234);
+        g_58c540[g_58c808].id = g_58c234;
+        g_58c234 += strlen((char *)g_58c234) + 1;
+        g_58c540[g_58c808].slot = 2;
+        g_58c808++;
+        g_58c540[g_58c808].id = 0;
+        FUN_425880();
+        // STRING: STUNTGP_D3D 0x4777fc
+        if (strstr((char *)g_58c540[g_58c808 - 1].id, "AnimSkyGround"))
+        {
+            ((float *)g_577660)[3] = 0.0f;
+            ((float *)g_577660)[4] = 0.0f;
+            ((float *)g_577660)[8] = 0.0007f;
+            ((float *)g_577660)[9] = 0.0007f;
+        }
+    }
+    // STRING: STUNTGP_D3D 0x47780c
+    if (Script_FindKey(script, &script, "L_TRACK") == 1)
+    {
+        Script_ReadString(script, &script, (char *)g_58c234);
+        g_624460 = g_58c234;
+        g_58c540[g_58c808].id = g_58c234;
+        g_58c234 += strlen((char *)g_58c234) + 1;
+        g_58c540[g_58c808].slot = 3;
+        g_58c808++;
+        g_58c540[g_58c808].id = 0;
+    }
+}
+
+// Queues each car's model and shadow scene from the L_CARn keys.
+// FUNCTION: STUNTGP_D3D 0x42c880
+void FUN_42c880(char *script)
+{
+    char shadowKey[16];
+    char key[16];
+    int slot = 4;
+    for (DWORD car = 1; car <= 6; car++)
+    {
+        // STRING: STUNTGP_D3D 0x477814
+        sprintf(key, "L_CAR%d", car);
+        // STRING: STUNTGP_D3D 0x47781c
+        sprintf(shadowKey, "L_CAR%dSHADOW", car);
+        if (Script_FindKey(script, &script, key) != 1)
+        {
+            return;
+        }
+        Script_ReadString(script, &script, (char *)g_58c234);
+        g_58c540[g_58c808].id = g_58c234;
+        g_58c234 += strlen((char *)g_58c234) + 1;
+        g_58c540[g_58c808].slot = slot;
+        g_58c808++;
+        g_58c540[g_58c808].id = 0;
+        Script_FindKey(script, &script, shadowKey);
+        Script_ReadString(script, &script, (char *)g_58c234);
+        g_58c540[g_58c808].id = g_58c234;
+        g_58c540[g_58c808].slot = slot + 1;
+        g_58c234 += strlen((char *)g_58c234) + 1;
+        g_58c808++;
+        g_58c540[g_58c808].id = 0;
+        slot += 2;
     }
 }
 
@@ -519,6 +598,62 @@ void FUN_42d7e0()
     g_624504.ir = ir << 8;
     g_624504.ig = ig << 8;
     g_624504.ib = ib << 8;
+}
+
+// GLOBAL: STUNTGP_D3D 0x477b80
+float g_477b80 = 1.0f;
+
+// GLOBAL: STUNTGP_D3D 0x477b84
+float g_477b84 = 1.0f;
+
+// GLOBAL: STUNTGP_D3D 0x589e00
+float g_589e00;
+
+extern int g_576be0;
+void FUN_4320c0(float gamma);
+
+// Eases the gamma towards its target, adding a slow flash while it is above 3.
+// FUNCTION: STUNTGP_D3D 0x42d870
+void FUN_42d870()
+{
+    if (g_4722d0->fadeActive == 1 || g_576be0)
+    {
+        g_477b84 = 1.0f;
+        g_477b80 = 1.0f;
+        FUN_4320c0(1.0f);
+        return;
+    }
+    float diff = g_477b80 - g_477b84;
+    if ((float)fabs(diff) > 0.2f)
+    {
+        float step;
+        if (diff > 0.0f)
+        {
+            step = 0.5f;
+        }
+        else
+        {
+            step = -0.05f;
+        }
+        g_477b84 += step;
+    }
+    if (g_477b84 > 3.0f)
+    {
+        g_589e00 += 0.0075f;
+        if (g_589e00 > 1.0f)
+        {
+            g_589e00 = 1.0f;
+        }
+    }
+    else
+    {
+        g_589e00 -= 0.05f;
+        if (g_589e00 < 0.0f)
+        {
+            g_589e00 = 0.0f;
+        }
+    }
+    FUN_4320c0(g_477b84 - g_589e00);
 }
 
 // FUNCTION: STUNTGP_D3D 0x434980

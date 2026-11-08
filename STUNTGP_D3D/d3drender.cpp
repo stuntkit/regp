@@ -504,9 +504,39 @@ void FUN_4234e0(BYTE *dst, BYTE *src)
 {
 }
 
-// STUB: STUNTGP_D3D 0x430100
-void FUN_430100(LPDIRECTDRAWSURFACE4 surface, BYTE *image, DWORD width, DWORD height, int bits)
+// Copies a packed image into a locked surface row by row, honouring its pitch.
+// FUNCTION: STUNTGP_D3D 0x430100
+void FUN_430100(LPDIRECTDRAWSURFACE4 surface, BYTE *image, int width, int height, int bits)
 {
+    DDSURFACEDESC2 desc;
+    desc.dwSize = sizeof(desc);
+    int res = surface->Lock(NULL, &desc, DDLOCK_WAIT, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    if (desc.dwFlags & DDSD_PITCH)
+    {
+        int bpp = bits / 8;
+        int pitch = desc.lPitch;
+        BYTE *dst = (BYTE *)desc.lpSurface;
+        int rowBytes = bpp * width;
+        for (int y = 0; y < height; y++)
+        {
+            int offset = 0;
+            for (int x = 0; x < width; x++)
+            {
+                for (int k = 0; k < bpp; k++)
+                {
+                    dst[offset] = image[offset];
+                    offset++;
+                }
+            }
+            image += rowBytes;
+            dst += pitch;
+        }
+        surface->Unlock(NULL);
+    }
 }
 
 // Uploads an image into texture slot through a system-memory staging surface.
@@ -973,6 +1003,50 @@ BOOL WINAPI FUN_42f530(GUID *guid, LPSTR description, LPSTR name, LPVOID context
     return TRUE;
 }
 
+HRESULT WINAPI FUN_42fe40(LPDDPIXELFORMAT format, LPVOID context);
+
+// Direct3D device enumeration callback; records up to six drivers of a DirectDraw device.
+// FUNCTION: STUNTGP_D3D 0x42f420
+HRESULT WINAPI FUN_42f420(GUID *guid, LPSTR description, LPSTR name, LPD3DDEVICEDESC hw, LPD3DDEVICEDESC hel, LPVOID context)
+{
+    BYTE *dev = (BYTE *)context;
+    D3DDriver *drv = (D3DDriver *)(dev + 0x2274) + *(DWORD *)(dev + 0x2270);
+    if (*(DWORD *)(dev + 0x2270) >= 6)
+    {
+        return D3DENUMRET_CANCEL;
+    }
+    drv->guid = *guid;
+    strncpy(drv->description, description, sizeof(drv->description));
+    strncpy(drv->name, name, sizeof(drv->name));
+    if (hw->dcmColorModel)
+    {
+        drv->hardware = 1;
+        drv->desc = *hw;
+    }
+    else
+    {
+        drv->hardware = 0;
+        drv->desc = *hel;
+    }
+    drv->perspective = drv->desc.dpcTriCaps.dwTextureCaps & D3DPTEXTURECAPS_PERSPECTIVE;
+    if (drv->desc.dpcTriCaps.dwRasterCaps & D3DPRASTERCAPS_WBUFFER)
+    {
+        drv->zbufferMode = 2;
+    }
+    else
+    {
+        drv->zbufferMode = 1;
+    }
+    drv->zbufferFormatCount = 0;
+    (*(LPDIRECT3D3 *)(dev + 0x2264))->EnumZBufferFormats(drv->guid, FUN_42fe40, drv);
+    if (!drv->zbufferFormatCount)
+    {
+        drv->zbufferMode = 0;
+    }
+    (*(DWORD *)(dev + 0x2270))++;
+    return D3DENUMRET_OK;
+}
+
 // FUNCTION: STUNTGP_D3D 0x42f6a0
 void FUN_42f6a0()
 {
@@ -1056,6 +1130,44 @@ void FUN_42f7f0(D3DVIEWPORT2 *viewport, DWORD width, DWORD height)
     viewport->dvClipHeight = 2.0f;
 }
 
+// Creates the selected device's viewport covering the display and makes it current.
+// FUNCTION: STUNTGP_D3D 0x42f840
+int FUN_42f840()
+{
+    BYTE *dev = g_5ba788.device;
+    LPDIRECT3DDEVICE3 *device = &((D3DDriver *)g_5ba788.deviceDesc)->device;
+    LPDIRECT3DDEVICE3 d3dDevice = *device;
+    LPDIRECT3DVIEWPORT3 *viewport = (LPDIRECT3DVIEWPORT3 *)(dev + 0x2268);
+    if (*viewport)
+    {
+        (*viewport)->Release();
+    }
+    D3DVIEWPORT2 desc;
+    FUN_42f7f0(&desc, (float)g_DD_DISPLAYRESWIDTH, (float)g_DD_DISPLAYRESHEIGHT);
+    int res = (*(LPDIRECT3D3 *)(dev + 0x2264))->CreateViewport(viewport, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = (*device)->AddViewport(*viewport);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = (*viewport)->SetViewport2(&desc);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    g_5ba788.unk1ea30 = (int)*viewport;
+    res = d3dDevice->SetCurrentViewport((LPDIRECT3DVIEWPORT3)g_5ba788.unk1ea30);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    return 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x42f930
 void FUN_42f930()
 {
@@ -1116,6 +1228,43 @@ void FUN_42fa40()
     {
         g_592074 = g_6244f0 = 1;
     }
+}
+
+// Total video memory reported by ddGetMemory.
+// GLOBAL: STUNTGP_D3D 0x5da1cc
+DWORD g_5da1cc;
+
+// Sets the display mode and creates the flipping primary surface and its back buffer;
+// cards with more than 8MB get triple buffering.
+// FUNCTION: STUNTGP_D3D 0x42fc90
+int FUN_42fc90(LPDIRECTDRAW4 dd, LPDIRECTDRAWSURFACE4 *front, LPDIRECTDRAWSURFACE4 *back, DWORD width, DWORD height, DWORD depth)
+{
+    int res = dd->SetDisplayMode(width, height, depth, 0, 0);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    DDSURFACEDESC2 desc;
+    memset(&desc, 0, sizeof(desc));
+    desc.dwBackBufferCount = (g_5da1cc > 0x800000) + 1;
+    desc.ddsCaps.dwCaps = DAT_CAPS | DDSCAPS_VIDEOMEMORY | DDSCAPS_PRIMARYSURFACE | DDSCAPS_FLIP | DDSCAPS_COMPLEX;
+    desc.dwSize = sizeof(desc);
+    desc.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
+    res = dd->CreateSurface(&desc, front, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    FUN_422a00(front);
+    DDSCAPS2 caps;
+    caps.dwCaps = DDSCAPS_BACKBUFFER;
+    res = (*front)->GetAttachedSurface(&caps, back);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    g_61c358 = back;
+    return res;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42fe40
@@ -1545,6 +1694,48 @@ int FUN_42bcb0(char *suffix, char *base, char *path)
     sprintf(path, "%s%s.TGA", base, suffix);
     FUN_462440(path);
     return g_489714 <= g_6249a4;
+}
+
+extern char g_GraphicsDirectory[128];
+extern char g_GraphicsDirectory24Max[128];
+extern int g_6249a0;
+
+// Finds an image as .PC or .TGA, trying the high-detail directory first when allowed.
+// FUNCTION: STUNTGP_D3D 0x42bcf0
+void FUN_42bcf0(char *suffix, char *path, int highDetail)
+{
+    char dirs[2][128];
+    g_489714 = 0;
+    g_583330 = 0;
+    strcpy(dirs[0], g_GraphicsDirectory);
+    strcpy(dirs[1], g_GraphicsDirectory24Max);
+    g_58332c = 1;
+    int level;
+    if (highDetail == 1 && g_6249a0 == 1)
+    {
+        level = 1;
+    }
+    else
+    {
+        level = 0;
+    }
+    char *dir = dirs[level];
+    for (;;)
+    {
+        if (FUN_42bc30(suffix, dir, path) == 1)
+        {
+            return;
+        }
+        if (FUN_42bcb0(suffix, dir, path) == 1)
+        {
+            return;
+        }
+        dir -= 128;
+        if (--level < 0)
+        {
+            return;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x42bdd0

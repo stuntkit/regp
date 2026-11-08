@@ -467,6 +467,40 @@ void FUN_42c1d0()
     }
 }
 
+struct ImageCacheEntry
+{
+    int used;
+    char *name;
+    DWORD data[4];
+};
+
+void FUN_430ca0(char *name, int compressed, int type);
+
+// Loads an image once; later loads of the same name reuse the cached table entry.
+// FUNCTION: STUNTGP_D3D 0x42c220
+int FUN_42c220(char *name, int compressed)
+{
+    ImageCacheEntry *e;
+    for (e = (ImageCacheEntry *)g_580af0; e->used; e++)
+    {
+        if (!_strcmpi(name, e->name))
+        {
+            *(ImageCacheEntry *)g_5895b0.entryCursor = *e;
+            g_5895b0.entryCursor += 6;
+            return 1;
+        }
+    }
+    FUN_430ca0(name, compressed, 1);
+    *(ImageCacheEntry *)g_57eb08 = *(ImageCacheEntry *)(g_5895b0.entryCursor - 6);
+    // STRING: STUNTGP_D3D 0x4777ec
+    sprintf(g_57e304, "%s", name);
+    ((ImageCacheEntry *)g_57eb08)->used = 1;
+    ((ImageCacheEntry *)g_57eb08)->name = g_57e304;
+    g_57eb08 += sizeof(ImageCacheEntry);
+    g_57e304 += strlen(name) + 1;
+    return 1;
+}
+
 SpriteFile *FUN_441180();
 
 // FUNCTION: STUNTGP_D3D 0x42c2e0

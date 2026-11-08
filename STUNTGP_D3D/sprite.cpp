@@ -4,6 +4,7 @@
 
 #include <direct.h>
 #include <io.h>
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -301,6 +302,68 @@ float FUN_438950(float size)
 }
 
 // Clips a sprite against the integer clip rectangle and queues it.
+// Horizontally stretched sprite: the left and right halves of the image with `middle` pixels
+// of the centre column between them. Flags 1/4 centre/right-align, 2/8 centre/bottom-align.
+// FUNCTION: STUNTGP_D3D 0x438230
+void FUN_438230(int layer, int def, float x, float y, float middle, DWORD flags)
+{
+    SpriteData s;
+    if (!def)
+    {
+        return;
+    }
+    if (middle < 0.0f)
+    {
+        return;
+    }
+    FUN_441320(&s, def);
+    s.flags = 2;
+    s.alpha = 0xff;
+    if (flags & 0x100)
+    {
+        s.blendMode = 0x58;
+    }
+    else
+    {
+        s.blendMode = (flags & 0x200) ? 0x70 : 0x20;
+    }
+    float half = s.width * 0.5f;
+    s.x = x;
+    s.y = y;
+    float u1 = s.u1;
+    float total = s.width + middle;
+    if (flags & 1)
+    {
+        s.x = x - total * 0.5f;
+    }
+    else if (flags & 4)
+    {
+        s.x = x - total;
+    }
+    if (flags & 2)
+    {
+        s.y = y - s.height * 0.5f;
+    }
+    else if (flags & 8)
+    {
+        s.y = y - s.height;
+    }
+    s.u1 = half * 4.0f + s.u0;
+    s.width = half;
+    FUN_438370(&s, layer, 0);
+    s.x = half + s.x;
+    if (middle != 0.0f)
+    {
+        s.u0 = s.u1;
+        s.width = middle;
+        FUN_438370(&s, layer, 0);
+        s.x = s.x + middle;
+    }
+    s.width = half;
+    s.u1 = u1;
+    FUN_438370(&s, layer, 0);
+}
+
 // FUNCTION: STUNTGP_D3D 0x438370
 void FUN_438370(SpriteData *src, int layer, int sub)
 {
@@ -543,6 +606,50 @@ float FUN_438a60(const char *text, float size)
     return height * lines;
 }
 
+// Draws text split into lines at '|' or 0xff; flag 2 centres the block vertically.
+// FUNCTION: STUNTGP_D3D 0x438ab0
+float FUN_438ab0(float x, float y, int layer, int style, char *text, float size, D3DCOLOR color, DWORD flags)
+{
+    int lines = 1;
+    float height = FUN_438950(size) * g_4793d8;
+    int i;
+    for (i = 0; text[i]; i++)
+    {
+        if (text[i] == '|' || text[i] == (char)0xff)
+        {
+            lines++;
+        }
+    }
+    if (flags & 2)
+    {
+        y -= (lines - 1) * height * 0.5f;
+    }
+    int start = 0;
+    for (i = 0; text[start]; i++)
+    {
+        char c = text[i];
+        if (c == '|' || c == (char)0xff || c == 0)
+        {
+            text[i] = 0;
+            FUN_438990(x, y, layer, 1, style, text + start, size, color, flags, 0.0f);
+            text[i] = c;
+            if (!c)
+            {
+                break;
+            }
+            y += height;
+            start = i + 1;
+        }
+    }
+    return lines * height;
+}
+
+// FUNCTION: STUNTGP_D3D 0x438ba0
+float FUN_438ba0(float x, float y, int layer, int style, int textId, float size, D3DCOLOR color, DWORD flags)
+{
+    return FUN_438ab0(x, y, layer, style, FUN_441170(textId), size, color, flags);
+}
+
 // FUNCTION: STUNTGP_D3D 0x438be0
 void FUN_438be0(float x, float y, int layer, int style, int textId, float size, D3DCOLOR color, DWORD flags)
 {
@@ -591,6 +698,52 @@ int FUN_438dc0(int style, int *a, int *b, int *c)
     *a = 0;
     *b = 0;
     return 0;
+}
+
+// Three-slice bar: fixed left and right caps around a stretched middle, from row `row` of the sprite.
+// FUNCTION: STUNTGP_D3D 0x438eb0
+void FUN_438eb0(float x, float y, int layer, int sub, int def, int leftWidth, int rightWidth, int rowHeight, int row, float scale, float midWidth, DWORD flags, float fade)
+{
+    SpriteData s;
+    fade = FUN_43d7b0(fade, 0.0f, 1.0f);
+    FUN_441320(&s, def);
+    s.flags = 2;
+    s.alpha = 0xff;
+    if (flags & 0x100)
+    {
+        s.blendMode = 0x58;
+    }
+    else if (flags & 0x200)
+    {
+        s.blendMode = 0x70;
+    }
+    else if (flags & 0x400)
+    {
+        s.blendMode = 0x60;
+        s.alpha = (int)(fade * 255.0f);
+    }
+    else
+    {
+        s.blendMode = 0x20;
+    }
+    s.x = x;
+    s.y = y;
+    s.height = rowHeight * scale;
+    s.v0 += rowHeight * 4.0f * row;
+    s.v1 += rowHeight * 4.0f * row;
+    s.width = leftWidth * scale;
+    s.u1 = leftWidth * 4.0f;
+    FUN_438370(&s, layer, sub);
+    s.x += s.width;
+    s.width = midWidth;
+    s.u0 = s.u1;
+    s.u1 = (256 - rightWidth) * 4.0f;
+    FUN_438370(&s, layer, sub);
+    s.x += s.width;
+    s.u0 = s.u1;
+    s.u1 = 1024.0f;
+    s.width = rightWidth * scale;
+    FUN_438370(&s, layer, sub);
 }
 
 // FUNCTION: STUNTGP_D3D 0x439380
@@ -1703,6 +1856,61 @@ int FUN_430ff0()
         exitError(ddGetErrMessage(res));
     }
     return 1;
+}
+
+// Nudges texture coordinates that sit on a texel boundary half a step inwards.
+// FUNCTION: STUNTGP_D3D 0x4310a0
+void FUN_4310a0(float *uv)
+{
+    double f;
+    if (uv[0] < 0.0f)
+    {
+        f = fmod(-uv[0], 1.0);
+        if (f <= 0.001)
+        {
+            uv[0] += 0.005;
+        }
+        if (f >= 0.999)
+        {
+            uv[0] -= 0.005;
+        }
+    }
+    else
+    {
+        f = fmod(uv[0], 1.0);
+        if (f <= 0.001)
+        {
+            uv[0] += 0.005;
+        }
+        if (f >= 0.999)
+        {
+            uv[0] -= 0.005;
+        }
+    }
+    if (uv[1] < 0.0f)
+    {
+        f = fmod(-uv[1], 1.0);
+        if (f <= 0.001)
+        {
+            uv[1] += 0.005;
+        }
+        if (f >= 0.999)
+        {
+            uv[1] -= 0.005;
+        }
+    }
+    else
+    {
+        f = fmod(uv[1], 1.0);
+        if (f <= 0.001)
+        {
+            uv[1] += 0.005;
+        }
+        if (f >= 0.999)
+        {
+            uv[1] -= 0.005;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x437e20

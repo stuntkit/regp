@@ -165,6 +165,10 @@ Scene *g_58c800;
 // GLOBAL: STUNTGP_D3D 0x58d810
 TrackHeader *g_58d810;
 
+// Name of the track scene from L_TRACK.
+// GLOBAL: STUNTGP_D3D 0x624460
+int g_624460;
+
 // GLOBAL: STUNTGP_D3D 0x624464
 BYTE *g_624464;
 
@@ -932,6 +936,26 @@ void FUN_42ba00(int from, int to)
     }
 }
 
+extern char *g_582f28[255];
+
+// Remaps scene texture indices from load order to their slot in the texture table.
+// FUNCTION: STUNTGP_D3D 0x42ba90
+void FUN_42ba90()
+{
+    for (int i = 0; g_582b28[i]; i++)
+    {
+        int j = 0;
+        while (strcmp(g_582b28[i], g_582f28[j]))
+        {
+            j++;
+        }
+        if (i != j)
+        {
+            FUN_42ba00(i, j);
+        }
+    }
+}
+
 // Camera height for the race scene list.
 // GLOBAL: STUNTGP_D3D 0x60dfa8
 float g_60dfa8;
@@ -1208,9 +1232,28 @@ void FUN_42d700()
     FUN_42d970();
 }
 
-// STUB: STUNTGP_D3D 0x42e240
+// Rescales the vertex colours of every object; the scale is full brightness, so it is a no-op.
+// FUNCTION: STUNTGP_D3D 0x42e240
 void FUN_42e240(Scene *scene)
 {
+    for (DWORD lod = 0; lod < scene->maxLod + 1; lod++)
+    {
+        for (DWORD i = 0; i < scene->objectCount; i++)
+        {
+            if (!FUN_42b8b0(scene, i, lod))
+            {
+                ObjectDef *def = &scene->lods[lod][i];
+                BYTE *v = def->unk2c;
+                for (DWORD j = 0; j < def->unk26; j++, v += 16)
+                {
+                    v[0xf] = v[0xf] * 255 / 255;
+                    v[0xe] = v[0xe] * 255 / 255;
+                    v[0xd] = v[0xd] * 255 / 255;
+                    v[0xc] = v[0xc] * 255 / 255;
+                }
+            }
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x42e380
@@ -1296,6 +1339,9 @@ DWORD g_61c508;
 
 // GLOBAL: STUNTGP_D3D 0x61c510
 int g_61c510;
+
+// GLOBAL: STUNTGP_D3D 0x61c514
+int g_61c514;
 
 // GLOBAL: STUNTGP_D3D 0x61c520
 int g_61c520;
@@ -1522,9 +1568,54 @@ void FUN_42b200()
     g_6243dc = ((int)g_6243d8 - (int)g_61c5f8) / 20;
 }
 
-// STUB: STUNTGP_D3D 0x429a40
+extern int g_6244d4;
+extern int g_6244e4;
+extern int g_61c510;
+extern int g_61c514;
+extern int g_61c520;
+
+// Perspective-divides the queued vertex lists into screen space.
+// FUNCTION: STUNTGP_D3D 0x429a40
 void FUN_429a40()
 {
+    float offY;
+    float scaleY;
+    float offX;
+    float scaleX;
+    scaleX = g_576b9c;
+    scaleY = g_576ba0;
+    offX = g_576b94;
+    offY = g_576b98;
+    int n = (g_61c520 - g_61c5ec) >> 2;
+    float **list = (float **)g_61c5ec;
+    while (n-- > 0)
+    {
+        float *v = *list++;
+        float s = 1.0f / (v[7] + 1.0f);
+        v[0] = s * v[0] * scaleX + offX;
+        v[1] = s * v[1] * scaleY + offY;
+        v[7] = s * 32.0f;
+    }
+    float *v = (float *)g_6244d4;
+    n = (g_6244e4 - g_6244d4) >> 5;
+    while (n-- > 0)
+    {
+        float s = 1.0f / (v[7] + 1.0f);
+        v[0] = s * v[0] * scaleX + offX;
+        v[1] = s * v[1] * scaleY + offY;
+        v[7] = s * 32.0f;
+        v += 8;
+    }
+    n = (g_61c510 - g_61c514) >> 5;
+    v = (float *)g_61c514;
+    while (n-- > 0)
+    {
+        float s = 1.0f / (v[7] + 1.0f);
+        v[0] = s * v[0] * scaleX + offX;
+        v[1] = s * v[1] * scaleY + offY;
+        v[7] = s * 32.0f;
+        v += 8;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x42a840
@@ -1536,6 +1627,46 @@ void FUN_42a840(Scene *scene)
         return;
     }
     g_62497c = scene->lod != scene->unk64 ? 1 : 4;
+}
+
+// Clips the eight corners of bounding box `box` against the view frustum, using the
+// plane distances' sign bits as outcodes: 0 outside, 1 partly visible, 2 inside.
+// FUNCTION: STUNTGP_D3D 0x42aa70
+int FUN_42aa70(int box)
+{
+    float l;
+    float r;
+    float t;
+    float b;
+    Vec4 *corner = (Vec4 *)(g_62446c + box * 16);
+    DWORD all = 0x3f;
+    DWORD any = 0;
+    DWORD n = 8;
+    while (n-- > 0)
+    {
+        float dx = corner->x - g_4722d0->cam.pos.x;
+        float dy = corner->y - g_4722d0->cam.pos.y;
+        float dz = corner->z - g_4722d0->cam.pos.z;
+        l = dx * g_4722d0->planeLeft.x + (dy * g_4722d0->planeLeft.y + dz * g_4722d0->planeLeft.z);
+        r = dx * g_4722d0->planeRight.x + dz * g_4722d0->planeRight.z + dy * g_4722d0->planeRight.y;
+        t = dz * g_4722d0->planeTop.z + dy * g_4722d0->planeTop.y + dx * g_4722d0->planeTop.x;
+        b = dx * g_4722d0->planeBottom.x + (dy * g_4722d0->planeBottom.y + dz * g_4722d0->planeBottom.z);
+        DWORD code = ((((((*(DWORD *)&l | 0x60000000) >> 1) | (*(DWORD *)&r & 0xbfffffff)) >> 1) |
+                       (*(DWORD *)&t & 0x9fffffff)) >> 1 |
+                      (*(DWORD *)&b & 0x8fffffff)) >> 26;
+        if (code == 0x3f && all != 0x3f)
+        {
+            return 2;
+        }
+        all &= code;
+        any |= code;
+        corner++;
+    }
+    if (all == 0x3f)
+    {
+        return 0;
+    }
+    return (any == 0x3f) + 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42a870
@@ -1619,13 +1750,6 @@ void FUN_42e6e0()
     g_6244f8 = 1;
     g_57b41c = 0;
 }
-
-// Scene to load into g_636418[slot]; the list ends at id 0.
-struct SceneLoad
-{
-    int id;   // 0x00
-    int slot; // 0x04
-};
 
 // GLOBAL: STUNTGP_D3D 0x58c230
 int g_58c230;
@@ -1784,9 +1908,36 @@ void FUN_4312c0()
     }
 }
 
-// STUB: STUNTGP_D3D 0x4311c0
+extern BYTE g_59207c[255];
+void FUN_4310a0(float *uv);
+
+// Nudges the texture coordinates of every face whose texture is flagged in g_59207c.
+// FUNCTION: STUNTGP_D3D 0x4311c0
 void FUN_4311c0(Scene *scene)
 {
+    for (DWORD lod = 0; lod < scene->maxLod + 1; lod++)
+    {
+        for (DWORD i = 0; i < scene->objectCount; i++)
+        {
+            if (!FUN_42b8b0(scene, i, lod))
+            {
+                DWORD count = scene->lods[lod][i].vertCount;
+                ObjectDef *def = &scene->lods[lod][i];
+                BYTE *face = def->verts;
+                for (DWORD j = 0; j < count; j++, face += 8)
+                {
+                    if (g_59207c[face[1]])
+                    {
+                        WORD *index = (WORD *)scene->unk38 + *(WORD *)(face + 6);
+                        for (DWORD k = 0; k < face[0]; k++)
+                        {
+                            FUN_4310a0((float *)(def->unk2c + index[k] * 16));
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 // STUB: STUNTGP_D3D 0x4342c0

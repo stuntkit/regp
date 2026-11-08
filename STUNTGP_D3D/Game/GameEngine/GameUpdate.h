@@ -770,7 +770,8 @@ struct GameSlot
     Vec4 planeRight;       // 0x128
     Vec4 planeTop;         // 0x138
     Vec4 planeBottom;      // 0x148
-    BYTE unk158[0x44];     // 0x158
+    BYTE unk158[0x40];     // 0x158
+    float nearZ;           // 0x198
     float unk19c;          // 0x19c
     float fov2;            // 0x1a0
     int unk1a4;            // 0x1a4

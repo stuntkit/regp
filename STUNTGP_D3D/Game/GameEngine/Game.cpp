@@ -315,6 +315,47 @@ void FUN_42e870()
     g_61c508 = (g_61c508 + 1) & 0xffff;
 }
 
+extern SlotFx *g_61b740;
+
+// Shakes the HUD faders by the car's clamped jolt.
+// FUNCTION: STUNTGP_D3D 0x44ac90
+void FUN_44ac90()
+{
+    Car *car = g_4722d0->data;
+    float dx = car->unk2308[0];
+    float dy = car->unk2308[1];
+    if (dx > 128.0f)
+    {
+        dx = 128.0f;
+    }
+    else if (dx < -128.0f)
+    {
+        dx = -128.0f;
+    }
+    if (dy > 128.0f)
+    {
+        dy = 128.0f;
+    }
+    else if (dy < -128.0f)
+    {
+        dy = -128.0f;
+    }
+    g_61b740->faders[1].x += dx;
+    g_61b740->faders[1].y += dy;
+    g_61b740->faders[2].x += dx;
+    g_61b740->faders[2].y += dy;
+    g_61b740->faders[3].x += dx;
+    g_61b740->faders[3].y += dy;
+    g_61b740->faders[4].x += dx;
+    g_61b740->faders[4].y += dy;
+    g_61b740->faders[5].x += dx;
+    g_61b740->faders[5].y += dy;
+    g_61b740->faders[6].x += dx;
+    g_61b740->faders[6].y += dy;
+    g_61b740->faders[7].x += dx;
+    g_61b740->faders[7].y += dy;
+}
+
 // STUB: STUNTGP_D3D 0x44ae40
 void FUN_44ae40()
 {

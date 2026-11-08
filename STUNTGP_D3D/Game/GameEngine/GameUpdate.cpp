@@ -1878,6 +1878,40 @@ void FUN_429510()
 
 extern int g_61c510;
 
+extern int g_61c510;
+
+// FUN_429660 that also stores clip outcodes for the four frustum sides and the near plane.
+// FUNCTION: STUNTGP_D3D 0x429520
+void FUN_429520(Vec4 *in, DWORD count)
+{
+    float d[5];
+    Vec4 t;
+    float *out = (float *)g_61c510;
+    float nearZ = g_4722d0->nearZ;
+    for (DWORD i = 0; i < count; i++)
+    {
+        t.x = g_61c428[8] * in->z + g_61c428[4] * in->y + g_61c428[0] * in->x + g_61c428[12];
+        t.y = g_61c428[9] * in->z + g_61c428[5] * in->y + g_61c428[1] * in->x + g_61c428[13];
+        t.z = g_61c428[10] * in->z + g_61c428[6] * in->y + g_61c428[2] * in->x + g_61c428[14];
+        float sx = g_61c3e8[0] * t.x;
+        out[0] = sx;
+        float sy = g_61c3e8[5] * t.y;
+        out[1] = sy;
+        float sz = g_61c3e8[10] * t.z + g_61c3e8[14];
+        out[2] = sz;
+        d[0] = nearZ - sz;
+        d[1] = -t.z - sx;
+        d[2] = sx - t.z;
+        d[3] = -t.z - sy;
+        d[4] = sy - t.z;
+        out[7] = t.z;
+        *(WORD *)(out + 4) = ((*(DWORD *)&d[4] >> 26) & 0x20) | ((*(DWORD *)&d[3] >> 27) & 0x10) |
+                             ((*(DWORD *)&d[2] >> 28) & 8) | ((*(DWORD *)&d[1] >> 29) & 4) | (*(DWORD *)&d[0] >> 31) | 2;
+        in++;
+        out += 8;
+    }
+}
+
 // Transforms points by g_61c428 and projects them into the g_61c510 vertex buffer.
 // FUNCTION: STUNTGP_D3D 0x429660
 void FUN_429660(Vec4 *in, DWORD count)
@@ -2025,9 +2059,44 @@ void FUN_443590()
     }
 }
 
-// STUB: STUNTGP_D3D 0x443630
+// GLOBAL: STUNTGP_D3D 0x60d67c
+int g_60d67c;
+
+// GLOBAL: STUNTGP_D3D 0x60d678
+int g_60d678;
+
+extern int g_60d674;
+void FUN_443480();
+
+// FUNCTION: STUNTGP_D3D 0x443630
 void FUN_443630()
 {
+    Car *car = g_4722d0->data;
+    if (g_60d67c && --g_60d67c == 0)
+    {
+        FUN_442cf0(180, g_6127a0[0x62], g_4d5bb8, 2, 0);
+    }
+    if (car->unk24a8 == 1)
+    {
+        FUN_443480();
+        FUN_41ab40(car, car->unk7268);
+        FUN_443590();
+        FUN_443530();
+        car->unk23a4 = 1;
+        if (g_60d678 == 1 && car->unk23bc < 1)
+        {
+            FUN_442cf0(300, g_6127a0[0x12], car, 0, 100);
+            g_60d674 = 1;
+            FUN_443560();
+            return;
+        }
+    }
+    else
+    {
+        FUN_443590();
+        FUN_4434f0();
+    }
+    FUN_443560();
 }
 
 // GLOBAL: STUNTGP_D3D 0x60f2b4
@@ -2901,6 +2970,29 @@ void FUN_446110()
     {
         FUN_460af0(found->id);
         g_484898 = found;
+    }
+}
+
+// Dumps the sound zone boxes in level script syntax.
+// FUNCTION: STUNTGP_D3D 0x446180
+void FUN_446180()
+{
+    // STRING: STUNTGP_D3D 0x484aa4
+    fprintf(g_5da2e4, "-LevelBoxList[] =\n");
+    for (SoundZone *zone = g_483f98; zone->id != -1; zone++)
+    {
+        // STRING: STUNTGP_D3D 0x484ab8
+        fprintf(g_5da2e4, "   -Type = %d\n", zone->id);
+        // STRING: STUNTGP_D3D 0x484ac8
+        fprintf(g_5da2e4, "   -Position = %12f %12f %12f\n", zone->bounds[0], zone->bounds[1], zone->bounds[2]);
+        // STRING: STUNTGP_D3D 0x484ae8
+        fprintf(g_5da2e4, "   -Scale    = %12f %12f %12f\n", zone->bounds[4], zone->bounds[5], zone->bounds[6]);
+        // STRING: STUNTGP_D3D 0x484b08
+        fprintf(g_5da2e4, "   -V        = %12f %12f %12f\n", zone->bounds[8], zone->bounds[9], zone->bounds[10]);
+        // STRING: STUNTGP_D3D 0x484b28
+        fprintf(g_5da2e4, "   -N        = %12f %12f %12f\n", zone->bounds[12], zone->bounds[13], zone->bounds[14]);
+        // STRING: STUNTGP_D3D 0x484b48
+        fprintf(g_5da2e4, "\n");
     }
 }
 

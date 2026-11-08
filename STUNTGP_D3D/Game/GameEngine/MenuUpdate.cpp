@@ -1156,6 +1156,51 @@ int FUN_436420(int sponsor, ShopItem *item, int *used, int unused)
     return price;
 }
 
+void FUN_436e90(int *p);
+void FUN_436ea0(int *p);
+
+// Rates a car setup on three bars, with unset part levels taken as the defaults.
+// FUNCTION: STUNTGP_D3D 0x436d60
+void FUN_436d60(ShopCar *car, int *stat0, int *stat1, int *stat2)
+{
+    ShopCar setup = *car;
+    FUN_436e90(&setup.parts[5][1]);
+    FUN_436e90(&setup.parts[4][1]);
+    FUN_436e90(&setup.parts[12][1]);
+    FUN_436e90(&setup.parts[8][1]);
+    FUN_436e90(&setup.parts[3][1]);
+    FUN_436e90(&setup.parts[6][1]);
+    FUN_436ea0(&setup.parts[13][1]);
+    FUN_436e90(&setup.parts[9][1]);
+    FUN_436e90(&setup.parts[11][1]);
+    FUN_436e90(&setup.parts[7][1]);
+    FUN_436e90(&setup.parts[10][1]);
+    int s0 = (setup.parts[5][1] + setup.parts[10][1] + setup.parts[11][1] * 4) * 2;
+    int s1 = (setup.parts[7][1] + (6 - setup.parts[12][1]) * 3 + setup.parts[8][1] * 2) * 2;
+    *stat1 = s1;
+    *stat0 = s0;
+    int s2 = setup.parts[11][1] * 6 + (setup.parts[5][1] + setup.parts[10][1]) * 4;
+    *stat2 = s2;
+    switch (car->unk04)
+    {
+    case 1:
+        *stat0 = s0 + 15;
+        *stat1 = s1 + 40;
+        *stat2 = s2 + 5;
+        break;
+    case 2:
+        *stat0 = s0 + 40;
+        *stat1 = s1 + 20;
+        *stat2 = s2 + 10;
+        break;
+    case 3:
+        *stat0 = s0 + 25;
+        *stat1 = s1 + 15;
+        *stat2 = s2 + 30;
+        break;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x436e90
 void FUN_436e90(int *p)
 {
@@ -1733,6 +1778,66 @@ void FUN_4378c0(int id)
 int FUN_437920(int index)
 {
     return g_menuState.nodes[index].unk04;
+}
+
+// Maps a node id to the pair of entries it joins; returns 0 for ids without one.
+// FUNCTION: STUNTGP_D3D 0x437930
+int FUN_437930(int id, int *from, int *to)
+{
+    *from = 0;
+    *to = 0;
+    switch (id)
+    {
+    case 7:
+        *to = 2;
+        *from = 1;
+        return 1;
+    case 8:
+        *to = 3;
+        *from = 2;
+        return 1;
+    case 9:
+        *to = 4;
+        *from = 3;
+        return 1;
+    case 10:
+        *to = 5;
+        *from = 4;
+        return 1;
+    case 11:
+        *to = 6;
+        *from = 5;
+        return 1;
+    case 12:
+        *to = 8;
+        *from = 7;
+        return 1;
+    case 13:
+        *to = 9;
+        *from = 8;
+        return 1;
+    case 14:
+        *to = 10;
+        *from = 9;
+        return 1;
+    case 15:
+        *to = 11;
+        *from = 10;
+        return 1;
+    case 16:
+        *to = 13;
+        *from = 12;
+        return 1;
+    case 17:
+        *to = 14;
+        *from = 13;
+        return 1;
+    case 18:
+        *to = 15;
+        *from = 14;
+        return 1;
+    }
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x437a90
@@ -2529,6 +2634,48 @@ float FUN_43da20(float a, float b)
         return a;
     }
     return b;
+}
+
+void FUN_438710(float x, float y, int layer, int def, float scale, DWORD flags);
+
+// Draws a three-layer sprite (shadow, outline, fill) in one of four colour sets.
+// FUNCTION: STUNTGP_D3D 0x43da40
+void FUN_43da40(int layer, int set, float x, float y, float scale, int shadow)
+{
+    int fill;
+    int outline;
+    int back;
+    switch (set)
+    {
+    case 1:
+        fill = 1;
+        outline = 5;
+        back = 9;
+        break;
+    case 2:
+        fill = 2;
+        outline = 6;
+        back = 10;
+        break;
+    case 3:
+        fill = 3;
+        outline = 7;
+        back = 11;
+        break;
+    case 4:
+        fill = 4;
+        outline = 8;
+        back = 12;
+        break;
+    default:
+        return;
+    }
+    if (shadow)
+    {
+        FUN_438710(x + 8.0f, y + 8.0f, layer + 2, back, scale, 0x203);
+    }
+    FUN_438710(x, y, layer + 1, outline, scale, 0x203);
+    FUN_438710(x, y, layer, fill, scale, 0x103);
 }
 
 // Reads the detail level and language overrides next to the executable.
