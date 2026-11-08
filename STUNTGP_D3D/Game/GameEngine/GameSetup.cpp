@@ -302,13 +302,59 @@ int g_4d5c9c;
 // GLOBAL: STUNTGP_D3D 0x4d5ca0
 int g_4d5ca0;
 
+// 16 screen-space effect slots; unk00 is 1 while a slot is in use.
 struct Unk496990
 {
-    int unk00;
-    BYTE unk04[0x40 - 4];
-    int unk40;
-    BYTE unk44[0x138 - 0x44];
+    int unk00;        // 0x00
+    BYTE unk04[0x4];  // 0x04
+    int unk08;        // 0x08
+    BYTE unk0c[0x4];  // 0x0c
+    int unk10;        // 0x10
+    float unk14;      // 0x14
+    float unk18;      // 0x18
+    BYTE unk1c[0x8];  // 0x1c
+    float unk24;      // 0x24
+    int unk28;        // 0x28
+    int unk2c;        // 0x2c
+    BYTE unk30[0x4];  // 0x30
+    int unk34;        // 0x34
+    BYTE unk38[0x8];  // 0x38
+    int unk40;        // 0x40
+    float unk44;      // 0x44
+    float unk48;      // 0x48
+    float unk4c;      // 0x4c
+    float unk50;      // 0x50
+    float unk54;      // 0x54
+    float unk58;      // 0x58
+    float unk5c;      // 0x5c
+    BYTE unk60[0x4];  // 0x60
+    float unk64;      // 0x64
+    float unk68;      // 0x68
+    float unk6c;      // 0x6c
+    float unk70;      // 0x70
+    BYTE unk74[0x18]; // 0x74
+    int unk8c;        // 0x8c
+    BYTE unk90[0x8];  // 0x90
+    int unk98;        // 0x98
+    BYTE unk9c[0x10]; // 0x9c
+    int unkac;        // 0xac
+    float x;          // 0xb0
+    float y;          // 0xb4
+    float unkb8;      // 0xb8
+    float width;      // 0xbc
+    float height;     // 0xc0
+    BYTE unkc4[0x10]; // 0xc4
+    int unkd4;        // 0xd4
+    int unkd8;        // 0xd8
+    int unkdc;        // 0xdc
+    int unke0;        // 0xe0
+    float halfWidth;  // 0xe4
+    float halfHeight; // 0xe8
+    float unkec;      // 0xec
+    float unkf0;      // 0xf0
+    BYTE unkf4[0x44]; // 0xf4
 };
+
 
 // GLOBAL: STUNTGP_D3D 0x496990
 Unk496990 g_496990[16];
@@ -335,6 +381,62 @@ void FUN_401000()
         g_496990[i].unk40 = 0;
     }
 }
+// Starts a 256x256 effect centred on (x, y) in the first free slot.
+// FUNCTION: STUNTGP_D3D 0x401030
+void FUN_401030(float x, float y)
+{
+    int i = 0;
+    Unk496990 *e = g_496990;
+    while (e->unk00 == 1)
+    {
+        i++;
+        if (i >= 16)
+        {
+            return;
+        }
+        e++;
+    }
+    e->unkd4 = 2;
+    e->width = 256.0f;
+    e->height = 256.0f;
+    e->unk10 = 24;
+    e->unk2c = 30;
+    e->unk24 = -0.5f;
+    e->unk14 = FUN_42f1c0(15.0f);
+    e->unk18 = FUN_42f1c0(7.5f) - 7.5f;
+    e->unk70 = 0.0f;
+    e->unk64 = 8.0f;
+    e->unk68 = 0.0f;
+    e->unk6c = 15.0f;
+    e->unk50 = 0.0f;
+    e->unk44 = 0.1f;
+    e->unk48 = 6.0f;
+    e->unk4c = 15.0f;
+    e->unk54 = 255.0f;
+    e->unk58 = 9.0f;
+    e->unk5c = 15.0f;
+    e->unk8c = -1;
+    e->unk00 = 1;
+    e->unk08 = 0;
+    e->unk28 = 0;
+    e->unk40 = 0;
+    e->unk98 = 0;
+    e->unk34 = 0;
+    e->unkd8 = 0x58;
+    e->unkac = e->unk10;
+    e->unkdc = 0;
+    e->unke0 = 0;
+    e->unkec = 1.0f;
+    e->unkf0 = 1.0f;
+    e->halfWidth = e->width * 0.5f;
+    e->halfHeight = e->height * 0.5f;
+    e->x = 320.0f - e->halfWidth;
+    e->y = 240.0f - e->halfHeight;
+    e->unkb8 = 1.0f;
+    e->x = x - e->halfWidth;
+    e->y = y - e->halfHeight;
+}
+
 
 struct Unk497f20
 {

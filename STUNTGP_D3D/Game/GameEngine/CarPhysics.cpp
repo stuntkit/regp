@@ -3504,6 +3504,64 @@ void FUN_4115c0()
     g_4d5bb8->unk7240 = 0;
 }
 
+void FUN_41d1f0(Stat *stat, float value);
+void FUN_4163e0(Car *car, float value);
+
+// Landing from a jump: scores the airtime and kicks the car up by how cleanly it came down.
+// FUNCTION: STUNTGP_D3D 0x4116f0
+void FUN_4116f0()
+{
+    if (g_4d5bb8->unk71f8 && !g_4d5bb8->unk7250)
+    {
+        g_4d5bb8->unk7204.x = 0.0f;
+        g_4d5bb8->unk7204.y = 0.0f;
+        g_4d5bb8->unk7204.z = 0.0f;
+        g_4d5bb8->unk2614 = g_4d5bb8->unk260c;
+        if (g_4d5bb8->unk7234)
+        {
+            float d = (float)fabs((float)abs((int)(g_4d5bb8->unk7234 - g_612948.unk03b4)));
+            float k = g_4d5bb8->unk1b94 * 60.0f;
+            if (d < k)
+            {
+                d -= g_4d5bb8->unk1b98 * 60.0f;
+                if (d < 0.0f)
+                {
+                    d = 0.0f;
+                }
+                k = (k - d) / k;
+                FUN_41d1f0(&g_4d5bb8->unk2584, k * 100.0f);
+                k = k * k;
+                FUN_4163e0(g_4d5bb8, k);
+                float f = k * g_4d5bb8->unk1b9c / g_4d5bb8->unk2618;
+                if (f > 25.0f)
+                {
+                    f = 25.0f;
+                }
+                g_4d5bb8->unk1c8c.y = f + g_4d5bb8->unk1c8c.y;
+                g_4d5bb8->unk2394 = 1;
+                g_4d5bb8->unk2398 = k;
+                g_4d5bb8->unk71f0 = 1;
+                if (g_4d5bb8->unk7258 < 10)
+                {
+                    g_4d5bb8->unk7258++;
+                }
+                if (g_4d5bb8->unk7254 < 0)
+                {
+                    g_4d5bb8->unk7254 = 270;
+                }
+                else
+                {
+                    g_4d5bb8->unk7254 += 270;
+                    if (g_4d5bb8->unk7254 > 600)
+                    {
+                        g_4d5bb8->unk7254 = 600;
+                    }
+                }
+            }
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x411880
 void FUN_411880(Car *car)
 {
@@ -4633,6 +4691,44 @@ void FUN_417350(Unk62a078 *p)
 
 void FUN_45e110(Unk62a078 *particle);
 
+// Bursts 32 dust particles from under the car.
+// FUNCTION: STUNTGP_D3D 0x4171c0
+void FUN_4171c0()
+{
+    Unk62a078 p;
+    *(Camera *)&p.pos = g_4864e8;
+    FUN_417130(&p);
+    Vec4 v;
+    v.x = g_4d5bb8->unk1c8c.x * 0.5f;
+    v.y = g_4d5bb8->unk1c8c.y * 0.5f;
+    v.z = g_4d5bb8->unk1c8c.z * 0.5f;
+    Vec4 down;
+    down.x = g_4d5bb8->axisY.x * 60.000004f;
+    down.y = g_4d5bb8->axisY.y * 60.000004f;
+    down.z = g_4d5bb8->axisY.z * 60.000004f;
+    for (int i = 0; i < 32; i++)
+    {
+        p.pos.x = g_4d5bb8->posX - down.x;
+        p.pos.y = g_4d5bb8->posY - down.y;
+        p.pos.z = g_4d5bb8->posZ - down.z;
+        Vec4 r;
+        r.x = FUN_42f1c0(5.0f);
+        r.y = (float)fabs(FUN_42f1c0(1.0f));
+        r.z = FUN_42f1c0(5.0f);
+        p.vel[0] = r.x + v.x;
+        p.vel[1] = r.y + v.y;
+        p.vel[2] = r.z + v.z;
+        p.size = (float)fabs(FUN_42f1c0(0.25f)) + 0.5f;
+        r.x = FUN_42f1c0(150.0f);
+        r.y = (float)fabs(FUN_42f1c0(10.0f));
+        r.z = FUN_42f1c0(150.0f);
+        p.pos.x = r.x + p.pos.x;
+        p.pos.y = r.y + p.pos.y;
+        p.pos.z = r.z + p.pos.z;
+        FUN_45e110(&p);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x4173e0
 void FUN_4173e0()
 {
@@ -5364,6 +5460,56 @@ void FUN_41d4b0()
     }
 }
 
+
+// Shows the split gap to the car behind (when leading) or to the car ahead.
+// FUNCTION: STUNTGP_D3D 0x41d5c0
+void FUN_41d5c0()
+{
+    char time[16];
+    char text[32];
+    if (!g_612948.unk03cc[1] || g_4d5bb8->unk23bc < 0 || g_4d5bb8->unk23a4 >= g_60eff8)
+    {
+        return;
+    }
+    if (g_4d5bb8->unk24ac == 0)
+    {
+        Car *second = g_612948.unk03cc[1];
+        if (second->unk23a4 < 1)
+        {
+            return;
+        }
+        int index = second - g_49a1f8;
+        int split = second->unk24ec - 1;
+        if (split < 0)
+        {
+            split = 9;
+        }
+        int gap = abs((int)(g_4d5bb8->unk24f0[split] - second->unk24f0[split]));
+        if (gap > 1800)
+        {
+            return;
+        }
+        FUN_41d3f0(gap, time);
+        // STRING: STUNTGP_D3D 0x4748dc
+        sprintf(text, "%s %s %s %s %s!", g_60f02c[index].name, g_6127a0[25], time, g_6127a0[26], g_6127a0[28]);
+        FUN_442cf0(180, text, g_4d5bb8, 2, 0);
+    }
+    else
+    {
+        Car *ahead = g_612948.unk03cc[g_4d5bb8->unk24ac - 1];
+        int split = g_4d5bb8->unk24ec;
+        int gap = abs((int)(g_4d5bb8->unk24f0[split] - ahead->unk24f0[split]));
+        if (gap > 1800)
+        {
+            return;
+        }
+        FUN_41d3f0(gap, time);
+        // STRING: STUNTGP_D3D 0x4748ec
+        sprintf(text, "%s %s %s %s %s!", g_60f02c[ahead - g_49a1f8].name, g_6127a0[25], time, g_6127a0[26],
+                g_6127a0[27]);
+        FUN_442cf0(180, text, g_4d5bb8, 2, 0);
+    }
+}
 
 // FUNCTION: STUNTGP_D3D 0x41d8a0
 void FUN_41d8a0()
