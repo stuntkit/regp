@@ -132,10 +132,10 @@ struct Wheel
     int unk70;          // 0x0070
     int unk74;          // 0x0074
     int unk78;          // 0x0078
-    BYTE unk007c[0x4];  // 0x007c
+    int unk7c;          // 0x007c
     float unk80;        // 0x0080
     float unk84;        // 0x0084
-    BYTE unk0088[0x4];  // 0x0088
+    float unk88;        // 0x0088
     float unk8c;        // 0x008c
     float unk90;        // 0x0090
     float unk94;        // 0x0094
@@ -228,7 +228,7 @@ struct Body
 struct ReplayFrame
 {
     int pos[3];           // 0x00
-    BYTE unk0c[0x8];      // 0x0c
+    short wheelAngle[4];  // 0x0c
     short unk14[4];       // 0x14
     char unk1c[4];        // 0x1c
     unsigned short unk20; // 0x20
@@ -236,7 +236,8 @@ struct ReplayFrame
     char unk23;           // 0x23
     BYTE flags;           // 0x24
     BYTE unk25;           // 0x25
-    BYTE unk26[0x6];      // 0x26
+    char axisZ[3];        // 0x26, scaled by 127
+    char axisY[3];        // 0x29
 };
 
 // Ghost/replay buffer: 0x80 byte header followed by frames.
@@ -545,9 +546,9 @@ struct Car
     int unk24a4;              // 0x24a4
     int unk24a8;              // 0x24a8
     int unk24ac;              // 0x24ac
-    BYTE unk24b0[0x10];       // 0x24b0
+    Vec4 unk24b0;             // 0x24b0
     Vec4 unk24c0;             // 0x24c0
-    BYTE unk24d0[0x10];       // 0x24d0
+    Vec4 unk24d0;             // 0x24d0
     int unk24e0;              // 0x24e0
     int unk24e4;              // 0x24e4
     int unk24e8;              // 0x24e8
@@ -569,7 +570,7 @@ struct Car
     DWORD unk25dc[6];         // 0x25dc
     int unk25f4[6];           // 0x25f4
     float unk260c;            // 0x260c
-    int unk2610;              // 0x2610
+    float unk2610;            // 0x2610
     float unk2614;            // 0x2614
     float unk2618;            // 0x2618
     float unk261c;            // 0x261c
@@ -591,10 +592,20 @@ struct Car
     float unk265c;            // 0x265c
     float unk2660;            // 0x2660
     unsigned int unk2664;     // 0x2664
-    BYTE unk2668[0xc];        // 0x2668
+    BYTE unk2668[0x4];        // 0x2668
+    float unk266c;            // 0x266c steering bias, -1..1
+    BYTE unk2670[0x4];        // 0x2670
     int unk2674;              // 0x2674
     int unk2678;              // 0x2678
-    BYTE unk267c[0x28];       // 0x267c
+    int unk267c;              // 0x267c
+    int unk2680;              // 0x2680
+    BYTE unk2684[0x4];        // 0x2684
+    Car *unk2688;             // 0x2688
+    int unk268c;              // 0x268c
+    float unk2690;            // 0x2690
+    int unk2694;              // 0x2694
+    BYTE unk2698[0x8];        // 0x2698
+    int unk26a0;              // 0x26a0
     int unk26a4;              // 0x26a4
     int unk26a8;              // 0x26a8
     int unk26ac;              // 0x26ac
@@ -603,7 +614,8 @@ struct Car
     BYTE unk26b8[0x54];       // 0x26b8
     float unk270c[16];        // 0x270c
     float wheelMatrix[4][16]; // 0x274c
-    BYTE unk284c[0x40];       // 0x284c
+    Vec4 unk284c;             // 0x284c
+    BYTE unk285c[0x30];       // 0x285c
     float unk288c;            // 0x288c
     float unk2890;            // 0x2890
     float unk2894;            // 0x2894
@@ -669,7 +681,7 @@ struct Car
     float unk7238;            // 0x7238
     float unk723c;            // 0x723c
     float unk7240;            // 0x7240
-    int unk7244;              // 0x7244
+    unsigned int unk7244;     // 0x7244
     int unk7248;              // 0x7248
     int unk724c;              // 0x724c
     int unk7250;              // 0x7250
@@ -940,7 +952,8 @@ struct Controller
     BYTE unk0a8[0x100]; // 0x0a8
     BYTE keys[7];       // 0x1a8
     BYTE prevKeys[7];   // 0x1af
-    BYTE unk1b6[0x26];  // 0x1b6
+    BYTE unk1b6[0x2];   // 0x1b6
+    float ffb[9];       // 0x1b8, force-feedback strengths, see g_4d5b24
 };
 
 extern InputSlot g_576618[10];

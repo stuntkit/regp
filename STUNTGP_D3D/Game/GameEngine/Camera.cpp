@@ -53,6 +53,10 @@ Vec4 *g_49815c;
 // GLOBAL: STUNTGP_D3D 0x498160
 Vec4 *g_498160;
 
+// Polygon hit by the last ray cast.
+// GLOBAL: STUNTGP_D3D 0x498164
+TrackPoly *g_498164;
+
 // Signed distances of the sweep's end and start points from that plane.
 // GLOBAL: STUNTGP_D3D 0x498168
 float g_498168;
