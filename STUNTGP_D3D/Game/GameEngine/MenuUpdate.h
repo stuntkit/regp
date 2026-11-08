@@ -315,7 +315,9 @@ struct MenuState
     int language;               // 0x4258, id of the loaded front-end language
     MenuLanguage languages[8];  // 0x425c, from Setup\languagePC.csv
     int languageCount;          // 0x437c
-    BYTE unk4380[0x438c - 0x4380];
+    int unk4380; // 0x4380
+    int unk4384; // 0x4384
+    int unk4388; // 0x4388
     int unk438c; // 0x438c
     int unk4390; // 0x4390
     BYTE unk4394[0x4398 - 0x4394];
