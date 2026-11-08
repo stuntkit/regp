@@ -422,12 +422,69 @@ void FUN_4054b0(float *p, float amount)
     }
 }
 
-// STUB: STUNTGP_D3D 0x405610
+void FUN_4288d0(CameraPath *path, Vec4 *out, float dist);
+
+// Steers at a point further down the racing line, blended across the track by unk265c;
+// a target behind the car is swapped for one far off to the side.
+// FUNCTION: STUNTGP_D3D 0x405610
 void FUN_405610(float amount)
 {
+    float k = g_4d5bb8->unk1cf0 * 0.013333334f;
+    if (k > 1.0f)
+    {
+        k = 1.0f;
+    }
+    else if (k < 0.25f)
+    {
+        k = 0.25f;
+    }
+    k *= 2000.0f;
+    Vec4 a;
+    FUN_4288d0(g_49a158, &a, k + g_49a16c);
+    Vec4 b;
+    FUN_4288d0(g_49a15c, &b, k + g_49a170);
+    Vec4 t;
+    t.x = b.x - a.x;
+    t.y = b.y - a.y;
+    t.z = b.z - a.z;
+    t.x = g_4d5bb8->unk265c * t.x;
+    t.y = g_4d5bb8->unk265c * t.y;
+    t.z = g_4d5bb8->unk265c * t.z;
+    t.x = t.x + a.x;
+    t.y = t.y + a.y;
+    t.z = t.z + a.z;
+    if (!g_4d5bb8->unk1fd8)
+    {
+        Vec4 d;
+        d.x = t.x - g_4d5bb8->posX;
+        d.y = t.y - g_4d5bb8->posY;
+        d.z = t.z - g_4d5bb8->posZ;
+        if (d.x * g_4d5bb8->axisZ.x + d.y * g_4d5bb8->axisZ.y + d.z * g_4d5bb8->axisZ.z < 0.1f)
+        {
+            float s;
+            if (d.x * g_4d5bb8->axisX.x + d.y * g_4d5bb8->axisX.y + d.z * g_4d5bb8->axisX.z < 0.0f)
+            {
+                s = -5000.0f;
+            }
+            else
+            {
+                s = 5000.0f;
+            }
+            Vec4 o;
+            o.x = s * g_4d5bb8->axisX.x;
+            o.y = s * g_4d5bb8->axisX.y;
+            o.z = s * g_4d5bb8->axisX.z;
+            t.x = o.x + g_4d5bb8->posX;
+            t.y = o.y + g_4d5bb8->posY;
+            t.z = o.z + g_4d5bb8->posZ;
+        }
+        if (!g_4d5bb8->unk1fd8)
+        {
+            FUN_4054b0(&t.x, amount);
+        }
+    }
 }
 
-void FUN_4288d0(CameraPath *path, Vec4 *out, float dist);
 
 
 // Steers towards a point, harder at low speed.
@@ -4527,10 +4584,55 @@ TrailParams g_474d18 = {0, 5, 1, 4};
 // GLOBAL: STUNTGP_D3D 0x474e28
 TrailParams g_474e28 = {0, 9, 2, 4};
 
-// STUB: STUNTGP_D3D 0x41e510
+int FUN_41e410(Vec4 *p, float *out);
+
+// Pushes a body-mesh point, placed in world space like FUN_416420, into a trail ring.
+// FUNCTION: STUNTGP_D3D 0x41e510
 void FUN_41e510(Vec4 *ring, DWORD *head, DWORD *count, Vec4 *pos, TrailParams *params)
 {
+    FUN_413b60();
+    Vec4 v = *pos;
+    Vec4 w;
+    w.x = g_4d5b30[0] * v.x + g_4d5b30[4] * v.y + g_4d5b30[8] * v.z;
+    w.y = g_4d5b30[1] * v.x + g_4d5b30[5] * v.y + g_4d5b30[9] * v.z;
+    w.z = g_4d5b30[2] * v.x + g_4d5b30[6] * v.y + g_4d5b30[10] * v.z;
+    float nx = -w.x;
+    Vec4 a;
+    a.x = nx * g_4d5bb8->axisX.x;
+    a.y = nx * g_4d5bb8->axisX.y;
+    a.z = nx * g_4d5bb8->axisX.z;
+    float t = 70.0f - w.y - g_4d5bb8->unk288c;
+    v.x = t * g_4d5bb8->axisY.x;
+    v.y = t * g_4d5bb8->axisY.y;
+    v.z = t * g_4d5bb8->axisY.z;
+    Vec4 c;
+    c.x = w.z * g_4d5bb8->axisZ.x;
+    c.y = w.z * g_4d5bb8->axisZ.y;
+    c.z = w.z * g_4d5bb8->axisZ.z;
+    a.x = a.x + v.x;
+    a.y = a.y + v.y;
+    a.z = a.z + v.z;
+    a.x = c.x + a.x;
+    a.y = c.y + a.y;
+    a.z = c.z + a.z;
+    w.x = g_4d5bb8->posX - a.x;
+    w.y = g_4d5bb8->posY - a.y;
+    w.z = g_4d5bb8->posZ - a.z;
+    DWORD size = params->size;
+    if (*count < size)
+    {
+        (*count)++;
+    }
+    DWORD h = (*head + 1) % size;
+    *head = h;
+    ring[size] = w;
+    ring[h] = w;
+    if (!params->unk10)
+    {
+        FUN_41e410(&w, &ring[h].x);
+    }
 }
+
 
 // FUNCTION: STUNTGP_D3D 0x414c60
 void FUN_414c60()
