@@ -330,6 +330,13 @@ void FUN_446b40()
 
 void FUN_446bb0();
 
+// Pip animation frames, indexed by frame / 2.
+// GLOBAL: STUNTGP_D3D 0x485110
+char g_485110[8] = {0, 13, 26, 39, 39, 26, 13, 0};
+
+// GLOBAL: STUNTGP_D3D 0x485118
+char g_485118[8] = {0, 11, 22, 33, 33, 22, 11, 0};
+
 // GLOBAL: STUNTGP_D3D 0x485120
 PauseItem g_485120[8] = {
     {1, 8, 12, 51, FUN_446b40, 0},
@@ -744,6 +751,95 @@ void FUN_4492d0(float value)
             FUN_432e00(&g_spriteDesc);
             x += 16.0f;
         }
+    }
+}
+
+struct HudPip
+{
+    DWORD x;     // 0x00
+    DWORD y;     // 0x04
+    DWORD frame; // 0x08
+};
+
+// GLOBAL: STUNTGP_D3D 0x485250
+HudPip g_485250[10] = {
+    {0, 0, 0},
+    {13, 0, 0},
+    {26, 0, 0},
+    {39, 0, 0},
+    {52, 0, 0},
+    {66, 0, 0},
+    {79, 0, 0},
+    {92, 0, 0},
+    {105, 0, 0},
+    {118, 0, 0},
+};
+
+// Flashes the pip at fader 2 for a cycle each time unk7254 reaches 1 mod 10.
+// FUNCTION: STUNTGP_D3D 0x448360
+void FUN_448360()
+{
+    if (g_61b740[1].delay)
+    {
+        g_spriteDesc.flags = 10;
+        DWORD frame = (g_61b740[1].delay + 1) & 0xf;
+        g_spriteDesc.z = 0.98f;
+        g_61b740[1].delay = frame;
+        g_spriteDesc.scaleX = 1.5f;
+        g_spriteDesc.scaleY = 1.5f;
+        g_spriteDesc.x = g_61b740->faders[2].x + 115.8f;
+        g_spriteDesc.y = g_61b740->faders[2].y + 25.800001f;
+        g_spriteDesc.v0 = 512.0f;
+        g_spriteDesc.v1 = 572.0f;
+        g_spriteDesc.width = 8.8f;
+        g_spriteDesc.height = 11.6f;
+        g_spriteDesc.texture = 11;
+        g_spriteDesc.blendMode = 0x20;
+        g_spriteDesc.u0 = ((g_485110[frame >> 1] + 122) * 1024.0f) * 0.00390625f;
+        g_spriteDesc.u1 = g_spriteDesc.u0 + 44.0f;
+        FUN_432e00(&g_spriteDesc);
+    }
+    else if (g_4722d0->data->unk7254 % 10 == 1)
+    {
+        g_61b740[1].delay = 1;
+    }
+}
+
+// Row of pips at fader 2, one per unk725c; lit pips grow in, the rest fade out.
+// FUNCTION: STUNTGP_D3D 0x448480
+void FUN_448480()
+{
+    float x = g_61b740->faders[2].x + 2.0f;
+    float y = g_61b740->faders[2].y + 52.2f;
+    HudPip *pip = g_485250;
+    for (DWORD i = 0; i < g_4722d0->data->unk725c; i++, pip++)
+    {
+        g_spriteDesc.flags = 10;
+        g_spriteDesc.z = 0.98f;
+        g_spriteDesc.scaleX = 1.5f;
+        g_spriteDesc.scaleY = 1.5f;
+        g_spriteDesc.x = pip->x + x;
+        g_spriteDesc.y = pip->y + y;
+        if (i < g_4722d0->data->unk725c)
+        {
+            if (pip->frame < 8)
+            {
+                pip->frame++;
+            }
+        }
+        else if (pip->frame != 0)
+        {
+            pip->frame = (pip->frame + 1) & 0xf;
+        }
+        g_spriteDesc.v0 = 580.0f;
+        g_spriteDesc.v1 = 624.0f;
+        g_spriteDesc.width = 8.8f;
+        g_spriteDesc.height = 8.8f;
+        g_spriteDesc.texture = 11;
+        g_spriteDesc.blendMode = 0x20;
+        g_spriteDesc.u0 = ((g_485118[pip->frame >> 1] + 123) * 1024.0f) * 0.00390625f;
+        g_spriteDesc.u1 = g_spriteDesc.u0 + 44.0f;
+        FUN_432e00(&g_spriteDesc);
     }
 }
 

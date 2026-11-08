@@ -1050,6 +1050,43 @@ void FUN_449ce0()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x449d70
+void FUN_449d70()
+{
+    CarRace *race = &g_4722d0->data->race;
+    if (!race->unk30 || (g_612948.unk8cec != 0x15 && g_612948.unk8cec != 0x16 && g_612948.unk8cec != 0x17))
+    {
+        return;
+    }
+    DWORD alpha;
+    if (race->unk34 >= 180)
+    {
+        alpha = (240 - race->unk34) * 255 / 60;
+    }
+    else
+    {
+        alpha = race->unk34 * 255 / 60;
+    }
+    if (alpha > 255)
+    {
+        alpha = 255;
+    }
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.x = 166.4f;
+    g_spriteDesc.y = 86.399994f - race->unk38;
+    g_spriteDesc.z = 0.99f;
+    g_spriteDesc.u0 = 0.0f;
+    g_spriteDesc.v0 = 0.0f;
+    g_spriteDesc.u1 = 1024.0f;
+    g_spriteDesc.v1 = 1024.0f;
+    g_spriteDesc.width = 307.2f;
+    g_spriteDesc.height = 307.2f;
+    g_spriteDesc.texture = 15;
+    g_spriteDesc.blendMode = 0x48;
+    g_spriteDesc.alpha = alpha;
+    FUN_432e00(&g_spriteDesc);
+}
+
 // FUNCTION: STUNTGP_D3D 0x44a3d0
 void FUN_44a3d0()
 {
