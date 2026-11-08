@@ -1548,12 +1548,8 @@ void FUN_432300(Font *font, D3DCOLOR color, DWORD flags)
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 1);
     if (!(flags & 0x14))
     {
-        int mode;
-        if (flags & 8)
-        {
-            mode = 0x60;
-        }
-        else
+        int mode = 0x60;
+        if (!(flags & 8))
         {
             mode = 0x28;
         }
