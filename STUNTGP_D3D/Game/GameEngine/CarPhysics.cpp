@@ -5368,10 +5368,56 @@ void FUN_418150()
     car->unk26b0->unk04 = car->unk7684 * 512.0f;
 }
 
-// STUB: STUNTGP_D3D 0x418320
+extern float g_60e7f0[0x100];
+extern float g_60ebf0[0x100];
+void FUN_412940(Car *car);
+
+// Resets the car when it strays past the track width envelope or ends up far above the path.
+// FUNCTION: STUNTGP_D3D 0x418320
 void FUN_418320()
 {
+    if (g_60f2b0 != 3)
+    {
+        Vec4 side;
+        side.x = g_482690 * g_4d5bb8->unk24c0.y - g_48268c * g_4d5bb8->unk24c0.z;
+        side.y = g_482688 * g_4d5bb8->unk24c0.z - g_482690 * g_4d5bb8->unk24c0.x;
+        side.z = g_48268c * g_4d5bb8->unk24c0.x - g_482688 * g_4d5bb8->unk24c0.y;
+        Vec3_Normalize(&side.x);
+        unsigned int k = g_4d5bb8->unk24a4 * 255 / g_624474->count & 0xff;
+        Vec4 d;
+        d.x = g_4d5bb8->posX - g_4d5bb8->unk24b0.x;
+        d.y = g_4d5bb8->posY - g_4d5bb8->unk24b0.y;
+        d.z = g_4d5bb8->posZ - g_4d5bb8->unk24b0.z;
+        float off = d.x * side.x + d.y * side.y + d.z * side.z;
+        if (g_4d5bb8->unk7648 != 1)
+        {
+            if (g_60ebf0[k] < 0.99f && off > g_60ebf0[k] * 10000.0f)
+            {
+                g_4d5bb8->unk763c = 1;
+            }
+            if (g_60e7f0[k] < 0.99f && off < g_60e7f0[k] * -10000.0f)
+            {
+                g_4d5bb8->unk763c = 1;
+            }
+        }
+        d.x = g_4d5bb8->posX - g_4d5bb8->unk24b0.x;
+        d.y = g_4d5bb8->posY - g_4d5bb8->unk24b0.y;
+        d.z = g_4d5bb8->posZ - g_4d5bb8->unk24b0.z;
+        if (g_4d5bb8->unk1fd8 && g_482688 * d.x + g_48268c * d.y + g_482690 * d.z > 3000.0f)
+        {
+            g_4d5bb8->unk763c = 1;
+        }
+    }
+    if (g_4d5bb8->unk763c == 1)
+    {
+        FUN_412940(g_4d5bb8);
+    }
+    if (g_4d5bb8->unk7640)
+    {
+        g_4d5bb8->unk7640--;
+    }
 }
+
 
 extern DWORD g_60f2b0;
 
