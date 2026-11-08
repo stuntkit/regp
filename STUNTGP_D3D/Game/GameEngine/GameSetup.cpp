@@ -1470,8 +1470,7 @@ void FUN_42e510()
     g_renderState.unk2e0 = NULL;
     memset(g_renderState.unk62ec, 0, 255 * sizeof(TextureSlot));
     g_renderState.unk7ed0 = NULL;
-    // g_renderState.unk7ed8..g_renderState.unk7ef4 are four contiguous {list, count} pairs.
-    memset(&g_renderState.unk7ed8, 0, 0x20);
+    memset(g_renderState.unk7ed8, 0, sizeof(g_renderState.unk7ed8));
     memset(g_renderState.unk7ef8, 0, sizeof(g_renderState.unk7ef8));
     g_renderState.unk3c = NULL;
     g_renderState.unk40 = NULL;
@@ -1693,41 +1692,41 @@ void FUN_42b040()
 void FUN_42b100()
 {
     memset(g_renderState.unk7ef8, 0, sizeof(g_renderState.unk7ef8));
-    g_renderState.unk7ed8 = g_renderState.unk114;
-    g_renderState.unk7ee0 = g_renderState.unk118;
-    g_renderState.unk7ee8 = g_renderState.unk10c;
-    g_renderState.unk7ef0 = g_renderState.unk110;
+    g_renderState.unk7ed8[0].list = g_renderState.unk114;
+    g_renderState.unk7ed8[1].list = g_renderState.unk118;
+    g_renderState.unk7ed8[2].list = g_renderState.unk10c;
+    g_renderState.unk7ed8[3].list = g_renderState.unk110;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42b140
-void FUN_42b140(void **out)
+void FUN_42b140(RenderList *out)
 {
-    out[6] = g_renderState.unk7ef0;
-    out[4] = g_renderState.unk7ee8;
-    out[0] = g_renderState.unk7ed8;
-    out[5] = 0;
-    out[7] = 0;
-    out[1] = 0;
-    out[2] = g_renderState.unk7ee0;
-    out[3] = 0;
+    out[3].list = g_renderState.unk7ed8[3].list;
+    out[2].list = g_renderState.unk7ed8[2].list;
+    out[0].list = g_renderState.unk7ed8[0].list;
+    out[2].count = 0;
+    out[3].count = 0;
+    out[0].count = 0;
+    out[1].list = g_renderState.unk7ed8[1].list;
+    out[1].count = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42b180
 void FUN_42b180(int *out)
 {
-    out[5] = ((int)g_renderState.unk7ee8 - out[4]) / 20;
-    out[7] = ((int)g_renderState.unk7ef0 - out[6]) / 20;
-    out[1] = ((int)g_renderState.unk7ed8 - out[0]) / 20;
-    out[3] = ((int)g_renderState.unk7ee0 - out[2]) / 20;
+    out[5] = ((int)g_renderState.unk7ed8[2].list - out[4]) / 20;
+    out[7] = ((int)g_renderState.unk7ed8[3].list - out[6]) / 20;
+    out[1] = ((int)g_renderState.unk7ed8[0].list - out[0]) / 20;
+    out[3] = ((int)g_renderState.unk7ed8[1].list - out[2]) / 20;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42b200
 void FUN_42b200()
 {
-    g_renderState.unk7edc = ((int)g_renderState.unk7ed8 - (int)g_renderState.unk114) / 20;
-    g_renderState.unk7ee4 = ((int)g_renderState.unk7ee0 - (int)g_renderState.unk118) / 20;
-    g_renderState.unk7eec = ((int)g_renderState.unk7ee8 - (int)g_renderState.unk10c) / 20;
-    g_renderState.unk7ef4 = ((int)g_renderState.unk7ef0 - (int)g_renderState.unk110) / 20;
+    g_renderState.unk7ed8[0].count = ((int)g_renderState.unk7ed8[0].list - (int)g_renderState.unk114) / 20;
+    g_renderState.unk7ed8[1].count = ((int)g_renderState.unk7ed8[1].list - (int)g_renderState.unk118) / 20;
+    g_renderState.unk7ed8[2].count = ((int)g_renderState.unk7ed8[2].list - (int)g_renderState.unk10c) / 20;
+    g_renderState.unk7ed8[3].count = ((int)g_renderState.unk7ed8[3].list - (int)g_renderState.unk110) / 20;
 }
 
 
@@ -2292,8 +2291,8 @@ void FUN_42a320(Scene *scene, ObjectDef *obj)
 // FUNCTION: STUNTGP_D3D 0x42a220
 void FUN_42a220()
 {
-    FUN_429ea0((PolyRef **)&g_renderState.unk7ed8, g_renderState.unk30, g_renderState.unk3c - g_renderState.unk30);
-    FUN_42a090((PolyRef **)&g_renderState.unk7ee8, g_renderState.unk34, g_renderState.unk40 - g_renderState.unk34);
+    FUN_429ea0((PolyRef **)&g_renderState.unk7ed8[0], g_renderState.unk30, g_renderState.unk3c - g_renderState.unk30);
+    FUN_42a090((PolyRef **)&g_renderState.unk7ed8[2], g_renderState.unk34, g_renderState.unk40 - g_renderState.unk34);
 }
 
 extern int g_624980;

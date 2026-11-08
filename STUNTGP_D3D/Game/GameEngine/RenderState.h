@@ -13,6 +13,13 @@ struct LightRec;
 struct RenderMaterial;
 struct Unk624488;
 
+// A polygon list and its length; FUN_429ea0/FUN_42a090 fill two of them at a time.
+struct RenderList
+{
+    void *list; // 0x00
+    int count;  // 0x04
+};
+
 // Lights active for the current object (unk8044 of them) and the next free record in unk8048.
 struct LightList
 {
@@ -63,14 +70,7 @@ struct RenderState
     TextureSlot unk62ec[255]; // 0x62ec
     TextureSlot *unk7ed0; // 0x7ed0
     int unk7ed4; // 0x7ed4
-    void *unk7ed8; // 0x7ed8
-    int unk7edc; // 0x7edc
-    void *unk7ee0; // 0x7ee0
-    int unk7ee4; // 0x7ee4
-    void *unk7ee8; // 0x7ee8
-    int unk7eec; // 0x7eec
-    void *unk7ef0; // 0x7ef0
-    int unk7ef4; // 0x7ef4
+    RenderList unk7ed8[4]; // 0x7ed8
     RenderBucket unk7ef8[8]; // 0x7ef8
     // Name of the track scene from L_TRACK.
     int unk7f78; // 0x7f78

@@ -2333,8 +2333,8 @@ void FUN_433f40()
     FUN_433c50(g_renderState.unk7ef8[6].data, g_renderState.unk7ef8[6].count);
     FUN_433c50(g_renderState.unk7ef8[7].data, g_renderState.unk7ef8[7].count);
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 1);
-    FUN_4338e0(g_renderState.unk118, g_renderState.unk7ee4);
-    FUN_4338e0(g_renderState.unk110, g_renderState.unk7ef4);
+    FUN_4338e0(g_renderState.unk118, g_renderState.unk7ed8[1].count);
+    FUN_4338e0(g_renderState.unk110, g_renderState.unk7ed8[3].count);
 }
 
 // FUNCTION: STUNTGP_D3D 0x432a90
