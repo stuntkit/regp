@@ -2938,6 +2938,74 @@ void FUN_425ae0()
     g_5775d0[3][1] = -10000.0f;
 }
 
+// Finds the four corner points of an object's mesh: corners take the UVs of points whose
+// UV record carries id, the second UV slot otherwise.
+// FUNCTION: STUNTGP_D3D 0x425b50
+void FUN_425b50(ObjectDef *obj, int id)
+{
+    Vec4 *pt = obj->points;
+    MeshUv *uvs = (MeshUv *)obj->unk2c;
+    FUN_425ae0();
+    for (unsigned int i = 0; i < obj->pointCount; i++, pt++)
+    {
+        MeshUv *uv = &uvs[i];
+        if (uv->unk0a == (WORD)id)
+        {
+            if (pt->x <= g_5775d0[0][0] && pt->y <= g_5775d0[0][1])
+            {
+                *(Vec4 *)g_5775d0[0] = *pt;
+                g_5775d0[0][4] = uv->u;
+                g_5775d0[0][5] = uv->v;
+            }
+            else if (pt->x >= g_5775d0[1][0] && pt->y <= g_5775d0[1][1])
+            {
+                *(Vec4 *)g_5775d0[1] = *pt;
+                g_5775d0[1][4] = uv->u;
+                g_5775d0[1][5] = uv->v;
+            }
+            if (pt->x <= g_5775d0[2][0] && pt->y >= g_5775d0[2][1])
+            {
+                *(Vec4 *)g_5775d0[2] = *pt;
+                g_5775d0[2][4] = uv->u;
+                g_5775d0[2][5] = uv->v;
+            }
+            else if (pt->x >= g_5775d0[3][0] && pt->y >= g_5775d0[3][1])
+            {
+                *(Vec4 *)g_5775d0[3] = *pt;
+                g_5775d0[3][4] = uv->u;
+                g_5775d0[3][5] = uv->v;
+            }
+        }
+        else
+        {
+            if (pt->x <= g_5775d0[0][0] && pt->y <= g_5775d0[0][1])
+            {
+                g_5775d0[0][6] = uv->u;
+                g_5775d0[0][7] = uv->v;
+            }
+            else if (pt->x >= g_5775d0[1][0] && pt->y <= g_5775d0[1][1])
+            {
+                g_5775d0[1][6] = uv->u;
+                g_5775d0[1][7] = uv->v;
+            }
+            if (pt->x <= g_5775d0[2][0] && pt->y >= g_5775d0[2][1])
+            {
+                g_5775d0[2][6] = uv->u;
+                g_5775d0[2][7] = uv->v;
+            }
+            else if (pt->x >= g_5775d0[3][0] && pt->y >= g_5775d0[3][1])
+            {
+                g_5775d0[3][6] = uv->u;
+                g_5775d0[3][7] = uv->v;
+            }
+        }
+    }
+    g_5775d0[0][2] = 0.0f;
+    g_5775d0[1][2] = 0.0f;
+    g_5775d0[2][2] = 0.0f;
+    g_5775d0[3][2] = 0.0f;
+}
+
 // FUNCTION: STUNTGP_D3D 0x42e420
 void FUN_42e420()
 {
