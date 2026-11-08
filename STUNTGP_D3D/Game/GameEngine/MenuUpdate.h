@@ -245,7 +245,7 @@ struct MenuDef
 {
     int unk00;       // 0x00
     float unk04;     // 0x04
-    int unk08;       // 0x08
+    float unk08;     // 0x08
     float x;         // 0x0c
     float y;         // 0x10
     float scale;     // 0x14
@@ -274,7 +274,7 @@ struct MenuList
     float unkb8;     // 0xb8, MenuDef::x
     float unkbc;     // 0xbc, MenuDef::y
     float unkc0;     // 0xc0
-    int unkc4;       // 0xc4
+    float unkc4;     // 0xc4, pointer bob phase
 };
 
 struct MenuLanguage
