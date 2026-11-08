@@ -554,9 +554,77 @@ void FUN_44ae40()
 {
 }
 
-// STUB: STUNTGP_D3D 0x401b00
+// Draws the current player's score popups: the sprite (mirrored for the first three types) and, for
+// popups that carry points, the score in large digits.
+// FUNCTION: STUNTGP_D3D 0x401b00
 void FUN_401b00()
 {
+    for (int i = 15; i >= 0; i--)
+    {
+        if (g_496990[i].unk00 == 1 && g_496990[i].unk28 > 2 && g_496990[i].unk04 == g_4722d0->data)
+        {
+            SpriteDesc s = g_496990[i].sprite;
+            s.z = 0.92f;
+            FUN_432e00(&s);
+            if (g_496990[i].unk0c == 0 || g_496990[i].unk0c == 1 || g_496990[i].unk0c == 2)
+            {
+                s.x = (s.width - 2.0f) + s.x;
+                s.originX = 0.0f;
+                float u = s.u1;
+                s.u1 = s.u0;
+                s.u0 = u;
+                FUN_432e00(&s);
+            }
+            if (g_496990[i].unk40 == 1)
+            {
+                s.scaleX *= 0.75f;
+                s.scaleY *= 0.75f;
+                char *text = g_496990[i].unk38;
+                char ch = *text;
+                int n = 0;
+                if (ch)
+                {
+                    do
+                    {
+                        n++;
+                    } while (text[n]);
+                }
+                s.x = s.originX + s.x;
+                float t = s.scaleY * 8.0f + s.y;
+                s.y = t + s.originY;
+                int off = 24 - n * 34;
+                s.x = off * s.scaleX * 0.5f + s.x;
+                char *c = text;
+                while (ch)
+                {
+                    int d = ch - '0';
+                    HudDigit *h = &g_4720d8[d];
+                    if (d < 0 || d > 11)
+                    {
+                        break;
+                    }
+                    s.color = 0xffffff;
+                    s.texture = h->texture;
+                    s.width = h->width;
+                    s.height = h->height;
+                    s.u0 = h->u0;
+                    s.v0 = h->v0;
+                    s.u1 = h->u1;
+                    s.v1 = h->v1;
+                    s.originX = h->width * 0.5f;
+                    s.originY = h->height * 0.5f;
+                    s.z = 0.93f;
+                    s.x = s.x - h->width * 0.5f;
+                    s.y = s.y - h->height * 0.5f;
+                    FUN_432e00(&s);
+                    s.x = h->width * 0.5f + s.x;
+                    s.y = h->height * 0.5f + s.y;
+                    s.x = s.scaleX * 34.0f + s.x;
+                    ch = *++c;
+                }
+            }
+        }
+    }
 }
 
 void FUN_431830(D3DCOLOR color);

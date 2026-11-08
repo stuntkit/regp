@@ -218,7 +218,7 @@ struct Unk496990
     int unk1c;        // 0x1c
     BYTE unk20[0x4];  // 0x20
     float unk24;      // 0x24
-    int unk28;        // 0x28
+    DWORD unk28;      // 0x28, frames alive
     int unk2c;        // 0x2c
     BYTE unk30[0x4];  // 0x30
     int unk34;        // 0x34
