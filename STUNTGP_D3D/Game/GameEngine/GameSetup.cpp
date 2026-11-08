@@ -813,9 +813,88 @@ void FUN_40a2f0()
 {
 }
 
-// STUB: STUNTGP_D3D 0x40d500
+// GLOBAL: STUNTGP_D3D 0x5898c8
+int g_5898c8;
+
+extern BYTE g_62dcf0[256];
+extern BYTE g_62d480[256];
+extern int g_60eff0;
+extern Car *g_474630;
+extern DWORD g_60f2b0;
+extern int g_60f2c0;
+extern int g_60dfa4;
+extern int g_60d618;
+void FUN_40bec0();
+void FUN_41f5d0();
+void FUN_431a90();
+void FUN_442c30();
+void FUN_448110();
+void FUN_443d90();
+void FUN_447b50();
+void FUN_4082d0();
+void FUN_41d980();
+void FUN_402710();
+void FUN_404280(Car *car);
+void FUN_404310(Car *car);
+void FUN_40d410(Car *car);
+void FUN_40d430();
+void FUN_460b80();
+void FUN_45f7c0(int value);
+void FUN_4130d0(int mode);
+
+// Race start: resets input, sound and every car, then points each active player's camera at its car.
+// FUNCTION: STUNTGP_D3D 0x40d500
 void FUN_40d500()
 {
+    FUN_40bec0();
+    FUN_41f5d0();
+    g_5898c8 = 1;
+    memset(g_62dcf0, 0, sizeof(g_62dcf0));
+    memset(g_62d480, 0, sizeof(g_62d480));
+    FUN_431a90();
+    FUN_442c30();
+    FUN_448110();
+    FUN_443d90();
+    FUN_447b50();
+    FUN_4130d0(g_60eff0);
+    Car *saved = g_4d5bb8;
+    g_4d5bb8 = g_49a1f8;
+    for (int n = 6; n != 0; n--)
+    {
+        FUN_4082d0();
+        g_4d5bb8++;
+    }
+    g_4d5bb8 = saved;
+    FUN_4130d0(g_60eff0);
+    FUN_41d980();
+    FUN_402710();
+    FUN_447bd0(60);
+    for (GameSlot *slot = g_498248; (int)slot < (int)&g_498248[4]; slot++)
+    {
+        g_4722d0 = slot;
+        if (slot->active == 1)
+        {
+            g_474630 = slot->data;
+            FUN_404280(g_474630);
+            FUN_404310(g_474630);
+        }
+    }
+    for (Car *car = g_49a1f8; (int)car < (int)&g_49a1f8[6]; car++)
+    {
+        FUN_40d410(car);
+    }
+    FUN_40d430();
+    g_60f2b0 = 1;
+    g_60f2b4 = 2;
+    g_60f2c0 = 0;
+    g_49a164 = 0;
+    FUN_460b80();
+    if (g_612948.unk02a0 == 1)
+    {
+        FUN_45f7c0(g_60dfa4);
+    }
+    g_60d618 = 60;
+    FUN_460cb0(0);
 }
 
 // FUNCTION: STUNTGP_D3D 0x40e050

@@ -892,6 +892,114 @@ void FUN_403e80()
 }
 
 extern int g_60f020;
+// Chase camera: eases the target toward the car's look point and the smoothed up vector toward the
+// car's, then places the camera at camOffset in the frame they span, lifted by the car's height.
+// FUNCTION: STUNTGP_D3D 0x403f40
+void FUN_403f40(Camera *out)
+{
+    GameSlot *s = g_4722d0;
+    Car *car = s->data;
+    Vec4 t;
+    Vec4 v;
+    t.x = car->unk22dc + car->posX;
+    t.y = car->unk22e0 + car->posY;
+    t.z = car->unk22e4 + car->posZ;
+    v.x = t.x - s->cam.target.x;
+    v.y = t.y - s->cam.target.y;
+    v.z = t.z - s->cam.target.z;
+    v.x *= 0.33333334f;
+    v.y *= 0.33333334f;
+    v.z *= 0.33333334f;
+    s->cam.target.x = v.x + s->cam.target.x;
+    s->cam.target.y = v.y + s->cam.target.y;
+    s->cam.target.z = v.z + s->cam.target.z;
+    v = s->data->axisY;
+    t.x = s->unk1ac.x - v.x;
+    t.y = s->unk1ac.y - v.y;
+    t.z = s->unk1ac.z - v.z;
+    t.x *= 0.1f;
+    t.y *= 0.1f;
+    t.z *= 0.1f;
+    s->unk1ac.x -= t.x;
+    s->unk1ac.y -= t.y;
+    s->unk1ac.z -= t.z;
+    v = s->unk1ac;
+    car = s->data;
+    float d = v.x * car->axisZ.x + v.y * car->axisZ.y + v.z * car->axisZ.z;
+    t.x = d * v.x;
+    t.y = d * v.y;
+    t.z = d * v.z;
+    Vec4 f;
+    f.x = car->axisZ.x - t.x;
+    f.y = s->data->axisZ.y - t.y;
+    f.z = s->data->axisZ.z - t.z;
+    Vec3_Normalize(&f.x);
+    Vec4 r;
+    r.x = f.y * v.z - f.z * v.y;
+    r.y = f.z * v.x - f.x * v.z;
+    r.z = f.x * v.y - f.y * v.x;
+    Vec3_Normalize(&r.x);
+    s = g_4722d0;
+    car = s->data;
+    t.x = car->camOffset.x * r.x;
+    t.y = car->camOffset.x * r.y;
+    t.z = car->camOffset.x * r.z;
+    Vec4 q;
+    q.x = car->camOffset.y * v.x;
+    q.y = car->camOffset.y * v.y;
+    q.z = car->camOffset.y * v.z;
+    v.x = car->camOffset.z * f.x;
+    v.y = car->camOffset.z * f.y;
+    v.z = car->camOffset.z * f.z;
+    q.x += t.x;
+    q.y += t.y;
+    q.z += t.z;
+    q.x = v.x + q.x;
+    q.y = v.y + q.y;
+    q.z = v.z + q.z;
+    q.x = -q.x;
+    q.y = -q.y;
+    q.z = -q.z;
+    t.x = q.x + car->posX;
+    t.y = q.y + car->posY;
+    t.z = q.z + car->posZ;
+    out->pos = t;
+    float h = car->unk244 - 115.0f;
+    if (h < 0.0f)
+    {
+        h = 0.0f;
+    }
+    q.x = h * car->axisY.x;
+    q.y = h * car->axisY.y;
+    q.z = h * car->axisY.z;
+    out->pos.x -= q.x;
+    out->pos.z -= q.z;
+    out->pos.y = out->pos.y - q.y - s->unk1c4 + s->unk1c0;
+}
+
+void FUN_404310(Car *car);
+
+// The original reloads the slot's car after every target store.
+#pragma optimize("a", off)
+// FUNCTION: STUNTGP_D3D 0x404280
+void FUN_404280(Car *car)
+{
+    if (car->active && g_4722d0->camMode == 5)
+    {
+        FUN_404310(car);
+        FUN_403f40(&g_4722d0->cam);
+        GameSlot *s = g_4722d0;
+        Camera *cam = &s->cam;
+        cam->target.x = s->data->unk22dc + s->data->posX;
+        cam->target.y = s->data->unk22e0 + s->data->posY;
+        cam->target.z = s->data->unk22e4 + s->data->posZ;
+        s->velX = 0.0f;
+        s->velY = 0.0f;
+        s->velZ = 0.0f;
+    }
+}
+#pragma optimize("", on)
+
 extern int g_576be0;
 
 void FUN_40d200(Car *car);

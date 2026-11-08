@@ -1098,6 +1098,14 @@ void FUN_431a80()
     FUN_423430();
 }
 
+void FUN_42fa00();
+
+// FUNCTION: STUNTGP_D3D 0x431a90
+void FUN_431a90()
+{
+    FUN_42fa00();
+}
+
 // GLOBAL: STUNTGP_D3D 0x592018
 Vec4 g_592018;
 

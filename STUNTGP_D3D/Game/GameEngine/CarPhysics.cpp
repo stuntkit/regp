@@ -3277,6 +3277,100 @@ float FUN_40e710(float v)
     return v;
 }
 
+void FUN_40eba0();
+void FUN_40ed30();
+void FUN_40ead0();
+
+// Engine update: drives the rpm (unk1cfc) from the wheel speed and gear, then looks up the torque
+// curve value for it.
+// FUNCTION: STUNTGP_D3D 0x40e7a0
+void FUN_40e7a0()
+{
+    g_4d5bb8->unkc7c[2] = 2.0f;
+    FUN_40eba0();
+    FUN_40ed30();
+    FUN_40ead0();
+    FUN_40e550();
+    FUN_40e470();
+    Car *car = g_4d5bb8;
+    float r = car->unkcb8[0].x * 0.01f;
+    float slip = car->unk1f14;
+    DWORD gear = car->unk1f10;
+    if (car->unk1cf8 < 0.1f)
+    {
+        car->unk1cfc = car->unk468 * car->unk1cfc;
+    }
+    if (gear == 1)
+    {
+        slip = 0.0f;
+    }
+    float d = FUN_40e710(slip * car->unk2618) + 50.0f;
+    float f = g_4d5bb8->unkc7c[gear + 1] * g_4d5bb8->unk1f08 * g_4d5bb8->unkc7c[0] * g_4d5bb8->unkca4 *
+              g_4d5bb8->unk1cf8 / d;
+    f = ((f * 100.0f) * 0.00027777778f) * 3.0f;
+    FUN_40d650(&f);
+    float c = r * 6.2831855f;
+    g_4d5bb8->unk1cfc = g_4d5bb8->unkc7c[gear + 1] * g_4d5bb8->unkc7c[0] * f * 60.0f / c + g_4d5bb8->unk1cfc;
+    f *= slip;
+    FUN_40e3a0(f);
+    car = g_4d5bb8;
+    while (car->unk1cfc > car->unk464)
+    {
+        car->unk1cfc *= 0.9f;
+    }
+    if (car->unk1cfc < 100.0f)
+    {
+        car->unk1cfc = 100.0f;
+    }
+    if (car->unk1cfc < car->unk460)
+    {
+        car->unk1cfc *= 1.05f;
+    }
+    if (gear != 1)
+    {
+        float a = r * car->unk1cfc * 6.2831855f / (car->unkc7c[gear + 1] * car->unkc7c[0] * 60.0f);
+        float w;
+        if (car->unkc70 == 1)
+        {
+            w = car->wheels[2].unk04;
+        }
+        else if (car->unkc70 == 0)
+        {
+            w = car->wheels[0].unk04;
+        }
+        else
+        {
+            w = (car->wheels[2].unk04 + car->wheels[0].unk04) * 0.5f;
+        }
+        float b = (a - w * 0.6f) * slip;
+        f = (((d * 0.02f) * car->unkc7c[gear + 1]) * b) * car->unkc7c[0] / c;
+        car->unk1cfc -= f;
+        FUN_40e3a0(50.0f / d * b * 1.6666666f);
+        car = g_4d5bb8;
+    }
+    while (car->unk1cfc > car->unk464)
+    {
+        car->unk1cfc *= 0.9f;
+    }
+    DWORD i = (DWORD)(car->unk1cfc * 128.0f / car->unk464);
+    if (i >= 0x80)
+    {
+        i = 0x7f;
+    }
+    car->unk1d00 = car->unk1d08[i] * car->unk1d04;
+    int curve = car->unk1f0c;
+    i = (DWORD)(g_4d5bb8->unk1cfc * 128.0f / g_4d5bb8->unk464);
+    if (i >= 0x80)
+    {
+        i = 0x7f;
+    }
+    car->unk1f08 = car->unk470[curve][i] * car->unk46c;
+    if (car->unk1f08 < 250.0f)
+    {
+        car->unk1f08 = 250.0f;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x40ead0
 void FUN_40ead0()
 {
