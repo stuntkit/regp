@@ -81,32 +81,6 @@ extern int g_D3DUVFix;
 // GLOBAL: STUNTGP_D3D 0x636418
 SceneSlot g_636418[16];
 
-struct RenderMaterial
-{
-    DWORD unk00;      // 0x00
-    DWORD unk04;      // 0x04
-    float alpha;      // 0x08
-    DWORD unk0c;      // 0x0c
-    Vec4 pos;         // 0x10
-    Vec4 local;       // 0x20, pos relative to the camera
-    Vec4 colour;      // 0x30, direction for directional lights
-    BYTE unk40[0x10]; // 0x40
-    int unk50;        // 0x50
-    DWORD unk54;      // 0x54
-    DWORD unk58;      // 0x58
-    DWORD unk5c;      // 0x5c
-    BYTE unk60[0x8];  // 0x60
-    float unk68;      // 0x68
-    float unk6c;      // 0x6c
-    float unk70;      // 0x70
-    int unk74;        // 0x74
-    int unk78;        // 0x78
-    int unk7c;        // 0x7c
-    int unk80;        // 0x80
-    int visible;      // 0x84
-    BYTE unk88[0x8];  // 0x88
-};
-
 // Loaded track file; the offsets are relative to data.
 struct TrackHeader
 {
@@ -3906,16 +3880,6 @@ void FUN_4342c0()
     FUN_434030();
     Matrix_Identity(g_5da1e0);
 }
-
-struct MeshPoly
-{
-    BYTE unk00[0x20];      // 0x00
-    int unk20;             // 0x20
-    int unk24;             // 0x24
-    int unk28;             // 0x28
-    DWORD count;           // 0x2c
-    MeshPolyVertex v[4];   // 0x30
-};
 
 // GLOBAL: STUNTGP_D3D 0x5da220
 DWORD g_5da220[4];
