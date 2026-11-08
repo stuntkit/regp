@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "../../vecmath.h"
+#include "GameSetup.h"
 #include "RenderState.h"
 
 void FUN_402ab0(float fov);
@@ -20,51 +21,8 @@ extern float g_60f010;
 // GLOBAL: STUNTGP_D3D 0x499f8c
 float g_499f8c;
 
-// Swept-sphere collision state used to keep the camera out of the scenery.
 // GLOBAL: STUNTGP_D3D 0x4980c0
-float g_4980c0;
-
-// GLOBAL: STUNTGP_D3D 0x4980c4
-Vec4 g_4980c4;
-
-// GLOBAL: STUNTGP_D3D 0x4980d4
-Vec4 g_4980d4;
-
-// GLOBAL: STUNTGP_D3D 0x4980e8
-Vec4 g_4980e8;
-
-// GLOBAL: STUNTGP_D3D 0x49814c
-float g_49814c;
-
-// GLOBAL: STUNTGP_D3D 0x498150
-float g_498150;
-
-// GLOBAL: STUNTGP_D3D 0x498154
-float g_498154;
-
-// GLOBAL: STUNTGP_D3D 0x498158
-float g_498158;
-
-// Point on and normal of the polygon plane being tested.
-// GLOBAL: STUNTGP_D3D 0x49815c
-Vec4 *g_49815c;
-
-// GLOBAL: STUNTGP_D3D 0x498160
-Vec4 *g_498160;
-
-// Polygon hit by the last ray cast.
-// GLOBAL: STUNTGP_D3D 0x498164
-TrackPoly *g_498164;
-
-// Signed distances of the sweep's end and start points from that plane.
-// GLOBAL: STUNTGP_D3D 0x498168
-float g_498168;
-
-// GLOBAL: STUNTGP_D3D 0x49816c
-float g_49816c;
-
-// GLOBAL: STUNTGP_D3D 0x498198
-Vec4 g_498198;
+CameraSweep g_cameraSweep;
 
 // FUNCTION: STUNTGP_D3D 0x403180
 void FUN_403180(float delta)
@@ -81,12 +39,93 @@ void FUN_403180(float delta)
     }
 }
 
-// Polygon list offset of the octree leaf holding g_4980d4, 0 when not found yet.
+// Polygon list offset of the octree leaf holding g_cameraSweep.unk14, 0 when not found yet.
 // GLOBAL: STUNTGP_D3D 0x49823c
 int g_49823c;
 
 // GLOBAL: STUNTGP_D3D 0x498240
 int g_498240;
+
+// Copies the handling set of each human player's race entry onto the car.
+// FUNCTION: STUNTGP_D3D 0x41f5d0
+void FUN_41f5d0()
+{
+    for (int i = 0; i < 6; i++)
+    {
+        RaceEntry *e = &g_60d730.entries[i];
+        if (g_60d730.entries[i].type == 2 && g_60d730.entries[i].unk034 == 1)
+        {
+            Car *car = &g_49a1f8[i];
+            car->unk220 = e->unk038;
+            car->unk224 = e->unk040;
+            car->unk228 = e->unk044;
+            car->unk22c = e->unk048;
+            car->unk220 = e->unk03c + car->unk220;
+            car->unk248 = e->unk0a8;
+            car->unk468 = e->unk04c;
+            car->unk460 = e->unk050;
+            car->unk464 = e->unk054;
+            car->unk045c = e->unk058;
+            car->unk46c = e->unk05c;
+            car->unk1f0c = e->unk060;
+            car->unkf78 = e->unk0e4;
+            car->unk1184 = e->unk0ec;
+            car->unkf80 = e->unk0e8;
+            car->unkc70 = e->unk068;
+            car->unkc74 = e->unk06c + 1;
+            car->unkca0 = e->unk070;
+            car->unkca4 = e->unk074;
+            car->unkca8 = e->unk078;
+            car->unkc7c[0] = e->unk07c;
+            car->unkc7c[1] = -2.06f;
+            car->unkc7c[2] = 2.0f;
+            for (unsigned int j = 0; j < e->unk06c; j++)
+            {
+                car->unkc7c[3 + j] = e->unk080[j];
+            }
+            car->unkd5c = e->unk0a0;
+            car->unkd58 = e->unk0a4;
+            int k;
+            for (k = 0; k < 4; k++)
+            {
+                car->unkcb8[k].z = e->unk0c8;
+                car->unkcb8[k].w = e->unk0cc;
+            }
+            for (k = 0; k < 4; k++)
+            {
+                car->suspension[k].maxTravelIn = e->unk0ac;
+                car->suspension[k].maxDampingIn = e->unk0b0;
+                car->suspension[k].maxStiffnessIn = e->unk0b4;
+                car->suspension[k].maxTravelOut = e->unk0b8;
+                car->suspension[k].maxDampingOut = e->unk0bc;
+                car->suspension[k].maxStiffnessOut = e->unk0c0;
+            }
+            car->unkcac = e->unk0d0;
+            car->unkcb0 = e->unk0d4;
+            car->unk24c = e->unk0d8;
+            car->unk254 = e->unk0dc;
+            car->unk250 = e->unk0e0;
+            car->unkd60 = e->unk0f0;
+            car->unkd64 = e->unk0f4;
+            car->unkd68 = e->unk0f8;
+            car->unkd6c = e->unk0fc;
+            car->unkf70 = e->unk100;
+            car->unkf74 = e->unk104;
+            car->unk1b94 = e->unk108;
+            car->unk1b98 = e->unk10c;
+            car->unk1b9c = e->unk110;
+            car->unk1ba0 = e->unk114;
+            car->unk1ba4 = e->unk118;
+            car->race.unk80[1] = e->unk11c[1];
+            car->race.unk80[2] = e->unk11c[2];
+            car->race.unk80[3] = e->unk11c[3];
+            car->race.unk80[0] = e->unk11c[0];
+            car->race.unk80[4] = e->unk11c[4];
+            car->race.unk80[5] = e->unk11c[5];
+            car->race.unk80[6] = e->unk11c[6];
+        }
+    }
+}
 
 Vec4 *FUN_420b20(Vec4 *out, WORD *idx);
 
@@ -116,13 +155,10 @@ int FUN_41f870(TrackPoly *poly)
     return flat;
 }
 
-// GLOBAL: STUNTGP_D3D 0x498118
-Vec4 g_498118;
-
 // FUNCTION: STUNTGP_D3D 0x41f920
 void FUN_41f920(TrackPoly *poly, float dist)
 {
-    Vec4 dir = g_498118;
+    Vec4 dir = g_cameraSweep.unk58;
     Vec3_Normalize(&dir.x);
     if (poly)
     {
@@ -147,9 +183,9 @@ int FUN_41f970(TrackPoly *poly, Vec4 *p)
         e.y = b->y - a->y;
         e.z = b->z - a->z;
         Vec4 side;
-        side.x = e.y * g_498160->z - e.z * g_498160->y;
-        side.y = e.z * g_498160->x - e.x * g_498160->z;
-        side.z = e.x * g_498160->y - e.y * g_498160->x;
+        side.x = e.y * g_cameraSweep.unka0->z - e.z * g_cameraSweep.unka0->y;
+        side.y = e.z * g_cameraSweep.unka0->x - e.x * g_cameraSweep.unka0->z;
+        side.z = e.x * g_cameraSweep.unka0->y - e.y * g_cameraSweep.unka0->x;
         float d;
         FUN_44eda0(&side.x, &d);
         Vec4 q;
@@ -172,14 +208,14 @@ int FUN_420690(TrackPoly *poly, Vec4 *p);
 int FUN_41fa80(TrackPoly *poly, Vec4 *p)
 {
     Vec4 v;
-    v.x = p->x - g_49815c->x;
-    v.y = p->y - g_49815c->y;
-    v.z = p->z - g_49815c->z;
-    float d = v.x * g_498160->x + v.y * g_498160->y + v.z * g_498160->z;
+    v.x = p->x - g_cameraSweep.unk9c->x;
+    v.y = p->y - g_cameraSweep.unk9c->y;
+    v.z = p->z - g_cameraSweep.unk9c->z;
+    float d = v.x * g_cameraSweep.unka0->x + v.y * g_cameraSweep.unka0->y + v.z * g_cameraSweep.unka0->z;
     float ad = (float)fabs(d);
-    if (ad < g_498154 - 0.01f && FUN_420690(poly, p) == 1)
+    if (ad < g_cameraSweep.unk94 - 0.01f && FUN_420690(poly, p) == 1)
     {
-        if (ad < g_498154 - 0.01f)
+        if (ad < g_cameraSweep.unk94 - 0.01f)
         {
             FUN_41f920(poly, d);
         }
@@ -220,7 +256,7 @@ int FUN_41fb10(TrackPoly *poly, Vec4 *p)
             q.y = q.y - s.y;
             q.z = q.z - s.z;
             t = (float)sqrt(q.x * q.x + q.y * q.y + q.z * q.z);
-            if (t < g_498154 - 0.01f)
+            if (t < g_cameraSweep.unk94 - 0.01f)
             {
                 FUN_41f920(poly, t);
             }
@@ -242,7 +278,7 @@ int FUN_41fc70(TrackPoly *poly, Vec4 *p)
         d.y = v->y - p->y;
         d.z = v->z - p->z;
         float dist = (float)sqrt(d.x * d.x + d.y * d.y + d.z * d.z);
-        if (dist < g_498154 - 0.01f)
+        if (dist < g_cameraSweep.unk94 - 0.01f)
         {
             FUN_41f920(poly, dist);
         }
@@ -257,13 +293,13 @@ Vec4 g_571448;
 int FUN_41fd20(TrackPoly *poly)
 {
     WORD *idx = g_renderState.unk7f98->indices + poly->firstIndex;
-    g_498160 = g_renderState.unk7f98->planes + poly->plane;
-    g_49815c = g_renderState.unk7f98->vertices + *idx;
+    g_cameraSweep.unka0 = g_renderState.unk7f98->planes + poly->plane;
+    g_cameraSweep.unk9c = g_renderState.unk7f98->vertices + *idx;
     FUN_420b20(&g_571448, idx);
-    g_498160 = &g_571448;
-    FUN_41fc70(poly, &g_4980c4);
-    FUN_41fb10(poly, &g_4980c4);
-    FUN_41fa80(poly, &g_4980c4);
+    g_cameraSweep.unka0 = &g_571448;
+    FUN_41fc70(poly, &g_cameraSweep.unk04);
+    FUN_41fb10(poly, &g_cameraSweep.unk04);
+    FUN_41fa80(poly, &g_cameraSweep.unk04);
     return 0;
 }
 
@@ -278,26 +314,22 @@ void FUN_41fda0(WORD *list)
     }
 }
 
-// Body the camera sphere ignores.
-// GLOBAL: STUNTGP_D3D 0x4981cc
-Body *g_4981cc;
-
 // FUNCTION: STUNTGP_D3D 0x41fde0
 int FUN_41fde0(Car *car)
 {
     Body *body = &car->body;
-    if (body == g_4981cc)
+    if (body == g_cameraSweep.unk10c)
     {
         return 0;
     }
     for (DWORD i = 0; i < body->numPoints; i++)
     {
         Vec4 d;
-        d.x = body->points[i].prev.x - g_4980c4.x;
-        d.y = body->points[i].prev.y - g_4980c4.y;
-        d.z = body->points[i].prev.z - g_4980c4.z;
+        d.x = body->points[i].prev.x - g_cameraSweep.unk04.x;
+        d.y = body->points[i].prev.y - g_cameraSweep.unk04.y;
+        d.z = body->points[i].prev.z - g_cameraSweep.unk04.z;
         float dist = (float)sqrt(d.x * d.x + d.y * d.y + d.z * d.z);
-        if (dist < g_498154 + body->points[i].radius - 1.0f)
+        if (dist < g_cameraSweep.unk94 + body->points[i].radius - 1.0f)
         {
             FUN_41f920(NULL, dist);
         }
@@ -319,7 +351,24 @@ int FUN_41fe80()
     return 0;
 }
 
-// 1 when the point lies inside every edge of the polygon, seen along the g_498160 normal.
+// GLOBAL: STUNTGP_D3D 0x571458
+CameraSweep g_571458;
+
+void FUN_420f80();
+
+// Runs the car test for a sphere at p, then restores the sweep state.
+// FUNCTION: STUNTGP_D3D 0x41feb0
+void FUN_41feb0(Vec4 p)
+{
+    g_571458 = g_cameraSweep;
+    g_cameraSweep.unk04 = p;
+    g_cameraSweep.unk14 = p;
+    FUN_420f80();
+    FUN_41fe80();
+    g_cameraSweep = g_571458;
+}
+
+// 1 when the point lies inside every edge of the polygon, seen along the g_cameraSweep.unka0 normal.
 // FUNCTION: STUNTGP_D3D 0x420690
 int FUN_420690(TrackPoly *poly, Vec4 *p)
 {
@@ -336,9 +385,9 @@ int FUN_420690(TrackPoly *poly, Vec4 *p)
         e.y = b->y - a->y;
         e.z = b->z - a->z;
         Vec4 side;
-        side.x = e.y * g_498160->z - e.z * g_498160->y;
-        side.y = e.z * g_498160->x - e.x * g_498160->z;
-        side.z = e.x * g_498160->y - e.y * g_498160->x;
+        side.x = e.y * g_cameraSweep.unka0->z - e.z * g_cameraSweep.unka0->y;
+        side.y = e.z * g_cameraSweep.unka0->x - e.x * g_cameraSweep.unka0->z;
+        side.z = e.x * g_cameraSweep.unka0->y - e.y * g_cameraSweep.unka0->x;
         float d;
         FUN_44eda0(&side.x, &d);
         Vec4 q;
@@ -359,16 +408,16 @@ int FUN_420690(TrackPoly *poly, Vec4 *p)
 int FUN_420a70()
 {
     Vec4 d;
-    d.x = g_4980d4.x - g_49815c->x;
-    d.y = g_4980d4.y - g_49815c->y;
-    d.z = g_4980d4.z - g_49815c->z;
-    g_498168 = d.y * g_498160->y + (d.x * g_498160->x + d.z * g_498160->z);
-    d.x = g_4980c4.x - g_49815c->x;
-    d.y = g_4980c4.y - g_49815c->y;
-    d.z = g_4980c4.z - g_49815c->z;
-    g_49816c = d.y * g_498160->y + (d.x * g_498160->x + d.z * g_498160->z);
-    float r = g_498154 + 0.25f;
-    if ((float)fabs(g_498168) > r && (float)fabs(g_49816c) > r)
+    d.x = g_cameraSweep.unk14.x - g_cameraSweep.unk9c->x;
+    d.y = g_cameraSweep.unk14.y - g_cameraSweep.unk9c->y;
+    d.z = g_cameraSweep.unk14.z - g_cameraSweep.unk9c->z;
+    g_cameraSweep.unka8 = d.y * g_cameraSweep.unka0->y + (d.x * g_cameraSweep.unka0->x + d.z * g_cameraSweep.unka0->z);
+    d.x = g_cameraSweep.unk04.x - g_cameraSweep.unk9c->x;
+    d.y = g_cameraSweep.unk04.y - g_cameraSweep.unk9c->y;
+    d.z = g_cameraSweep.unk04.z - g_cameraSweep.unk9c->z;
+    g_cameraSweep.unkac = d.y * g_cameraSweep.unka0->y + (d.x * g_cameraSweep.unka0->x + d.z * g_cameraSweep.unka0->z);
+    float r = g_cameraSweep.unk94 + 0.25f;
+    if ((float)fabs(g_cameraSweep.unka8) > r && (float)fabs(g_cameraSweep.unkac) > r)
     {
         return 0;
     }
@@ -415,15 +464,15 @@ void FUN_420f00(OctNode *node)
         for (;;)
         {
             int octant = 0;
-            if (g_4980d4.x >= node->x)
+            if (g_cameraSweep.unk14.x >= node->x)
             {
                 octant = 1;
             }
-            if (g_4980d4.y <= node->y)
+            if (g_cameraSweep.unk14.y <= node->y)
             {
                 octant |= 4;
             }
-            if (g_4980d4.z <= node->z)
+            if (g_cameraSweep.unk14.z <= node->z)
             {
                 octant |= 2;
             }
@@ -443,7 +492,7 @@ void FUN_420f80()
     TrackOctree *tree = g_renderState.unk7f98;
     g_49823c = 0;
     g_498240 = 0;
-    while (g_498154 > tree->roots[g_498240].key)
+    while (g_cameraSweep.unk94 > tree->roots[g_498240].key)
     {
         g_498240++;
         if (g_498240 == 1)
@@ -531,13 +580,15 @@ int FUN_421b80()
 void FUN_421c30(float bounce)
 {
     Vec4 push;
-    float d = (g_4980e8.x * g_498198.x + g_4980e8.y * g_498198.y + g_4980e8.z * g_498198.z) * (2.0f - (1.0f - bounce));
-    push.x = g_498198.x * d;
-    push.y = g_498198.y * d;
-    push.z = g_498198.z * d;
-    g_4980e8.x -= push.x;
-    g_4980e8.y -= push.y;
-    g_4980e8.z -= push.z;
+    float d = (g_cameraSweep.unk28.x * g_cameraSweep.unkd8.x + g_cameraSweep.unk28.y * g_cameraSweep.unkd8.y +
+               g_cameraSweep.unk28.z * g_cameraSweep.unkd8.z) *
+              (2.0f - (1.0f - bounce));
+    push.x = g_cameraSweep.unkd8.x * d;
+    push.y = g_cameraSweep.unkd8.y * d;
+    push.z = g_cameraSweep.unkd8.z * d;
+    g_cameraSweep.unk28.x -= push.x;
+    g_cameraSweep.unk28.y -= push.y;
+    g_cameraSweep.unk28.z -= push.z;
 }
 
 // Moves a body point to its new world position, keeping the old one.
@@ -665,13 +716,15 @@ void FUN_403460()
             g_4722d0->unk1a4--;
             return;
         }
-        g_4980c4 = g_4722d0->cam.pos;
-        g_4980c0 = 1.0f;
-        g_498154 = 125.0f;
-        g_498158 = 15625.0f;
-        g_498150 = 1.0f;
-        g_4980e8 = *(Vec4 *)&g_4722d0->velX;
-        g_49814c = (float)sqrt(g_4980e8.x * g_4980e8.x + g_4980e8.y * g_4980e8.y + g_4980e8.z * g_4980e8.z);
+        g_cameraSweep.unk04 = g_4722d0->cam.pos;
+        g_cameraSweep.unk00 = 1.0f;
+        g_cameraSweep.unk94 = 125.0f;
+        g_cameraSweep.unk98 = 15625.0f;
+        g_cameraSweep.unk90 = 1.0f;
+        g_cameraSweep.unk28 = *(Vec4 *)&g_4722d0->velX;
+        g_cameraSweep.unk8c = (float)sqrt(g_cameraSweep.unk28.x * g_cameraSweep.unk28.x +
+                                          g_cameraSweep.unk28.y * g_cameraSweep.unk28.y +
+                                          g_cameraSweep.unk28.z * g_cameraSweep.unk28.z);
         unsigned int i = 0;
         int hit;
         do
@@ -682,7 +735,7 @@ void FUN_403460()
                 FUN_421c30(0.01f);
             }
         } while (hit == 1 && i++ < 32);
-        g_4722d0->cam.pos = g_4980d4;
+        g_4722d0->cam.pos = g_cameraSweep.unk14;
     }
 }
 
@@ -1250,87 +1303,69 @@ void FUN_4051e0()
     FUN_4028f0(g_4722d8, 10);
 }
 
-// GLOBAL: STUNTGP_D3D 0x498128
-Vec4 g_498128;
-
-// GLOBAL: STUNTGP_D3D 0x4981c8
-float g_4981c8;
-
 // FUNCTION: STUNTGP_D3D 0x41ff30
 int FUN_41ff30(Vec4 *p)
 {
     Vec4 v;
-    v.x = p->x - g_4980c4.x;
-    v.y = p->y - g_4980c4.y;
-    v.z = p->z - g_4980c4.z;
-    float d = g_498128.z * v.z + g_498128.y * v.y + g_498128.x * v.x;
-    if (d >= -0.01f && d < g_4981c8)
+    v.x = p->x - g_cameraSweep.unk04.x;
+    v.y = p->y - g_cameraSweep.unk04.y;
+    v.z = p->z - g_cameraSweep.unk04.z;
+    float d = g_cameraSweep.unk68.z * v.z + g_cameraSweep.unk68.y * v.y + g_cameraSweep.unk68.x * v.x;
+    if (d >= -0.01f && d < g_cameraSweep.unk108)
     {
-        g_4981c8 = d;
+        g_cameraSweep.unk108 = d;
         return 1;
     }
     return 0;
 }
 
-// GLOBAL: STUNTGP_D3D 0x498148
-float g_498148;
-
-// GLOBAL: STUNTGP_D3D 0x498188
-Vec4 g_498188;
-
-// GLOBAL: STUNTGP_D3D 0x4981a8
-Vec4 g_4981a8;
-
-// GLOBAL: STUNTGP_D3D 0x4981b8
-Vec4 g_4981b8;
-
-// Sweeps the sphere along g_498128 against point p; on a hit records the contact, its normal and the
+// Sweeps the sphere along g_cameraSweep.unk68 against point p; on a hit records the contact, its normal and the
 // sphere centre at contact.
 // FUNCTION: STUNTGP_D3D 0x41ffa0
 int FUN_41ffa0(Vec4 *p)
 {
     Vec4 d;
-    d.x = p->x - g_4980c4.x;
-    d.y = p->y - g_4980c4.y;
-    d.z = p->z - g_4980c4.z;
+    d.x = p->x - g_cameraSweep.unk04.x;
+    d.y = p->y - g_cameraSweep.unk04.y;
+    d.z = p->z - g_cameraSweep.unk04.z;
     float dist2 = d.x * d.x + d.y * d.y + d.z * d.z;
-    float r = g_498148 + g_498154;
+    float r = g_cameraSweep.unk88 + g_cameraSweep.unk94;
     if (dist2 > r * r)
     {
         return 0;
     }
-    float t = g_498128.x * d.x + g_498128.y * d.y + g_498128.z * d.z;
+    float t = g_cameraSweep.unk68.x * d.x + g_cameraSweep.unk68.y * d.y + g_cameraSweep.unk68.z * d.z;
     float h = dist2 - t * t;
-    if (h > g_498158)
+    if (h > g_cameraSweep.unk98)
     {
         return 0;
     }
-    t = t - (float)sqrt(g_498158 - h);
+    t = t - (float)sqrt(g_cameraSweep.unk98 - h);
     Vec4 q;
-    q.x = g_498128.x * t;
-    q.y = g_498128.y * t;
-    q.z = t * g_498128.z;
-    q.x = g_4980c4.x + q.x;
-    q.y = g_4980c4.y + q.y;
-    q.z = g_4980c4.z + q.z;
+    q.x = g_cameraSweep.unk68.x * t;
+    q.y = g_cameraSweep.unk68.y * t;
+    q.z = t * g_cameraSweep.unk68.z;
+    q.x = g_cameraSweep.unk04.x + q.x;
+    q.y = g_cameraSweep.unk04.y + q.y;
+    q.z = g_cameraSweep.unk04.z + q.z;
     if (!FUN_41ff30(&q))
     {
         return 0;
     }
     Vec4 n;
     n.x = q.x - p->x;
-    g_4981a8 = q;
+    g_cameraSweep.unke8 = q;
     n.y = q.y - p->y;
     n.z = q.z - p->z;
     Vec3_Normalize(&n.x);
-    g_4981b8.x = g_498154 * n.x;
-    g_4981b8.y = g_498154 * n.y;
-    g_498198 = n;
-    g_4981b8.z = g_498154 * n.z;
-    g_4981b8.x = g_4981b8.x + p->x;
-    g_4981b8.y = g_4981b8.y + p->y;
-    g_4981b8.z = g_4981b8.z + p->z;
-    g_498188 = g_4981b8;
+    g_cameraSweep.unkf8.x = g_cameraSweep.unk94 * n.x;
+    g_cameraSweep.unkf8.y = g_cameraSweep.unk94 * n.y;
+    g_cameraSweep.unkd8 = n;
+    g_cameraSweep.unkf8.z = g_cameraSweep.unk94 * n.z;
+    g_cameraSweep.unkf8.x = g_cameraSweep.unkf8.x + p->x;
+    g_cameraSweep.unkf8.y = g_cameraSweep.unkf8.y + p->y;
+    g_cameraSweep.unkf8.z = g_cameraSweep.unkf8.z + p->z;
+    g_cameraSweep.unkc8 = g_cameraSweep.unkf8;
     return 1;
 }
 
@@ -1338,19 +1373,19 @@ int FUN_41ffa0(Vec4 *p)
 // FUNCTION: STUNTGP_D3D 0x421960
 int FUN_421960(Body *body, int i)
 {
-    float r = g_498154 + body->points[i].radius;
+    float r = g_cameraSweep.unk94 + body->points[i].radius;
     Vec4 *p = &body->points[i].prev;
     Vec4 d;
-    d.x = p->x - g_4980c4.x;
-    d.y = p->y - g_4980c4.y;
-    d.z = p->z - g_4980c4.z;
+    d.x = p->x - g_cameraSweep.unk04.x;
+    d.y = p->y - g_cameraSweep.unk04.y;
+    d.z = p->z - g_cameraSweep.unk04.z;
     float dist2 = d.x * d.x + d.y * d.y + d.z * d.z;
-    float reach = g_498148 + r;
+    float reach = g_cameraSweep.unk88 + r;
     if (dist2 > reach * reach)
     {
         return 0;
     }
-    float t = g_498128.x * d.x + g_498128.y * d.y + g_498128.z * d.z;
+    float t = g_cameraSweep.unk68.x * d.x + g_cameraSweep.unk68.y * d.y + g_cameraSweep.unk68.z * d.z;
     float h = dist2 - t * t;
     float r2 = r * r;
     if (h > r2)
@@ -1359,30 +1394,30 @@ int FUN_421960(Body *body, int i)
     }
     t = t - (float)sqrt(r2 - h);
     Vec4 q;
-    q.x = g_498128.x * t;
-    q.y = g_498128.y * t;
-    q.z = t * g_498128.z;
-    q.x = g_4980c4.x + q.x;
-    q.y = g_4980c4.y + q.y;
-    q.z = g_4980c4.z + q.z;
+    q.x = g_cameraSweep.unk68.x * t;
+    q.y = g_cameraSweep.unk68.y * t;
+    q.z = t * g_cameraSweep.unk68.z;
+    q.x = g_cameraSweep.unk04.x + q.x;
+    q.y = g_cameraSweep.unk04.y + q.y;
+    q.z = g_cameraSweep.unk04.z + q.z;
     if (!FUN_41ff30(&q))
     {
         return 0;
     }
     Vec4 n;
     n.x = q.x - p->x;
-    g_4981a8 = q;
+    g_cameraSweep.unke8 = q;
     n.y = q.y - p->y;
     n.z = q.z - p->z;
     Vec3_Normalize(&n.x);
-    g_4981b8.x = g_498154 * n.x;
-    g_4981b8.y = g_498154 * n.y;
-    g_498198 = n;
-    g_4981b8.z = g_498154 * n.z;
-    g_4981b8.x = g_4981b8.x + p->x;
-    g_4981b8.y = g_4981b8.y + p->y;
-    g_4981b8.z = g_4981b8.z + p->z;
-    g_498188 = g_4981b8;
+    g_cameraSweep.unkf8.x = g_cameraSweep.unk94 * n.x;
+    g_cameraSweep.unkf8.y = g_cameraSweep.unk94 * n.y;
+    g_cameraSweep.unkd8 = n;
+    g_cameraSweep.unkf8.z = g_cameraSweep.unk94 * n.z;
+    g_cameraSweep.unkf8.x = g_cameraSweep.unkf8.x + p->x;
+    g_cameraSweep.unkf8.y = g_cameraSweep.unkf8.y + p->y;
+    g_cameraSweep.unkf8.z = g_cameraSweep.unkf8.z + p->z;
+    g_cameraSweep.unkc8 = g_cameraSweep.unkf8;
     return 1;
 }
 
@@ -1401,7 +1436,7 @@ void FUN_420190(TrackPoly *poly, int *hit)
         *hit |= r;
         if (r == 1)
         {
-            g_498164 = poly;
+            g_cameraSweep.unka4 = poly;
             g_5715cc = 3;
         }
         idx++;

@@ -242,58 +242,6 @@ int g_4d5c9c;
 // GLOBAL: STUNTGP_D3D 0x4d5ca0
 int g_4d5ca0;
 
-// 16 screen-space effect slots; unk00 is 1 while a slot is in use.
-struct Unk496990
-{
-    int unk00;        // 0x00
-    BYTE unk04[0x4];  // 0x04
-    int unk08;        // 0x08
-    BYTE unk0c[0x4];  // 0x0c
-    int unk10;        // 0x10
-    float unk14;      // 0x14
-    float unk18;      // 0x18
-    BYTE unk1c[0x8];  // 0x1c
-    float unk24;      // 0x24
-    int unk28;        // 0x28
-    int unk2c;        // 0x2c
-    BYTE unk30[0x4];  // 0x30
-    int unk34;        // 0x34
-    BYTE unk38[0x8];  // 0x38
-    int unk40;        // 0x40
-    float unk44;      // 0x44
-    float unk48;      // 0x48
-    float unk4c;      // 0x4c
-    float unk50;      // 0x50
-    float unk54;      // 0x54
-    float unk58;      // 0x58
-    float unk5c;      // 0x5c
-    BYTE unk60[0x4];  // 0x60
-    float unk64;      // 0x64
-    float unk68;      // 0x68
-    float unk6c;      // 0x6c
-    float unk70;      // 0x70
-    BYTE unk74[0x18]; // 0x74
-    int unk8c;        // 0x8c
-    BYTE unk90[0x8];  // 0x90
-    int unk98;        // 0x98
-    BYTE unk9c[0x10]; // 0x9c
-    int unkac;        // 0xac
-    float x;          // 0xb0
-    float y;          // 0xb4
-    float unkb8;      // 0xb8
-    float width;      // 0xbc
-    float height;     // 0xc0
-    BYTE unkc4[0x10]; // 0xc4
-    int unkd4;        // 0xd4
-    int unkd8;        // 0xd8
-    int unkdc;        // 0xdc
-    int unke0;        // 0xe0
-    float halfWidth;  // 0xe4
-    float halfHeight; // 0xe8
-    float unkec;      // 0xec
-    float unkf0;      // 0xf0
-    BYTE unkf4[0x44]; // 0xf4
-};
 
 
 // GLOBAL: STUNTGP_D3D 0x496990
@@ -336,9 +284,9 @@ void FUN_401030(float x, float y)
         }
         e++;
     }
-    e->unkd4 = 2;
-    e->width = 256.0f;
-    e->height = 256.0f;
+    e->sprite.texture = 2;
+    e->sprite.width = 256.0f;
+    e->sprite.height = 256.0f;
     e->unk10 = 24;
     e->unk2c = 30;
     e->unk24 = -0.5f;
@@ -362,19 +310,19 @@ void FUN_401030(float x, float y)
     e->unk40 = 0;
     e->unk98 = 0;
     e->unk34 = 0;
-    e->unkd8 = 0x58;
-    e->unkac = e->unk10;
-    e->unkdc = 0;
-    e->unke0 = 0;
-    e->unkec = 1.0f;
-    e->unkf0 = 1.0f;
-    e->halfWidth = e->width * 0.5f;
-    e->halfHeight = e->height * 0.5f;
-    e->x = 320.0f - e->halfWidth;
-    e->y = 240.0f - e->halfHeight;
-    e->unkb8 = 1.0f;
-    e->x = x - e->halfWidth;
-    e->y = y - e->halfHeight;
+    e->sprite.blendMode = 0x58;
+    e->sprite.flags = e->unk10;
+    e->sprite.alpha = 0;
+    e->sprite.angle = 0;
+    e->sprite.scaleX = 1.0f;
+    e->sprite.scaleY = 1.0f;
+    e->sprite.originX = e->sprite.width * 0.5f;
+    e->sprite.originY = e->sprite.height * 0.5f;
+    e->sprite.x = 320.0f - e->sprite.originX;
+    e->sprite.y = 240.0f - e->sprite.originY;
+    e->sprite.z = 1.0f;
+    e->sprite.x = x - e->sprite.originX;
+    e->sprite.y = y - e->sprite.originY;
 }
 
 // Frames left before the sample started by FUN_4011c0 is played again, panned the other way.
@@ -403,6 +351,224 @@ void FUN_4011f0()
     {
         FUN_461150(g_497d14, 0, 0, g_497d18, -0xff, 0, NULL);
     }
+}
+
+extern int g_60f2b4;
+extern int g_60d680;
+extern HudDigit g_472030[6];
+GameSlot *FUN_402590(Car *car);
+
+// Spawns a score popup for the current car and adds the points to its total: type picks the sprite,
+// sound and colour, kind how the popup moves.
+// FUNCTION: STUNTGP_D3D 0x401220
+void FUN_401220(int type, int kind, unsigned int points)
+{
+    if (g_60f2b4 != 2 || g_4d5bb8->unk24e0 == 1 || g_60f2b0 == 4 || (g_60f2b0 == 3 && g_60d680))
+    {
+        return;
+    }
+    g_4d5bb8->unk260c += points;
+    if (!FUN_402590(g_4d5bb8) || g_612948.unk0054 == 1)
+    {
+        return;
+    }
+    int i = 0;
+    Unk496990 *e = g_496990;
+    while (e->unk00 == 1)
+    {
+        i++;
+        if (i >= 16)
+        {
+            return;
+        }
+        e++;
+    }
+    HudDigit *d = &g_472030[type];
+    e->unk14 = 0.0f;
+    e->unk18 = 0.0f;
+    e->unk1c = 0;
+    e->unk34 = points;
+    // STRING: STUNTGP_D3D 0x47220c
+    sprintf(e->unk38, "%d", points);
+    int sample = 0x2f;
+    if (type > 2)
+    {
+        sample = 0x2e;
+    }
+    FUN_4011c0(sample, 0xc0);
+    switch (kind)
+    {
+    case 0:
+        e->sprite.texture = d->texture;
+        e->sprite.width = d->width;
+        e->sprite.height = d->height;
+        e->sprite.u0 = d->u0;
+        e->sprite.v0 = d->v0;
+        e->sprite.u1 = d->u1;
+        e->sprite.v1 = d->v1;
+        e->unk10 = 0x18;
+        e->unk40 = 1;
+        e->unk2c = 60;
+        e->unk18 = -5.0f;
+        e->unk24 = -0.025f;
+        e->unk70 = 0.0f;
+        e->unk64 = 8.0f;
+        e->unk68 = 0.0f;
+        e->unk6c = 15.0f;
+        e->unk44 = 2.0f;
+        e->unk48 = 60.0f;
+        e->unk4c = 0.0f;
+        e->unk54 = 255.0f;
+        e->unk58 = 15.0f;
+        e->unk5c = 15.0f;
+        e->unk8c = 9;
+        e->unk88 = 15;
+        e->unk90 = 0x3f;
+        e->unk94 = 0;
+        e->unk98 = 0;
+        break;
+    case 1:
+        e->sprite.texture = d->texture;
+        e->sprite.width = d->width;
+        e->sprite.height = d->height;
+        e->sprite.u0 = d->u0;
+        e->sprite.v0 = d->v0;
+        e->sprite.u1 = d->u1;
+        e->sprite.v1 = d->v1;
+        e->unk10 = 0x19;
+        e->unk40 = 1;
+        e->unk24 = -0.025f;
+        e->unk2c = 60;
+        e->unk18 = -5.0f;
+        e->unk70 = 0.0f;
+        e->unk64 = -8.0f;
+        e->unk68 = 0.0f;
+        e->unk6c = 15.0f;
+        e->unk44 = 2.0f;
+        e->unk48 = 60.0f;
+        e->unk4c = 0.0f;
+        e->unk54 = 255.0f;
+        e->unk58 = 15.0f;
+        e->unk5c = 15.0f;
+        e->unk8c = 9;
+        e->unk88 = 15;
+        e->unk90 = 0x55;
+        e->unk94 = 0;
+        e->unk98 = 0;
+        break;
+    case 2:
+        e->sprite.texture = d->texture;
+        e->sprite.width = d->width;
+        e->sprite.height = d->height;
+        e->sprite.u0 = d->u0;
+        e->sprite.v0 = d->v0;
+        e->sprite.u1 = d->u1;
+        e->sprite.v1 = d->v1;
+        e->unk10 = 0x39;
+        e->unk40 = 1;
+        e->unk2c = 120;
+        e->unk24 = 0.025f;
+        e->unk70 = 0.0f;
+        e->unk64 = -11.75f;
+        e->unk68 = 60.0f;
+        e->unk6c = 0.0f;
+        e->unk44 = 2.0f;
+        e->unk48 = 30.0f;
+        e->unk4c = 0.0f;
+        e->unk54 = 255.0f;
+        e->unk58 = 0.0f;
+        e->unk5c = 15.0f;
+        e->unk8c = 9;
+        e->unk88 = 16;
+        e->unk90 = 0x3f;
+        e->unk94 = 0;
+        e->unk98 = 0;
+        break;
+    case 3:
+        e->sprite.texture = d->texture;
+        e->sprite.width = d->width;
+        e->sprite.height = d->height;
+        e->sprite.u0 = d->u0;
+        e->sprite.v0 = d->v0;
+        e->sprite.u1 = d->u1;
+        e->sprite.v1 = d->v1;
+        e->unk10 = 0x39;
+        e->unk40 = 1;
+        e->unk2c = 120;
+        e->unk24 = 0.025f;
+        e->unk70 = 0.0f;
+        e->unk64 = -11.75f;
+        e->unk68 = 60.0f;
+        e->unk6c = 0.0f;
+        e->unk44 = 2.0f;
+        e->unk48 = 30.0f;
+        e->unk4c = 0.0f;
+        e->unk54 = 255.0f;
+        e->unk58 = 0.0f;
+        e->unk5c = 15.0f;
+        e->unk8c = 9;
+        e->unk88 = 16;
+        e->unk90 = 0x7f;
+        e->unk94 = 0;
+        e->unk74 = 30.0f;
+        e->unk78 = 15.0f;
+        e->unk7c = 0;
+        e->unk80 = 0xffffff;
+        e->unk84 = 0xc0c0c0;
+        e->unk98 = 1;
+        e->unk9c = 0;
+        e->unka0 = 30.0f;
+        e->unka4 = 15.0f;
+        e->unka8 = 15.0f;
+        break;
+    default:
+        return;
+    }
+    e->unk10 |= 0x20;
+    e->unk74 = 6.0f;
+    e->unk78 = 6.0f;
+    DWORD colour;
+    if (type == 0 || type == 3)
+    {
+        colour = 0xffa000;
+    }
+    else if (type == 1 || type == 4)
+    {
+        colour = 0xe0f0ff;
+    }
+    else if (type == 2 || type == 5)
+    {
+        colour = 0xffdc00;
+    }
+    else
+    {
+        goto place;
+    }
+    e->unk7c = colour;
+    e->unk80 = colour;
+    e->unk84 = colour;
+place:
+    e->unk00 = 1;
+    e->unk04 = g_4d5bb8;
+    e->unk08 = kind;
+    e->unk0c = type;
+    e->unk28 = 0;
+    e->sprite.blendMode = 0x48;
+    e->sprite.flags = e->unk10;
+    e->sprite.alpha = 0;
+    e->sprite.angle = 0;
+    e->sprite.scaleX = 1.0f;
+    e->sprite.scaleY = 1.0f;
+    float hw = e->sprite.width * 0.5f;
+    float hh = e->sprite.height * 0.5f;
+    if (type == 0 || type == 1 || type == 2)
+    {
+        hw = e->sprite.width;
+    }
+    e->sprite.originX = hw;
+    e->sprite.originY = hh;
+    e->sprite.x = 320.0f - hw;
+    e->sprite.y = 240.0f - hh;
 }
 
 
@@ -738,6 +904,40 @@ void FUN_419180()
     // STRING: STUNTGP_D3D 0x47468c
     sprintf(text, "%s %s\n", g_60f02c[g_4d5bb8 - g_49a1f8].name, g_6127a0[23]);
     FUN_442cf0(180, text, g_4d5bb8, 1, 0);
+}
+
+extern float g_60f2d0[31];
+void FUN_418bd0();
+void FUN_418d10();
+
+// While the car is between 40% and 65% of the path: crowd and messages, and every third tick a boost to
+// unk2570 from unk1184, capped by g_60f2d0[6].
+// FUNCTION: STUNTGP_D3D 0x4191f0
+void FUN_4191f0()
+{
+    if ((int)g_4d5bb8->unk7650 >= 40 && (int)g_4d5bb8->unk7650 < 65)
+    {
+        if (!g_4d5bb8->unk7660)
+        {
+            FUN_419110();
+        }
+        FUN_418f70();
+        FUN_418bd0();
+        if (++g_4d5bb8->unk7660 % 3)
+        {
+            return;
+        }
+        if (g_4d5bb8->unk7658 < g_60f2d0[6] * g_4d5bb8->unk1184 && g_4d5bb8->unk2570 < g_4d5bb8->unk2574)
+        {
+            unsigned int add = (int)(g_4d5bb8->unk1184 * 10.0f);
+            g_4d5bb8->unk7658 += add;
+            g_4d5bb8->unk2570 += add;
+        }
+    }
+    if ((int)g_4d5bb8->unk7650 >= 65)
+    {
+        FUN_418d10();
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x4199a0

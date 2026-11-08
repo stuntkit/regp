@@ -112,11 +112,6 @@ DWORD g_5712f4;
 // GLOBAL: STUNTGP_D3D 0x5712f8
 int g_5712f8;
 
-// STUB: STUNTGP_D3D 0x401220
-void FUN_401220(int type, int mode, unsigned int points)
-{
-}
-
 // Returns the player slot driving this car, or NULL for AI cars.
 // FUNCTION: STUNTGP_D3D 0x402590
 GameSlot *FUN_402590(Car *car)
@@ -1186,6 +1181,44 @@ void FUN_408dc0(float amount)
     }
 }
 
+void FUN_411340();
+
+// Hands the camera to the free-flying mode 4 when the car is first launched, drifting towards the car
+// unless it is already within 500.
+// FUNCTION: STUNTGP_D3D 0x408e90
+void FUN_408e90()
+{
+    if (g_4722d0->camMode < 10 && (!g_4d5bb8->unk726c || *g_4d5bb8->unk726c != 2))
+    {
+        Vec4 d;
+        d.x = g_4d5bb8->posX - g_4722d0->cam.pos.x;
+        d.y = g_4d5bb8->posY - g_4722d0->cam.pos.y;
+        d.z = g_4d5bb8->posZ - g_4722d0->cam.pos.z;
+        if ((float)sqrt(d.x * d.x + d.y * d.y + d.z * d.z) < 500.0f)
+        {
+            g_4722d0->velX = 0.0f;
+            g_4722d0->velY = 0.0f;
+            g_4722d0->velZ = 0.0f;
+            g_4722d0->accelX = 0.0f;
+            g_4722d0->accelY = 0.0f;
+            g_4722d0->accelZ = 0.0f;
+        }
+        else
+        {
+            g_4722d0->velX = d.x * 0.01f;
+            g_4722d0->velY = d.y * 0.01f;
+            g_4722d0->velZ = d.z * 0.01f;
+        }
+        if (g_4d5bb8->unk762c != 1)
+        {
+            g_4d5bb8->unk762c = 1;
+            g_4d5bb8->unk7630 = g_4722d0->camMode;
+            g_4722d0->camMode = 4;
+            FUN_411340();
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x408f90
 void FUN_408f90()
 {
@@ -1193,6 +1226,89 @@ void FUN_408f90()
     {
         g_4722d0->camMode = g_4d5bb8->unk7630;
         g_4d5bb8->unk762c = 0;
+    }
+}
+
+void FUN_411490(Car *car);
+void FUN_418510();
+
+// Reacts to the flags of the surface under the car: camera handoffs, the path start (type 10), launch
+// pads and stuck detection, counting ticks spent stuck or upside down (up below 0.707).
+// FUNCTION: STUNTGP_D3D 0x408fc0
+void FUN_408fc0(float up)
+{
+    int idx = g_cameraSweep.unka4->surface;
+    int stuck = 0;
+    unsigned int type = (BYTE)g_renderState.unk7f98->surfaces[idx] & 0xf;
+    if (type > 0)
+    {
+        if (type > 4)
+        {
+            if (type == 10 && !g_4d5bb8->unk7648 && !g_4d5bb8->unk1fd8)
+            {
+                g_4d5bb8->unk764c = 0;
+                g_4d5bb8->unk7654 = g_4d5bb8->unk2278;
+                g_4d5bb8->unk7648 = 1;
+                g_4d5bb8->unk7660 = 0;
+                g_4d5bb8->unk7658 = 0;
+                g_4d5bb8->unk765c = 0;
+                g_4d5bb8->unk7674 = g_4d5bb8->unk24a4;
+            }
+        }
+        else
+        {
+            g_4722d0 = FUN_402590(g_4d5bb8);
+            if (g_4722d0)
+            {
+                FUN_408f90();
+            }
+            else
+            {
+                g_4d5bb8->unk762c = 0;
+            }
+            FUN_402580();
+        }
+    }
+    if (g_renderState.unk7f98->surfaces[idx] & 0x40)
+    {
+        g_4722d0 = FUN_402590(g_4d5bb8);
+        if (g_4722d0)
+        {
+            FUN_408e90();
+        }
+        else
+        {
+            g_4d5bb8->unk762c = 1;
+        }
+        FUN_402580();
+        if (g_4d5bb8->unk1cf0 < 500.0f / 60.0f)
+        {
+            stuck = 0x80;
+        }
+    }
+    else
+    {
+        g_4d5bb8->race.unk78 = 0;
+    }
+    if (g_renderState.unk7f98->surfaces[idx] & 0x80)
+    {
+        stuck = 0x80;
+        FUN_411490(g_4d5bb8);
+    }
+    if ((g_renderState.unk7f98->surfaces[idx] & 0x20) && g_4d5bb8->unk1cf0 < 100.0f / 60.0f)
+    {
+        stuck = 0x80;
+    }
+    FUN_418510();
+    if (!stuck && up > 0.70710677f)
+    {
+        g_4d5bb8->unk7638 = 0;
+        return;
+    }
+    if ((DWORD)++g_4d5bb8->unk7638 >= 180)
+    {
+        g_4d5bb8->unk763c = 1;
+        g_4d5bb8->unk7638 = 0;
     }
 }
 
@@ -1217,12 +1333,10 @@ void FUN_409180(int wheel)
     }
 }
 
-extern TrackPoly *g_498164;
-
 // FUNCTION: STUNTGP_D3D 0x4091e0
 void FUN_4091e0(int wheel)
 {
-    BYTE *s = (BYTE *)&g_renderState.unk7f98->surfaces[g_498164->surface];
+    BYTE *s = (BYTE *)&g_renderState.unk7f98->surfaces[g_cameraSweep.unka4->surface];
     g_4d5bb8->wheels[wheel].unk84 = s[1] * 0.015625f;
     g_4d5bb8->wheels[wheel].unk8c = s[2];
     g_4d5bb8->wheels[wheel].unk88 = s[3];
@@ -3918,6 +4032,52 @@ void FUN_411330(Car *car)
     car->unk71e8 = 0;
 }
 
+void FUN_4115e0(float dist);
+
+// Tracks the peak height of a jump and scores it once the car has dropped 2 below the peak.
+// FUNCTION: STUNTGP_D3D 0x411680
+void FUN_411680()
+{
+    if (g_60f2b0 != 4)
+    {
+        if (g_4d5bb8->posY > g_4d5bb8->unk723c)
+        {
+            g_4d5bb8->unk723c = g_4d5bb8->posY;
+            return;
+        }
+        if (!g_4d5bb8->unk7240 && g_4d5bb8->unk723c - 2.0f > g_4d5bb8->posY)
+        {
+            FUN_4115e0(g_4d5bb8->unk723c - g_4d5bb8->unk7238);
+        }
+    }
+}
+
+// Upright landing: when the car comes down with its up axis within ~25 degrees of vertical, a one-off
+// bonus and message, at most every 300 ticks.
+// FUNCTION: STUNTGP_D3D 0x411340
+void FUN_411340()
+{
+    if (!g_4d5bb8->unk1fd8 &&
+        g_482688.x * g_4d5bb8->axisY.x + g_482688.y * g_4d5bb8->axisY.y + g_482688.z * g_4d5bb8->axisY.z >= 0.9f &&
+        !g_4d5bb8->race.unk78)
+    {
+        g_4d5bb8->race.unk78 = 1;
+        if (FUN_402590(g_4d5bb8))
+        {
+            if (!g_4d5bb8->unk71e8)
+            {
+                FUN_401220(5, 0, g_60d688[32]);
+                FUN_442cf0(180, g_6127a0[43], g_4d5bb8, 2, 100);
+            }
+            g_4d5bb8->unk71e8 = 300;
+        }
+    }
+    if (g_4d5bb8->unk71e8)
+    {
+        g_4d5bb8->unk71e8--;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x411410
 void FUN_411410(Car *car)
 {
@@ -4008,6 +4168,43 @@ void FUN_4115c0()
     g_4d5bb8->unk7238 = g_4d5bb8->posY;
     g_4d5bb8->unk723c = 0;
     g_4d5bb8->unk7240 = 0;
+}
+
+// Jump distance bands: the furthest band reached picks the popup and its score.
+struct ScoreBand
+{
+    char *name;
+    DWORD threshold;
+    int score;
+    int type;
+};
+
+// GLOBAL: STUNTGP_D3D 0x474350
+ScoreBand g_474350[5] = {
+    // STRING: STUNTGP_D3D 0x4743c0
+    {"Band 1", 250, 28, 0},
+    // STRING: STUNTGP_D3D 0x4743c8
+    {"Band 2", 400, 29, 1},
+    // STRING: STUNTGP_D3D 0x4743d0
+    {"Band 3", 800, 30, 2},
+    // STRING: STUNTGP_D3D 0x4743d8
+    {"Band 4", 1250, 31, 2},
+    // STRING: STUNTGP_D3D 0x4743e0
+    {"Dummy Band", 50000, 0, 0},
+};
+
+// FUNCTION: STUNTGP_D3D 0x4115e0
+void FUN_4115e0(float dist)
+{
+    g_4d5bb8->unk7240 = 1;
+    if (g_474350[0].threshold <= dist)
+    {
+        int i;
+        for (i = 0; g_474350[i + 1].threshold < dist && i < 4; i++)
+        {
+        }
+        FUN_401220(g_474350[i].type, 0, g_60d688[g_474350[i].score]);
+    }
 }
 
 void FUN_41d1f0(Stat *stat, float value);
@@ -4111,11 +4308,34 @@ void FUN_4118d0()
 // Entry of the 0x98-byte trick table at 0x473a40; the input sequences end with -1.
 struct TrickDef
 {
-    int unk00;         // 0x00, 0 ends the table
-    BYTE unk04[0x14];  // 0x04
+    int msg[3];        // 0x00, message per repeat count; msg[0] 0 ends the table
+    int score[3];      // 0x0c, score id per repeat count
     char seqA[0x40];   // 0x18, matched against Car::unk6fb4
     char seqB[0x40];   // 0x58, matched against Car::unk70b4
 };
+
+// Input-sequence tricks; seqA is matched against Car::unk6fb4, seqB against Car::unk70b4, -1 ends a sequence.
+// GLOBAL: STUNTGP_D3D 0x473a40
+TrickDef g_473a40[11] = {
+    {{31, 32, 33}, {1, 2, 3}, {7, 8, 1, 2, 3, 4, 5, 6, 7, -1}, {-1}},
+    {{34, 35, 36}, {4, 5, 6}, {2, 1, 8, 7, 6, 5, 4, 3, 2, -1}, {-1}},
+    {{40, 41, 42}, {7, 8, 9}, {-1}, {8, 1, 2, 3, 4, 5, 6, 7, 8, -1}},
+    {{37, 38, 39}, {10, 11, 12}, {-1}, {1, 8, 7, 6, 5, 4, 3, 2, 1, -1}},
+    {{82, 82, 82}, {13, 13, 13}, {7, 8, 1, 2, 3, 4, 5, 4, 3, 2, 1, -1}, {-1}},
+    {{81, 81, 81}, {14, 14, 14}, {2, 1, 8, 7, 6, 5, 4, 5, 6, 7, 8, -1}, {-1}},
+    {{92, 92, 92}, {16, 16, 16}, {-1}, {1, 2, 3, 4, 5, 4, 3, 2, 1, -1}},
+    {{91, 91, 91}, {15, 15, 15}, {-1}, {1, 8, 7, 6, 5, 6, 7, 8, 1, -1}},
+    {{85, 85, 85}, {17, 17, 17}, {-1}, {8, 1, 2, 3, 4, 5, 6, 7, 8, 7, 6, 5, 4, 3, 2, 1, -1}},
+    {{85, 85, 85}, {17, 17, 17}, {-1}, {1, 8, 7, 6, 5, 4, 3, 2, 1, 2, 3, 4, 5, 6, 7, 8, -1}},
+    {{0, 0, 0}, {0, 0, 0}, {0}, {0}},
+};
+
+// GLOBAL: STUNTGP_D3D 0x4740c8
+TrickDef g_4740c8 = {{86, 86, 86}, {19, 19, 19}, {-1}, {-1}};
+
+// GLOBAL: STUNTGP_D3D 0x474160
+TrickDef g_474160 = {{87, 87, 87}, {20, 20, 20}, {-1}, {-1}};
+
 
 // Counts how often the trick's input sequence was completed, capped at 3; 0 on a stray input.
 // FUNCTION: STUNTGP_D3D 0x411c10
@@ -4239,6 +4459,70 @@ int FUN_411da0(int value, int offset)
     return g_474290[i];
 }
 
+// GLOBAL: STUNTGP_D3D 0x4742f0
+int g_4742f0[24] = {17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21};
+
+void FUN_4190b0(Car *car, unsigned int percent);
+
+// Awards a trick completed n times (1..3).
+// FUNCTION: STUNTGP_D3D 0x411de0
+void FUN_411de0(TrickDef *trick, int n)
+{
+    int k = n - 1;
+    int id = trick->score[k];
+    int score = FUN_411da0(g_60d688[id], g_4d5bb8->unk725c);
+    if (FUN_402590(g_4d5bb8) && g_612948.unk0054 != 1)
+    {
+        int type;
+        if (id >= 5000)
+        {
+            type = 4;
+        }
+        else
+        {
+            type = id >= 10000 ? 5 : 3;
+        }
+        type += k;
+        if (type > 5)
+        {
+            type = 5;
+        }
+        FUN_442cf0(180, g_6127a0[trick->msg[k]], g_4d5bb8, 2, 0);
+        int kind = FUN_42f1f0(1) + 1;
+        FUN_401220(type, kind, score);
+        FUN_4190b0(g_4d5bb8, (int)(g_4d5bb8->unk2640 == 1 ? g_60f2d0[4] : g_60f2d0[2]));
+        FUN_461150(g_4742f0[g_4d5bb8->unk725c], 0, 0, 0xff, 0, 1, NULL);
+        return;
+    }
+    g_4d5bb8->unk260c += score;
+}
+
+// Awards the first completed trick, else a spin bonus for long input runs.
+// FUNCTION: STUNTGP_D3D 0x411f10
+void FUN_411f10()
+{
+    if (g_60f2b0 != 4)
+    {
+        for (TrickDef *t = g_473a40; t->msg[0]; t++)
+        {
+            int n = FUN_411c10(t);
+            if (n)
+            {
+                FUN_411de0(t, n);
+                return;
+            }
+        }
+        if (g_4d5bb8->unk6dac > 16 || g_4d5bb8->unk6db0 > 16)
+        {
+            FUN_411de0(&g_474160, 1);
+        }
+        else if (g_4d5bb8->unk6dac > 10 || g_4d5bb8->unk6db0 > 10)
+        {
+            FUN_411de0(&g_4740c8, 1);
+        }
+    }
+}
+
 void FUN_41d1f0(Stat *stat, float value);
 void FUN_41d230();
 
@@ -4258,6 +4542,69 @@ void FUN_411fa0()
         g_4d5bb8->unk7258--;
     }
     FUN_406ff0();
+}
+
+// FUNCTION: STUNTGP_D3D 0x412040
+void FUN_412040()
+{
+    g_4d5bb8->unk724c = 15;
+    g_4d5bb8->unk7250 = 0;
+    g_4d5bb8->unk7248 = 0;
+    if (g_4d5bb8->unk71f4 == 1)
+    {
+        FUN_411f10();
+    }
+    FUN_41d230();
+    FUN_41d1f0(&g_4d5bb8->unk2594[0], 100.0f);
+    FUN_41d1f0(&g_4d5bb8->unk2594[1], g_4d5bb8->unk260c - g_4d5bb8->unk2614);
+    g_4d5bb8->unk2594[1].mean = g_4d5bb8->unk260c / g_4d5bb8->unk2594[1].count;
+    g_4d5bb8->unk725c = g_4d5bb8->unk7258;
+    FUN_406ff0();
+}
+
+// Trick window countdown: closes it when it runs out or the car lands, or arms landing detection once all
+// four wheels are off the ground.
+// FUNCTION: STUNTGP_D3D 0x4120f0
+void FUN_4120f0()
+{
+    Car *car = g_4d5bb8;
+    if (car->unk7250)
+    {
+        if (--car->unk7250 == 0)
+        {
+            car->unk71f4 = 0;
+        }
+        if (car->unk724c == 1)
+        {
+            if (!car->unk7250)
+            {
+                FUN_411fa0();
+                return;
+            }
+            if (!car->unk1fd8 && (DWORD)++car->unk7248 > 10)
+            {
+                FUN_412040();
+                return;
+            }
+        }
+        else
+        {
+            if ((float)(DWORD)++car->unk7248 >= 896.0f)
+            {
+                FUN_411fa0();
+                return;
+            }
+            for (DWORD i = 0; i < 4; i++)
+            {
+                if (car->wheels[i].unk70 < 4)
+                {
+                    return;
+                }
+            }
+            car->unk7248 = 0;
+            car->unk724c = 1;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x4121c0
@@ -6142,9 +6489,51 @@ void FUN_41ac30(Car *car)
 {
 }
 
-// STUB: STUNTGP_D3D 0x41bea0
+extern int g_4d5b20;
+extern int g_4746c0;
+void FUN_460d20(unsigned int n);
+void FUN_41bdd0();
+void FUN_41af70();
+void FUN_41b0d0();
+void FUN_41b250();
+void FUN_41b510();
+void FUN_41b5d0();
+void FUN_41b680();
+void FUN_41b710();
+void FUN_41b8e0();
+void FUN_41ba40();
+void FUN_41bc80();
+
+// Per-tick sound update for the current car; g_4d5b20 == 1 silences everything instead.
+// FUNCTION: STUNTGP_D3D 0x41bea0
 void FUN_41bea0()
 {
+    if (g_4d5b20 == 1)
+    {
+        FUN_460dd0();
+        FUN_41bdd0();
+        return;
+    }
+    if (FUN_402590(g_4d5bb8))
+    {
+        FUN_460d20(15000);
+        g_4746c0 = 100;
+    }
+    else
+    {
+        g_4746c0 = 50;
+    }
+    FUN_41ba40();
+    FUN_41b5d0();
+    FUN_41af70();
+    FUN_41b0d0();
+    FUN_41b8e0();
+    FUN_41b510();
+    FUN_41bc80();
+    FUN_41b250();
+    FUN_41b680();
+    FUN_41b710();
+    FUN_460d20(7500);
 }
 
 // STUB: STUNTGP_D3D 0x41bf20
@@ -7117,7 +7506,6 @@ void FUN_421fa0(Body *body)
     }
 }
 
-extern Vec4 g_498198;
 void FUN_44f8e0(float *m);
 void FUN_44efd0(float *out, float *a, float *b);
 
@@ -7142,7 +7530,7 @@ void FUN_422020(Body *body, int i, float turns, float *m)
     n.y = t[1] * d.x + t[5] * d.y + t[9] * d.z;
     n.z = t[2] * d.x + t[6] * d.y + t[10] * d.z;
     Vec3_Normalize(&n.x);
-    up = g_498198;
+    up = g_cameraSweep.unkd8;
     s.x = up.y * n.z - up.z * n.y;
     s.y = up.z * n.x - up.x * n.z;
     s.z = up.x * n.y - up.y * n.x;
@@ -7432,7 +7820,6 @@ void FUN_408920(Body *body)
     g_4d5bb8->unk1c8c = *(Vec4 *)body->vel;
 }
 
-extern Vec4 g_498198;
 void FUN_413290(float *v);
 
 void FUN_40f760(Body *body, int i, float angle, float *m);
@@ -7453,10 +7840,10 @@ void FUN_4089b0(Body *body, float *m, int i, float limit)
     dv.x = w.x - p.x;
     dv.y = w.y - p.y;
     dv.z = w.z - p.z;
-    float a = g_498198.x * dv.x + g_498198.y * dv.y + g_498198.z * dv.z;
-    pr.x = g_498198.x * a;
-    pr.y = g_498198.y * a;
-    pr.z = g_498198.z * a;
+    float a = g_cameraSweep.unkd8.x * dv.x + g_cameraSweep.unkd8.y * dv.y + g_cameraSweep.unkd8.z * dv.z;
+    pr.x = g_cameraSweep.unkd8.x * a;
+    pr.y = g_cameraSweep.unkd8.y * a;
+    pr.z = g_cameraSweep.unkd8.z * a;
     p.x = dv.x - pr.x;
     p.y = dv.y - pr.y;
     p.z = dv.z - pr.z;
@@ -7481,11 +7868,11 @@ void FUN_4089b0(Body *body, float *m, int i, float limit)
 void FUN_408bc0(Body *body, float *out, int point, float limit)
 {
     Vec4 v = *(Vec4 *)body->vel;
-    float d = g_498198.x * v.x + g_498198.y * v.y + g_498198.z * v.z;
+    float d = g_cameraSweep.unkd8.x * v.x + g_cameraSweep.unkd8.y * v.y + g_cameraSweep.unkd8.z * v.z;
     Vec4 p;
-    p.x = g_498198.x * d;
-    p.y = g_498198.y * d;
-    p.z = g_498198.z * d;
+    p.x = g_cameraSweep.unkd8.x * d;
+    p.y = g_cameraSweep.unkd8.y * d;
+    p.z = g_cameraSweep.unkd8.z * d;
     Vec4 t;
     t.x = v.x - p.x;
     t.y = v.y - p.y;
@@ -7513,9 +7900,9 @@ void FUN_408cb0(float speed)
         f = 5.0f;
     }
     Vec4 v;
-    v.x = g_498198.x * f;
-    v.y = g_498198.y * f;
-    v.z = g_498198.z * f;
+    v.x = g_cameraSweep.unkd8.x * f;
+    v.y = g_cameraSweep.unkd8.y * f;
+    v.z = g_cameraSweep.unkd8.z * f;
     FUN_413290(&v.x);
 }
 
@@ -8243,6 +8630,7 @@ void FUN_419900()
 
 void FUN_41c530();
 extern Scene *g_571314;
+void FUN_42b7f0(Scene *scene, Camera *camera, int arg);
 
 // Builds the skid mark mesh: 128 copies of the template quad, each its own face and points.
 // FUNCTION: STUNTGP_D3D 0x41c9b0
@@ -8314,6 +8702,15 @@ void FUN_41d180()
     for (int i = 0; i < 4; i++)
     {
         FUN_41d170(&g_4d5bb8->skids[i]);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x41d1c0
+void FUN_41d1c0()
+{
+    if (g_612948.unk0034 >= 80 && g_5712f8)
+    {
+        FUN_42b7f0(g_571314, &g_4864e8, 0);
     }
 }
 

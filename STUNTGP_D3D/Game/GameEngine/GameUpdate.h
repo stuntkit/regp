@@ -183,7 +183,15 @@ struct TrailParams
     int unk08;        // 0x008
     int unk0c;        // 0x00c
     void *unk10;      // 0x010
-    BYTE unk14[0xfc]; // 0x014
+    BYTE unk14[0xd8]; // 0x014
+    int unkec;        // 0x0ec, 1 to draw a sprite at the head
+    DWORD unkf0;      // 0x0f0, sprite: OverlayPoly flags
+    int unkf4;        // 0x0f4, sprite: texture
+    DWORD unkf8;      // 0x0f8, sprite: alpha
+    DWORD unkfc;      // 0x0fc, sprite: colour
+    float unk100;     // 0x100, sprite: half width
+    float unk104;     // 0x104, sprite: half height
+    BYTE unk108[0x8]; // 0x108
 };
 
 // Damped angular spring for a body panel, driven by FUN_417f10.
@@ -365,6 +373,45 @@ struct TrackPoly
     WORD surface;     // 0x6, into TrackOctree::surfaces
 };
 
+// Swept-sphere collision state used to keep the camera out of the scenery. One block in the original:
+// FUN_41feb0 saves and restores it with a single copy.
+struct CameraSweep
+{
+    float unk00; // 0x00
+    Vec4 unk04; // 0x04
+    Vec4 unk14; // 0x14
+    BYTE unk24[0x4]; // 0x24
+    Vec4 unk28; // 0x28
+    BYTE unk38[0x20]; // 0x38
+    Vec4 unk58; // 0x58
+    Vec4 unk68; // 0x68
+    BYTE unk78[0x10]; // 0x78
+    float unk88; // 0x88
+    float unk8c; // 0x8c
+    float unk90; // 0x90
+    float unk94; // 0x94
+    float unk98; // 0x98
+    // Point on and normal of the polygon plane being tested.
+    Vec4 *unk9c; // 0x9c
+    Vec4 *unka0; // 0xa0
+    // Polygon hit by the last ray cast.
+    TrackPoly *unka4; // 0xa4
+    // Signed distances of the sweep's end and start points from that plane.
+    float unka8; // 0xa8
+    float unkac; // 0xac
+    BYTE unkb0[0x18]; // 0xb0
+    Vec4 unkc8; // 0xc8
+    Vec4 unkd8; // 0xd8
+    Vec4 unke8; // 0xe8
+    Vec4 unkf8; // 0xf8
+    float unk108; // 0x108
+    // Body the camera sphere ignores.
+    Body *unk10c; // 0x10c
+    BYTE unk110[0x60]; // 0x110
+};
+
+extern CameraSweep g_cameraSweep;
+
 struct OctNode
 {
     float x;          // 0x00
@@ -416,6 +463,18 @@ struct StuntKnot
     float pathPosition; // 0x00
     float width;        // 0x04
     int grade;          // 0x08
+};
+
+// Cell of a HUD texture: texture, source rectangle and on-screen size.
+struct HudDigit
+{
+    int texture;  // 0x00
+    float u0;     // 0x04
+    float v0;     // 0x08
+    float u1;     // 0x0c
+    float v1;     // 0x10
+    float width;  // 0x14
+    float height; // 0x18
 };
 
 struct Car
@@ -560,7 +619,8 @@ struct Car
     float unk2328;            // 0x2328
     float unk232c;            // 0x232c
     float unk2330;            // 0x2330
-    BYTE unk2334[0x8];        // 0x2334
+    BYTE unk2334[0x4];        // 0x2334
+    int unk2338;              // 0x2338
     int unk233c[4];           // 0x233c
     int unk234c;              // 0x234c
     int unk2350;              // 0x2350
@@ -571,7 +631,7 @@ struct Car
     float unk2360;            // 0x2360
     float unk2364;            // 0x2364
     int unk2368;              // 0x2368
-    int unk236c;              // 0x236c
+    unsigned int unk236c;     // 0x236c
     int unk2370;              // 0x2370
     int unk2374;              // 0x2374
     int unk2378;              // 0x2378
@@ -713,7 +773,11 @@ struct Car
     DWORD unk3920;            // 0x3920
     int unk3924;              // 0x3924
     int unk3928;              // 0x3928
-    BYTE unk392c[0x38];       // 0x392c
+    float unk392c;            // 0x392c
+    BYTE unk3930[0x4];        // 0x3930
+    Vec4 unk3934;             // 0x3934
+    Vec4 unk3944;             // 0x3944
+    Vec4 unk3954;             // 0x3954
     SkidMark skids[4];        // 0x3964
     int unk6da4;              // 0x6da4
     int unk6da8;              // 0x6da8
@@ -753,7 +817,7 @@ struct Car
     DWORD unk7234;            // 0x7234
     float unk7238;            // 0x7238
     float unk723c;            // 0x723c
-    float unk7240;            // 0x7240
+    int unk7240;              // 0x7240
     unsigned int unk7244;     // 0x7244
     int unk7248;              // 0x7248
     int unk724c;              // 0x724c
@@ -764,7 +828,7 @@ struct Car
     int unk7260;              // 0x7260
     int unk7264;              // 0x7264
     Replay *unk7268;          // 0x7268
-    BYTE unk726c[0x4];        // 0x726c
+    int *unk726c;             // 0x726c
     Body body;                // 0x7270
     int unk7614;              // 0x7614
     int unk7618;              // 0x7618
@@ -785,7 +849,9 @@ struct Car
     int unk764c;              // 0x764c, segment along g_4d5c9c
     unsigned int unk7650;     // 0x7650, unk764c as a percentage of the path
     int unk7654;              // 0x7654
-    BYTE unk7658[0xc];        // 0x7658
+    int unk7658;              // 0x7658
+    int unk765c;              // 0x765c
+    int unk7660;              // 0x7660
     Vec4 unk7664;             // 0x7664, nearest point on the path
 
     int unk7674;              // 0x7674
