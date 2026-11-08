@@ -600,9 +600,10 @@ struct Car
     float unk2618;            // 0x2618
     float unk261c;            // 0x261c
     int unk2620;              // 0x2620
-    int unk2624;              // 0x2624
-    int unk2628;              // 0x2628
-    int unk262c;              // 0x262c
+    unsigned int unk2624;     // 0x2624
+    float unk2628;            // 0x2628
+    float unk262c;            // 0x262c
+
     int catchUp;              // 0x2630
     float unk2634;            // 0x2634
     float leaderGap;          // 0x2638

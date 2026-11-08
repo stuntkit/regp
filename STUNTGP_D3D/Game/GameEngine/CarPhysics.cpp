@@ -23,6 +23,8 @@ extern DWORD g_60f000[4];
 extern int g_60f2b4;
 extern int g_576be0;
 extern float g_60f010;
+extern float g_60f2d0[31];
+
 
 int FUN_442fb0();
 void FUN_443de0();
@@ -593,7 +595,8 @@ void FUN_406610()
 
 // Point across the track: side >= 0 blends from the centre path towards g_49a158, below 0 towards g_49a160.
 // FUNCTION: STUNTGP_D3D 0x406870
-void FUN_406870(Vec4 *out, float dist, float side)
+void FUN_406870(float dist, float side, Vec4 *out)
+
 {
     Vec4 left;
     Vec4 centre;
@@ -634,6 +637,67 @@ float g_499fb0;
 
 // GLOBAL: STUNTGP_D3D 0x49a148
 Vec4 g_49a148;
+
+// Measures how much the path bends ahead and picks the AI target speed from it.
+// FUNCTION: STUNTGP_D3D 0x406970
+void FUN_406970()
+{
+    float k = g_4d5bb8->unk1cf0 * 0.01f;
+    if (k > 1.0f)
+    {
+        k = 1.0f;
+    }
+    else if (k < 0.5f)
+    {
+        k = 0.5f;
+    }
+    Vec4 a;
+    FUN_406870(0.0f, g_4d5bb8->unk266c, &a);
+
+    Vec4 b;
+    FUN_406870(k * 2500.0f, g_4d5bb8->unk266c, &b);
+
+    Vec4 c;
+    FUN_406870(k * 5000.0f, g_4d5bb8->unk266c, &c);
+
+    Vec4 d;
+    d.x = b.x - a.x;
+    d.y = b.y - a.y;
+    d.z = b.z - a.z;
+    Vec4 n;
+    n.x = g_482690 * d.y - g_48268c * d.z;
+    n.y = g_482688 * d.z - g_482690 * d.x;
+    n.z = g_48268c * d.x - g_482688 * d.y;
+    Vec3_Normalize(&n.x);
+    Vec4 q;
+    q.x = c.x - b.x;
+    q.y = c.y - b.y;
+    q.z = c.z - b.z;
+    float t = q.x * n.x + q.y * n.y + q.z * n.z;
+    g_4d5bb8->unk2668 = t;
+    float speed = (108.33334f - (float)fabs(t * 0.0004f) * 100.0f) + 16.666666f;
+    int flag;
+    if (g_4d5bb8->unk24e0 == 1)
+    {
+        flag = 1;
+        speed = g_60f2d0[7];
+    }
+    else if (g_4d5bb8->unk767c == 1)
+    {
+        flag = 1;
+        speed = g_60f2d0[8];
+    }
+    else
+    {
+        flag = 0;
+    }
+    if (g_4d5bb8->unk762c == 1)
+    {
+        speed = 166.66667f;
+    }
+    g_499fa8 = speed;
+    g_499fac = flag;
+}
 
 // Same steering as FUN_4054b0, aimed at g_49a148 with the g_499fb0 blend.
 // FUNCTION: STUNTGP_D3D 0x406700
@@ -3176,10 +3240,70 @@ void FUN_410b00(int value)
     g_4d5bb8->unk2624 = value;
 }
 
-// STUB: STUNTGP_D3D 0x410b30
+// Wheelie / stoppie / two-wheel balance: lifts the centre of mass while only one axle or side is grounded.
+// FUNCTION: STUNTGP_D3D 0x410b30
 void FUN_410b30()
 {
+    if (g_4d5bb8->wheels[2].unk70 <= 0 && g_4d5bb8->wheels[3].unk70 <= 0 && g_4d5bb8->wheels[0].unk70 > 2 && g_4d5bb8->wheels[1].unk70 > 2)
+    {
+        g_4d5bb8->unk262c = 500.0f;
+        g_4d5bb8->unk2624 = 24;
+    }
+    if (g_4d5bb8->wheels[0].unk70 <= 0 && g_4d5bb8->wheels[2].unk70 <= 0 && g_4d5bb8->wheels[1].unk70 > 2 && g_4d5bb8->wheels[3].unk70 > 2)
+    {
+        g_4d5bb8->unk262c = 500.0f;
+        g_4d5bb8->unk2624 = 24;
+    }
+    if (g_4d5bb8->wheels[1].unk70 <= 0 && g_4d5bb8->wheels[3].unk70 <= 0 && g_4d5bb8->wheels[0].unk70 > 2 && g_4d5bb8->wheels[2].unk70 > 2)
+    {
+        g_4d5bb8->unk262c = 500.0f;
+        g_4d5bb8->unk2624 = 24;
+    }
+    int air = 0;
+    unsigned int ground = 0;
+    for (int i = 0; i < 4; i++)
+    {
+        if (g_4d5bb8->wheels[i].unk70 > 2)
+        {
+            ground++;
+        }
+        if (g_4d5bb8->wheels[i].unk70 <= 0)
+        {
+            air++;
+        }
+    }
+    if (air == 4 || ground >= 3)
+    {
+        FUN_410ad0();
+    }
+    else if (g_4d5bb8->unk2624 > 0)
+    {
+        g_4d5bb8->unk2624--;
+        float u = g_482688 * g_4d5bb8->axisY.x + g_48268c * g_4d5bb8->axisY.y + g_482690 * g_4d5bb8->axisY.z;
+        float s;
+        if (u < 0.0f)
+        {
+            s = -(u * u);
+        }
+        else
+        {
+            s = u * u;
+        }
+        float f = (s + 1.0f) * g_4d5bb8->unk262c;
+        float r = f - g_4d5bb8->unk2628;
+        if (r < 0.01f)
+        {
+            r = 0.01f;
+        }
+        else if (r > 1.0f)
+        {
+            r = 1.0f;
+        }
+        g_4d5bb8->unk261c = g_4d5bb8->unk22c - f * r;
+        g_4d5bb8->unk2628 = f;
+    }
 }
+
 
 // FUNCTION: STUNTGP_D3D 0x410cd0
 void FUN_410cd0()
