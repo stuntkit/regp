@@ -82,6 +82,110 @@ void FUN_44d4a0()
     g_menuState.unk4474 = g_menuState.unk440c[(rand() & 0xff) % g_menuState.unk4408];
 }
 
+int FUN_437790(ScoreEntry *table, int count, Initials *name, int score);
+void FUN_437880(int index);
+void FUN_43ae00(RaceSetup4 *src, RaceResults4 *dst);
+void FUN_43bf30();
+void FUN_43d500(int a);
+Initials *FUN_43d690(Initials *name);
+
+// GLOBAL: STUNTGP_D3D 0x61c0a0
+RaceSetup4 g_61c0a0;
+
+// GLOBAL: STUNTGP_D3D 0x61c0b8
+RaceResults4 g_61c0b8;
+
+// GLOBAL: STUNTGP_D3D 0x61c0c0
+char g_61c0c0[0x40];
+
+// Time-trial challenge: shows the record, races car 0x15 on track 0x19, then the score table.
+// FUNCTION: STUNTGP_D3D 0x44d4c0
+void FUN_44d4c0()
+{
+    int n;
+    switch (g_menuState.unk4234)
+    {
+    case 0:
+        g_menuState.unk4238 = 0;
+        g_menuState.unk423c = 1;
+        g_menuState.unk4234 = 1;
+        return;
+    case 1:
+        g_menuState.unk4234 = 2;
+        FUN_43dfa0(0x23, 9);
+        return;
+    case 2:
+        if (g_menuState.unk44d0)
+        {
+            FUN_43eef0();
+            return;
+        }
+        g_menuState.unk4234 = 3;
+        g_menuState.unk45ec = 0x5f;
+        g_menuState.unk45f0[0].color = 0xffffffff;
+        g_menuState.unk45f0[0].text = FUN_441170(0x260);
+        n = 1;
+        if (g_menuState.unk1dfc[0].time)
+        {
+            sprintf(g_61c0c0, FUN_441170(0x261), FUN_43d690((Initials *)g_menuState.unk1dfc[0].name),
+                    g_menuState.unk1dfc[0].time);
+            g_menuState.unk45f0[1].color = 0xffff8080;
+            g_menuState.unk45f0[1].text = g_61c0c0;
+            n = 2;
+        }
+        g_menuState.unk45f0[n].color = 0xffc8c8ff;
+        g_menuState.unk45f0[n].text = FUN_441170(0x262);
+        g_menuState.unk45e8 = 0;
+        g_menuState.unk4690 = n + 1;
+        FUN_43dfa0(0x24, 0x26);
+        return;
+    case 3:
+        if (g_menuState.unk45e8)
+        {
+            g_menuState.unk4234 = 1;
+            return;
+        }
+        g_61c0a0.car = 0x15;
+        g_61c0a0.track = 0x19;
+        g_61c0a0.minutes = 0x5a;
+        g_61c0a0.name = *(Initials *)g_menuState.unk44d4[g_menuState.unk4238];
+        g_61c0a0.unk0c = g_menuState.unk1dfc[0].time;
+        FUN_43ae00(&g_61c0a0, &g_61c0b8);
+        g_menuState.unk4234 = 4;
+        FUN_43dfa0(0, 25);
+        return;
+    case 4:
+        if (!g_61c0b8.won)
+        {
+            FUN_437790(g_menuState.unk1dfc, 100, (Initials *)g_menuState.unk44d4[g_menuState.unk4238], g_61c0b8.unk04);
+            if (g_61c0b8.unk04 >= g_menuState.car18UnlockScore)
+            {
+                FUN_437880(0x12);
+            }
+        }
+        g_menuState.unk4694.unk00 = 0x1fd;
+        g_menuState.unk4694.unk04 = 0;
+        g_menuState.unk4694.unk08 = 2;
+        g_menuState.unk4694.count = 100;
+        g_menuState.unk4694.entries = g_menuState.unk1dfc;
+        g_menuState.unk4234 = 5;
+        FUN_43dfa0(0x25, 0x27);
+        return;
+    case 5:
+        FUN_43bf30();
+        g_menuState.unk4234 = 6;
+        FUN_43dfa0(0x26, 0x28);
+        return;
+    case 6:
+        g_menuState.unk4234 = 7;
+        FUN_43d500(0);
+        return;
+    case 7:
+        FUN_43eef0();
+        return;
+    }
+}
+
 // The RaceSetup7 tail of g_61c208 and the RaceResults7 that follows it.
 // GLOBAL: STUNTGP_D3D 0x61c2cc
 int g_61c2cc;

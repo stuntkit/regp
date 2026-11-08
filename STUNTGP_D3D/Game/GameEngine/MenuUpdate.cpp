@@ -2797,6 +2797,94 @@ int FUN_43b5f0(int value, BitWriter *writer)
     return 1;
 }
 
+// Delta-encodes a recorded replay into out: the header and first frame verbatim, then each frame
+// against the decoder's running copy. Returns the bytes written, 0 if out is too small.
+// FUNCTION: STUNTGP_D3D 0x43b640
+int FUN_43b640(BYTE *out, int size, Replay *replay)
+{
+    ReplayFrame prev;
+    BitWriter writer;
+    int vx = 0;
+    int vy = 0;
+    int vz = 0;
+    int w0 = 0;
+    int w1 = 0;
+    int w2 = 0;
+    int w3 = 0;
+    if (size < 0xac)
+    {
+        return 0;
+    }
+    memcpy(out, replay, 0xac);
+    FUN_43b270(&writer, out + 0xac, size - 0xac);
+    prev = replay->frames[0];
+    ReplayFrame *f = &replay->frames[1];
+    while (!(prev.flags & 1))
+    {
+        if (writer.count > writer.size - 0x80)
+        {
+            return 0;
+        }
+        vx += FUN_43b4f0(5, f->pos[0] - prev.pos[0] - vx, &writer, 0);
+        vy += FUN_43b4f0(5, f->pos[1] - prev.pos[1] - vy, &writer, 1);
+        vz += FUN_43b4f0(5, f->pos[2] - prev.pos[2] - vz, &writer, 0);
+        prev.pos[0] += vx;
+        prev.pos[1] += vy;
+        prev.pos[2] += vz;
+        int d0 = FUN_43b210(f->wheelAngle[0], prev.wheelAngle[0]) - w0;
+        int d1 = FUN_43b210(f->wheelAngle[1], prev.wheelAngle[1]) - w1;
+        int d2 = FUN_43b210(f->wheelAngle[2], prev.wheelAngle[2]) - w2;
+        int d3 = FUN_43b210(f->wheelAngle[3], prev.wheelAngle[3]) - w3;
+        w0 += FUN_43b4f0(5, d0, &writer, 0);
+        w1 += FUN_43b4f0(5, d1, &writer, 0);
+        w2 += FUN_43b4f0(5, d2, &writer, 0);
+        w3 += FUN_43b4f0(5, d3, &writer, 0);
+        prev.wheelAngle[0] += w0;
+        prev.wheelAngle[1] += w1;
+        prev.wheelAngle[2] += w2;
+        prev.wheelAngle[3] += w3;
+        prev.unk14[0] += FUN_43b4f0(4, (f->unk14[0] - prev.unk14[0]) / 8, &writer, 1) * 8;
+        prev.unk14[1] += FUN_43b4f0(4, (f->unk14[1] - prev.unk14[1]) / 8, &writer, 1) * 8;
+        prev.unk14[2] += FUN_43b4f0(4, (f->unk14[2] - prev.unk14[2]) / 8, &writer, 1) * 8;
+        prev.unk14[3] += FUN_43b4f0(4, (f->unk14[3] - prev.unk14[3]) / 8, &writer, 1) * 8;
+        prev.unk1c[0] += FUN_43b4f0(3, f->unk1c[0] - prev.unk1c[0], &writer, 1);
+        prev.unk1c[1] += FUN_43b4f0(3, f->unk1c[1] - prev.unk1c[1], &writer, 1);
+        prev.unk1c[2] += FUN_43b4f0(3, f->unk1c[2] - prev.unk1c[2], &writer, 1);
+        prev.unk1c[3] += FUN_43b4f0(3, f->unk1c[3] - prev.unk1c[3], &writer, 1);
+        prev.axisZ[0] += FUN_43b4f0(4, f->axisZ[0] - prev.axisZ[0], &writer, 1);
+        prev.axisZ[1] += FUN_43b4f0(4, f->axisZ[1] - prev.axisZ[1], &writer, 1);
+        prev.axisZ[2] += FUN_43b4f0(4, f->axisZ[2] - prev.axisZ[2], &writer, 1);
+        prev.axisY[0] += FUN_43b4f0(4, f->axisY[0] - prev.axisY[0], &writer, 1);
+        prev.axisY[1] += FUN_43b4f0(4, f->axisY[1] - prev.axisY[1], &writer, 1);
+        prev.axisY[2] += FUN_43b4f0(4, f->axisY[2] - prev.axisY[2], &writer, 1);
+        prev.unk20 += FUN_43b4f0(5, f->unk20 - prev.unk20, &writer, 0);
+        prev.unk22 += FUN_43b5f0(f->unk22 - prev.unk22, &writer);
+        prev.unk23 += FUN_43b5f0(f->unk23 - prev.unk23, &writer);
+        if (prev.unk25 != f->unk25)
+        {
+            FUN_43b300(&writer, 1, 1);
+            FUN_43b2a0(&writer, f->unk25);
+            prev.unk25 = f->unk25;
+        }
+        else
+        {
+            FUN_43b300(&writer, 0, 1);
+        }
+        if (prev.flags != f->flags)
+        {
+            FUN_43b300(&writer, 1, 1);
+            FUN_43b2a0(&writer, f->flags);
+            prev.flags = f->flags;
+        }
+        else
+        {
+            FUN_43b300(&writer, 0, 1);
+        }
+        f++;
+    }
+    return writer.count;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43bb00
 int FUN_43bb00(int bits, BitReader *reader, int flag)
 {
