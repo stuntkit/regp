@@ -496,7 +496,7 @@ struct Car
     int unk2250;              // 0x2250
     float unk2254;            // 0x2254
     float unk2258;            // 0x2258
-    float unk225c;            // 0x225c
+    int unk225c;              // 0x225c
     int unk2260;              // 0x2260
     float unk2264;            // 0x2264
     int unk2268;              // 0x2268
