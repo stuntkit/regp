@@ -724,7 +724,7 @@ struct Car
     int unk2678;              // 0x2678
     int unk267c;              // 0x267c
     int unk2680;              // 0x2680
-    BYTE unk2684[0x4];        // 0x2684
+    float unk2684;            // 0x2684
     Car *unk2688;             // 0x2688
     int unk268c;              // 0x268c
     float unk2690;            // 0x2690
