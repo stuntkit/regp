@@ -268,6 +268,17 @@ int FUN_41fd20(TrackPoly *poly)
     return 0;
 }
 
+// Tests the sweep sphere against every polygon of a -1 terminated list.
+// FUNCTION: STUNTGP_D3D 0x41fda0
+void FUN_41fda0(WORD *list)
+{
+    int hit = 0;
+    while (*list != 0xffff)
+    {
+        hit |= FUN_41fd20(&g_624480->polys[*list++]);
+    }
+}
+
 // Body the camera sphere ignores.
 // GLOBAL: STUNTGP_D3D 0x4981cc
 Body *g_4981cc;

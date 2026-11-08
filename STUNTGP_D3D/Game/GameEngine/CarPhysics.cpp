@@ -5013,9 +5013,79 @@ void FUN_4157f0(Unk62a078 *p)
     p->alpha = 255.0f;
 }
 
-// STUB: STUNTGP_D3D 0x415880
+void FUN_45e110(Unk62a078 *particle);
+
+// Tyre smoke: heat builds while a slow car spins its wheels and puffs once it passes 200.
+// FUNCTION: STUNTGP_D3D 0x415880
 void FUN_415880()
 {
+    Vec4 up;
+    up.x = g_4d5bb8->axisY.x * -30.000002f;
+    up.y = g_4d5bb8->axisY.y * -30.000002f;
+    up.z = g_4d5bb8->axisY.z * -30.000002f;
+    Wheel *w = g_4d5bb8->wheels;
+    int first = 1;
+    Unk62a078 p;
+    Vec4 *pos;
+    for (int i = 0; i < 4; i++, w++)
+    {
+        if (g_4d5bb8->unk1cf0 < 100.0f)
+        {
+            if (g_4d5bb8->wheels[i].unk30 >= 3.5f)
+            {
+                float f = (float)fabs(g_4d5bb8->wheels[i].unk30 * 0.25f);
+                if (f > 1.0f)
+                {
+                    f = 1.0f;
+                }
+                w->unk18 += f * g_4d5bb8->wheels[i].unk84 * 20.0f / g_4d5bb8->wheels[i].unk8c;
+            }
+            else
+            {
+                w->unk18 -= 2.0f;
+                if (w->unk18 < 20.0f)
+                {
+                    w->unk18 = 20.0f;
+                }
+            }
+            if (w->unk18 > 200.0f)
+            {
+                float k = g_4d5bb8->unk1cf0 * 0.001f;
+                if (k < 0.01f)
+                {
+                    k = 0.01f;
+                }
+                w->unk18 = 175.0f;
+                if (first == 1)
+                {
+                    FUN_4157f0(&p);
+                    pos = &p.pos;
+                    *(Camera *)pos = g_4864e8;
+                    first = 0;
+                }
+                pos->x = up.x + g_4d5bb8->wheels[i].pos.x;
+                pos->y = up.y + g_4d5bb8->wheels[i].pos.y;
+                pos->z = up.z + g_4d5bb8->wheels[i].pos.z;
+                p.vel[0] = k * g_4d5bb8->unk1c8c.x;
+                p.vel[1] = k * g_4d5bb8->unk1c8c.y;
+                p.vel[2] = k * g_4d5bb8->unk1c8c.z;
+                Vec4 r;
+                r.x = FUN_42f1c0(5.0f);
+                r.y = 0.0f;
+                r.z = FUN_42f1c0(5.0f);
+                p.vel[0] = r.x + p.vel[0];
+                p.vel[1] = r.y + p.vel[1];
+                p.vel[2] = r.z + p.vel[2];
+                if (i >= 2)
+                {
+                    p.size = 0.7f;
+                }
+                p.angle = FUN_42f1c0(360.0f);
+                p.spin = FUN_42f1c0(45.0f) - 22.5f;
+                FUN_45e110(&p);
+            }
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x415ac0
@@ -5244,9 +5314,6 @@ void FUN_416ea0(Unk62a078 *p)
     p->alphaOut = 12.0f;
     p->colors[0] = 0x182010;
 }
-
-extern float g_482670;
-void FUN_45e110(Unk62a078 *particle);
 
 // Smoke from every wheel that is slipping harder than the car's weight allows.
 // FUNCTION: STUNTGP_D3D 0x416f30

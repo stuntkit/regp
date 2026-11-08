@@ -133,7 +133,8 @@ struct Wheel
     BYTE unk0008[0x4];  // 0x0008
     float unk0c;        // 0x000c
     float unk10;        // 0x0010
-    BYTE unk0014[0x8];  // 0x0014
+    BYTE unk0014[0x4];  // 0x0014
+    float unk18;        // 0x0018
     float unk1c;        // 0x001c
     BYTE unk0020[0x10]; // 0x0020
     float unk30;        // 0x0030
