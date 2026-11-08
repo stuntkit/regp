@@ -467,6 +467,53 @@ extern char **g_582f24;
 extern char **g_583324;
 extern SpriteFile *g_58358c;
 
+int FUN_42b9a0(const char *name);
+int FUN_42bb70(char *path, char *out);
+void FUN_42bcf0(char *suffix, char *path, int highDetail);
+DWORD FUN_4306c0(int width, int height, DWORD count, int unk, char *path);
+extern int g_583590;
+
+// Registers the texture file path: loads it into the next texture slot when FUN_42b9a0 accepts
+// it, and records the name in the lists at g_583324 and g_582f24.
+// FUNCTION: STUNTGP_D3D 0x42bf60
+void FUN_42bf60(char *path, int highDetail)
+{
+    char file[128];
+    char name[128];
+    sprintf(name, path);
+    if (FUN_42b9a0(name))
+    {
+        FUN_42bb70(path, name);
+        FUN_42bcf0(name, file, highDetail);
+        g_renderState.unk7ed0->unk04[2] = 0;
+        if ((DWORD)g_58271c < (DWORD)g_583590)
+        {
+            g_renderState.unk7ed0->unk04[4] = 0;
+        }
+        else
+        {
+            g_renderState.unk7ed0->unk04[4] = g_582718;
+        }
+        int n = FUN_4306c0(g_489714, g_489714, 0, 0, file);
+        if (g_58332c == 1)
+        {
+            g_583328 += g_489718 * g_489714 * 2;
+        }
+        else
+        {
+            g_583328 += g_489718 * g_489714;
+        }
+        g_582728[g_582718] = g_582724 + g_582718;
+        g_582718 += n;
+        g_58271c += n;
+        *g_583324++ = path;
+        *g_583324 = NULL;
+    }
+    *g_582f24++ = path;
+    *g_582f24 = NULL;
+    g_582b24++;
+}
+
 // Registers a new empty texture of size code sizeCode (4..8 for 16..256 texels) and names it by
 // its slot number.
 // FUNCTION: STUNTGP_D3D 0x42c0a0
