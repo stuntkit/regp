@@ -362,7 +362,7 @@ int FUN_45dc40(Unlock *unlock);
 int FUN_457a40(Unk457e70 *object);
 int FUN_457be0();
 int FUN_457cf0(Unk457e70 *object, int mode);
-void FUN_455af0();
+void FUN_455af0(PoolObject *object);
 void FUN_452070(int id, float x, float y);
 void FUN_458d50(Unk457e70 *object, int mode, int card);
 void FUN_45cba0(int index, float pos);
@@ -832,7 +832,6 @@ MenuItem g_488d60[2] = {
 MenuDef g_488da0 = {0xb, 0.0f, 0x3f000000, 320.0f, 420.0f, 1.0f, 2, 1.25f, 1, 0x32, g_488d60, 0};
 
 void FUN_424a90(int mode);
-void FUN_4392b0(int textId, int value);
 void FUN_450760(int textId);
 void FUN_4507e0(Unk4516c0 *object);
 
@@ -1990,13 +1989,38 @@ void FUN_4557f0(PoolObject *object)
 {
 }
 
-// STUB: STUNTGP_D3D 0x455800
+void FUN_4558c0();
+void FUN_4558e0(PoolObject *object);
+
+// Car choice page: each player picks a car with the pad.
+// FUNCTION: STUNTGP_D3D 0x455800
 int FUN_455800(PoolObject *object, int msg, int arg)
 {
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(1);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(99, 0.3f, -0.5f);
+        return 0;
+    case 0x10:
+    case 0x11:
+        FUN_440890(msg);
+        FUN_43eef0();
+        FUN_4558c0();
+        return 0;
+    case 1:
+        FUN_455af0(object);
+        return 0;
+    case 3:
+        FUN_4392b0(0x53, 0);
+        FUN_439340(0x55);
+        FUN_4558e0(object);
+        break;
+    }
     return 0;
 }
 
-void FUN_439340(int textId);
 void FUN_455f60(Unk455fc0 *object);
 void FUN_455fc0(Unk455fc0 *object);
 
@@ -4161,7 +4185,7 @@ int FUN_457cf0(Unk457e70 *object, int mode)
 }
 
 // FUNCTION: STUNTGP_D3D 0x455af0
-void FUN_455af0()
+void FUN_455af0(PoolObject *object)
 {
     for (int player = 1; player < 5; player++)
     {

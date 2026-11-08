@@ -4331,6 +4331,53 @@ void FUN_4558c0()
     FUN_43dc40();
 }
 
+void FUN_45be20(MenuLine *lines, int count, float x, float y, float width, float spacing);
+
+// Car choice panels per player, with the instructions underneath.
+// FUNCTION: STUNTGP_D3D 0x4558e0
+void FUN_4558e0(PoolObject *object)
+{
+    MenuLine lines[10];
+    int ids[4] = {0x26f, 0x270, 0x273, 0x272};
+    int count = FUN_43d9c0(4, 4);
+    int i;
+    for (i = 1; i < count + 1; i++)
+    {
+        int joined = FUN_437090(i);
+        int car = FUN_437050(i);
+        int text = i + 0xc1;
+        float x = ((text - 0xc2) - (count - 1) * 0.5f) * 150.0f + 320.0f;
+        int def = FUN_43dcc0(joined, car ? car - 1 : 0);
+        float x0 = x - 64.0f;
+        float x1 = x + 64.0f;
+        FUN_439450(x0, 96.0f, x1, 244.0f, 10, 0x6f, 0x40);
+        FUN_439380(x0, 96.0f, x1, 244.0f, 13, 0, 0, 0.0f);
+        D3DCOLOR color;
+        if (def)
+        {
+            FUN_438710(x, 170.0f, 12, def, 0.8f, 3);
+            color = (FUN_43dd60() & 0x20) ? 0xffffffff : 0xffff8080;
+        }
+        else
+        {
+            FUN_438710(x, 170.0f, 12, 0x170, 0.8f, 3);
+            color = 0xff808080;
+        }
+        FUN_438be0(x, 110.0f, 12, 4, i + 0xc1, 1.25f, color, 3);
+        int handicap = FUN_437010(i);
+        if (def && handicap)
+        {
+            FUN_438be0(x, 230.0f, 12, 4, handicap + 0x2c7, 1.25f, color, 3);
+        }
+    }
+    for (i = 0; i < 3; i++)
+    {
+        lines[i].color = 0xffffffff;
+        lines[i].text = FUN_441170(ids[i + 1]);
+    }
+    FUN_45be20(lines, 3, 320.0f, 325.0f, 540.0f, 0.0f);
+}
+
 // FUNCTION: STUNTGP_D3D 0x455b90
 int FUN_455b90(int player)
 {
