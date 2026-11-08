@@ -3,6 +3,10 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+#include "../../sprite.h"
+
+struct Car;
+
 struct Unk4d5cc0
 {
     short unk00;
@@ -200,5 +204,55 @@ struct RaceState
 };
 
 extern RaceState g_60d730;
+
+// 16 screen-space effect slots; unk00 is 1 while a slot is in use.
+struct Unk496990
+{
+    int unk00;        // 0x00
+    Car *unk04;       // 0x04
+    int unk08;        // 0x08
+    int unk0c;        // 0x0c
+    int unk10;        // 0x10
+    float unk14;      // 0x14
+    float unk18;      // 0x18
+    int unk1c;        // 0x1c
+    BYTE unk20[0x4];  // 0x20
+    float unk24;      // 0x24
+    int unk28;        // 0x28
+    int unk2c;        // 0x2c
+    BYTE unk30[0x4];  // 0x30
+    int unk34;        // 0x34
+    char unk38[0x8];  // 0x38, score text
+    int unk40;        // 0x40
+    float unk44;      // 0x44
+    float unk48;      // 0x48
+    float unk4c;      // 0x4c
+    float unk50;      // 0x50
+    float unk54;      // 0x54
+    float unk58;      // 0x58
+    float unk5c;      // 0x5c
+    BYTE unk60[0x4];  // 0x60
+    float unk64;      // 0x64
+    float unk68;      // 0x68
+    float unk6c;      // 0x6c
+    float unk70;      // 0x70
+    float unk74;      // 0x74
+    float unk78;      // 0x78
+    DWORD unk7c;      // 0x7c, colours
+    DWORD unk80;      // 0x80
+    DWORD unk84;      // 0x84
+    int unk88;        // 0x88
+    int unk8c;        // 0x8c
+    int unk90;        // 0x90
+    int unk94;        // 0x94
+    int unk98;        // 0x98
+    int unk9c;        // 0x9c
+    float unka0;      // 0xa0
+    float unka4;      // 0xa4
+    float unka8;      // 0xa8
+    SpriteDesc sprite; // 0xac
+};
+
+extern Unk496990 g_496990[16];
 
 #endif /* GAMESETUP_H */

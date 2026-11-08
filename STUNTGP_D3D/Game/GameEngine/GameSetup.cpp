@@ -242,71 +242,6 @@ int g_4d5c9c;
 // GLOBAL: STUNTGP_D3D 0x4d5ca0
 int g_4d5ca0;
 
-// 16 screen-space effect slots; unk00 is 1 while a slot is in use.
-struct Unk496990
-{
-    int unk00;        // 0x00
-    Car *unk04;       // 0x04
-    int unk08;        // 0x08
-    int unk0c;        // 0x0c
-    int unk10;        // 0x10
-    float unk14;      // 0x14
-    float unk18;      // 0x18
-    int unk1c;        // 0x1c
-    BYTE unk20[0x4];  // 0x20
-    float unk24;      // 0x24
-    int unk28;        // 0x28
-    int unk2c;        // 0x2c
-    BYTE unk30[0x4];  // 0x30
-    int unk34;        // 0x34
-    char unk38[0x8];  // 0x38, score text
-    int unk40;        // 0x40
-    float unk44;      // 0x44
-    float unk48;      // 0x48
-    float unk4c;      // 0x4c
-    float unk50;      // 0x50
-    float unk54;      // 0x54
-    float unk58;      // 0x58
-    float unk5c;      // 0x5c
-    BYTE unk60[0x4];  // 0x60
-    float unk64;      // 0x64
-    float unk68;      // 0x68
-    float unk6c;      // 0x6c
-    float unk70;      // 0x70
-    float unk74;      // 0x74
-    float unk78;      // 0x78
-    DWORD unk7c;      // 0x7c, colours
-    DWORD unk80;      // 0x80
-    DWORD unk84;      // 0x84
-    int unk88;        // 0x88
-    int unk8c;        // 0x8c
-    int unk90;        // 0x90
-    int unk94;        // 0x94
-    int unk98;        // 0x98
-    int unk9c;        // 0x9c
-    float unka0;      // 0xa0
-    float unka4;      // 0xa4
-    float unka8;      // 0xa8
-    int unkac;        // 0xac
-    float x;          // 0xb0
-    float y;          // 0xb4
-    float unkb8;      // 0xb8
-    float width;      // 0xbc
-    float height;     // 0xc0
-    float u0;         // 0xc4
-    float v0;         // 0xc8
-    float u1;         // 0xcc
-    float v1;         // 0xd0
-    int unkd4;        // 0xd4
-    int unkd8;        // 0xd8
-    int unkdc;        // 0xdc
-    int unke0;        // 0xe0
-    float halfWidth;  // 0xe4
-    float halfHeight; // 0xe8
-    float unkec;      // 0xec
-    float unkf0;      // 0xf0
-    BYTE unkf4[0x44]; // 0xf4
-};
 
 
 // GLOBAL: STUNTGP_D3D 0x496990
@@ -349,9 +284,9 @@ void FUN_401030(float x, float y)
         }
         e++;
     }
-    e->unkd4 = 2;
-    e->width = 256.0f;
-    e->height = 256.0f;
+    e->sprite.texture = 2;
+    e->sprite.width = 256.0f;
+    e->sprite.height = 256.0f;
     e->unk10 = 24;
     e->unk2c = 30;
     e->unk24 = -0.5f;
@@ -375,19 +310,19 @@ void FUN_401030(float x, float y)
     e->unk40 = 0;
     e->unk98 = 0;
     e->unk34 = 0;
-    e->unkd8 = 0x58;
-    e->unkac = e->unk10;
-    e->unkdc = 0;
-    e->unke0 = 0;
-    e->unkec = 1.0f;
-    e->unkf0 = 1.0f;
-    e->halfWidth = e->width * 0.5f;
-    e->halfHeight = e->height * 0.5f;
-    e->x = 320.0f - e->halfWidth;
-    e->y = 240.0f - e->halfHeight;
-    e->unkb8 = 1.0f;
-    e->x = x - e->halfWidth;
-    e->y = y - e->halfHeight;
+    e->sprite.blendMode = 0x58;
+    e->sprite.flags = e->unk10;
+    e->sprite.alpha = 0;
+    e->sprite.angle = 0;
+    e->sprite.scaleX = 1.0f;
+    e->sprite.scaleY = 1.0f;
+    e->sprite.originX = e->sprite.width * 0.5f;
+    e->sprite.originY = e->sprite.height * 0.5f;
+    e->sprite.x = 320.0f - e->sprite.originX;
+    e->sprite.y = 240.0f - e->sprite.originY;
+    e->sprite.z = 1.0f;
+    e->sprite.x = x - e->sprite.originX;
+    e->sprite.y = y - e->sprite.originY;
 }
 
 // Frames left before the sample started by FUN_4011c0 is played again, panned the other way.
@@ -407,6 +342,15 @@ void FUN_4011c0(int channel, DWORD volume)
     g_497d14 = channel;
     g_497d18 = volume;
     FUN_461150(channel, 0, 0, volume, 0xff, 0, NULL);
+}
+
+// FUNCTION: STUNTGP_D3D 0x4011f0
+void FUN_4011f0()
+{
+    if (g_497d10 && --g_497d10 == 0)
+    {
+        FUN_461150(g_497d14, 0, 0, g_497d18, -0xff, 0, NULL);
+    }
 }
 
 extern int g_60f2b4;
@@ -455,13 +399,13 @@ void FUN_401220(int type, int kind, unsigned int points)
     switch (kind)
     {
     case 0:
-        e->unkd4 = d->texture;
-        e->width = d->width;
-        e->height = d->height;
-        e->u0 = d->u0;
-        e->v0 = d->v0;
-        e->u1 = d->u1;
-        e->v1 = d->v1;
+        e->sprite.texture = d->texture;
+        e->sprite.width = d->width;
+        e->sprite.height = d->height;
+        e->sprite.u0 = d->u0;
+        e->sprite.v0 = d->v0;
+        e->sprite.u1 = d->u1;
+        e->sprite.v1 = d->v1;
         e->unk10 = 0x18;
         e->unk40 = 1;
         e->unk2c = 60;
@@ -484,13 +428,13 @@ void FUN_401220(int type, int kind, unsigned int points)
         e->unk98 = 0;
         break;
     case 1:
-        e->unkd4 = d->texture;
-        e->width = d->width;
-        e->height = d->height;
-        e->u0 = d->u0;
-        e->v0 = d->v0;
-        e->u1 = d->u1;
-        e->v1 = d->v1;
+        e->sprite.texture = d->texture;
+        e->sprite.width = d->width;
+        e->sprite.height = d->height;
+        e->sprite.u0 = d->u0;
+        e->sprite.v0 = d->v0;
+        e->sprite.u1 = d->u1;
+        e->sprite.v1 = d->v1;
         e->unk10 = 0x19;
         e->unk40 = 1;
         e->unk24 = -0.025f;
@@ -513,13 +457,13 @@ void FUN_401220(int type, int kind, unsigned int points)
         e->unk98 = 0;
         break;
     case 2:
-        e->unkd4 = d->texture;
-        e->width = d->width;
-        e->height = d->height;
-        e->u0 = d->u0;
-        e->v0 = d->v0;
-        e->u1 = d->u1;
-        e->v1 = d->v1;
+        e->sprite.texture = d->texture;
+        e->sprite.width = d->width;
+        e->sprite.height = d->height;
+        e->sprite.u0 = d->u0;
+        e->sprite.v0 = d->v0;
+        e->sprite.u1 = d->u1;
+        e->sprite.v1 = d->v1;
         e->unk10 = 0x39;
         e->unk40 = 1;
         e->unk2c = 120;
@@ -541,13 +485,13 @@ void FUN_401220(int type, int kind, unsigned int points)
         e->unk98 = 0;
         break;
     case 3:
-        e->unkd4 = d->texture;
-        e->width = d->width;
-        e->height = d->height;
-        e->u0 = d->u0;
-        e->v0 = d->v0;
-        e->u1 = d->u1;
-        e->v1 = d->v1;
+        e->sprite.texture = d->texture;
+        e->sprite.width = d->width;
+        e->sprite.height = d->height;
+        e->sprite.u0 = d->u0;
+        e->sprite.v0 = d->v0;
+        e->sprite.u1 = d->u1;
+        e->sprite.v1 = d->v1;
         e->unk10 = 0x39;
         e->unk40 = 1;
         e->unk2c = 120;
@@ -609,31 +553,22 @@ place:
     e->unk08 = kind;
     e->unk0c = type;
     e->unk28 = 0;
-    e->unkd8 = 0x48;
-    e->unkac = e->unk10;
-    e->unkdc = 0;
-    e->unke0 = 0;
-    e->unkec = 1.0f;
-    e->unkf0 = 1.0f;
-    float hw = e->width * 0.5f;
-    float hh = e->height * 0.5f;
+    e->sprite.blendMode = 0x48;
+    e->sprite.flags = e->unk10;
+    e->sprite.alpha = 0;
+    e->sprite.angle = 0;
+    e->sprite.scaleX = 1.0f;
+    e->sprite.scaleY = 1.0f;
+    float hw = e->sprite.width * 0.5f;
+    float hh = e->sprite.height * 0.5f;
     if (type == 0 || type == 1 || type == 2)
     {
-        hw = e->width;
+        hw = e->sprite.width;
     }
-    e->halfWidth = hw;
-    e->halfHeight = hh;
-    e->x = 320.0f - hw;
-    e->y = 240.0f - hh;
-}
-
-// FUNCTION: STUNTGP_D3D 0x4011f0
-void FUN_4011f0()
-{
-    if (g_497d10 && --g_497d10 == 0)
-    {
-        FUN_461150(g_497d14, 0, 0, g_497d18, -0xff, 0, NULL);
-    }
+    e->sprite.originX = hw;
+    e->sprite.originY = hh;
+    e->sprite.x = 320.0f - hw;
+    e->sprite.y = 240.0f - hh;
 }
 
 
