@@ -12,6 +12,26 @@ int FUN_4375a0(int *tracks, int count);
 
 // PageSlot
 // PageSelectTrack
+// PageUnlock
+struct Unk45db80
+{
+    DWORD unk00[5];    // 0x00
+    PoolObject *child; // 0x14
+    int unk18;         // 0x18
+    int unk1c;         // 0x1c
+    int unk20;         // 0x20
+};
+
+// One newly unlocked car or track, shown by PageUnlock.
+struct Unlock
+{
+    char text[0x80]; // 0x00
+    int id;          // 0x80
+};
+
+char *FUN_441170(int id);
+void FUN_437870();
+
 struct Unk45c4b0
 {
     DWORD unk00[5];    // 0x00
@@ -223,13 +243,20 @@ int FUN_45bf40(PoolObject *object, int msg, int arg);
 int FUN_459200(Unk459200 *object, int arg);
 void FUN_459300(MenuHolder *object);
 int FUN_459320(PoolObject *object, int msg, int arg);
-int FUN_45db80(PoolObject *object, int arg);
+int FUN_45db80(Unk45db80 *object, int arg);
 void FUN_45dde0(MenuHolder *object);
 int FUN_45de00(PoolObject *object, int msg, int arg);
 
 // One entry per language, built by FUN_452c00.
 // One entry per track, built by FUN_456fc0.
 // Per save slot: money text, then the FUN_45a9c0 number.
+int FUN_45dc40(Unlock *unlock);
+// GLOBAL: STUNTGP_D3D 0x627ff8
+int g_627ff8;
+
+// GLOBAL: STUNTGP_D3D 0x627ffc
+Unlock g_627ffc[0x3f];
+
 // GLOBAL: STUNTGP_D3D 0x627cd8
 char g_627cd8[2][8][0x20];
 
@@ -620,6 +647,15 @@ MenuItem g_4894a0[2] = {
 // Items are picked by FUN_45c4b0.
 // GLOBAL: STUNTGP_D3D 0x4894e0
 MenuDef g_4894e0 = {0xb, 0.0f, 0x3f800000, 220.0f, 400.0f, 0.8f, 2, 1.1f, 1, 0xbe, NULL, 0};
+
+// GLOBAL: STUNTGP_D3D 0x489690
+MenuItem g_489690[2] = {
+    {0, 0xffc8c8ff, 0xffffffff, 0x17, 0, 1, 0, 0},
+    {0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x4896d0
+MenuDef g_4896d0 = {0xb, 0.0f, 0x3f000000, 320.0f, 420.0f, 1.0f, 2, 1.25f, 1, 0x50, g_489690, 0};
 
 // STUB: STUNTGP_D3D 0x450550
 int FUN_450550(PoolObject *object, int msg, int arg)
@@ -1624,15 +1660,115 @@ int FUN_45d320(PoolObject *object, int msg, int arg)
     return 0;
 }
 
-// STUB: STUNTGP_D3D 0x45db80
-int FUN_45db80(PoolObject *object, int arg)
+// FUNCTION: STUNTGP_D3D 0x45db80
+int FUN_45db80(Unk45db80 *object, int arg)
 {
-    return 0;
+    object->unk18 = 0;
+    object->unk1c = 0;
+    object->unk20 = 0;
+    MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
+    memset(list, 0, sizeof(MenuList));
+    *(PoolClass *)&list->base.destroy = g_menuListClass;
+    list->base.type = 0x29;
+    // STRING: STUNTGP_D3D 0x489708
+    list->base.name = "MenuText";
+    list->base.unk08 = 0;
+    if (!FUN_43c860(list, &g_4896d0))
+    {
+        Pool_Free(list);
+        object->child = NULL;
+    }
+    else
+    {
+        object->child = &list->base;
+    }
+    PoolObject *child = object->child;
+    child->message(child, 0x18, 0);
+    child->message(child, 0x16, 0);
+    FUN_437870();
+    for (g_627ff8 = 0; g_627ff8 < 0x3f; g_627ff8++)
+    {
+        if (!FUN_45dc40(&g_627ffc[g_627ff8]))
+        {
+            break;
+        }
+    }
+    return 1;
 }
 
 // STUB: STUNTGP_D3D 0x45de00
 int FUN_45de00(PoolObject *object, int msg, int arg)
 {
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x45dc40
+int FUN_45dc40(Unlock *unlock)
+{
+    int i;
+    unlock->text[0] = 0;
+    unlock->id = 0;
+    for (i = 1; i < 0x19; i++)
+    {
+        if (g_menuState.unlocked[0x18 + i] == 2)
+        {
+            g_menuState.unlocked[0x18 + i] = 1;
+            unlock->id = i + 0xc1;
+            switch (FUN_437360(i))
+            {
+            case 1:
+            case 3:
+                sprintf(unlock->text, FUN_441170(0x27a), FUN_441170(i + 0x1b7));
+                return 1;
+            case 2:
+            case 4:
+                sprintf(unlock->text, FUN_441170(0x27b), FUN_441170(i + 0x1b7));
+                return 1;
+            default:
+                strcpy(unlock->text, FUN_441170(i + 0x1b7));
+                return 1;
+            }
+        }
+    }
+    for (i = 1; i < 0x16; i++)
+    {
+        if (g_menuState.unlocked[i] == 2)
+        {
+            g_menuState.unlocked[i] = 1;
+            unlock->id = i + 0xac;
+            switch (i)
+            {
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+            case 15:
+            case 17:
+            case 18:
+            case 21:
+                sprintf(unlock->text, FUN_441170(0x278), FUN_441170(i + 0x18a));
+                break;
+            case 16:
+            case 19:
+                sprintf(unlock->text, FUN_441170(0x277), FUN_441170(i + 0x18a));
+                break;
+            case 20:
+                sprintf(unlock->text, FUN_441170(0x279), FUN_441170(i + 0x18a));
+                break;
+            }
+            return 1;
+        }
+    }
     return 0;
 }
 
@@ -1799,7 +1935,7 @@ PoolObject *FUN_43e000(int a, int screen)
         break;
     case 40:
         // STRING: STUNTGP_D3D 0x479864
-        object = NewScreen(0x24, 35, "PageUnlock", &g_489700, FUN_45db80);
+        object = NewScreen(0x24, 35, "PageUnlock", &g_489700, (ScreenInit)FUN_45db80);
         break;
     case 24:
         // STRING: STUNTGP_D3D 0x479870
