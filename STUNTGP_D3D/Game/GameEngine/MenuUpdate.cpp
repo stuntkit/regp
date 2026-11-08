@@ -267,7 +267,7 @@ char *g_4881b0[4] = {
 MenuInput g_menuInput[5];
 
 // GLOBAL: STUNTGP_D3D 0x5df528
-int g_5df528[13];
+RaceRequest g_5df528;
 
 // GLOBAL: STUNTGP_D3D 0x5df560
 MenuState g_menuState;
@@ -1989,7 +1989,123 @@ void FUN_439e10()
 // FUNCTION: STUNTGP_D3D 0x439e30
 void FUN_439e30()
 {
-    memset(g_5df528, 0, sizeof(g_5df528));
+    memset(&g_5df528, 0, sizeof(g_5df528));
+}
+
+// FUNCTION: STUNTGP_D3D 0x439e90
+void FUN_439e90()
+{
+    g_menuState.sfx = g_60d730.sfx;
+    g_menuState.music = g_60d730.music;
+    g_menuState.unk0084 = g_60d730.unk00c;
+    g_menuState.music = FUN_43d790(g_menuState.music, 0, 100);
+    g_menuState.sfx = FUN_43d790(g_menuState.sfx, 0, 100);
+    int detail = FUN_43d790(g_menuState.unk0084, 0, 100);
+    g_menuState.sfx -= g_menuState.sfx % 10;
+    g_menuState.music -= g_menuState.music % 10;
+    g_menuState.unk0084 = detail - detail % 10;
+    g_menuState.unk0070 = g_60d730.unk864;
+    switch (g_5df528.mode)
+    {
+    case 1:
+    {
+        RaceResults *dst = g_5df528.dst1;
+        RaceSetup1 *src = g_5df528.src1;
+        dst->won = g_60d730.unk058 == 1;
+        for (int i = 0; i < 6; i++)
+        {
+            RaceEntry *e = &g_60d730.entries[src->cars[i].car - 1];
+            dst->results[i].unk04 = e->result.unk08;
+            dst->results[i].unk08 = e->result.unk0c;
+            dst->results[i].unk0c = e->result.unk10;
+            dst->results[i].unk10 = e->result.unk14;
+            dst->results[i].position = e->result.unk04;
+            if (!dst->won && (e->result.unk04 < 1 ||
+                                 e->result.unk04 > 6))
+            {
+                dst->results[i].position = 6;
+            }
+        }
+        break;
+    }
+    case 3:
+    {
+        g_5df528.dst3->won = g_60d730.unk058 == 1;
+        g_5df528.dst3->unk10 = g_60d730.entries[0].result.unk08;
+        g_5df528.dst3->unk04 = g_60d730.unk844;
+        g_5df528.dst3->unk08 = g_60d730.unk85c;
+        g_5df528.dst3->unk0c = g_60d730.unk854;
+        break;
+    }
+    case 5:
+    {
+        RaceResults *dst = g_5df528.dst5;
+        RaceSetup5 *src = g_5df528.src5;
+        dst->won = g_60d730.unk058 == 1;
+        for (int i = 0; i < 6; i++)
+        {
+            RaceEntry *e = &g_60d730.entries[src->cars[i].car - 1];
+            dst->results[i].unk04 = e->result.unk08;
+            dst->results[i].unk08 = e->result.unk0c;
+            dst->results[i].unk0c = e->result.unk10;
+            dst->results[i].unk10 = e->result.unk14;
+            dst->results[i].position = e->result.unk04;
+            if (!dst->won && (e->result.unk04 < 1 ||
+                                 e->result.unk04 > 6))
+            {
+                dst->results[i].position = 6;
+            }
+        }
+        break;
+    }
+    case 4:
+    {
+        g_5df528.dst4->won = g_60d730.unk058 == 1;
+        g_5df528.dst4->unk04 = g_60d730.entries[0].result.unk14;
+        break;
+    }
+    case 6:
+    {
+        RaceResults6 *dst = g_5df528.dst6;
+        dst->won = g_60d730.unk058 == 1;
+        RaceSetup6 *src = g_5df528.src6;
+        dst->count = src->count;
+        for (int i = 0; i < dst->count; i++)
+        {
+            RaceEntry *e = &g_60d730.entries[src->cars[i].unk08 - 1];
+            dst->results[i].unk04 = e->result.unk08;
+            dst->results[i].unk08 = e->result.unk0c;
+            dst->results[i].unk0c = e->result.unk10;
+            dst->results[i].unk10 = e->result.unk14;
+            dst->results[i].position = e->result.unk04;
+            if (!dst->won && (e->result.unk04 < 1 ||
+                                 e->result.unk04 > 6))
+            {
+                dst->results[i].position = 6;
+            }
+        }
+        break;
+    }
+    case 7:
+        g_5df528.dst7->won = g_60d730.unk058 == 1;
+        g_5df528.dst7->count = g_5df528.src7->count;
+        for (int i = 0; i < g_5df528.dst7->count; i++)
+        {
+            RaceEntry *e = &g_60d730.entries[g_5df528.src7->cars[i].car - 1];
+            g_5df528.dst7->results[i].unk04 = e->result.unk08;
+            g_5df528.dst7->results[i].unk08 = e->result.unk0c;
+            g_5df528.dst7->results[i].unk0c = e->result.unk10;
+            g_5df528.dst7->results[i].unk10 = e->result.unk14;
+            g_5df528.dst7->results[i].position = e->result.unk04;
+            if (!g_5df528.dst7->won && (e->result.unk04 < 1 ||
+                                           e->result.unk04 > 6))
+            {
+                g_5df528.dst7->results[i].position = 6;
+            }
+        }
+        break;
+    }
+    g_5df528.mode = 0;
 }
 
 // GLOBAL: STUNTGP_D3D 0x60d730

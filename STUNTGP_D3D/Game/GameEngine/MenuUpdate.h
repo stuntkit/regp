@@ -276,6 +276,103 @@ struct MenuLanguage
     int id;
 };
 
+// Car slot of a race setup; car is the 1-based RaceState entry.
+struct RaceSetupCar
+{
+    int unk00; // 0x00
+    int unk04; // 0x04
+    int unk08; // 0x08
+    int car;   // 0x0c
+    int unk10; // 0x10
+    int unk14; // 0x14
+    int unk18; // 0x18
+};
+
+struct RaceSetup1
+{
+    RaceSetupCar cars[6]; // 0x00
+};
+
+struct RaceSetup5
+{
+    BYTE unk000[0x12c];   // 0x000
+    RaceSetupCar cars[6]; // 0x12c
+};
+
+struct RaceSetup6
+{
+    MenuRoundCar cars[4]; // 0x00, unk08 is the RaceState entry
+    int count;            // 0x30
+};
+
+struct RaceSetup7Car
+{
+    int unk00;        // 0x00
+    int car;          // 0x04
+    BYTE unk08[0x18]; // 0x08
+};
+
+struct RaceSetup7
+{
+    RaceSetup7Car cars[6]; // 0x00
+    int count;             // 0xc0
+};
+
+struct RaceResults
+{
+    int won;                   // 0x00
+    MenuRaceResult results[6]; // 0x04
+};
+
+struct RaceResults3
+{
+    int won;   // 0x00
+    int unk04; // 0x04
+    int unk08; // 0x08
+    int unk0c; // 0x0c
+    int unk10; // 0x10
+};
+
+struct RaceResults4
+{
+    int won;   // 0x00
+    int unk04; // 0x04
+};
+
+struct RaceResults6
+{
+    int won;                   // 0x00
+    MenuRaceResult results[4]; // 0x04
+    int count;                 // 0x54
+};
+
+struct RaceResults7
+{
+    int won;                   // 0x00
+    MenuRaceResult results[6]; // 0x04
+    int count;                 // 0x7c
+};
+
+// Race started from the front end; FUN_439e90 copies its results back into dst<mode>.
+struct RaceRequest
+{
+    int mode;           // 0x00
+    RaceSetup1 *src1;   // 0x04
+    RaceResults *dst1;  // 0x08
+    void *src3;         // 0x0c
+    RaceResults3 *dst3; // 0x10
+    void *src4;         // 0x14
+    RaceResults4 *dst4; // 0x18
+    RaceSetup5 *src5;   // 0x1c
+    RaceResults *dst5;  // 0x20
+    RaceSetup6 *src6;   // 0x24
+    RaceResults6 *dst6; // 0x28
+    RaceSetup7 *src7;   // 0x2c
+    RaceResults7 *dst7; // 0x30
+};
+
+extern RaceRequest g_5df528;
+
 // Front-end state, cleared as a whole by FUN_43d0b0.
 struct MenuState
 {

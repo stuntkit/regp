@@ -135,6 +135,29 @@ char *FUN_43d5f0(int value, int digits)
     return g_5ff368;
 }
 
+// Opens a screen on top of the current one, keeping the current one on the stack.
+// FUNCTION: STUNTGP_D3D 0x43dfa0
+int FUN_43dfa0(int a, int screen)
+{
+    if (screen <= 0 || screen >= 0x29)
+    {
+        return 0;
+    }
+    if (g_frontEnd.nextScreen)
+    {
+        g_frontEnd.nextScreenStatic = TRUE;
+        g_frontEnd.objects[g_frontEnd.objectCount] = g_frontEnd.nextScreen;
+        g_frontEnd.objectCount++;
+    }
+    else if (g_frontEnd.screen)
+    {
+        g_frontEnd.screenStatic = TRUE;
+        g_frontEnd.objects[g_frontEnd.objectCount] = g_frontEnd.screen;
+        g_frontEnd.objectCount++;
+    }
+    return FUN_43ee40(FUN_43e000(a, screen));
+}
+
 // FUNCTION: STUNTGP_D3D 0x43eef0
 int FUN_43eef0()
 {

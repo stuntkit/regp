@@ -348,8 +348,8 @@ void FUN_438230(int layer, int def, float x, float y, float middle, DWORD flags)
     {
         s.y = y - s.height;
     }
-    s.u1 = half * 4.0f + s.u0;
     s.width = half;
+    s.u1 = half * 4.0f + s.u0;
     FUN_438370(&s, layer, 0);
     s.x = half + s.x;
     if (middle != 0.0f)
@@ -359,8 +359,8 @@ void FUN_438230(int layer, int def, float x, float y, float middle, DWORD flags)
         FUN_438370(&s, layer, 0);
         s.x = s.x + middle;
     }
-    s.width = half;
     s.u1 = u1;
+    s.width = half;
     FUN_438370(&s, layer, 0);
 }
 
@@ -465,6 +465,68 @@ void FUN_438590(int layer, int sub, SpriteNode *node)
         g_spriteLists.tails[i]->next = node;
         g_spriteLists.tails[i] = node;
     }
+}
+
+// Vertically stretched counterpart of FUN_438230: top and bottom halves with `middle` pixels
+// of the centre row between them.
+// FUNCTION: STUNTGP_D3D 0x4385d0
+void FUN_4385d0(int layer, int def, float x, float y, float middle, DWORD flags)
+{
+    SpriteData s;
+    if (!def)
+    {
+        return;
+    }
+    if (middle < 0.0f)
+    {
+        return;
+    }
+    FUN_441320(&s, def);
+    s.flags = 2;
+    s.alpha = 0xff;
+    if (flags & 0x100)
+    {
+        s.blendMode = 0x58;
+    }
+    else
+    {
+        s.blendMode = (flags & 0x200) ? 0x70 : 0x20;
+    }
+    float half = s.height * 0.5f;
+    s.x = x;
+    s.y = y;
+    float v1 = s.v1;
+    float total = s.height + middle;
+    if (flags & 1)
+    {
+        s.x = x - s.width * 0.5f;
+    }
+    else if (flags & 4)
+    {
+        s.x = x - s.width;
+    }
+    if (flags & 2)
+    {
+        s.y = y - total * 0.5f;
+    }
+    else if (flags & 8)
+    {
+        s.y = y - total;
+    }
+    s.height = half;
+    s.v1 = half * 4.0f + s.v0;
+    FUN_438370(&s, layer, 0);
+    s.y = half + s.y;
+    if (middle != 0.0f)
+    {
+        s.v0 = s.v1;
+        s.height = middle;
+        FUN_438370(&s, layer, 0);
+        s.y = s.y + middle;
+    }
+    s.v1 = v1;
+    s.height = half;
+    FUN_438370(&s, layer, 0);
 }
 
 void FUN_438740(int layer, int def, float x, float y, float scale, DWORD flags, float fade);
@@ -744,6 +806,117 @@ void FUN_438eb0(float x, float y, int layer, int sub, int def, int leftWidth, in
     s.u1 = 1024.0f;
     s.width = rightWidth * scale;
     FUN_438370(&s, layer, sub);
+}
+
+// GLOBAL: STUNTGP_D3D 0x5df414
+char g_5df414[0x100];
+
+void FUN_439040(float x, float y, int layer, int font, const char *text, float size, D3DCOLOR color, int style, int row, float scale, DWORD flags, int width, float fade);
+
+// FUNCTION: STUNTGP_D3D 0x438ff0
+void FUN_438ff0(float x, float y, int layer, int font, int textId, float size, D3DCOLOR color, int style, int row, float scale, DWORD flags, int width, float fade)
+{
+    FUN_439040(x, y, layer, font, FUN_441170(textId), size, color, style, row, scale, flags, width, fade);
+}
+
+// Text button centred on (x, y). A zero width fits the text, a negative one is a minimum width.
+// Flags 1/4 centre/right-align the text, 0x40 adds a drop shadow.
+// FUNCTION: STUNTGP_D3D 0x439040
+void FUN_439040(float x, float y, int layer, int font, const char *text, float size, D3DCOLOR color, int style, int row, float scale, DWORD flags, int width, float fade)
+{
+    int left;
+    int right;
+    int height;
+    float charHeight = FUN_438950(size);
+    float textWidth = -1.0f;
+    int def = FUN_438dc0(style, &left, &right, &height);
+    float h = (height * 28 / 32) * scale;
+    float w;
+    if (width == 0)
+    {
+        textWidth = FUN_438910(text, size);
+        w = textWidth;
+    }
+    else if (width < 0)
+    {
+        width = -width;
+        textWidth = FUN_438910(text, size);
+        if (textWidth > width)
+        {
+            w = textWidth;
+        }
+        else
+        {
+            w = width;
+        }
+    }
+    else
+    {
+        w = width;
+    }
+    x -= ((left + right) * scale + w) * 0.5f;
+    y -= h * 0.5f;
+    float textX = left * scale + x;
+    float textY = (h - charHeight) * 0.5f + y + scale;
+    if (flags & 1)
+    {
+        if (textWidth < 0.0f)
+        {
+            textWidth = FUN_438910(text, size);
+        }
+        textX += (w - textWidth) * 0.5f;
+    }
+    else if (flags & 4)
+    {
+        if (textWidth < 0.0f)
+        {
+            textWidth = FUN_438910(text, size);
+        }
+        textX += w - textWidth;
+    }
+    if (flags & 0x40)
+    {
+        FUN_438eb0(x + 8.0f, y + 8.0f, 15, 0, def, left, right, height, 2, scale, w, 0x200, 0.0f);
+    }
+    FUN_438eb0(x, y, layer, 3, def, left, right, height, 1, scale, w, 0x200, 0.0f);
+    FUN_438eb0(x, y, layer, 2, def, left, right, height, row, scale, w, 0x100, 0.0f);
+    FUN_438960(textX, textY, layer, 1, font, text, size, color, 0);
+    if (fade > 0.0f)
+    {
+        FUN_438eb0(x, y, layer, 0, def, left, right, height, 3, scale, w, 0x400, fade);
+    }
+}
+
+void FUN_4392c0(int textId, int value, float x, float y);
+
+// FUNCTION: STUNTGP_D3D 0x4392b0
+void FUN_4392b0(int textId, int value)
+{
+    FUN_4392c0(textId, value, 0.0f, 0.0f);
+}
+
+// Front-end text button offset from the screen centre; value is formatted into the text when set.
+// FUNCTION: STUNTGP_D3D 0x4392c0
+void FUN_4392c0(int textId, int value, float x, float y)
+{
+    float px = x + 320.0f;
+    float py = y + 50.0f;
+    char *text = g_5df414;
+    if (value)
+    {
+        sprintf(g_5df414, FUN_441170(textId), value);
+    }
+    else
+    {
+        text = FUN_441170(textId);
+    }
+    FUN_439040(px, py, 2, 4, text, 1.25f, 0xffffffff, 3, 0, 1.0f, 0x41, -240, 0.0f);
+}
+
+// FUNCTION: STUNTGP_D3D 0x439340
+void FUN_439340(int textId)
+{
+    FUN_438ff0(320.0f, 420.0f, 2, 4, textId, 1.25f, 0xffffffff, 4, 0, 1.0f, 0x41, -400, 0.0f);
 }
 
 // FUNCTION: STUNTGP_D3D 0x439380
