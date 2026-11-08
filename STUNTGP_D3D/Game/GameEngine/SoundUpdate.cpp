@@ -756,8 +756,8 @@ void FUN_461150(int channel, int loop, DWORD frequency, DWORD volume, int pan, i
     {
         return;
     }
-    int level = g_4897f8[g_sfxVolume * volume / 255 / 2];
-    if (buffer->SetVolume(level) != DS_OK)
+    DWORD v = g_sfxVolume * volume / 255;
+    if (buffer->SetVolume(g_4897f8[v / 2]) != DS_OK)
     {
         return;
     }
@@ -1039,8 +1039,7 @@ void FUN_461850(int *channel, DWORD frequency, DWORD volume, Vec4 *pos, Vec4 *ve
     {
         return;
     }
-    SoundChannel *ch = &g_62e118[*channel];
-    LPDIRECTSOUNDBUFFER buffer = ch->buffer;
+    LPDIRECTSOUNDBUFFER buffer = g_62e118[*channel].buffer;
     if (!buffer)
     {
         return;
@@ -1075,7 +1074,7 @@ void FUN_461850(int *channel, DWORD frequency, DWORD volume, Vec4 *pos, Vec4 *ve
     }
     if (!frequency)
     {
-        frequency = ch->rate;
+        frequency = g_62e118[*channel].rate;
     }
     if (velocity)
     {

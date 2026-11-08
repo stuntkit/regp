@@ -2049,10 +2049,10 @@ void FUN_430d40(int slot, int id)
         {
             exitError(ddGetErrMessage(res));
         }
+        desc.dwFlags = (*g_592028 ? DDSD_CKSRCBLT : 0) + 0x101007;
         LPDIRECT3DTEXTURE2 target = (LPDIRECT3DTEXTURE2)surfaceSlot->unk04;
         desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_ALLOCONLOAD;
         desc.ddsCaps.dwCaps2 = 0x80;
-        desc.dwFlags = (*g_592028 ? DDSD_CKSRCBLT : 0) + 0x101007;
         desc.dwTextureStage = 0;
         res = target->Load(texture);
         if (res != DD_OK)

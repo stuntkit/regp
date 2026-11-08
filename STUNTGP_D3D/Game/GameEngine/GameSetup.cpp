@@ -3727,11 +3727,10 @@ void FUN_42f090()
     memset(g_58c810, 0, sizeof(g_58c810));
     g_58c80c = g_58c810;
     g_58c538 = g_58c600;
-    for (SceneLoad *load = g_58c540; load->id;)
+    for (int k = 0; g_58c540[k].id; k++)
     {
-        FUN_42efb0(load->id);
-        int slot = load->slot;
-        load++;
+        FUN_42efb0(g_58c540[k].id);
+        int slot = g_58c540[k].slot;
         g_636418[slot].scene = g_58c800;
         g_636418[slot].data = g_58d810;
         g_636418[slot].size = g_58c230;

@@ -726,11 +726,11 @@ void FUN_445940(int frames, int fadeIn, int fadeOut)
     g_498248[3].active = 1;
     g_4722d0 = g_498248;
     FUN_442a40(2, fadeIn, fadeIn, fadeIn, 100, 0, 1.0f);
-    for (int i = frames + 2; i != 0; i--)
+    for (frames += 2; frames != 0; frames--)
     {
         FUN_4458f0();
         FUN_4458b0();
-        if (i == 120 && fadeOut)
+        if (frames == 120 && fadeOut)
         {
             FUN_442a40(2, fadeOut, 0, 180, 0, 100, 1.0f);
         }

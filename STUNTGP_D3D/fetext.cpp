@@ -2081,8 +2081,8 @@ void FUN_440ae0()
         {
             break;
         }
-        g_606838[i + 1] = g_menuState.languages[i].name;
         strcpy(g_menuState.languages[i].name, token);
+        g_606838[i + 1] = g_menuState.languages[i].name;
     }
     FeCsv_SkipLine(g_6087a0, &pos);
     g_menuState.languageCount = i;

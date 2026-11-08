@@ -531,7 +531,7 @@ int FUN_421830(Car *a, Car *b)
     bz = b->unk1c8c.z;
     by = b->unk1c8c.y;
     bx = b->unk1c8c.x;
-    if (d.x * d.x + d.y * d.y + d.z * d.z < r * r + (ax * ax + ay * ay + az * az) + (bx * bx + by * by + bz * bz))
+    if (d.x * d.x + d.y * d.y + d.z * d.z < (bx * bx + by * by + bz * bz) + (r * r + (ax * ax + ay * ay + az * az)))
     {
         return 1;
     }
