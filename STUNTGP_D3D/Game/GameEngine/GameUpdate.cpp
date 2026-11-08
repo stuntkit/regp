@@ -1746,9 +1746,44 @@ void FUN_41ab40(Car *car, Replay *replay)
     replay->count = 0;
 }
 
-// STUB: STUNTGP_D3D 0x41ab70
+void FUN_419ee0();
+void FUN_419ec0();
+
+// Plays one tick of the car's replay: interpolates between the current and next frame, then steps to the next
+// frame once the clock passes it.
+// FUNCTION: STUNTGP_D3D 0x41ab70
 void FUN_41ab70(Car *car)
 {
+    Replay *r = car->unk7268;
+    g_570ac0 = r;
+    g_4d5cb8 = r->cur;
+    g_570ac4 = g_4d5cb8 + 1;
+    r->unk08 = (float)fmod(r->unk0c + r->unk08, 1.0);
+    FUN_419ee0();
+    FUN_41a000();
+    FUN_41a230();
+    FUN_41a330();
+    FUN_41a3c0();
+    FUN_41a430();
+    FUN_41a8d0();
+    FUN_41a7e0();
+    FUN_41a9b0();
+    FUN_41a900();
+    FUN_41a370();
+    FUN_41a930();
+    FUN_41a9e0();
+    FUN_41aa60();
+    FUN_419ec0();
+    r = g_570ac0;
+    if (1.0f - r->unk0c <= r->unk08)
+    {
+        r->cur++;
+        g_570ac4++;
+        if (g_570ac4->flags & 1)
+        {
+            FUN_41aac0(r);
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x41af50

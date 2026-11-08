@@ -4698,6 +4698,11 @@ void FUN_412430(Car *car)
     car->unk721c = 0;
 }
 
+// STUB: STUNTGP_D3D 0x412470
+void FUN_412470()
+{
+}
+
 // FUNCTION: STUNTGP_D3D 0x412670
 void FUN_412670()
 {

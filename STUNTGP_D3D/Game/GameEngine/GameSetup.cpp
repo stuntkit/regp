@@ -1073,6 +1073,55 @@ void FUN_419b30(char *name, Car *car, Replay *replay)
     FUN_44aff0(path, replay, replay->size);
 }
 
+// Body inertia-like 3x3 matrix, rows 16 bytes apart.
+// GLOBAL: STUNTGP_D3D 0x4d5b70
+Vec4 g_4d5b70[3];
+
+void FUN_40f5b0(float *fx, float *fy, float grip, float scale, float load, int i);
+
+// Splits the car's velocity into a forward slip term per axle and feeds each loaded wheel's tyre model.
+// FUNCTION: STUNTGP_D3D 0x419b80
+void FUN_419b80()
+{
+    Car *car = g_4d5bb8;
+    float front = car->unk224;
+    float rear = car->unk228;
+    Vec4 a;
+    a.x = g_4d5b70[1].x * car->axisZ.y + g_4d5b70[2].x * car->axisZ.z + car->axisZ.x * g_4d5b70[0].x;
+    a.y = g_4d5b70[1].y * car->axisZ.y + g_4d5b70[2].y * car->axisZ.z + car->axisZ.x * g_4d5b70[0].y;
+    a.z = g_4d5b70[1].z * car->axisZ.y + g_4d5b70[2].z * car->axisZ.z + car->axisZ.x * g_4d5b70[0].z;
+    Vec4 b;
+    b.x = g_4d5b70[2].x * car->axisX.z + g_4d5b70[1].x * car->axisX.y + car->axisX.x * g_4d5b70[0].x;
+    b.y = g_4d5b70[2].y * car->axisX.z + g_4d5b70[1].y * car->axisX.y + car->axisX.x * g_4d5b70[0].y;
+    b.z = g_4d5b70[2].z * car->axisX.z + g_4d5b70[1].z * car->axisX.y + car->axisX.x * g_4d5b70[0].z;
+    float s = car->unk1c8c.x * car->axisZ.x + car->axisZ.z * car->unk1c8c.z + car->axisZ.y * car->unk1c8c.y;
+    float q = car->unk1c8c.y * a.y + car->unk1c8c.z * a.z + car->unk1c8c.x * a.x;
+    float r = s * car->axisZ.z * b.z + s * car->axisZ.y * b.y + s * car->axisZ.x * b.x;
+    r = -r;
+    Vec4 m;
+    m.x = r * b.x;
+    m.y = r * b.y;
+    m.z = r * b.z;
+    float c = -(m.x * car->axisX.x + m.y * car->axisX.y + m.z * car->axisX.z);
+    float d = car->unk1c8c.z * car->axisX.z + car->axisX.y * car->unk1c8c.y + car->axisX.x * car->unk1c8c.x;
+    float f = (1.0f - front) * c + d;
+    float g = (1.0f - rear) * c + d;
+    car->wheels[0].unk14 = g;
+    car->wheels[1].unk14 = g;
+    car->wheels[2].unk14 = f;
+    car->wheels[3].unk14 = f;
+    for (int i = 0; i < 4; i++)
+    {
+        car->wheels[i].unk30 = 0.0f;
+        if (car->wheels[i].unk0c > 8.515625f)
+        {
+            float v = car->wheels[i].unk04 - (i < 2 ? s : q);
+            FUN_40f5b0(&car->wheels[i].unk14, &v, car->wheels[i].unk34, car->wheels[i].unk38, car->wheels[i].unk0c, i);
+            car = g_4d5bb8;
+        }
+    }
+}
+
 void FUN_40fb30();
 
 // FUNCTION: STUNTGP_D3D 0x419e30
@@ -1110,6 +1159,18 @@ void FUN_419e90()
             FUN_414ac0(i);
         }
     }
+}
+
+void FUN_412470();
+
+// Tyre forces, then the rest of the per-car physics tail.
+// FUNCTION: STUNTGP_D3D 0x419ec0
+void FUN_419ec0()
+{
+    FUN_419b80();
+    FUN_419e30();
+    FUN_419e90();
+    FUN_412470();
 }
 
 extern Replay *g_570ac0;
