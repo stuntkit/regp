@@ -1426,4 +1426,10 @@
 // LIBRARY: STUNTGP_D3D 0x469a3e
 // _toupper
 
+// LIBRARY: STUNTGP_D3D 0x462950
+// __CIasin
+
+// LIBRARY: STUNTGP_D3D 0x462964
+// _asin
+
 #endif
