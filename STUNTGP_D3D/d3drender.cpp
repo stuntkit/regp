@@ -92,13 +92,7 @@ int g_587990;
 int g_587994;
 
 // GLOBAL: STUNTGP_D3D 0x5895b0
-int g_5895b0;
-
-// GLOBAL: STUNTGP_D3D 0x5895b4
-char *g_5895b4;
-
-// GLOBAL: STUNTGP_D3D 0x5895b8
-int *g_5895b8;
+ImageLoader g_5895b0;
 
 // GLOBAL: STUNTGP_D3D 0x5ba788
 DisplayDevices g_5ba788;
@@ -1474,11 +1468,11 @@ int FUN_42bb70(char *path, char *out)
 // FUNCTION: STUNTGP_D3D 0x42bc00
 void FUN_42bc00()
 {
-    g_5895b4 = g_583990;
-    g_5895b0 = 0;
+    g_5895b0.nameCursor = g_583990;
+    g_5895b0.totalSize = 0;
     g_583990[0] = 0;
     g_587994 = 0;
-    g_5895b8 = &g_587990;
+    g_5895b0.entryCursor = &g_587990;
 }
 
 // Reads the size of a .PC image; returns whether it fits the texture size limit.

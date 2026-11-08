@@ -50,6 +50,16 @@ struct TextureSlot
     DWORD unk04[6];
 };
 
+// Image table bookkeeping; the loaders append names and 0x18-byte entries.
+struct ImageLoader
+{
+    int totalSize;    // 0x00
+    char *nameCursor; // 0x04
+    int *entryCursor; // 0x08
+};
+
+extern ImageLoader g_5895b0;
+
 extern LPDIRECT3DDEVICE3 g_d3dDevice;
 extern BOOL g_d3dInScene;
 

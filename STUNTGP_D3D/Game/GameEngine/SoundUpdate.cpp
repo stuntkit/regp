@@ -511,6 +511,88 @@ void FUN_460df0()
     }
 }
 
+// If the 3D sound is already playing, swaps it for a duplicate in a free one-shot slot.
+// FUNCTION: STUNTGP_D3D 0x460e70
+int FUN_460e70(LPDIRECTSOUNDBUFFER *buffer, LPDIRECTSOUND3DBUFFER *buffer3d, int channel, int *slotIndex)
+{
+    LPDIRECTSOUNDBUFFER copy;
+    DWORD status;
+    LPDIRECTSOUND3DBUFFER copy3d;
+    LPDIRECTSOUNDBUFFER source = *buffer;
+    if (source->GetStatus(&status) != DS_OK)
+    {
+        return 0;
+    }
+    if (status & DSBSTATUS_PLAYING)
+    {
+        if ((int)g_62f5b0 >= 32)
+        {
+            return 0;
+        }
+        SoundChannel *slot = &g_62e118[72];
+        while (slot->buffer)
+        {
+            slot++;
+        }
+        if (g_directSound->DuplicateSoundBuffer(source, &copy) != DS_OK)
+        {
+            return 0;
+        }
+        if (copy->QueryInterface(IID_IDirectSound3DBuffer, (void **)&copy3d) != DS_OK)
+        {
+            copy->Release();
+            return 0;
+        }
+        *buffer = copy;
+        slot->buffer = copy;
+        *buffer3d = copy3d;
+        slot->buffer3d = copy3d;
+        g_62f5b0++;
+        slot->type = g_62e118[channel].type;
+        if (slotIndex)
+        {
+            *slotIndex = slot - g_62e118;
+        }
+    }
+    return 1;
+}
+
+// If the sound is already playing, swaps it for a duplicate in a free one-shot slot.
+// FUNCTION: STUNTGP_D3D 0x460f70
+int FUN_460f70(LPDIRECTSOUNDBUFFER *buffer, int channel, int *slotIndex)
+{
+    LPDIRECTSOUNDBUFFER source = *buffer;
+    DWORD status;
+    if (source->GetStatus(&status) != DS_OK)
+    {
+        return 0;
+    }
+    if (status & DSBSTATUS_PLAYING)
+    {
+        if ((int)g_62f5b0 >= 32)
+        {
+            return 0;
+        }
+        SoundChannel *slot = &g_62e118[72];
+        while (slot->buffer)
+        {
+            slot++;
+        }
+        if (g_directSound->DuplicateSoundBuffer(source, &slot->buffer) != DS_OK)
+        {
+            return 0;
+        }
+        *buffer = slot->buffer;
+        g_62f5b0++;
+        slot->type = g_62e118[channel].type;
+        if (slotIndex)
+        {
+            *slotIndex = slot - g_62e118;
+        }
+    }
+    return 1;
+}
+
 // Nearest active player camera to a point, or the first one in single view.
 // FUNCTION: STUNTGP_D3D 0x461270
 GameSlot *FUN_461270(Vec4 *pos)

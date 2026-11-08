@@ -1321,7 +1321,6 @@ int size_of_file(char *path);
 int bload(char *path, char *buffer, int maxSize);
 void FUN_4623c0(char *path, void *buffer, void *arg);
 extern char g_GraphicsDirectory[128];
-extern int g_5895b0;
 
 // Loads a TGA image from the graphics directory and converts it to 16-bit.
 // FUNCTION: STUNTGP_D3D 0x430b80
@@ -1335,7 +1334,7 @@ WORD *FUN_430b80(char *name, int type)
     FUN_4623c0(path, image, &g_571fd4);
     FUN_430280(image, (WORD *)image, g_489714, g_489718);
     DWORD size = g_489714 * g_489718 * 2;
-    g_5895b0 += size;
+    g_5895b0.totalSize += size;
     result = (WORD *)Mem_Alloc(size, type);
     memcpy(result, image, size);
     Mem_Free(image);
@@ -1352,10 +1351,33 @@ BYTE *FUN_430c30(char *name, int type)
     int size = size_of_file(path);
     BYTE *buffer = (BYTE *)Mem_Alloc(size, type);
     bload(path, (char *)buffer, size);
-    g_5895b0 += size;
+    g_5895b0.totalSize += size;
     g_489714 = *(WORD *)(buffer + 6);
     g_489718 = *(WORD *)(buffer + 8);
     return buffer;
+}
+
+// Loads an image and appends it to the image table; compressed 1 is a packed .PC.
+// FUNCTION: STUNTGP_D3D 0x430ca0
+void FUN_430ca0(char *name, int compressed, int type)
+{
+    void *data;
+    if (compressed == 1)
+    {
+        data = FUN_430c30(name, type);
+    }
+    else
+    {
+        data = FUN_430b80(name, type);
+    }
+    sprintf(g_5895b0.nameCursor, name);
+    g_5895b0.entryCursor[1] = (int)g_5895b0.nameCursor;
+    g_5895b0.entryCursor[3] = g_489714;
+    g_5895b0.entryCursor[4] = g_489718;
+    g_5895b0.entryCursor[5] = compressed;
+    g_5895b0.entryCursor[2] = (int)data;
+    g_5895b0.nameCursor += strlen(name) + 1;
+    g_5895b0.entryCursor += 6;
 }
 
 // GLOBAL: STUNTGP_D3D 0x583594

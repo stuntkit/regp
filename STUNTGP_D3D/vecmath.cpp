@@ -86,6 +86,42 @@ float g_61c534;
 float g_61c538;
 
 // Rotation angle and axis of the 3x3 part of m.
+// Multiplies a in place by b.
+// FUNCTION: STUNTGP_D3D 0x44f280
+void FUN_44f280(float *a, float *b)
+{
+    float t[16];
+    for (int i = 0; i < 4; i++)
+    {
+        t[i * 4 + 0] = a[i * 4 + 0] * b[0] + a[i * 4 + 1] * b[4] + a[i * 4 + 2] * b[8] + a[i * 4 + 3] * b[12];
+        t[i * 4 + 1] = a[i * 4 + 0] * b[1] + a[i * 4 + 1] * b[5] + a[i * 4 + 2] * b[9] + a[i * 4 + 3] * b[13];
+        t[i * 4 + 2] = a[i * 4 + 0] * b[2] + a[i * 4 + 1] * b[6] + a[i * 4 + 2] * b[10] + a[i * 4 + 3] * b[14];
+        t[i * 4 + 3] = a[i * 4 + 0] * b[3] + a[i * 4 + 1] * b[7] + a[i * 4 + 2] * b[11] + a[i * 4 + 3] * b[15];
+        a[i * 4 + 0] = t[i * 4 + 0];
+        a[i * 4 + 1] = t[i * 4 + 1];
+        a[i * 4 + 2] = t[i * 4 + 2];
+        a[i * 4 + 3] = t[i * 4 + 3];
+    }
+}
+
+// 4x4 product a * b into out. When out aliases an input the result goes to a scratch matrix and is lost.
+// FUNCTION: STUNTGP_D3D 0x44f360
+void FUN_44f360(float *out, float *a, float *b)
+{
+    float t[16];
+    if (out == a || out == b)
+    {
+        out = t;
+    }
+    for (int i = 0; i < 4; i++)
+    {
+        out[i * 4 + 0] = a[i * 4 + 0] * b[0] + a[i * 4 + 1] * b[4] + a[i * 4 + 2] * b[8] + a[i * 4 + 3] * b[12];
+        out[i * 4 + 1] = a[i * 4 + 0] * b[1] + a[i * 4 + 1] * b[5] + a[i * 4 + 2] * b[9] + a[i * 4 + 3] * b[13];
+        out[i * 4 + 2] = a[i * 4 + 0] * b[2] + a[i * 4 + 1] * b[6] + a[i * 4 + 2] * b[10] + a[i * 4 + 3] * b[14];
+        out[i * 4 + 3] = a[i * 4 + 0] * b[3] + a[i * 4 + 1] * b[7] + a[i * 4 + 2] * b[11] + a[i * 4 + 3] * b[15];
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x44f420
 void FUN_44f420(float *m, float *angle, Vec4 *axis)
 {
@@ -251,6 +287,31 @@ void FUN_450190(Camera *cam)
     m += 16;
     g_6227d0++;
     g_6227cc = (BYTE *)m;
+}
+
+// Re-orthonormalises the rotation rows, keeping the z row's direction.
+// FUNCTION: STUNTGP_D3D 0x44f8e0
+void FUN_44f8e0(float *m)
+{
+    Vec4 *rows = (Vec4 *)m;
+    Vec4 *rowZ = &rows[2];
+    Vec4 z = *rowZ;
+    Vec3_Normalize(&z.x);
+    Vec4 *rowY = &rows[1];
+    Vec4 y = *rowY;
+    Vec3_Normalize(&y.x);
+    Vec4 x;
+    x.x = z.z * y.y - z.y * y.z;
+    x.y = z.x * y.z - y.x * z.z;
+    x.z = y.x * z.y - z.x * y.y;
+    Vec3_Normalize(&x.x);
+    y.x = x.z * z.y - x.y * z.z;
+    y.y = x.x * z.z - x.z * z.x;
+    y.z = x.y * z.x - x.x * z.y;
+    Vec3_Normalize(&y.x);
+    rows[0] = x;
+    *rowY = y;
+    *rowZ = z;
 }
 
 // GLOBAL: STUNTGP_D3D 0x61c3a4

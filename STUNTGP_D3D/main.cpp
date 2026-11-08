@@ -445,7 +445,6 @@ void FUN_42c1d0()
 }
 
 SpriteFile *FUN_441180();
-extern int g_5895b0;
 
 // FUNCTION: STUNTGP_D3D 0x42c2e0
 int FUN_42c2e0(const char *name)
@@ -457,7 +456,7 @@ int FUN_42c2e0(const char *name)
         {
             if (!g_57b420)
             {
-                g_57e308 = g_5895b0;
+                g_57e308 = g_5895b0.totalSize;
                 g_57b420 = 1;
             }
             return 1;

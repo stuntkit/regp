@@ -1330,6 +1330,35 @@ int FUN_437100()
     return count;
 }
 
+void FUN_424340(int player, int mode);
+
+// FUNCTION: STUNTGP_D3D 0x437130
+int FUN_437130(int player, int mode)
+{
+    if (!FUN_437090(player))
+    {
+        return 0;
+    }
+    switch (mode)
+    {
+    case 1:
+        FUN_424340(player - 1, 1);
+        return 1;
+    case 2:
+        FUN_424340(player - 1, 2);
+        return 1;
+    case 3:
+        FUN_424340(player - 1, 3);
+        return 1;
+    case 4:
+        FUN_424340(player - 1, 4);
+        break;
+    case 5:
+        return 0;
+    }
+    return 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x4371c0
 int FUN_4371c0(int track, int mode)
 {
