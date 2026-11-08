@@ -4119,6 +4119,126 @@ void FUN_41bdd0()
     }
 }
 
+// One-quad mesh scene in g_636418[1]: the face, its four UVs and transform.
+// GLOBAL: STUNTGP_D3D 0x4747d8
+MeshUv g_4747d8[4] = {
+    {1.0f, 0.0f, 0, 0x37, 0x3737},
+    {0.0f, 0.0f, 1, 0x37, 0x3737},
+    {1.0f, 2.0f, 2, 0x37, 0x3737},
+    {0.0f, 2.0f, 3, 0x37, 0x3737},
+};
+
+// GLOBAL: STUNTGP_D3D 0x474818
+MeshFace g_474818 = {4, 5, 0x70, 0x50, 0, 0};
+
+// GLOBAL: STUNTGP_D3D 0x474820
+Camera g_474820 = {{0.0f, 0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.0f}, 0, NULL, NULL, 0};
+
+// GLOBAL: STUNTGP_D3D 0x570ad8
+Vec4 g_570ad8;
+
+// GLOBAL: STUNTGP_D3D 0x5712d8
+DWORD *g_5712d8[2];
+
+// GLOBAL: STUNTGP_D3D 0x5712e0
+DWORD g_5712e0[4];
+
+// GLOBAL: STUNTGP_D3D 0x5712fc
+char *g_5712fc;
+
+// GLOBAL: STUNTGP_D3D 0x571300
+MeshFace *g_571300;
+
+// GLOBAL: STUNTGP_D3D 0x571304
+WORD *g_571304;
+
+// GLOBAL: STUNTGP_D3D 0x571308
+Vec4 *g_571308;
+
+// GLOBAL: STUNTGP_D3D 0x57130c
+MeshUv *g_57130c;
+
+// GLOBAL: STUNTGP_D3D 0x571310
+ObjectDef *g_571310;
+
+// GLOBAL: STUNTGP_D3D 0x571314
+Scene *g_571314;
+
+// FUNCTION: STUNTGP_D3D 0x41c530
+void FUN_41c530()
+{
+    g_571300 = (MeshFace *)Mem_Alloc(0x400, 0);
+    g_571304 = (WORD *)Mem_Alloc(0x400, 0);
+    g_571308 = (Vec4 *)Mem_Alloc(0x2000, 0);
+    g_57130c = (MeshUv *)Mem_Alloc(0x2000, 0);
+    g_571310 = (ObjectDef *)Mem_Alloc(0x40, 0);
+    g_571314 = (Scene *)Mem_Alloc(0x68, 0);
+    g_571300[0] = g_474818;
+    memcpy(g_57130c, g_4747d8, sizeof(g_4747d8));
+    g_571308[0].x = 0.0f;
+    g_571308[0].y = 0.0f;
+    g_571308[0].z = -50.0f;
+    g_571308[1].x = 0.0f;
+    g_571308[1].y = 0.0f;
+    g_571308[1].z = 50.0f;
+    g_571308[2].x = 100.0f;
+    g_571308[2].y = 0.0f;
+    g_571308[2].z = -50.0f;
+    g_571308[3].x = 100.0f;
+    g_571308[3].y = 0.0f;
+    g_571308[3].z = 50.0f;
+    memset(g_571310, 0, sizeof(ObjectDef));
+    g_571310->visible = 1;
+    g_571310->flags = 0;
+    g_571310->unk04 = 0;
+    *(WORD *)g_571310->unk06 = 0;
+    g_571310->matrix = (Vec4 *)&g_474820;
+    *(WORD *)(g_571310->unk0c + 0x14) = 0;
+    *(WORD *)(g_571310->unk0c + 0x16) = 0;
+    g_571310->vertCount = 0;
+    g_571310->unk26 = 0;
+    g_571310->pointCount = 0;
+    g_571310->unk2c = (BYTE *)g_57130c;
+    g_571310->points = g_571308;
+    g_571310->verts = (BYTE *)g_571300;
+    *(DWORD *)(g_571310->unk0c + 4) = 0;
+    *(DWORD *)(g_571310->unk0c + 8) = 0;
+    *(DWORD *)(g_571310->unk0c + 0xc) = 0;
+    g_636418[1].scene = g_571314;
+    g_5712d8[0] = g_5712e0;
+    g_5712e0[0] = 0;
+    g_5712e0[1] = 0;
+    g_5712e0[2] = 0;
+    g_570ad8.x = 0.0f;
+    g_570ad8.y = 1.0f;
+    g_570ad8.z = 0.0f;
+    memset(g_571314, 0, sizeof(Scene));
+    *(WORD *)g_571314->unk00 = 0;
+    g_571314->flags = 1;
+    g_571314->camera = NULL;
+    *(DWORD *)(g_571314->unk10 + 0) = 0;
+    *(DWORD *)(g_571314->unk10 + 4) = 0;
+    *(DWORD *)(g_571314->unk10 + 8) = 0;
+    *(WORD *)(g_571314->unk10 + 0x10) = 0;
+    *(WORD *)(g_571314->unk10 + 0x12) = 0;
+    g_571314->objectCount = 1;
+    g_571314->unk28 = (SceneEntry *)&g_570ad8;
+    g_571314->verts = (BYTE *)g_571300;
+    g_571314->unk30 = (BYTE *)g_57130c;
+    g_571314->points = g_571308;
+    g_571314->unk38 = (BYTE *)g_571304;
+    g_571314->matrices = (BYTE *)&g_474820;
+    g_571314->unk40 = (DWORD *)g_5712d8;
+    g_571314->view = (SceneView *)g_571310;
+    g_571314->lods[0] = g_571310;
+    g_571314->lods[1] = g_571310;
+    g_571314->lods[2] = g_571310;
+    g_571314->lods[3] = g_571310;
+    g_571314->maxLod = 0;
+    g_571314->lod = 0;
+    g_571314->textures = &g_5712fc;
+}
+
 // FUNCTION: STUNTGP_D3D 0x41c710
 void FUN_41c710()
 {

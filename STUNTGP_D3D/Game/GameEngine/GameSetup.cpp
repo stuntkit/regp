@@ -1431,13 +1431,14 @@ void FUN_42d070()
 {
 }
 
+// UV scroll record; unk00 is the mode (0 still, 2 u scrolls and v follows the wave, -1 ends the list).
 struct Unk624488
 {
     int unk00;   // 0x00
-    int unk04;   // 0x04
-    int unk08;   // 0x08
-    int unk0c;   // 0x0c
-    float unk10; // 0x10
+    float unk04; // 0x04, u offset
+    float unk08; // 0x08, v offset
+    float unk0c; // 0x0c, u speed
+    float unk10; // 0x10, v speed
 };
 
 // GLOBAL: STUNTGP_D3D 0x589628
@@ -1910,6 +1911,100 @@ void FUN_42ef80()
 {
     g_62448c = g_58c800->unk28;
     g_624490 = g_58c800->unk28 + g_58d810->unk0e4;
+}
+
+// GLOBAL: STUNTGP_D3D 0x577650
+float g_577650;
+
+// GLOBAL: STUNTGP_D3D 0x577654
+unsigned int g_577654;
+
+extern int g_577660[10];
+
+// Advances every texture UV scroll, wrapping offsets into [-1, 1].
+// FUNCTION: STUNTGP_D3D 0x4258a0
+void FUN_4258a0()
+{
+    if (g_612948.unk0004 == 1)
+    {
+        return;
+    }
+    float u;
+    float v;
+    unsigned int phase;
+    if (g_577654 >= 0x800 && g_577654 < 0x1800)
+    {
+        phase = g_577654 + 0x10;
+    }
+    else
+    {
+        phase = g_577654 + 0x20;
+    }
+    g_577654 = phase & 0x1fff;
+    g_577650 = g_sinTable[g_577654] * 0.046875f;
+    Unk624488 *r = g_624488;
+    while (r->unk00 != -1)
+    {
+        if (r->unk00 != 0)
+        {
+            if (r->unk00 == 2)
+            {
+                u = r->unk0c + r->unk04;
+                r->unk08 = g_577650;
+                r->unk04 = u;
+                if (u > 1.0f)
+                {
+                    r->unk04 = u - 1.0f;
+                }
+            }
+            else
+            {
+                u = r->unk04 + r->unk0c;
+                r->unk04 = u;
+                v = r->unk10 + r->unk08;
+                r->unk08 = v;
+                if (u > 1.0f)
+                {
+                    r->unk04 = u - 1.0f;
+                }
+                if (v > 1.0f)
+                {
+                    r->unk08 = v - 1.0f;
+                }
+                if (r->unk04 < -1.0f)
+                {
+                    r->unk04 = r->unk04 + 1.0f;
+                }
+                if (r->unk08 < -1.0f)
+                {
+                    r->unk08 = r->unk08 + 1.0f;
+                }
+            }
+        }
+        r++;
+    }
+    Unk624488 *s = (Unk624488 *)g_577660;
+    for (int i = 2; i != 0; i--, s++)
+    {
+        s->unk04 = s->unk0c + s->unk04;
+        s->unk08 = s->unk08 + s->unk10;
+        if (s->unk04 > 1.0f)
+        {
+            s->unk04 = s->unk04 - 1.0f;
+        }
+        if (s->unk08 > 1.0f)
+        {
+            s->unk08 = s->unk08 - 1.0f;
+        }
+        if (s->unk04 < -1.0f)
+        {
+            s->unk04 = s->unk04 + 1.0f;
+        }
+        if (s->unk08 < -1.0f)
+        {
+            s->unk08 = s->unk08 + 1.0f;
+        }
+    }
 }
 
 // STUB: STUNTGP_D3D 0x425ad0

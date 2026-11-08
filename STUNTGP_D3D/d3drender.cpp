@@ -10,6 +10,7 @@
 #include "Game/GameEngine/GameSetup.h"
 #include "Game/GameEngine/GameUpdate.h"
 
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -2830,6 +2831,85 @@ void FUN_44fd60()
 {
     g_6227cc = g_61c7cc;
     g_6227d0 = 0;
+}
+
+// Screen-space vertex for the 2D clipper; flags holds the inside bits for the four clip edges.
+struct ClipVertex
+{
+    float x;        // 0x00
+    float y;        // 0x04
+    float z;        // 0x08
+    float rhw;      // 0x0c
+    float u;        // 0x10
+    float v;        // 0x14
+    BYTE color[4];  // 0x18
+    DWORD flags;    // 0x1c
+};
+
+// Point where the edge a-b crosses clip edge 1 (left), 2 (right), 4 (top) or 8 (bottom).
+// FUNCTION: STUNTGP_D3D 0x4253e0
+void FUN_4253e0(ClipVertex *a, ClipVertex *b, ClipVertex *out, int edge)
+{
+    float da;
+    float db;
+    switch (edge)
+    {
+    case 1:
+        da = a->x - g_576c14;
+        db = b->x - g_576c14;
+        break;
+    case 2:
+        da = a->x - g_576c18;
+        db = b->x - g_576c18;
+        break;
+    case 4:
+        da = a->y - g_576c1c;
+        db = b->y - g_576c1c;
+        break;
+    case 8:
+        da = a->y - g_576c20;
+        db = b->y - g_576c20;
+        break;
+    }
+    float d = db - da;
+    float t;
+    if ((float)fabs(d) <= 1.0f)
+    {
+        t = 1.0f;
+    }
+    else
+    {
+        t = -(da / d);
+    }
+    float x = (b->x - a->x) * t + a->x;
+    out->x = x;
+    float y = (b->y - a->y) * t + a->y;
+    out->y = y;
+    out->z = (b->z - a->z) * t + a->z;
+    out->u = (b->u - a->u) * t + a->u;
+    out->v = (b->v - a->v) * t + a->v;
+    int f = (int)(t * 256.0f);
+    out->color[3] = (BYTE)(((b->color[3] - a->color[3]) * f >> 8) + a->color[3]);
+    out->color[2] = (BYTE)(((b->color[2] - a->color[2]) * f >> 8) + a->color[2]);
+    out->color[1] = (BYTE)(((b->color[1] - a->color[1]) * f >> 8) + a->color[1]);
+    out->color[0] = (BYTE)(((b->color[0] - a->color[0]) * f >> 8) + a->color[0]);
+    out->flags = 0xf;
+    if (x < g_576c14)
+    {
+        out->flags = 0xe;
+    }
+    else if (x > g_576c18)
+    {
+        out->flags = 0xd;
+    }
+    if (y < g_576c1c)
+    {
+        out->flags &= ~4;
+    }
+    else if (y > g_576c20)
+    {
+        out->flags &= ~8;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x425870
