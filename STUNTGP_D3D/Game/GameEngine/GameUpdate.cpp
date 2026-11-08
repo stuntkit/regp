@@ -2446,6 +2446,8 @@ extern char *g_4856d8[6];
 extern char *g_4856f0[6];
 extern char *g_485708[6];
 
+// The original reloads car->unk23cc/unk23d4 after FUN_4482a0, which /Oa would keep in a register.
+#pragma optimize("a", off)
 // Formats a car's two times and score into its results text and points results row `row` at it.
 // FUNCTION: STUNTGP_D3D 0x443f10
 void FUN_443f10(Car *car, int row)
@@ -2468,24 +2470,26 @@ void FUN_443f10(Car *car, int row)
         sprintf(time1, "%d:%d%d:%d%d", d[4], d[3], d[2], d[1], d[0]);
     }
     FUN_4482a0(car->unk23d4, d);
-    time2 = g_60f02c[index].time2;
     if (car->unk23d4 >= 36000)
     {
+        time2 = g_60f02c[index].time2;
         // STRING: STUNTGP_D3D 0x482b64
         sprintf(time2, "%d%d:%d%d:%d%d", d[5], d[4], d[3], d[2], d[1], d[0]);
     }
     else
     {
+        time2 = g_60f02c[index].time2;
         // STRING: STUNTGP_D3D 0x482b74
         sprintf(time2, "%d:%d%d:%d%d", d[4], d[3], d[2], d[1], d[0]);
     }
     // STRING: STUNTGP_D3D 0x482b84
     sprintf(g_60f02c[index].score, "%d", (int)car->unk260c);
-    g_485708[row] = g_60f02c[index].score;
     g_4856c0[row] = g_60f02c[index].name;
+    g_485708[row] = g_60f02c[index].score;
     g_4856d8[row] = time1;
     g_4856f0[row] = time2;
 }
+#pragma optimize("", on)
 
 // STUB: STUNTGP_D3D 0x444070
 void FUN_444070()
