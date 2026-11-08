@@ -7334,9 +7334,75 @@ void FUN_412bf0()
 {
 }
 
-// STUB: STUNTGP_D3D 0x412e80
+// Grid slot offsets, alternating sides, for FUN_412e80.
+// GLOBAL: STUNTGP_D3D 0x4744f0
+Vec4 g_4744f0[6] = {
+    {300.0f, 0.0f, 0.0f, 0.0f},
+    {-300.0f, 0.0f, 0.0f, 0.0f},
+    {300.0f, 0.0f, 0.0f, 0.0f},
+    {-300.0f, 0.0f, 0.0f, 0.0f},
+    {300.0f, 0.0f, 0.0f, 0.0f},
+    {-300.0f, 0.0f, 0.0f, 0.0f},
+};
+
+void FUN_413490(Car *car);
+void FUN_413530(Car *car);
+void FUN_408640(Car *car, float *pos);
+
+// Lines the cars up along path 2, starting 87% of the way round and two points apart.
+// FUNCTION: STUNTGP_D3D 0x412e80
 void FUN_412e80()
 {
+    Vec4 up;
+    Vec4 side;
+    Vec4 dir;
+    Vec4 pos;
+    int k;
+    CameraPath *path = FUN_428800(2);
+    up.x = 0.0f;
+    up.y = 1.0f;
+    up.z = 0.0f;
+    k = 87;
+    g_4d5bb8 = g_49a1f8;
+    for (int i = 0; i < 6; i++)
+    {
+        Vec4 *off = &g_4744f0[i];
+        Vec4 *pt = &path->points[path->count * k / 100];
+        k -= 2;
+        if (g_4d5bb8->active == 1)
+        {
+            dir.x = pt[1].x - pt[0].x;
+            dir.y = pt[1].y - pt[0].y;
+            dir.z = pt[1].z - pt[0].z;
+            Vec3_Normalize(&dir.x);
+            FUN_413490(g_4d5bb8);
+            FUN_413530(g_4d5bb8);
+            g_4d5bb8->unk1c8c.x = 0.0f;
+            g_4d5bb8->unk1c8c.y = 0.0f;
+            g_4d5bb8->unk1c8c.z = 0.0f;
+            g_4d5bb8->unk1cac.x = 0.0f;
+            g_4d5bb8->unk1cac.y = 0.0f;
+            g_4d5bb8->unk1cac.z = 0.0f;
+            side.x = dir.y * up.z - dir.z * up.y;
+            side.y = dir.z * up.x - dir.x * up.z;
+            side.z = dir.x * up.y - dir.y * up.x;
+            Matrix_Identity(g_4d5bb8->matrix);
+            *(Vec4 *)&g_4d5bb8->matrix[0] = side;
+            *(Vec4 *)&g_4d5bb8->matrix[4] = up;
+            *(Vec4 *)&g_4d5bb8->matrix[8] = dir;
+            memcpy(g_4d5bb8->body.mat0, g_4d5bb8->matrix, sizeof(g_4d5bb8->matrix));
+            pos.x = g_4d5bb8->matrix[8] * off->z + g_4d5bb8->matrix[4] * off->y + off->x * g_4d5bb8->matrix[0];
+            pos.y = g_4d5bb8->matrix[5] * off->y + g_4d5bb8->matrix[9] * off->z + off->x * g_4d5bb8->matrix[1];
+            pos.z = g_4d5bb8->matrix[6] * off->y + g_4d5bb8->matrix[10] * off->z + off->x * g_4d5bb8->matrix[2];
+            pos.x = pos.x + pt->x;
+            pos.y = pos.y + pt->y;
+            pos.z = pos.z + pt->z;
+            pos.y = pos.y + 150.0f;
+            FUN_408640(g_4d5bb8, &pos.x);
+        }
+        g_4d5bb8++;
+    }
+    g_4d5bb8 = g_49a1f8;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4130d0
