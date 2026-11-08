@@ -86,7 +86,10 @@ struct RenderMaterial
     DWORD unk00;      // 0x00
     DWORD unk04;      // 0x04
     float alpha;      // 0x08
-    BYTE unk0c[0x44]; // 0x0c
+    DWORD unk0c;      // 0x0c
+    Vec4 pos;         // 0x10
+    Vec4 local;       // 0x20, pos relative to the camera
+    BYTE unk30[0x20]; // 0x30
     int unk50;        // 0x50
     DWORD unk54;      // 0x54
     DWORD unk58;      // 0x58
@@ -99,7 +102,8 @@ struct RenderMaterial
     int unk78;        // 0x78
     int unk7c;        // 0x7c
     int unk80;        // 0x80
-    BYTE unk84[0xc];  // 0x84
+    int visible;      // 0x84
+    BYTE unk88[0x8];  // 0x88
 };
 
 // Loaded track file; the offsets are relative to data.
@@ -1602,6 +1606,96 @@ struct Light
     int g;            // 0x7c
     int b;            // 0x80
 };
+
+void FUN_42d870();
+
+// Collects the enabled lights for the frame into g_renderState.unk804c: their positions relative
+// to the camera and, for lights with flare type 3, whether the flare is in view. Point lights
+// out of view are left out.
+// FUNCTION: STUNTGP_D3D 0x42d9b0
+void FUN_42d9b0()
+{
+    FUN_42d870();
+    Light **active = g_renderState.unk804c.lights;
+    g_renderState.unk8044 = 0;
+    for (DWORD i = 0; i < (DWORD)g_renderState.unk7fb8; i++)
+    {
+        RenderMaterial *light = &g_renderState.unk7f94[i];
+        GameSlot *gs = g_4722d0;
+        if (!light->unk00)
+        {
+            continue;
+        }
+        Vec4 d;
+        int visible;
+        float r;
+        switch (light->unk04)
+        {
+        case 0:
+            d.x = light->pos.x - gs->cam.pos.x;
+            d.y = light->pos.y - gs->cam.pos.y;
+            d.z = light->pos.z - gs->cam.pos.z;
+            light->local = d;
+            if (light->unk50 == 3)
+            {
+                visible = 1;
+                float z = d.z * gs->axisZ.z + d.y * gs->axisZ.y + d.x * gs->axisZ.x;
+                if (z > gs->unk19c)
+                {
+                    visible = 0;
+                    light->visible = visible;
+                    break;
+                }
+                if (z < gs->nearZ ||
+                    d.z * gs->planeLeft.z + d.y * gs->planeLeft.y + d.x * gs->planeLeft.x > 5000.0f ||
+                    d.z * gs->planeRight.z + d.y * gs->planeRight.y + d.x * gs->planeRight.x > 5000.0f ||
+                    d.z * gs->planeTop.z + d.y * gs->planeTop.y + d.x * gs->planeTop.x > 5000.0f ||
+                    d.z * gs->planeBottom.z + d.y * gs->planeBottom.y + d.x * gs->planeBottom.x > 5000.0f)
+                {
+                    visible = 0;
+                }
+                light->visible = visible;
+            }
+            else
+            {
+                light->visible = 0;
+            }
+            break;
+        case 1:
+            d.x = light->pos.x - gs->cam.pos.x;
+            d.y = light->pos.y - gs->cam.pos.y;
+            d.z = light->pos.z - gs->cam.pos.z;
+            light->local = d;
+            r = (light->alpha < 1.0f ? 1.0f : light->alpha) * 500.0f;
+            visible = 1;
+            if (d.z * gs->axisZ.z + d.y * gs->axisZ.y + d.x * gs->axisZ.x > gs->unk19c ||
+                d.z * gs->planeLeft.z + d.y * gs->planeLeft.y + d.x * gs->planeLeft.x > r ||
+                d.z * gs->planeRight.z + d.y * gs->planeRight.y + d.x * gs->planeRight.x > r ||
+                d.z * gs->planeTop.z + d.y * gs->planeTop.y + d.x * gs->planeTop.x > r ||
+                d.z * gs->planeBottom.z + d.y * gs->planeBottom.y + d.x * gs->planeBottom.x > r)
+            {
+                visible = 0;
+            }
+            if (light->unk50 == 3)
+            {
+                light->visible = visible;
+            }
+            else
+            {
+                light->visible = 0;
+            }
+            if (visible != 1)
+            {
+                continue;
+            }
+            break;
+        default:
+            continue;
+        }
+        *active++ = (Light *)light;
+        g_renderState.unk8044++;
+    }
+}
 
 // GLOBAL: STUNTGP_D3D 0x589df8
 DWORD g_589df8;
