@@ -2074,6 +2074,86 @@ void FUN_439e90()
     g_5df528.mode = 0;
 }
 
+// The original copies field by field in source order, as if dst and src could alias.
+#pragma optimize("a", off)
+// Fills a 65-dword record from src (a differently laid out item record), then stores src[35],
+// index and value into slot.
+// FUNCTION: STUNTGP_D3D 0x43a4a0
+void FUN_43a4a0(DWORD *slot, DWORD *dst, DWORD *src, DWORD index, DWORD value)
+{
+    memset(dst, 0, 0x41 * sizeof(DWORD));
+    dst[0] = 1;
+    dst[1] = src[1];
+    dst[2] = src[2];
+    dst[3] = src[3];
+    dst[4] = src[4];
+    dst[5] = src[5];
+    dst[6] = src[6];
+    dst[7] = src[7];
+    dst[8] = src[8];
+    dst[9] = src[9];
+    dst[10] = src[10];
+    dst[11] = src[11];
+    dst[12] = src[45];
+    dst[13] = src[12];
+    dst[14] = src[13];
+    dst[15] = src[14];
+    dst[16] = src[15];
+    dst[17] = src[17];
+    dst[18] = src[16];
+    dst[19] = src[18];
+    dst[20] = src[19];
+    dst[21] = src[20];
+    dst[22] = src[21];
+    dst[23] = src[22];
+    dst[24] = src[23];
+    dst[25] = src[24];
+    dst[26] = src[25];
+    dst[27] = src[26];
+    dst[28] = src[27];
+    dst[29] = src[28];
+    dst[30] = src[29];
+    dst[31] = src[30];
+    dst[32] = src[31];
+    dst[33] = src[32];
+    dst[34] = src[33];
+    dst[35] = src[34];
+    dst[36] = src[36];
+    dst[37] = src[37];
+    dst[62] = 0;
+    dst[38] = src[38];
+    dst[39] = src[39];
+    dst[40] = src[40];
+    dst[42] = src[41];
+    dst[43] = src[42];
+    dst[41] = src[43];
+    dst[44] = src[44];
+    dst[45] = src[45];
+    dst[46] = src[46];
+    dst[47] = src[47];
+    dst[48] = src[48];
+    dst[49] = src[49];
+    dst[50] = src[50];
+    dst[51] = src[51];
+    dst[52] = src[52];
+    dst[53] = src[53];
+    dst[54] = src[54];
+    dst[55] = src[55];
+    dst[56] = src[56];
+    dst[57] = src[57];
+    dst[58] = src[58];
+    dst[59] = src[59];
+    dst[60] = src[60];
+    dst[61] = src[61];
+    dst[63] = src[62];
+    dst[64] = src[63];
+    slot[12] = src[35];
+    slot[9] = index;
+    slot[10] = index;
+    slot[11] = value;
+}
+#pragma optimize("", on)
+
 // GLOBAL: STUNTGP_D3D 0x60d730
 RaceState g_60d730;
 
