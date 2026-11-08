@@ -3482,6 +3482,40 @@ int FUN_45abb0(PoolObject *object, int msg, int arg)
     return 0;
 }
 
+// Prompt box under the slot list; the text depends on whether the slot is in use.
+// FUNCTION: STUNTGP_D3D 0x45b2c0
+void FUN_45b2c0(Unk45a9c0 *object)
+{
+    FUN_439450(40.0f, 332.0f, 600.0f, 432.0f, 10, 0x6f, 0x40);
+    FUN_439380(40.0f, 332.0f, 600.0f, 432.0f, 13, 2, 0x100, 0.0f);
+    FUN_438ba0(320.0f, 382.0f, 12, 4, (g_menuState.unk0f1c[object->unk1c].unk000 != 0) + 0x3c, 1.5f, 0xffffffff,
+               0x803);
+}
+
+// Yes/no question box beside the slot list, with its menu in unk34.
+// FUNCTION: STUNTGP_D3D 0x45b360
+void FUN_45b360(Unk45a9c0 *object)
+{
+    FUN_439450(40.0f, 332.0f, 408.0f, 432.0f, 10, 0x6f, 0x40);
+    FUN_439380(40.0f, 332.0f, 408.0f, 432.0f, 13, 2, 0x100, 0.0f);
+    FUN_438ba0(224.0f, 382.0f, 12, 4, 0x3a, 1.5f, 0xffffffff, 0x803);
+    FUN_439450(440.0f, 332.0f, 600.0f, 432.0f, 10, 0x6e, 0x40);
+    FUN_439380(440.0f, 332.0f, 600.0f, 432.0f, 13, 2, 0, 0.0f);
+    object->unk34->message(object->unk34, 3, 0);
+}
+
+// As FUN_45b360 for the second question, with its menu in unk38.
+// FUNCTION: STUNTGP_D3D 0x45b440
+void FUN_45b440(Unk45a9c0 *object)
+{
+    FUN_439450(40.0f, 332.0f, 408.0f, 432.0f, 10, 0x6f, 0x40);
+    FUN_439380(40.0f, 332.0f, 408.0f, 432.0f, 13, 2, 0x100, 0.0f);
+    FUN_438ba0(224.0f, 382.0f, 12, 4, 0x3b, 1.5f, 0xffffffff, 0x803);
+    FUN_439450(440.0f, 332.0f, 600.0f, 432.0f, 10, 0x6e, 0x40);
+    FUN_439380(440.0f, 332.0f, 600.0f, 432.0f, 13, 2, 0, 0.0f);
+    object->unk38->message(object->unk38, 3, 0);
+}
+
 // FUNCTION: STUNTGP_D3D 0x45b520
 int FUN_45b520(Unk45b520 *object, int arg)
 {
