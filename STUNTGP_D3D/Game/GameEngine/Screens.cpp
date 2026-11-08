@@ -38,6 +38,8 @@ int FUN_458eb0();
 int FUN_452d70(int id);
 void FUN_440880(int a);
 
+int FUN_4527d0(int index);
+
 struct Unk459790
 {
     DWORD unk00[5];    // 0x00
@@ -357,6 +359,7 @@ void FUN_45cba0(int index, float pos);
 void FUN_45da70(Unk45d2e0 *object, int index, float pos);
 void FUN_45c320(float x, float y);
 void FUN_45c3d0(float x, float y);
+void FUN_452830(float x, float y);
 // GLOBAL: STUNTGP_D3D 0x627b54
 GhostHeader g_627b54;
 
@@ -2576,6 +2579,46 @@ void FUN_45c3d0(float x, float y)
     FUN_438710(g_489290 + x, y, 0xc, 0x1e, 1.0f, 0x100);
     FUN_438710(x, g_489294 + y, 0xc, 0x1f, 1.0f, 0x100);
     FUN_438710(g_489290 + x, g_489294 + y, 0xc, 0x20, 1.0f, 0x100);
+}
+
+// FUNCTION: STUNTGP_D3D 0x452830
+void FUN_452830(float x, float y)
+{
+    int left = (int)x;
+    int first = left - 1;
+    int top = (int)y;
+    int last = left + 3;
+    int bottom = top + 2;
+    if (first < 0)
+    {
+        first = 0;
+    }
+    if (top < 0)
+    {
+        top = 0;
+    }
+    if (last > 32)
+    {
+        last = 32;
+    }
+    if (bottom > 12)
+    {
+        bottom = 12;
+    }
+    for (int row = top; row < bottom; row++)
+    {
+        int *entry = &g_486b88[row].unk08[first];
+        int count = FUN_4527d0(row);
+        if (count > last)
+        {
+            count = last;
+        }
+        for (int col = first; col < count; col++)
+        {
+            FUN_438710(384.0f - (x - col) * 230.4f, 198.0f - (y - row) * 230.4f, 0x11, *entry, 1.0f, 3);
+            entry++;
+        }
+    }
 }
 
 typedef int (*ScreenInit)(PoolObject *object, int arg);
