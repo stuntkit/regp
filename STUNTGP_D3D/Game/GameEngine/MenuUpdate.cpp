@@ -3573,6 +3573,25 @@ int FUN_451e80(Unk451a50 *object, float x, float y)
     return object->groups[row * 12 + column + 2];
 }
 
+void FUN_438710(float x, float y, int layer, int def, float scale, DWORD flags);
+
+struct Unk452000
+{
+    DWORD unk00[8]; // 0x00
+    int unk20;      // 0x20
+    DWORD unk24[4]; // 0x24
+    float unk34;    // 0x34
+};
+
+// Draws the two halves of a selector arrow, bobbing left by a sine of unk34.
+// FUNCTION: STUNTGP_D3D 0x452000
+void FUN_452000(Unk452000 *object, float x, float y)
+{
+    x -= (float)sin(object->unk34 * 3.1415927f) * 20.0f + 120.0f;
+    FUN_438710(x, y, 13, object->unk20 + 0x35, 1.0f, 0x203);
+    FUN_438710(x, y, 12, object->unk20 + 0x31, 1.0f, 0x103);
+}
+
 // FUNCTION: STUNTGP_D3D 0x452530
 void FUN_452530(MenuHolder *object)
 {

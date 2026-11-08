@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "../../globals.h"
 #include "../../mem.h"
@@ -2029,6 +2030,27 @@ void FUN_45b850(MenuHolder *object)
     object->child = NULL;
 }
 
+void FUN_438710(float x, float y, int layer, int def, float scale, DWORD flags);
+
+struct Unk45ba30
+{
+    DWORD unk00[6]; // 0x00
+    float unk18;    // 0x18
+};
+
+// Draws the six-panel strip, scrolled left by unk18 panels.
+// FUNCTION: STUNTGP_D3D 0x45ba30
+void FUN_45ba30(Unk45ba30 *object)
+{
+    float x = 320.0f - object->unk18 * 280.0f;
+    for (int i = 1; i < 7; i++)
+    {
+        FUN_438710(x, 176.0f, 18, i + 0x2a, 1.0f, 0x203);
+        FUN_438710(x, 176.0f, 17, i + 0x24, 1.0f, 0x103);
+        x += 280.0f;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x45bba0
 int FUN_45bba0(MenuObject *object)
 {
@@ -2096,6 +2118,22 @@ void FUN_45c670(Unk45c670 *object)
         g_menuState.unk4478 = 5;
         break;
     }
+}
+
+struct Unk45d130
+{
+    DWORD unk00[6]; // 0x00
+    int unk18;      // 0x18
+    DWORD unk1c[3]; // 0x1c
+    float unk28;    // 0x28
+};
+
+// FUNCTION: STUNTGP_D3D 0x45d130
+void FUN_45d130(Unk45d130 *object, float x, float y)
+{
+    x = x - 140.0f - (float)sin(object->unk28 * 3.1415927f) * 20.0f;
+    FUN_438710(x, y, 13, object->unk18 + 0x35, 1.0f, 0x203);
+    FUN_438710(x, y, 12, object->unk18 + 0x31, 1.0f, 0x103);
 }
 
 // FUNCTION: STUNTGP_D3D 0x45db10
