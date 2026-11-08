@@ -5413,6 +5413,68 @@ int FUN_458eb0()
     return 0;
 }
 
+void FUN_459070(Unk457e70 *object, int textId);
+
+// Message handler of the memory card confirmation.
+// FUNCTION: STUNTGP_D3D 0x458f30
+void FUN_458f30(Unk457e70 *object, int msg)
+{
+    switch (msg)
+    {
+    case 0xb:
+    case 0xc:
+        object->unk40->message(object->unk40, msg, 0);
+        return;
+    case 0x11:
+        FUN_440890(msg);
+        FUN_458860(object);
+        return;
+    case 0x10:
+        switch (object->unk40->message(object->unk40, 0x1a, 0))
+        {
+        case 1:
+            FUN_440880(2);
+            FUN_458860(object);
+            return;
+        case 0:
+            FUN_440880(3);
+            object->unk1e8 = 0;
+            return;
+        }
+        break;
+    case 3:
+        if (object->unk1ec && object->unk1e8)
+        {
+            if (object->unk1ec == 6)
+            {
+                switch (g_menuState.unk46c8)
+                {
+                case 1:
+                    FUN_459070(object, 0x237);
+                    return;
+                case 2:
+                    FUN_459070(object, 0x238);
+                    return;
+                case 3:
+                    FUN_459070(object, 0x239);
+                    return;
+                case 4:
+                    FUN_459070(object, 0x23a);
+                    return;
+                case 5:
+                    FUN_459070(object, 0x23b);
+                    return;
+                }
+            }
+            else
+            {
+                FUN_459070(object, object->unk1ec + 0x230);
+            }
+        }
+        break;
+    }
+}
+
 // Yes/no confirmation panel for a memory card operation.
 // FUNCTION: STUNTGP_D3D 0x459070
 void FUN_459070(Unk457e70 *object, int textId)
@@ -5423,6 +5485,38 @@ void FUN_459070(Unk457e70 *object, int textId)
     FUN_439380(40.0f, 332.0f, 408.0f, 432.0f, 13, 2, 0x100, 0.0f);
     FUN_438ba0(224.0f, 382.0f, 12, 4, textId, 1.5f, 0xffffffff, 0x803);
     object->unk40->message(object->unk40, 3, 0);
+}
+
+// Message handler of the memory card error prompt.
+// FUNCTION: STUNTGP_D3D 0x459160
+void FUN_459160(Unk457e70 *object, int msg)
+{
+    switch (msg)
+    {
+    case 0xb:
+    case 0xc:
+        object->unk40->message(object->unk40, msg, 0);
+        return;
+    case 0x11:
+        FUN_440890(msg);
+        FUN_458860(object);
+        return;
+    case 0x10:
+        switch (object->unk40->message(object->unk40, 0x1a, 0))
+        {
+        case 1:
+            FUN_440880(2);
+            FUN_458860(object);
+            return;
+        case 0:
+            object->unk1f0 = 0;
+            return;
+        }
+        break;
+    case 3:
+        FUN_459070(object, object->unk1ec + 0x23b);
+        break;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x459300

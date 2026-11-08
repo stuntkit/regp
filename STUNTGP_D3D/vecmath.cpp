@@ -213,6 +213,147 @@ void Matrix_Multiply3(float *a, float *b)
 extern BYTE *g_6227cc;
 extern int g_6227d0;
 
+// Builds a look-at matrix (rows side, up, back) and its transpose for a scene camera.
+// FUNCTION: STUNTGP_D3D 0x44fdb0
+void FUN_44fdb0(Camera *cam)
+{
+    Vec4 dir;
+    dir.x = cam->pos.x - cam->target.x;
+    dir.y = cam->pos.y - cam->target.y;
+    dir.z = cam->pos.z - cam->target.z;
+    Vec4 up = cam->up;
+    Vec3_Normalize(&dir.x);
+    if ((float)fabs(dir.x * up.x + dir.y * up.y + dir.z * up.z) > 0.99999f)
+    {
+        up.z += 1.0f;
+        Vec3_Normalize(&up.x);
+    }
+    float d = dir.x * up.x + dir.y * up.y + dir.z * up.z;
+    Vec4 t;
+    t.x = d * dir.x;
+    t.y = d * dir.y;
+    t.z = d * dir.z;
+    up.x -= t.x;
+    up.y -= t.y;
+    up.z -= t.z;
+    Vec3_Normalize(&up.x);
+    Vec4 side;
+    side.x = dir.y * up.z - dir.z * up.y;
+    side.y = dir.z * up.x - dir.x * up.z;
+    side.z = dir.x * up.y - dir.y * up.x;
+    side.x = -side.x;
+    side.y = -side.y;
+    side.z = -side.z;
+
+    float *m = (float *)g_6227cc;
+    m[0] = side.x;
+    m[1] = side.y;
+    m[2] = side.z;
+    m[3] = 0.0f;
+    m[4] = up.x;
+    m[5] = up.y;
+    m[6] = up.z;
+    m[7] = 0.0f;
+    m[8] = dir.x;
+    m[9] = dir.y;
+    m[10] = dir.z;
+    m[11] = 0.0f;
+    m[12] = 0.0f;
+    m[13] = 0.0f;
+    m[14] = 0.0f;
+    m[15] = 1.0f;
+    cam->unk44 = (Vec4 *)m;
+    m += 16;
+    g_6227d0++;
+    cam->matrix = (Vec4 *)m;
+    m[0] = side.x;
+    m[1] = up.x;
+    m[2] = dir.x;
+    m[3] = 0.0f;
+    m[4] = side.y;
+    m[5] = up.y;
+    m[6] = dir.y;
+    m[7] = 0.0f;
+    m[8] = side.z;
+    m[9] = up.z;
+    m[10] = dir.z;
+    m[11] = 0.0f;
+    m[12] = 0.0f;
+    m[13] = 0.0f;
+    m[14] = 0.0f;
+    m[15] = 1.0f;
+    m += 16;
+    g_6227d0++;
+    g_6227cc = (BYTE *)m;
+}
+
+// Builds an object's rotation matrix (rows side, up, facing) and its transpose from its frame.
+// FUNCTION: STUNTGP_D3D 0x44ff90
+void FUN_44ff90(ObjectDef *obj)
+{
+    Camera *xf = (Camera *)obj->matrix;
+    Vec4 dir = xf->target;
+    Vec4 up = xf->up;
+    if ((float)fabs(dir.x * up.x + dir.y * up.y + dir.z * up.z) > 0.99999f)
+    {
+        up.z += 1.0f;
+        Vec3_Normalize(&up.x);
+    }
+    float d = dir.x * up.x + dir.y * up.y + dir.z * up.z;
+    up.x -= d * dir.x;
+    up.y -= d * dir.y;
+    up.z -= d * dir.z;
+    Vec3_Normalize(&up.x);
+    Vec4 side;
+    side.x = dir.y * up.z - dir.z * up.y;
+    side.y = dir.z * up.x - dir.x * up.z;
+    side.z = dir.x * up.y - dir.y * up.x;
+    side.x = -side.x;
+    side.y = -side.y;
+    side.z = -side.z;
+
+    float *m = (float *)g_6227cc;
+    m[0] = side.x;
+    m[1] = side.y;
+    m[2] = side.z;
+    m[3] = 0.0f;
+    m[4] = up.x;
+    m[5] = up.y;
+    m[6] = up.z;
+    m[7] = 0.0f;
+    m[8] = dir.x;
+    m[9] = dir.y;
+    m[10] = dir.z;
+    m[11] = 0.0f;
+    m[12] = 0.0f;
+    m[13] = 0.0f;
+    m[14] = 0.0f;
+    m[15] = 1.0f;
+    xf->unk40 = (int)m;
+    m += 16;
+    g_6227d0++;
+    m[0] = side.x;
+    m[1] = up.x;
+    m[2] = dir.x;
+    m[3] = 0.0f;
+    m[4] = side.y;
+    m[5] = up.y;
+    m[6] = dir.y;
+    m[7] = 0.0f;
+    m[8] = side.z;
+    m[9] = up.z;
+    m[10] = dir.z;
+    m[11] = 0.0f;
+    m[12] = 0.0f;
+    m[13] = 0.0f;
+    m[14] = 0.0f;
+    m[15] = 1.0f;
+    xf->unk44 = (Vec4 *)m;
+    m += 16;
+    g_6227d0++;
+    g_6227cc = (BYTE *)m;
+}
+
 // Builds the camera's view matrix and its transpose from pos, target, up and the view roll.
 // FUNCTION: STUNTGP_D3D 0x450190
 void FUN_450190(Camera *cam)
