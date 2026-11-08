@@ -223,6 +223,33 @@ void FUN_42cb00(char *script)
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x42cb70
+void FUN_42cb70(char *script)
+{
+    char key[64];
+    char *value;
+    for (int i = 0; i < 6; i++)
+    {
+        g_60f02c[i].unk1c = 100;
+        g_60f02c[i].unk20 = 100;
+    }
+    for (DWORD car = 0; car < 6; car++)
+    {
+        // STRING: STUNTGP_D3D 0x47786c
+        sprintf(key, "L_CAR%d_AISKILL", car + 1);
+        if (Script_FindKey(script, &value, key) == 1)
+        {
+            Script_ReadInt(value, NULL, &g_60f02c[car].unk1c);
+        }
+        // STRING: STUNTGP_D3D 0x47787c
+        sprintf(key, "L_CAR%d_AIMODE", car + 1);
+        if (Script_FindKey(script, &value, key) == 1)
+        {
+            Script_ReadInt(value, NULL, &g_60f02c[car].unk20);
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x42d060
 void FUN_42d060(char *script, char *key)
 {
