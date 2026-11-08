@@ -5233,10 +5233,78 @@ int FUN_45c6a0(Unk45c6a0 *object, int msg, int arg)
     return 0;
 }
 
-// STUB: STUNTGP_D3D 0x45d1a0
-int FUN_45d1a0(PoolObject *object, int arg)
+// GLOBAL: STUNTGP_D3D 0x489530
+MenuItem g_489530[4] = {
+    {-1, 0xffffffff, 0xffffffff, 0x14, 0, 4, 0, 0},
+    {0, 0xffc8c8ff, 0xffffffff, 0x15, 0, 1, 0, 0},
+    {1, 0xffc8c8ff, 0xffffffff, 0x16, 0, 1, 0, 0},
+    {0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x4895b0
+MenuDef g_4895b0 = {0xb, 1.0f, 0, 507.0f, 405.0f, 1.0f, 2, 1.25f, 1, 0x78, g_489530, 0};
+
+// GLOBAL: STUNTGP_D3D 0x4895e0
+MenuItem g_4895e0[3] = {
+    {0, 0xffc8c8ff, 0xffffffff, 0x18, 0, 1, 0, 0},
+    {1, 0xffc8c8ff, 0xffffffff, 0x19, 0, 1, 0, 0},
+    {0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x489640
+MenuDef g_489640 = {0xb, 1.0f, 0, 507.0f, 405.0f, 1.0f, 2, 1.25f, 1, 0xa0, g_4895e0, 0};
+
+int FUN_437920(int index);
+int FUN_437930(int id, int *from, int *to);
+
+// PageSelectTree init: the branch menu, its confirm box and the two nodes reachable from here.
+// FUNCTION: STUNTGP_D3D 0x45d1a0
+int FUN_45d1a0(PoolObject *base, int arg)
 {
-    return 0;
+    Unk45d2e0 *object = (Unk45d2e0 *)base;
+    g_627ff4++;
+    object->unk28 = object->unk24 = g_menuState.unk4488;
+    object->unk20 = g_menuState.unk4488;
+    g_menuState.unk4484 = 0;
+    object->unk1c = 0;
+    MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
+    memset(list, 0, sizeof(MenuList));
+    *(PoolClass *)&list->base.destroy = g_menuListClass;
+    list->base.type = 0x29;
+    // STRING: STUNTGP_D3D 0x489678
+    list->base.name = "MenuText";
+    list->base.unk08 = 0;
+    if (!FUN_43c860(list, &g_489640))
+    {
+        Pool_Free(list);
+        object->unk14 = NULL;
+    }
+    else
+    {
+        object->unk14 = &list->base;
+    }
+    object->unk14->message(object->unk14, 0x18, 0);
+    list = (MenuList *)Pool_Alloc(sizeof(MenuList));
+    memset(list, 0, sizeof(MenuList));
+    *(PoolClass *)&list->base.destroy = g_menuListClass;
+    list->base.type = 0x29;
+    // STRING: STUNTGP_D3D 0x489684
+    list->base.name = "MenuText";
+    list->base.unk08 = 0;
+    if (!FUN_43c860(list, &g_4895b0))
+    {
+        Pool_Free(list);
+        object->unk18 = NULL;
+    }
+    else
+    {
+        object->unk18 = &list->base;
+    }
+    object->unk18->message(object->unk18, 0x18, 0);
+    FUN_437930(g_menuState.unk4490[g_menuState.unk448c - 1], &object->unk2c, &object->unk30);
+    object->unk34[0] = FUN_437920(object->unk2c);
+    object->unk34[1] = FUN_437920(object->unk30);
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x45d2e0
@@ -5380,8 +5448,6 @@ char g_627fe0[0x13];
 
 int FUN_43dd60();
 int FUN_4371c0(int track, int mode);
-int FUN_437920(int index);
-int FUN_437930(int id, int *from, int *to);
 
 // Node map: a pyramid of rows of 6 down to 3 nodes, with the links between visited nodes and the
 // cursor arrows on the current one.

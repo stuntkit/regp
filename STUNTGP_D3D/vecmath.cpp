@@ -589,6 +589,21 @@ void FUN_44eb70(DWORD yaw, DWORD pitch, DWORD roll, float *x, float *y, float *z
     *z = g_61c3a4[2] * vx + g_61c3a4[6] * vy + g_61c3a4[10] * vz;
 }
 
+void FUN_44fa20(float *m, int yaw, int pitch, int roll);
+
+// As FUN_44eb70 with the inverse rotation.
+// FUNCTION: STUNTGP_D3D 0x44ecb0
+void FUN_44ecb0(int yaw, int pitch, int roll, float *x, float *y, float *z)
+{
+    FUN_44fa20(g_61c3a4, yaw, pitch, roll);
+    float vx = *x;
+    float vy = *y;
+    float vz = *z;
+    *x = g_61c3a4[0] * vx + g_61c3a4[4] * vy + g_61c3a4[8] * vz;
+    *y = g_61c3a4[1] * vx + g_61c3a4[5] * vy + g_61c3a4[9] * vz;
+    *z = g_61c3a4[2] * vx + g_61c3a4[6] * vy + g_61c3a4[10] * vz;
+}
+
 // Rotates v by the yaw/pitch/roll angles given in degrees.
 // FUNCTION: STUNTGP_D3D 0x44ec00
 void FUN_44ec00(float *angles, float *v)
