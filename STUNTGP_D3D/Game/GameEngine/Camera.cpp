@@ -570,6 +570,81 @@ void FUN_403bc0()
     }
 }
 
+void FUN_405370(float *pos, CameraPath *path, int *index, float *distance);
+void FUN_4288d0(CameraPath *path, Vec4 *out, float dist);
+
+// Camera path tracking for the current slot.
+// GLOBAL: STUNTGP_D3D 0x499f78
+Vec4 g_499f78;
+
+// GLOBAL: STUNTGP_D3D 0x499f98
+int g_499f98;
+
+// GLOBAL: STUNTGP_D3D 0x499f9c
+float g_499f9c;
+
+// GLOBAL: STUNTGP_D3D 0x499fa0
+float g_499fa0;
+
+// Shake builds up while the camera strays from the camera path and the wheels are slipping.
+// FUNCTION: STUNTGP_D3D 0x403c80
+void FUN_403c80()
+{
+    FUN_405370(&g_4722d0->cam.pos.x, g_4722d0->path, &g_499f98, &g_499f9c);
+    g_499fa0 = g_499f9c * g_4722d0->path->unk18 * 0.01f;
+    FUN_4288d0(g_4722d0->path, &g_499f78, g_499fa0);
+    Vec4 ahead;
+    FUN_4288d0(g_4722d0->path, &ahead, g_499fa0 + 5000.0f);
+    Vec4 d;
+    d.x = ahead.x - g_499f78.x;
+    d.y = ahead.y - g_499f78.y;
+    d.z = ahead.z - g_499f78.z;
+    Vec4 n;
+    n.x = g_482690 * d.y - g_48268c * d.z;
+    n.y = g_482688 * d.z - g_482690 * d.x;
+    n.z = g_48268c * d.x - g_482688 * d.y;
+    Vec3_Normalize(&n.x);
+    Vec4 e;
+    e.x = g_499f78.x - g_4722d0->cam.pos.x;
+    e.y = g_499f78.y - g_4722d0->cam.pos.y;
+    e.z = g_499f78.z - g_4722d0->cam.pos.z;
+    float off = e.x * n.x + e.y * n.y + e.z * n.z;
+    g_4722d0->unk1c4 *= 0.97f;
+    off = (float)fabs(off) - 1300.0f;
+    if (off >= 0.0f)
+    {
+        off *= 0.0025f;
+        if (off > 1.0f)
+        {
+            off = 1.0f;
+        }
+        off = off * off * 5000.0f;
+        float slip = 0.0f;
+        for (int i = 0; i < 4; i++)
+        {
+            slip += g_4722d0->data->wheels[i].unk30;
+        }
+        slip = slip * 0.25f - 10.0f;
+        if (slip < 0.0f)
+        {
+            slip = 0.0f;
+        }
+        else
+        {
+            slip *= 0.02f;
+            if (slip > 1.0f)
+            {
+                slip = 1.0f;
+            }
+        }
+        g_4722d0->unk1c4 = off * slip * 0.05f + g_4722d0->unk1c4;
+        if (g_4722d0->unk1c4 > 400.0f)
+        {
+            g_4722d0->unk1c4 = 400.0f;
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x403e80
 void FUN_403e80()
 {
