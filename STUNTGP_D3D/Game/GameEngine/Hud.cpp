@@ -330,6 +330,37 @@ void FUN_445350()
     g_60d730.unk058 = 1;
 }
 
+void FUN_443060();
+extern int g_60f284;
+extern int g_60f294;
+extern int g_60f298;
+extern int g_60f29c;
+
+// GLOBAL: STUNTGP_D3D 0x60f288
+int g_60f288;
+
+// GLOBAL: STUNTGP_D3D 0x60f28c
+int g_60f28c;
+
+// GLOBAL: STUNTGP_D3D 0x60f290
+int g_60f290;
+
+// FUNCTION: STUNTGP_D3D 0x445360
+void FUN_445360()
+{
+    FUN_443060();
+    FUN_445150();
+    g_60d730.unk024[0] = 0;
+    g_576be0 = 0;
+    g_60f294 = 0;
+    g_60f298 = 0;
+    g_60f29c = 0;
+    g_60f288 = 0;
+    g_60f28c = 0;
+    g_60f290 = 0;
+    g_60f284 = g_60d730.unk844;
+}
+
 // FUNCTION: STUNTGP_D3D 0x446a70
 void FUN_446a70()
 {

@@ -2411,6 +2411,65 @@ void FUN_4342e0(MeshPoly *poly)
     }
 }
 
+int FUN_4280a0(Vec4 *pos, Vec4 *size);
+
+// Unit billboard corners, scaled by MeshPoly's size.
+// GLOBAL: STUNTGP_D3D 0x478910
+MeshPolyVertex g_478910[4] = {
+    {{-50.0f, 50.0f, 0.0f, 0.0f}, 0.0f, 0.0f, 0x1ffffff},
+    {{50.0f, 50.0f, 0.0f, 0.0f}, 0.998f, 0.0f, 0x1ffffff},
+    {{50.0f, -50.0f, 0.0f, 0.0f}, 0.998f, 0.998f, 0x1ffffff},
+    {{-50.0f, -50.0f, 0.0f, 0.0f}, 0.0f, 0.998f, 0x1ffffff},
+};
+
+// Appends a camera-facing quad (centre unk00, half size unk00 + 0x10) to the dynamic mesh unless
+// it is outside the view.
+// FUNCTION: STUNTGP_D3D 0x4343f0
+void FUN_4343f0(MeshPoly *poly)
+{
+    if (g_5da24c < g_5da234 + 0x200)
+    {
+        Vec4 *pos = (Vec4 *)poly->unk00;
+        Vec4 *size = (Vec4 *)(poly->unk00 + 0x10);
+        if (FUN_4280a0(pos, size) != 1)
+        {
+            ObjectDef *object = g_5da25c;
+            object->vertCount++;
+            object->unk26 += 4;
+            object->pointCount += 4;
+            g_5da24c->count = 4;
+            g_5da24c->flags = poly->unk24 | 0x80;
+            g_5da24c->unk01 = poly->unk20;
+            g_5da24c->unk02 = poly->unk28;
+            g_5da24c->index = g_5da250 - g_5da238;
+            g_5da24c++;
+            Vec4 *m = g_4722d0->cam.matrix;
+            int point = g_5da254 - g_5da23c;
+            for (int i = 0; i < 4; i++)
+            {
+                Vec4 t;
+                float x = g_478910[i].pos.x * size->x;
+                float y = size->y * g_478910[i].pos.y;
+                float z = g_478910[i].pos.z * size->z;
+                g_5da258->point = point;
+                g_5da258->color = poly->v[i].color;
+                g_5da258->u = g_478910[i].u;
+                g_5da258->v = g_478910[i].v;
+                t.x = y * m[1].x + z * m[2].x + x * m[0].x;
+                t.y = y * m[1].y + z * m[2].y + x * m[0].y;
+                t.z = x * m[0].z + y * m[1].z + z * m[2].z;
+                g_5da254->x = t.x + pos->x;
+                g_5da254->y = t.y + pos->y;
+                g_5da254->z = t.z + pos->z;
+                *g_5da250++ = g_5da258 - g_5da240;
+                g_5da258++;
+                point++;
+                g_5da254++;
+            }
+        }
+    }
+}
+
 struct ObjectHolder
 {
     BYTE unk00[0x14];
