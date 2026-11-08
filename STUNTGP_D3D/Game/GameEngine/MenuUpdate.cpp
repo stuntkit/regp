@@ -2714,7 +2714,7 @@ void FUN_438710(float x, float y, int layer, int def, float scale, DWORD flags);
 
 // Draws a three-layer sprite (shadow, outline, fill) in one of four colour sets.
 // FUNCTION: STUNTGP_D3D 0x43da40
-void FUN_43da40(int layer, int set, float x, float y, float scale, int shadow)
+void FUN_43da40(float x, float y, float scale, int layer, int set, int shadow)
 {
     int fill;
     int outline;
@@ -3897,8 +3897,8 @@ void FUN_452130(Unk451aa0 *object, float x, float y, float phase)
 {
     float t = phase + 0.5f;
     t -= (int)t;
-    FUN_43da40(7, object->groups[object->unk1c * 12 + 1], x - 100.0f + (float)sin(t * 3.1415927f) * 100.0f,
-               (0.5f - t) * 200.0f + y, 0.5f, 1);
+    FUN_43da40(x - 100.0f + (float)sin(t * 3.1415927f) * 100.0f, (0.5f - t) * 200.0f + y, 0.5f, 7,
+               object->groups[object->unk1c * 12 + 1], 1);
 }
 
 // Name of the highlighted part, and in the shop its owner and price.
