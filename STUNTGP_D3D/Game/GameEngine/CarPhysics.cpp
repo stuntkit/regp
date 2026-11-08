@@ -437,6 +437,42 @@ void FUN_406610()
     }
 }
 
+// Point across the track: side >= 0 blends from the centre path towards g_49a158, below 0 towards g_49a160.
+// FUNCTION: STUNTGP_D3D 0x406870
+void FUN_406870(Vec4 *out, float dist, float side)
+{
+    Vec4 left;
+    Vec4 centre;
+    Vec4 right;
+    FUN_4288d0(g_49a158, &left, g_49a16c + dist);
+    FUN_4288d0(g_49a15c, &centre, g_49a170 + dist);
+    FUN_4288d0(g_49a160, &right, g_49a174 + dist);
+    Vec4 d;
+    if (side >= 0.0f)
+    {
+        d.x = left.x - centre.x;
+        d.y = left.y - centre.y;
+        d.z = left.z - centre.z;
+        d.x *= side;
+        d.y *= side;
+        d.z *= side;
+    }
+    else
+    {
+        d.x = right.x - centre.x;
+        d.y = right.y - centre.y;
+        d.z = right.z - centre.z;
+        float s = -side;
+        d.x = s * d.x;
+        d.y = s * d.y;
+        d.z = s * d.z;
+    }
+    d.x = d.x + centre.x;
+    d.y = d.y + centre.y;
+    d.z = d.z + centre.z;
+    *out = d;
+}
+
 // FUNCTION: STUNTGP_D3D 0x406e80
 void FUN_406e80()
 {
@@ -3736,9 +3772,129 @@ void FUN_417350(Unk62a078 *p)
     p->colors[0] = 0x182010;
 }
 
-// STUB: STUNTGP_D3D 0x4173e0
+void FUN_45e110(Unk62a078 *particle);
+float FUN_42f1c0(float range);
+
+// FUNCTION: STUNTGP_D3D 0x4173e0
 void FUN_4173e0()
 {
+    if (g_612948.unk0034 >= 80 && g_4d5bb8->unk71ec == 0 && g_4d5bb8->unk7244 <= 60 &&
+        (++g_4d5bb8->unk7244 & 1) == 0)
+    {
+        Unk62a078 p;
+        FUN_417350(&p);
+        Vec4 v;
+        v.x = g_4d5bb8->unk1c8c.x * 0.5f;
+        v.y = g_4d5bb8->unk1c8c.y * 0.5f;
+        v.z = g_4d5bb8->unk1c8c.z * 0.5f;
+        for (int i = 0; i < 2; i++)
+        {
+            p.pos = g_4d5bb8->wheels[i].pos;
+            p.vel[0] = FUN_42f1c0(5.0f) + v.x;
+            p.vel[1] = v.y;
+            p.vel[2] = v.z;
+            FUN_45e110(&p);
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x4174e0
+void FUN_4174e0(Unk62a078 *p)
+{
+    *(Camera *)&p->pos = g_4864e8;
+    Car *car = g_4d5bb8;
+    p->unk98 = 0x60;
+    p->flags = 3;
+    p->vel[0] = car->unk1c8c.x * 0.5f;
+    p->mode = 2;
+    p->colors[0] = 0x402000;
+    p->texture = 9;
+    p->lifetime = 30;
+    p->unk68 = 0.01f;
+    p->unk7c = 1;
+    p->vel[1] = car->unk1c8c.y * 0.5f;
+    p->anim = NULL;
+    p->sizeIn = 6.0f;
+    p->sizeOut = 6.0f;
+    p->vel[2] = car->unk1c8c.z * 0.5f;
+    p->gravity = g_48266c * -0.6f;
+    if (car->unk1cf0 < 10.0f)
+    {
+        p->size = car->unk1cf0 * 0.1f;
+    }
+    else
+    {
+        p->size = 1.0f;
+    }
+    p->alphaIn = 6.0f;
+    p->alphaOut = 21.0f;
+    p->alpha = 255.0f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4175e0
+void FUN_4175e0(Unk62a078 *p)
+{
+    *(Camera *)&p->pos = g_4864e8;
+    Car *car = g_4d5bb8;
+    p->unk98 = 0x60;
+    p->flags = 3;
+    p->vel[0] = car->unk1c8c.x * 0.75f;
+    p->mode = 2;
+    p->colors[0] = 0x101800;
+    p->texture = 9;
+    p->lifetime = 18;
+    p->unk68 = 0.05f;
+    p->unk7c = 1;
+    p->vel[1] = car->unk1c8c.y * 0.75f;
+    p->anim = NULL;
+    p->sizeIn = 3.0f;
+    p->sizeOut = 9.0f;
+    p->vel[2] = car->unk1c8c.z * 0.75f;
+    p->gravity = g_48266c * -0.3f;
+    if (car->unk1cf0 < 10.0f)
+    {
+        p->size = car->unk1cf0 * 0.1f;
+    }
+    else
+    {
+        p->size = 0.75f;
+    }
+    p->alphaIn = 3.0f;
+    p->alphaOut = 6.0f;
+    p->alpha = 255.0f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4176f0
+void FUN_4176f0(Unk62a078 *p)
+{
+    *(Camera *)&p->pos = g_4864e8;
+    Car *car = g_4d5bb8;
+    p->unk98 = 0x60;
+    p->flags = 3;
+    p->vel[0] = car->unk1c8c.x * 0.5f;
+    p->mode = 2;
+    p->colors[0] = 0x401000;
+    p->texture = 9;
+    p->lifetime = 18;
+    p->unk68 = 0.1f;
+    p->unk7c = 1;
+    p->vel[1] = car->unk1c8c.y * 0.5f;
+    p->anim = NULL;
+    p->sizeIn = 3.0f;
+    p->sizeOut = 12.0f;
+    p->vel[2] = car->unk1c8c.z * 0.5f;
+    p->gravity = g_48266c * -0.3f;
+    if (car->unk1cf0 < 10.0f)
+    {
+        p->size = car->unk1cf0 * 0.075f;
+    }
+    else
+    {
+        p->size = 1.0f;
+    }
+    p->alphaIn = 3.0f;
+    p->alphaOut = 6.0f;
+    p->alpha = 255.0f;
 }
 
 // STUB: STUNTGP_D3D 0x417800
@@ -4099,6 +4255,44 @@ Car *FUN_407a70(Car *self)
         ahead = behind;
     }
     return ahead;
+}
+
+// Like FUN_407a70 but measured the other way round the lap, with negative positions wrapped.
+// FUNCTION: STUNTGP_D3D 0x407b20
+Car *FUN_407b20(Car *self)
+{
+    float mine = fmod(self->unk23b0, 100.0);
+    if (mine < 0.0f)
+    {
+        mine += 100.0f;
+    }
+    Car *car = g_49a1f8;
+    Car *ahead = NULL;
+    float aheadDist = 1000.0f;
+    Car *behind = NULL;
+    float behindDist = 1000.0f;
+    for (int i = 0; i < 6; i++, car++)
+    {
+        if (car != self && car->active == 1)
+        {
+            float other = car->unk23b0 < 0.0f ? fmod(car->unk23b0 + 100.0f, 100.0) : fmod(car->unk23b0, 100.0);
+            float d = mine - other;
+            if (d < 0.0f)
+            {
+                if (d < behindDist)
+                {
+                    behindDist = d;
+                    behind = car;
+                }
+            }
+            else if (d < aheadDist)
+            {
+                aheadDist = d;
+                ahead = car;
+            }
+        }
+    }
+    return ahead ? ahead : behind;
 }
 
 // FUNCTION: STUNTGP_D3D 0x407dd0

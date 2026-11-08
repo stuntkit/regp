@@ -740,9 +740,38 @@ void FUN_40de30()
     }
 }
 
-// STUB: STUNTGP_D3D 0x410a10
+extern float *g_4d5b24;
+extern InputState *g_576b6c;
+int FUN_45ed60(int index);
+void FUN_4240e0(int slot);
+int FUN_443770();
+void FUN_410780(int slot);
+void FUN_410800(int slot);
+void FUN_4108c0(int slot);
+void FUN_410950(int slot);
+void FUN_4109e0(int slot);
+
+// FUNCTION: STUNTGP_D3D 0x410a10
 void FUN_410a10(int index)
 {
+    int type = FUN_45ed60(index);
+    if (type == 0 || type == 1)
+    {
+        return;
+    }
+    g_4d5bb8 = &g_49a1f8[g_62d580[index].unk018];
+    g_576b6c = &g_62d580[index].state;
+    g_4d5b24 = g_62d580[index].ffb;
+    FUN_4240e0(index);
+    if (g_612948.unk02a0 != 2 && g_612948.unk0004 != 1 && FUN_443770() == 2)
+    {
+        FUN_410780(index);
+        FUN_410800(index);
+        FUN_4108c0(index);
+        FUN_410950(index);
+        return;
+    }
+    FUN_4109e0(index);
 }
 
 // STUB: STUNTGP_D3D 0x415df0
@@ -952,6 +981,23 @@ ReplayFrame *g_570ac4;
 // GLOBAL: STUNTGP_D3D 0x4d5cb8
 ReplayFrame *g_4d5cb8;
 
+// FUNCTION: STUNTGP_D3D 0x41a230
+void FUN_41a230()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        int prev = g_4d5cb8->wheelAngle[i];
+        float old = g_4d5bb8->wheels[i].unk94;
+        g_4d5bb8->wheels[i].unk94 = (g_570ac4->wheelAngle[i] - prev) * g_570ac0->unk08 + prev;
+        float d = g_4d5bb8->wheels[i].unk94 - old;
+        float spin = d < 0.0f ? -fmod(-d, 360.0) : fmod(d, 360.0);
+        spin = spin * g_4d5bb8->unkcb8[i].x * -0.017453294f;
+        g_4d5bb8->wheels[i].unk00 = (spin - g_4d5bb8->wheels[i].unk04) * 1.5f;
+        g_4d5bb8->wheels[i].unk04 = spin;
+        Matrix_RotationX(g_4d5bb8->wheelMatrix[i], g_4d5bb8->wheels[i].unk94);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x41a330
 void FUN_41a330()
 {
@@ -1011,6 +1057,22 @@ void FUN_41a4c0()
 }
 
 void FUN_40c160();
+
+// FUNCTION: STUNTGP_D3D 0x41a6a0
+void FUN_41a6a0()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        float angle = g_570ac4->wheelAngle[i];
+        float d = angle - g_4d5bb8->wheels[i].unk94;
+        float spin = d < 0.0f ? -fmod(-d, 360.0) : fmod(d, 360.0);
+        spin = spin * g_4d5bb8->unkcb8[i].x * -0.017453294f;
+        g_4d5bb8->wheels[i].unk00 = (spin - g_4d5bb8->wheels[i].unk04) * 1.5f;
+        g_4d5bb8->wheels[i].unk04 = spin;
+        g_4d5bb8->wheels[i].unk94 = angle;
+        Matrix_RotationX(g_4d5bb8->wheelMatrix[i], angle);
+    }
+}
 
 // FUNCTION: STUNTGP_D3D 0x41a780
 void FUN_41a780()

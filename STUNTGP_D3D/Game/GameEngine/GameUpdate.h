@@ -228,7 +228,7 @@ struct Body
 struct ReplayFrame
 {
     int pos[3];           // 0x00
-    BYTE unk0c[0x8];      // 0x0c
+    short wheelAngle[4];  // 0x0c
     short unk14[4];       // 0x14
     char unk1c[4];        // 0x1c
     unsigned short unk20; // 0x20
@@ -675,7 +675,7 @@ struct Car
     float unk7238;            // 0x7238
     float unk723c;            // 0x723c
     float unk7240;            // 0x7240
-    int unk7244;              // 0x7244
+    unsigned int unk7244;     // 0x7244
     int unk7248;              // 0x7248
     int unk724c;              // 0x724c
     int unk7250;              // 0x7250
@@ -941,7 +941,8 @@ struct Controller
     BYTE unk0a8[0x100]; // 0x0a8
     BYTE keys[7];       // 0x1a8
     BYTE prevKeys[7];   // 0x1af
-    BYTE unk1b6[0x26];  // 0x1b6
+    BYTE unk1b6[0x2];   // 0x1b6
+    float ffb[9];       // 0x1b8, force-feedback strengths, see g_4d5b24
 };
 
 extern InputSlot g_576618[10];
