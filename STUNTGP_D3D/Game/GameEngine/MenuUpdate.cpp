@@ -4190,6 +4190,41 @@ int FUN_456650(Unk456070 *object)
     return count;
 }
 
+// FUNCTION: STUNTGP_D3D 0x4564b0
+void FUN_4564b0(Unk456070 *object)
+{
+    FUN_456070(object);
+    for (int player = 1; player < 5; player++)
+    {
+        if (object->unk34[player] && object->unk20[player] && FUN_437090(player))
+        {
+            if (FUN_436fd0(player, 5) || FUN_436fd0(player, 6))
+            {
+                if (!FUN_43dd70())
+                {
+                    if (!object->unk48[player])
+                    {
+                        FUN_4565a0(object, player);
+                    }
+                    else
+                    {
+                        FUN_4565d0(object, player);
+                    }
+                }
+            }
+            else if (object->unk48[player] && FUN_456600(player) && !FUN_43dd70() && FUN_456650(object) >= 2)
+            {
+                object->unk1c -= object->unk1c % 60;
+                FUN_440880(3);
+            }
+        }
+        else if (object->unk48[player])
+        {
+            FUN_4565d0(object, player);
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x456670
 int FUN_456670(Unk456070 *object)
 {
