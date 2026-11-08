@@ -249,6 +249,34 @@ void FUN_412940(Car *car)
     }
     FUN_402580();
 }
+void FUN_4289a0(CameraPath *path, Vec4 *out, float dist, DWORD *knot);
+extern CameraPath *g_571328;
+
+
+// Places the car dist along the race path, facing along it, and resets it there.
+// FUNCTION: STUNTGP_D3D 0x412b10
+void FUN_412b10(Car *car, float dist)
+{
+    CameraPath *path = g_571328;
+    FUN_4289a0(path, &car->unk24b0, dist, (DWORD *)&car->unk24a4);
+    DWORD i = car->unk24a4;
+    int pct = i * 100 / path->count;
+    car->unk23ac = pct;
+    car->unk23a8 = pct - 1;
+    DWORD j = (i + 1) % path->count;
+    car->unk23b0 = pct;
+    Vec4 d;
+    d.x = path->points[j].x - path->points[i].x;
+    d.y = path->points[j].y - path->points[i].y;
+    d.z = path->points[j].z - path->points[i].z;
+    Vec3_Normalize(&d.x);
+    car->unk2644 = i;
+    car->unk264c = i;
+    car->unk2654 = i;
+    car->unk24c0 = d;
+    FUN_412940(car);
+}
+
 
 
 // FUNCTION: STUNTGP_D3D 0x4028d0

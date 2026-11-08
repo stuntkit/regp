@@ -189,6 +189,47 @@ int FUN_41fa80(TrackPoly *poly, Vec4 *p)
     return 0;
 }
 
+// Pushes the camera away from every polygon edge inside the sphere.
+// FUNCTION: STUNTGP_D3D 0x41fb10
+int FUN_41fb10(TrackPoly *poly, Vec4 *p)
+{
+    WORD *idx = g_624480->indices + poly->firstIndex;
+    WORD *cur = idx;
+    for (unsigned int i = 0; i < poly->vertexCount; cur++)
+    {
+        Vec4 *a = &g_624480->vertices[*cur];
+        i++;
+        Vec4 *b = &g_624480->vertices[idx[i % poly->vertexCount]];
+        Vec4 e;
+        e.x = b->x - a->x;
+        e.y = b->y - a->y;
+        e.z = b->z - a->z;
+        float len;
+        FUN_44eda0(&e.x, &len);
+        Vec4 q;
+        q.x = p->x - a->x;
+        q.y = p->y - a->y;
+        q.z = p->z - a->z;
+        float t = q.x * e.x + q.y * e.y + q.z * e.z;
+        if (t >= 0.0f && t <= len)
+        {
+            Vec4 s;
+            s.x = t * e.x;
+            s.y = t * e.y;
+            s.z = t * e.z;
+            q.x = q.x - s.x;
+            q.y = q.y - s.y;
+            q.z = q.z - s.z;
+            t = (float)sqrt(q.x * q.x + q.y * q.y + q.z * q.z);
+            if (t < g_498154 - 0.01f)
+            {
+                FUN_41f920(poly, t);
+            }
+        }
+    }
+    return 0;
+}
+
 // Pushes the camera away from every polygon vertex inside the sphere.
 // FUNCTION: STUNTGP_D3D 0x41fc70
 int FUN_41fc70(TrackPoly *poly, Vec4 *p)
