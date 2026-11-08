@@ -2757,6 +2757,28 @@ void FUN_40e080()
     }
 }
 
+// Every 8 ticks shifts the car's position trail down a slot, shrinking the older widths.
+// FUNCTION: STUNTGP_D3D 0x40e290
+void FUN_40e290()
+{
+    PosHistory *h = &g_4d5bb8->unk1f2c;
+    if (++h->unka0 >= 8)
+    {
+        for (int i = 7; i != 0; i--)
+        {
+            h->samples[i] = h->samples[i - 1];
+            h->samples[i].unk10 *= 0.95f;
+        }
+        h->samples[0].unk10 = 400.0f;
+        h->unka0 = 0;
+        h->samples[0].pos = *(Vec4 *)&g_4d5bb8->posX;
+    }
+    if (g_60f2b0 != 4 && g_4d5bb8->unk1cf0 >= 16.666666f)
+    {
+        FUN_40e080();
+    }
+}
+
 // Splits drive torque between the axles by drive mode (0 front, 1 rear, 2 4WD).
 // FUNCTION: STUNTGP_D3D 0x40e3a0
 void FUN_40e3a0(float torque)

@@ -338,7 +338,7 @@ struct PosSample
 struct PosHistory
 {
     PosSample samples[8]; // 0x00
-    int unka0;            // 0xa0
+    DWORD unka0;          // 0xa0, ticks since the last sample
 };
 
 // 6 entries at 0x49a1f8
