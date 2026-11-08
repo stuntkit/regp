@@ -21,6 +21,18 @@ void FUN_43dd40(int a, float b, float c);
 void FUN_440890(int id);
 void FUN_438710(float x, float y, int layer, int def, float scale, DWORD flags);
 
+int FUN_436fd0(int player, int button);
+int FUN_455b90(int player);
+void FUN_455be0(int player, int delta);
+void FUN_455c20(int player, int delta);
+
+void FUN_4402f0(int value);
+int FUN_440180();
+int FUN_458e10();
+int FUN_458e30();
+int FUN_458e50();
+int FUN_458eb0();
+
 struct GhostHeader
 {
     BYTE unk00[0x1c]; // 0x00
@@ -155,6 +167,13 @@ struct Unk45d2e0
     DWORD unk00[5];     // 0x00
     PoolObject *unk14;  // 0x14
     PoolObject *unk18;  // 0x18
+    int unk1c;          // 0x1c
+    int unk20;          // 0x20
+    float unk24;        // 0x24
+    float unk28;        // 0x28
+    int unk2c;          // 0x2c
+    int unk30;          // 0x30
+    int unk34[2];       // 0x34, FUN_437920 of unk2c and unk30
 };
 
 struct Unk450930;
@@ -293,6 +312,11 @@ int FUN_45dc40(Unlock *unlock);
 int FUN_457a40(Unk457e70 *object);
 int FUN_457be0();
 int FUN_457cf0(Unk457e70 *object, int mode);
+void FUN_455af0();
+void FUN_452070(int id, float x, float y);
+void FUN_458d50(Unk457e70 *object, int mode, int card);
+void FUN_45cba0(int index, float pos);
+void FUN_45da70(Unk45d2e0 *object, int index, float pos);
 // GLOBAL: STUNTGP_D3D 0x627b54
 GhostHeader g_627b54;
 
@@ -2200,6 +2224,114 @@ int FUN_457cf0(Unk457e70 *object, int mode)
         index = 0;
     }
     return index;
+}
+
+// FUNCTION: STUNTGP_D3D 0x455af0
+void FUN_455af0()
+{
+    for (int player = 1; player < 5; player++)
+    {
+        if (FUN_455b90(player) && !FUN_43dd70())
+        {
+            if (FUN_436fd0(player, 3))
+            {
+                FUN_455be0(player, -1);
+            }
+            if (FUN_436fd0(player, 4))
+            {
+                FUN_455be0(player, 1);
+            }
+            if (FUN_436fd0(player, 1))
+            {
+                FUN_455c20(player, -1);
+            }
+            if (FUN_436fd0(player, 2))
+            {
+                FUN_455c20(player, 1);
+            }
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x452070
+void FUN_452070(int id, float x, float y)
+{
+    x -= (int)x;
+    if (x >= 0.5f)
+    {
+        x -= 1.0f;
+    }
+    y -= (int)y;
+    if (y >= 0.5f)
+    {
+        y -= 1.0f;
+    }
+    x = x * -1280.0f - 35.0f;
+    y = y * -600.0f + 80.0f;
+    FUN_438710(x, y, 0x11, id + 0x109, 1.0f, 0);
+    FUN_438710(x + 255.0f, y, 0x11, id + 0x11e, 1.0f, 0);
+}
+
+// FUNCTION: STUNTGP_D3D 0x458d50
+void FUN_458d50(Unk457e70 *object, int mode, int card)
+{
+    switch (mode)
+    {
+    case 1:
+        FUN_4402f0(card);
+        object->unk1f0 = FUN_440180();
+        break;
+    case 2:
+        FUN_4402f0(card);
+        object->unk1f0 = FUN_458e50();
+        break;
+    case 3:
+        FUN_4402f0(card);
+        object->unk1f0 = FUN_458eb0();
+        break;
+    case 4:
+        FUN_4402f0(card);
+        object->unk1f0 = FUN_458e10();
+        break;
+    case 5:
+        FUN_4402f0(card);
+        object->unk1f0 = FUN_458e30();
+        break;
+    case 6:
+        object->unk1f0 = 0;
+        break;
+    }
+    if (object->unk1ec != 6)
+    {
+        Sleep(500);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45cba0
+void FUN_45cba0(int index, float pos)
+{
+    pos -= (int)pos;
+    if (pos >= 0.5f)
+    {
+        pos -= 1.0f;
+    }
+    pos = pos * -1280.0f - 35.0f;
+    FUN_438710(pos, 82.0f, 0x11, g_menuState.unk440c[index] + 0xd9, 1.0f, 0);
+    FUN_438710(pos + 255.0f, 82.0f, 0x11, g_menuState.unk440c[index] + 0xf1, 1.0f, 0);
+}
+
+// FUNCTION: STUNTGP_D3D 0x45da70
+void FUN_45da70(Unk45d2e0 *object, int index, float pos)
+{
+    pos -= (int)pos;
+    if (pos >= 0.5f)
+    {
+        pos -= 1.0f;
+    }
+    pos = pos * -1280.0f - 35.0f;
+    int node = object->unk34[index];
+    FUN_438710(pos, 82.0f, 0x11, node + 0xd9, 1.0f, 0);
+    FUN_438710(pos + 255.0f, 82.0f, 0x11, node + 0xf1, 1.0f, 0);
 }
 
 typedef int (*ScreenInit)(PoolObject *object, int arg);
