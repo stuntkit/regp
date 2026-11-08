@@ -114,12 +114,18 @@ struct TrackHeader
 {
     BYTE unk000[0x20];
     int unk020;               // 0x020
-    BYTE unk024[0x2c - 0x24];
+    int unk024;               // 0x024
+    int unk028;               // 0x028
     int unk02c;               // 0x02c
-    BYTE unk030[0x38 - 0x30];
+    int unk030;               // 0x030
+    int unk034;               // 0x034
     int unk038;               // 0x038
     int unk03c;               // 0x03c
-    BYTE unk040[0x58 - 0x40];
+    int unk040;               // 0x040
+    int unk044;               // 0x044
+    int unk048;               // 0x048
+    int unk04c;               // 0x04c
+    BYTE unk050[0x58 - 0x50];
     int unk058;               // 0x058
     int unk05c;               // 0x05c
     int unk060;               // 0x060
@@ -196,6 +202,11 @@ extern void *g_6243c0;
 extern void *g_6243c8;
 extern void *g_6243d0;
 extern void *g_6243d8;
+extern int g_582724;
+extern int g_6243c4;
+extern int g_6243cc;
+extern int g_6243d4;
+extern int g_6243dc;
 extern void *g_61c5f4;
 extern void *g_61c5f8;
 extern void *g_61c5fc;
@@ -836,9 +847,146 @@ int FUN_42b9a0(const char *name)
     return result;
 }
 
+// Offsets the texture index of every vertex by g_582724, once per shared vertex list.
+// FUNCTION: STUNTGP_D3D 0x42b900
+void FUN_42b900(Scene *scene)
+{
+    ObjectDef **lods = scene->lods;
+    for (DWORD lod = 0; lod < scene->maxLod + 1; lod++, lods++)
+    {
+        ObjectDef *def = *lods;
+        for (DWORD i = 0; i < scene->objectCount; i++, def++)
+        {
+            BYTE *verts = def->verts;
+            if (!FUN_42b8b0(scene, i, lod))
+            {
+                BYTE *texture = verts + 1;
+                for (DWORD j = 0; j < def->vertCount; j++, texture += 8)
+                {
+                    *texture += g_582724;
+                }
+            }
+        }
+    }
+}
+
+// Replaces texture index `from` with `to` in the vertices of every loaded track scene.
+// FUNCTION: STUNTGP_D3D 0x42ba00
+void FUN_42ba00(int from, int to)
+{
+    for (SceneSlot *slot = &g_636418[2]; slot->scene; slot++)
+    {
+        Scene *scene = slot->scene;
+        for (DWORD lod = 0; lod < scene->maxLod + 1; lod++)
+        {
+            ObjectDef *def = scene->lods[lod];
+            for (DWORD i = 0; i < scene->objectCount; i++, def++)
+            {
+                BYTE *texture = def->verts + 1;
+                for (DWORD j = 0; j < def->vertCount; j++, texture += 8)
+                {
+                    if (*texture == from)
+                    {
+                        *texture = to;
+                    }
+                }
+            }
+        }
+    }
+}
+
 // Camera height for the race scene list.
 // GLOBAL: STUNTGP_D3D 0x60dfa8
 float g_60dfa8;
+
+// FUNCTION: STUNTGP_D3D 0x42b620
+void FUN_42b620(Scene *scene)
+{
+    GameSlot *slot = g_4722d0;
+    Vec4 *pos = &scene->camera->pos;
+    Vec4 d;
+    d.x = pos->x - slot->cam.pos.x;
+    d.y = pos->y - slot->cam.pos.y;
+    d.z = pos->z - slot->cam.pos.z;
+    float depth = (d.x * slot->axisZ.x + d.y * slot->axisZ.y + d.z * slot->axisZ.z) * 3.2f / slot->fov;
+    scene->unk64 = scene->lod;
+    if (depth > 5000.0f)
+    {
+        if (depth > 10000.0f)
+        {
+            scene->lod = 3;
+        }
+        else
+        {
+            scene->lod = 2;
+        }
+    }
+    else if (depth > 3000.0f)
+    {
+        scene->lod = 1;
+    }
+    else
+    {
+        scene->lod = 0;
+    }
+    if (g_612948.unk0034 < 25)
+    {
+        scene->lod += 2;
+    }
+    else if (g_612948.unk0034 < 50)
+    {
+        scene->lod++;
+    }
+    if (scene->lod > 3)
+    {
+        scene->lod = 3;
+    }
+}
+
+// Level of detail for a point, from its depth in front of the camera and the frame rate.
+// FUNCTION: STUNTGP_D3D 0x42b580
+DWORD FUN_42b580(Vec4 *pos)
+{
+    GameSlot *slot = g_4722d0;
+    Vec4 d;
+    d.x = pos->x - slot->cam.pos.x;
+    d.y = pos->y - slot->cam.pos.y;
+    d.z = pos->z - slot->cam.pos.z;
+    float depth = (d.x * slot->axisZ.x + d.y * slot->axisZ.y + d.z * slot->axisZ.z) * 3.2f / slot->fov;
+    DWORD lod;
+    if (depth > 5000.0f)
+    {
+        if (depth > 10000.0f)
+        {
+            lod = 3;
+        }
+        else
+        {
+            lod = 2;
+        }
+    }
+    else if (depth > 3000.0f)
+    {
+        lod = 1;
+    }
+    else
+    {
+        lod = 0;
+    }
+    if (g_612948.unk0034 < 25)
+    {
+        lod += 2;
+    }
+    else if (g_612948.unk0034 < 50)
+    {
+        lod++;
+    }
+    if (lod > 3)
+    {
+        lod = 3;
+    }
+    return lod;
+}
 
 // FUNCTION: STUNTGP_D3D 0x42b6e0
 void FUN_42b6e0()
@@ -1169,6 +1317,47 @@ void FUN_42ebb0()
     }
 }
 
+// Resolves the scene header's file offsets into pointers.
+// FUNCTION: STUNTGP_D3D 0x42ebf0
+void FUN_42ebf0()
+{
+    TrackHeader *header = g_58d810;
+    Scene *scene = (Scene *)&header->data[header->unk04c];
+    g_58c800 = scene;
+    scene->unk28 = (SceneEntry *)&header->data[header->unk020];
+    scene->verts = &header->data[header->unk024];
+    scene->unk30 = &header->data[header->unk028];
+    scene->points = (Vec4 *)&header->data[header->unk02c];
+    scene->unk38 = &header->data[header->unk030];
+    scene->matrices = &header->data[header->unk044];
+    scene->unk40 = (DWORD *)&header->data[header->unk040];
+    scene->view = (SceneView *)&header->data[header->unk048];
+    scene->textures = (char **)&header->data[header->unk038];
+    for (int i = 0; i < 4; i++)
+    {
+        scene->lods[i] = (ObjectDef *)scene->view + (int)scene->lods[i];
+    }
+}
+
+// Resolves each mesh's indices into the scene's shared arrays.
+// FUNCTION: STUNTGP_D3D 0x42eca0
+void FUN_42eca0()
+{
+    Scene *scene = g_58c800;
+    DWORD lodCount = scene->maxLod + 1;
+    for (DWORD lod = 0; lod < lodCount; lod++)
+    {
+        ObjectDef *def = scene->lods[lod];
+        for (DWORD i = 0; i < scene->objectCount; i++, def++)
+        {
+            def->matrix = (Vec4 *)(scene->matrices + (int)def->matrix * 0x50);
+            def->unk2c = scene->unk30 + (int)def->unk2c * 16;
+            def->points = scene->points + (int)def->points;
+            def->verts = scene->verts + (int)def->verts * 8;
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x42ed30
 void FUN_42ed30()
 {
@@ -1285,6 +1474,15 @@ void FUN_42b180(int *out)
     out[7] = ((int)g_6243d8 - out[6]) / 20;
     out[1] = ((int)g_6243c0 - out[0]) / 20;
     out[3] = ((int)g_6243c8 - out[2]) / 20;
+}
+
+// FUNCTION: STUNTGP_D3D 0x42b200
+void FUN_42b200()
+{
+    g_6243c4 = ((int)g_6243c0 - (int)g_61c5fc) / 20;
+    g_6243cc = ((int)g_6243c8 - (int)g_61c600) / 20;
+    g_6243d4 = ((int)g_6243d0 - (int)g_61c5f4) / 20;
+    g_6243dc = ((int)g_6243d8 - (int)g_61c5f8) / 20;
 }
 
 // STUB: STUNTGP_D3D 0x429a40

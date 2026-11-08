@@ -46,6 +46,20 @@ float g_498154;
 // GLOBAL: STUNTGP_D3D 0x498158
 float g_498158;
 
+// Point on and normal of the polygon plane being tested.
+// GLOBAL: STUNTGP_D3D 0x49815c
+Vec4 *g_49815c;
+
+// GLOBAL: STUNTGP_D3D 0x498160
+Vec4 *g_498160;
+
+// Signed distances of the sweep's end and start points from that plane.
+// GLOBAL: STUNTGP_D3D 0x498168
+float g_498168;
+
+// GLOBAL: STUNTGP_D3D 0x49816c
+float g_49816c;
+
 // GLOBAL: STUNTGP_D3D 0x498198
 Vec4 g_498198;
 
@@ -70,6 +84,27 @@ int g_49823c;
 
 // GLOBAL: STUNTGP_D3D 0x498240
 int g_498240;
+
+// 0 when both sweep points are further than the sphere radius from the plane.
+// FUNCTION: STUNTGP_D3D 0x420a70
+int FUN_420a70()
+{
+    Vec4 d;
+    d.x = g_4980d4.x - g_49815c->x;
+    d.y = g_4980d4.y - g_49815c->y;
+    d.z = g_4980d4.z - g_49815c->z;
+    g_498168 = d.y * g_498160->y + (d.x * g_498160->x + d.z * g_498160->z);
+    d.x = g_4980c4.x - g_49815c->x;
+    d.y = g_4980c4.y - g_49815c->y;
+    d.z = g_4980c4.z - g_49815c->z;
+    g_49816c = d.y * g_498160->y + (d.x * g_498160->x + d.z * g_498160->z);
+    float r = g_498154 + 0.25f;
+    if ((float)fabs(g_498168) > r && (float)fabs(g_49816c) > r)
+    {
+        return 0;
+    }
+    return 1;
+}
 
 // FUNCTION: STUNTGP_D3D 0x420f00
 void FUN_420f00(OctNode *node)

@@ -1505,6 +1505,25 @@ void FUN_426260()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x4267d0
+void FUN_4267d0(AnimObject *obj, ObjectDef *def)
+{
+    Vec4 up;
+    Vec4 forward;
+    forward.x = 0.0f;
+    forward.y = 0.0f;
+    forward.z = 1.0f;
+    up.x = 0.0f;
+    up.y = 1.0f;
+    up.z = 0.0f;
+    FUN_44ec00(&obj->rot.x, &forward.x);
+    FUN_44ec00(&obj->rot.x, &up.x);
+    FUN_44ec00(&obj->unk24.x, &forward.x);
+    FUN_44ec00(&obj->unk24.x, &up.x);
+    def->matrix[2] = forward;
+    def->matrix[3] = up;
+}
+
 // FUNCTION: STUNTGP_D3D 0x426880
 void FUN_426880(AnimObject *obj, ObjectDef *def)
 {
@@ -1621,6 +1640,25 @@ void FUN_426df0(AnimObject *obj, ObjectDef *def)
     Vec4 *m = def->matrix;
     m[1].z = m[1].x = g_sinTable[obj->angleA] * 0.005f + 1.0f;
     m[1].y = g_sinTable[(obj->angleA * 2) & 0x1fff] * 0.01f + 1.0f;
+}
+
+// FUNCTION: STUNTGP_D3D 0x426e30
+void FUN_426e30(AnimObject *obj, ObjectDef *def)
+{
+    int angle = obj->angleA;
+    Vec4 *m = def->matrix;
+    int angle2 = (angle * 2) & 0x1fff;
+    m[2].x = g_sinTable[angle];
+    m[2].y = 0.0f;
+    m[2].z = 2.0f;
+    Vec3_Normalize(&m[2].x);
+    m[3].x = g_sinTable[angle];
+    m[3].y = 16.0f;
+    m[3].z = g_sinTable[angle2];
+    Vec3_Normalize(&m[3].x);
+    m[1].x = g_sinTable[angle] * 0.01f + 1.0f;
+    m[1].y = g_sinTable[angle2] * 0.02f + 1.0f;
+    m[1].z = g_sinTable[angle2] * 0.01f + 1.0f;
 }
 
 // FUNCTION: STUNTGP_D3D 0x427010
@@ -1750,6 +1788,26 @@ void FUN_4294f0()
 void FUN_429510()
 {
     FUN_4294f0();
+}
+
+extern int g_61c510;
+
+// Transforms points by g_61c428 and projects them into the g_61c510 vertex buffer.
+// FUNCTION: STUNTGP_D3D 0x429660
+void FUN_429660(Vec4 *in, DWORD count)
+{
+    float *out = (float *)g_61c510;
+    for (DWORD i = 0; i < count; i++, in++, out += 8)
+    {
+        Vec4 t;
+        t.x = g_61c428[0] * in->x + g_61c428[8] * in->z + g_61c428[4] * in->y + g_61c428[12];
+        t.y = g_61c428[1] * in->x + g_61c428[9] * in->z + g_61c428[5] * in->y + g_61c428[13];
+        t.z = g_61c428[2] * in->x + g_61c428[10] * in->z + g_61c428[6] * in->y + g_61c428[14];
+        out[7] = t.z;
+        out[0] = g_61c3e8[0] * t.x;
+        out[1] = g_61c3e8[5] * t.y;
+        out[2] = g_61c3e8[10] * t.z + g_61c3e8[14];
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x431810

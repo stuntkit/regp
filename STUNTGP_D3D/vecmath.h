@@ -17,6 +17,7 @@ void FUN_44ec00(float *angles, float *v);
 void FUN_44fb00(float *m, DWORD yaw, DWORD pitch, DWORD roll);
 
 extern float g_61c3e8[16];
+extern float g_61c428[16];
 extern float g_61c468[16];
 
 void Matrix_Set(float *m, float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13,

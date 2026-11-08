@@ -119,12 +119,15 @@ struct TextureFormatList
     DDPIXELFORMAT formats[16]; // 0x174
 };
 
-// Z-buffer formats collected by FUN_42fe40.
+// Z-buffer formats collected by FUN_42fe40; one per Direct3D driver of a
+// DirectDraw device, 0x478 bytes apart from devices[i] + 0x2274.
 struct ZBufferFormatList
 {
-    BYTE unk000[0x374];
+    BYTE unk000[0x64];
+    int unk064;                // 0x064
+    BYTE unk068[0x374 - 0x68];
     DWORD count;               // 0x374
-    DDPIXELFORMAT formats[1];  // 0x378, count unknown
+    DDPIXELFORMAT formats[8];  // 0x378
 };
 
 // Name storage for g_textureFiles.
@@ -241,6 +244,9 @@ int g_58271c;
 
 // GLOBAL: STUNTGP_D3D 0x582720
 int g_582720;
+
+// GLOBAL: STUNTGP_D3D 0x582724
+int g_582724;
 
 // GLOBAL: STUNTGP_D3D 0x582b24
 int g_582b24;
@@ -1131,6 +1137,32 @@ HRESULT WINAPI FUN_42fe40(LPDDPIXELFORMAT format, LPVOID context)
     return D3DENUMRET_OK;
 }
 
+// Picks the deepest z-buffer format of at least 16 bits, preferring less stencil.
+// FUNCTION: STUNTGP_D3D 0x42fe90
+void FUN_42fe90(int device, int driver)
+{
+    ZBufferFormatList *list = (ZBufferFormatList *)&g_5ba788.devices[device][0x2274] + driver;
+    DDPIXELFORMAT *best = NULL;
+    if (!list->unk064)
+    {
+        return;
+    }
+    g_5ba788.zbufferFormat = best;
+    for (DWORD i = 0; i < list->count; i++)
+    {
+        DDPIXELFORMAT *format = &list->formats[i];
+        DWORD depth = format->dwZBufferBitDepth;
+        DWORD stencil = format->dwStencilBitDepth;
+        if (depth >= 16 &&
+            (!best || depth > best->dwZBufferBitDepth ||
+             (depth == best->dwZBufferBitDepth && stencil < best->dwStencilBitDepth)))
+        {
+            best = format;
+            g_5ba788.zbufferFormat = best;
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x432190
 void FUN_432190(int mode)
 {
@@ -1359,6 +1391,9 @@ struct RenderItem
 // GLOBAL: STUNTGP_D3D 0x6243c0
 void *g_6243c0;
 
+// GLOBAL: STUNTGP_D3D 0x6243c4
+int g_6243c4;
+
 // GLOBAL: STUNTGP_D3D 0x6243c8
 void *g_6243c8;
 
@@ -1367,6 +1402,9 @@ int g_6243cc;
 
 // GLOBAL: STUNTGP_D3D 0x6243d0
 void *g_6243d0;
+
+// GLOBAL: STUNTGP_D3D 0x6243d4
+int g_6243d4;
 
 // GLOBAL: STUNTGP_D3D 0x6243d8
 void *g_6243d8;
@@ -2027,6 +2065,41 @@ void FUN_425ae0()
 void FUN_42e420()
 {
     g_61c5e4 = -1;
+}
+
+void FUN_42f2e0(char *dst, const char *src);
+
+// Flags ATI Radeon and Intel i740/i810/i815 cards, which get a reduced render path.
+// FUNCTION: STUNTGP_D3D 0x42f220
+void FUN_42f220()
+{
+    DDDEVICEIDENTIFIER id;
+    char desc[516];
+    g_dd4->GetDeviceIdentifier(&id, 0);
+    FUN_42f2e0(desc, id.szDescription);
+    switch (id.dwVendorId)
+    {
+    case 0x8086:
+        // STRING: STUNTGP_D3D 0x478118
+        if (strstr(desc, "intel(r) 82740") ||
+            // STRING: STUNTGP_D3D 0x478128
+            strstr(desc, "intel(r) 82810") ||
+            // STRING: STUNTGP_D3D 0x478138
+            strstr(desc, "intel(r) 82815"))
+        {
+            g_589e08 = 1;
+            g_592050 = 0;
+        }
+        break;
+    case 0x1002:
+        // STRING: STUNTGP_D3D 0x478110
+        if (strstr(desc, "radeon"))
+        {
+            g_589e08 = 1;
+            g_592050 = 0;
+        }
+        break;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x42f2e0

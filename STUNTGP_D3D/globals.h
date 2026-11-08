@@ -70,7 +70,7 @@ struct DisplayDevices
     int unk1ea34;                  // 0x1ea34
     DDPIXELFORMAT *textureFormat;  // 0x1ea38
     int hasArgb1555;               // 0x1ea3c
-    int unk1ea40;                  // 0x1ea40
+    DDPIXELFORMAT *zbufferFormat;  // 0x1ea40
     DWORD surfaceSlotCount;        // 0x1ea44
     SurfaceSlot surfaceSlots[255]; // 0x1ea48
 };
@@ -119,7 +119,8 @@ struct GameState
     int unk0050;             // 0x0050
     int unk0054;             // 0x0054
     int unk0058;             // 0x0058
-    BYTE unk005c[0x240];     // 0x005c
+    char demoNames[0x200];   // 0x005c, storage for demoScripts
+    char *demoScripts[16];   // 0x025c, rolling demo script names
     int unk029c;             // 0x029c
     int unk02a0;             // 0x02a0
     int unk02a4;             // 0x02a4
