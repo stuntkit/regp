@@ -1029,6 +1029,51 @@ struct HudSprite
     int height;
 };
 
+// Lap counter digits [0..7] and the "LAP" label [8].
+// GLOBAL: STUNTGP_D3D 0x4852c8
+HudSprite g_4852c8[9] = {
+    {0, 89, 0, 0, 38, 34},
+    {0, 124, 0, 0, 38, 33},
+    {38, 89, 0, 0, 38, 34},
+    {76, 89, 0, 0, 38, 34},
+    {114, 89, 0, 0, 38, 34},
+    {38, 124, 0, 0, 38, 33},
+    {76, 124, 0, 0, 38, 33},
+    {114, 124, 0, 0, 38, 33},
+    {215, 231, 0, 0, 39, 22},
+};
+
+// Draws the current lap number right-aligned on fader 7, with its label.
+// FUNCTION: STUNTGP_D3D 0x4485e0
+void FUN_4485e0()
+{
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.z = 0.95f;
+    g_spriteDesc.texture = 14;
+    g_spriteDesc.blendMode = 0x20;
+    unsigned int lap = g_4722d0->data->unk1f10;
+    float width = g_4852c8[lap].width * 0.8f;
+    g_spriteDesc.x = g_61b740->faders[7].x - width;
+    g_spriteDesc.y = g_61b740->faders[7].y;
+    g_spriteDesc.u0 = (float)(g_4852c8[lap].u * 1024.0f) * 0.00390625f;
+    g_spriteDesc.v0 = (float)(g_4852c8[lap].v * 1024.0f) * 0.00390625f;
+    g_spriteDesc.u1 = (float)((g_4852c8[lap].u + g_4852c8[lap].width) * 1024.0f) * 0.00390625f;
+    g_spriteDesc.v1 = (float)((g_4852c8[lap].height + g_4852c8[lap].v) * 1024.0f) * 0.00390625f;
+    g_spriteDesc.width = width;
+    g_spriteDesc.height = g_4852c8[lap].height * 0.8f;
+    FUN_432e00(&g_spriteDesc);
+    g_spriteDesc.z = 0.95f;
+    g_spriteDesc.x = g_61b740->faders[7].x - 8.0f;
+    g_spriteDesc.y = g_61b740->faders[7].y + 8.8f;
+    g_spriteDesc.u0 = (float)(g_4852c8[8].u * 1024.0f) * 0.00390625f;
+    g_spriteDesc.v0 = (float)(g_4852c8[8].v * 1024.0f) * 0.00390625f;
+    g_spriteDesc.u1 = (float)((g_4852c8[8].width + g_4852c8[8].u) * 1024.0f) * 0.00390625f;
+    g_spriteDesc.v1 = (float)((g_4852c8[8].height + g_4852c8[8].v) * 1024.0f) * 0.00390625f;
+    g_spriteDesc.width = g_4852c8[8].width * 0.8f;
+    g_spriteDesc.height = g_4852c8[8].height * 0.8f;
+    FUN_432e00(&g_spriteDesc);
+}
+
 // GLOBAL: STUNTGP_D3D 0x4853a0
 HudSprite g_4853a0[12] = {
     {0, 0, 0, 0, 71, 88},
@@ -1056,10 +1101,10 @@ void FUN_4487d0(unsigned int index, float x, float y, float z)
     g_spriteDesc.blendMode = 0x20;
     g_spriteDesc.x = sprite->x + x;
     g_spriteDesc.y = sprite->y + y;
-    g_spriteDesc.u0 = sprite->u * 1024.0f * 0.00390625f;
-    g_spriteDesc.v0 = sprite->v * 1024.0f * 0.00390625f;
-    g_spriteDesc.u1 = sprite->width * 1024.0f * 0.00390625f + g_spriteDesc.u0;
-    g_spriteDesc.v1 = sprite->height * 1024.0f * 0.00390625f + g_spriteDesc.v0;
+    g_spriteDesc.u0 = (float)(sprite->u * 1024.0f) * 0.00390625f;
+    g_spriteDesc.v0 = (float)(sprite->v * 1024.0f) * 0.00390625f;
+    g_spriteDesc.u1 = (float)(sprite->width * 1024.0f) * 0.00390625f + g_spriteDesc.u0;
+    g_spriteDesc.v1 = (float)(sprite->height * 1024.0f) * 0.00390625f + g_spriteDesc.v0;
     g_spriteDesc.width = sprite->width * 0.8f;
     g_spriteDesc.height = sprite->height * 0.8f;
     FUN_432e00(&g_spriteDesc);
@@ -1069,10 +1114,10 @@ void FUN_4487d0(unsigned int index, float x, float y, float z)
         g_spriteDesc.z = z;
         g_spriteDesc.x = (float)medal->x + sprite->x + x;
         g_spriteDesc.y = (float)medal->y + sprite->y + y;
-        g_spriteDesc.u0 = medal->u * 1024.0f * 0.00390625f;
-        g_spriteDesc.v0 = medal->v * 1024.0f * 0.00390625f;
-        g_spriteDesc.u1 = medal->width * 1024.0f * 0.00390625f + g_spriteDesc.u0;
-        g_spriteDesc.v1 = medal->height * 1024.0f * 0.00390625f + g_spriteDesc.v0;
+        g_spriteDesc.u0 = (float)(medal->u * 1024.0f) * 0.00390625f;
+        g_spriteDesc.v0 = (float)(medal->v * 1024.0f) * 0.00390625f;
+        g_spriteDesc.u1 = (float)(medal->width * 1024.0f) * 0.00390625f + g_spriteDesc.u0;
+        g_spriteDesc.v1 = (float)(medal->height * 1024.0f) * 0.00390625f + g_spriteDesc.v0;
         g_spriteDesc.width = medal->width * 0.8f;
         g_spriteDesc.height = medal->height * 0.8f;
     }
@@ -1082,10 +1127,10 @@ void FUN_4487d0(unsigned int index, float x, float y, float z)
         g_spriteDesc.z = z;
         g_spriteDesc.x = x + 44.0f;
         g_spriteDesc.y = y + 10.0f;
-        g_spriteDesc.u0 = g_4853a0[8].u * 1024.0f * 0.00390625f;
-        g_spriteDesc.v0 = g_4853a0[8].v * 1024.0f * 0.00390625f;
-        g_spriteDesc.u1 = g_4853a0[8].width * 1024.0f * 0.00390625f + g_spriteDesc.u0;
-        g_spriteDesc.v1 = g_4853a0[8].height * 1024.0f * 0.00390625f + g_spriteDesc.v0;
+        g_spriteDesc.u0 = (float)(g_4853a0[8].u * 1024.0f) * 0.00390625f;
+        g_spriteDesc.v0 = (float)(g_4853a0[8].v * 1024.0f) * 0.00390625f;
+        g_spriteDesc.u1 = (float)(g_4853a0[8].width * 1024.0f) * 0.00390625f + g_spriteDesc.u0;
+        g_spriteDesc.v1 = (float)(g_4853a0[8].height * 1024.0f) * 0.00390625f + g_spriteDesc.v0;
         g_spriteDesc.width = g_4853a0[8].width * 0.8f;
         g_spriteDesc.height = g_4853a0[8].height * 0.8f;
     }
