@@ -12,6 +12,7 @@
 #include "../../timer.h"
 #include "../../random.h"
 #include "../../vecmath.h"
+#include "../../sintable.h"
 #include "io_wad.h"
 #include "MenuUpdate.h"
 #include "../../objects.h"
@@ -1095,9 +1096,49 @@ void FUN_42b7e0(WORD *flags)
     flags[1] &= 0xfff7;
 }
 
-// STUB: STUNTGP_D3D 0x42b7f0
+void FUN_44fdb0(Camera *cam);
+void FUN_450150(Scene *scene);
+
+// Appends the scene with a copy of its camera to the render list at g_4955e4.
+// FUNCTION: STUNTGP_D3D 0x42b7f0
 void FUN_42b7f0(Scene *scene, Camera *camera, int arg)
 {
+    FUN_44fdb0(camera);
+    FUN_450150(scene);
+    camera->unk40 = 0;
+    g_4955e4[0] = (DWORD)scene;
+    *(Camera *)(g_4955e4 + 1) = *camera;
+    if (arg)
+    {
+        FUN_42b7b0(scene, arg);
+    }
+    else
+    {
+        FUN_42b7e0((WORD *)scene);
+    }
+    g_4955e4 += 0x15;
+    *g_4955e4 = 0;
+}
+
+// Appends the scene with a copy of its camera to the render list at g_4955e0.
+// FUNCTION: STUNTGP_D3D 0x42b850
+void FUN_42b850(Scene *scene, Camera *camera, int arg)
+{
+    FUN_44fdb0(camera);
+    FUN_450150(scene);
+    camera->unk40 = 0;
+    g_4955e0[0] = (DWORD)scene;
+    *(Camera *)(g_4955e0 + 1) = *camera;
+    if (arg)
+    {
+        FUN_42b7b0(scene, arg);
+    }
+    else
+    {
+        FUN_42b7e0((WORD *)scene);
+    }
+    g_4955e0 += 0x15;
+    *g_4955e0 = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42b8b0
@@ -1442,6 +1483,62 @@ void FUN_42d700()
     g_renderState.unk801c = *g_renderState.unk7fac;
     FUN_42d7e0();
     FUN_42d970();
+}
+
+struct Light
+{
+    int unk00;        // 0x00
+    int type;         // 0x04, 0 directional, 1 point
+    float range;      // 0x08
+    int unk0c;        // 0x0c
+    Vec4 pos;         // 0x10
+    Vec4 local;       // 0x20, pos relative to the current object
+    Vec4 colour;      // 0x30
+    BYTE unk40[0x20]; // 0x40
+    DWORD color;      // 0x60, flare colour
+    BYTE unk64[0x14]; // 0x64
+    int r;            // 0x78
+    int g;            // 0x7c
+    int b;            // 0x80
+};
+
+// GLOBAL: STUNTGP_D3D 0x589df8
+DWORD g_589df8;
+
+// GLOBAL: STUNTGP_D3D 0x589dfc
+int g_589dfc;
+
+// Glow billboard on a light, fading in with distance from the camera and pulsing with g_589df8.
+// FUNCTION: STUNTGP_D3D 0x42e0a0
+void FUN_42e0a0(Light *light)
+{
+    float size = light->range * 20.0f;
+    float dx = light->pos.x - g_4722d0->cam.pos.x;
+    float dy = light->pos.y - g_4722d0->cam.pos.y;
+    float dz = light->pos.z - g_4722d0->cam.pos.z;
+    float fade = (float)sqrt(dz * dz + dy * dy + dx * dx) * 5e-05f;
+    if (fade > 1.0f)
+    {
+        fade = 1.0f;
+    }
+    Billboard billboard = g_486538;
+    float scale = fade * size + g_sinTable[g_589df8] * 0.01f;
+    int angle = -g_589dfc & 0x1fff;
+    billboard.dir.x = g_cosTable[angle];
+    billboard.dir.y = g_sinTable[angle];
+    billboard.dir.z = 0.0f;
+    billboard.pos = light->pos;
+    billboard.texture = 6;
+    billboard.unk00 = 0x60;
+    billboard.alpha = (short)(int)(fade * 192.0f);
+    billboard.size[0] = scale;
+    billboard.size[1] = scale;
+    billboard.size[2] = scale;
+    billboard.colors[0] = light->color;
+    billboard.colors[1] = light->color;
+    billboard.colors[2] = light->color;
+    billboard.colors[3] = light->color;
+    FUN_434590(&billboard);
 }
 
 // Rescales the vertex colours of every object; the scale is full brightness, so it is a no-op.
@@ -2275,6 +2372,45 @@ void FUN_42a870(Scene *scene, ObjectDef *object)
     }
 }
 
+void FUN_429520(Vec4 *in, DWORD count);
+void FUN_429660(Vec4 *in, DWORD count);
+void FUN_44fbd0(Scene *scene, ObjectDef *obj, float *m);
+void FUN_42a320(Scene *scene, ObjectDef *obj);
+void FUN_42b2a0(Vec4 *out, Vec4 *dir, Scene *scene, ObjectDef *obj);
+extern float g_61c428[16];
+
+// Transforms and queues the visible objects of the current level of detail, lighting those with
+// flag 4.
+// FUNCTION: STUNTGP_D3D 0x42a8c0
+void FUN_42a8c0(PolyRef **lists, Scene *scene, int mode)
+{
+    ObjectDef *obj = scene->lods[scene->lod];
+    for (DWORD i = 0; i < scene->objectCount; obj++, i++)
+    {
+        if (obj->visible == 1)
+        {
+            FUN_42b2a0(&g_renderState.unk00, &g_renderState.unk10, scene, obj);
+            FUN_44fbd0(scene, obj, g_61c428);
+            if (!mode)
+            {
+                FUN_429660(obj->points, obj->pointCount);
+                FUN_429d50(scene, obj, lists);
+            }
+            else
+            {
+                FUN_429520(obj->points, obj->pointCount);
+                FUN_429b70(scene, obj, lists);
+            }
+            if (obj->flags & 4)
+            {
+                FUN_42a870(scene, obj);
+                FUN_42a320(scene, obj);
+            }
+            g_renderState.unk28 += obj->pointCount * 0x20;
+        }
+    }
+}
+
 // Brings the view position into the object's local space (out) and gives its direction (dir).
 // FUNCTION: STUNTGP_D3D 0x42b2a0
 void FUN_42b2a0(Vec4 *out, Vec4 *dir, Scene *scene, ObjectDef *obj)
@@ -2313,21 +2449,6 @@ void FUN_42b2a0(Vec4 *out, Vec4 *dir, Scene *scene, ObjectDef *obj)
 }
 
 void FUN_44efd0(float *out, float *a, float *b);
-
-struct Light
-{
-    int unk00;        // 0x00
-    int type;         // 0x04, 0 directional, 1 point
-    float range;      // 0x08
-    int unk0c;        // 0x0c
-    Vec4 pos;         // 0x10
-    Vec4 local;       // 0x20, pos relative to the current object
-    Vec4 colour;      // 0x30
-    BYTE unk40[0x38]; // 0x40
-    int r;            // 0x78
-    int g;            // 0x7c
-    int b;            // 0x80
-};
 
 // Per-object light record in g_renderState.unk8048, 36 bytes.
 struct LightRec
@@ -3252,6 +3373,106 @@ void FUN_446290()
     }
 }
 
+void FUN_434900(float *values, DWORD count);
+void FUN_446180();
+
+// Writes the level settings script.
+// FUNCTION: STUNTGP_D3D 0x4463b0
+void FUN_4463b0()
+{
+    // STRING: STUNTGP_D3D 0x484d84
+    fprintf(g_5da2e4, "-VERSION = %s\n",
+            // STRING: STUNTGP_D3D 0x484a9c
+            "V1.0");
+    // STRING: STUNTGP_D3D 0x484d94
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484d98
+    fprintf(g_5da2e4, "-Ambience[] =\n");
+    // STRING: STUNTGP_D3D 0x484da8
+    fprintf(g_5da2e4, " I = %d\n", (int)(g_renderState.unk801c.intensity * 255.0f));
+    // STRING: STUNTGP_D3D 0x484db4
+    fprintf(g_5da2e4, " R = %d\n", (int)g_renderState.unk801c.red);
+    // STRING: STUNTGP_D3D 0x484dc0
+    fprintf(g_5da2e4, " G = %d\n", (int)g_renderState.unk801c.green);
+    // STRING: STUNTGP_D3D 0x484dcc
+    fprintf(g_5da2e4, " B = %d\n", (int)g_renderState.unk801c.blue);
+    // STRING: STUNTGP_D3D 0x484dd8
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484ddc
+    fprintf(g_5da2e4, "-FogColour[] =\n");
+    // STRING: STUNTGP_D3D 0x484dec
+    fprintf(g_5da2e4, " R = %d\n", g_5896b8);
+    // STRING: STUNTGP_D3D 0x484df8
+    fprintf(g_5da2e4, " G = %d\n", g_5896bc);
+    // STRING: STUNTGP_D3D 0x484e04
+    fprintf(g_5da2e4, " B = %d\n", g_5896c0);
+    // STRING: STUNTGP_D3D 0x484e10
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484e14
+    fprintf(g_5da2e4, "-FogEnvelope[] = \n");
+    FUN_434900(g_5896c8, 0x80);
+    // STRING: STUNTGP_D3D 0x484e28
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484e2c
+    fprintf(g_5da2e4, "-ColRestitutionTab[] = \n");
+    FUN_434900(g_497d20, 0x80);
+    // STRING: STUNTGP_D3D 0x484e48
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484e4c
+    fprintf(g_5da2e4, "-FarPlaneClipDistanceTab[] = \n");
+    FUN_434900(g_577688, 0x100);
+    // STRING: STUNTGP_D3D 0x484e6c
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484e70
+    fprintf(g_5da2e4, "-CarReplacementSplineMask[] = \n");
+    FUN_434900(g_60dff0, 0x80);
+    // STRING: STUNTGP_D3D 0x484e90
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484e94
+    fprintf(g_5da2e4, "-CarLightsMask[] = \n");
+    FUN_434900(g_60e1f0, 0x80);
+    // STRING: STUNTGP_D3D 0x484eac
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484eb0
+    fprintf(g_5da2e4, "-AmbienceEnvelope[] = \n");
+    FUN_434900(g_60e3f0, 0x80);
+    // STRING: STUNTGP_D3D 0x484ec8
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484ecc
+    fprintf(g_5da2e4, "-TrackWidthEnvelope_Left[] = \n");
+    FUN_434900(g_60e7f0, 0x100);
+    // STRING: STUNTGP_D3D 0x484eec
+    fprintf(g_5da2e4, "\n");
+    // STRING: STUNTGP_D3D 0x484ef0
+    fprintf(g_5da2e4, "-TrackWidthEnvelope_Right[] = \n");
+    FUN_434900(g_60ebf0, 0x100);
+    // STRING: STUNTGP_D3D 0x484f10
+    fprintf(g_5da2e4, "\n");
+    FUN_446180();
+    FUN_446290();
+    // STRING: STUNTGP_D3D 0x484f14
+    fprintf(g_5da2e4, "-END\n\n");
+}
+
+void FUN_446340();
+
+// Saves the level settings to Config\Levels\<level>.cfg.
+// FUNCTION: STUNTGP_D3D 0x4466a0
+void FUN_4466a0()
+{
+    char path[128];
+    // STRING: STUNTGP_D3D 0x484f1c
+    sprintf(path, "%s\\Config\\Levels\\%s.cfg", g_GameDirectory, g_LevelScript);
+    // STRING: STUNTGP_D3D 0x484f34
+    g_5da2e4 = fopen(path, "wt");
+    if (g_5da2e4)
+    {
+        FUN_446340();
+        FUN_4463b0();
+        fclose(g_5da2e4);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x4467b0
 void FUN_4467b0(char *script)
 {
@@ -3381,6 +3602,32 @@ void FUN_45a3f0(MenuHolder *object)
     object->child = NULL;
 }
 
+float FUN_438a60(const char *text, float size);
+float FUN_438ab0(float x, float y, int layer, int style, char *text, float size, D3DCOLOR color, DWORD flags);
+
+// Framed block of text lines centred low on the screen.
+// FUNCTION: STUNTGP_D3D 0x45a500
+void FUN_45a500(MenuLine *lines, int count)
+{
+    float height = 0.0f;
+    int i;
+    for (i = 0; i < count; i++)
+    {
+        height += FUN_438a60(lines[i].text, 1.25f);
+    }
+    height += (count - 1) * 4.0f;
+    float h = (height + 20.0f) * 0.5f;
+    float y0 = 380.0f - h;
+    float y1 = h + 384.0f;
+    FUN_439450(100.0f, y0, 540.0f, y1, 10, 0x6f, 0x40);
+    FUN_439380(100.0f, y0, 540.0f, y1, 13, 2, 0, 0.0f);
+    float y = 380.0f - height * 0.5f;
+    for (i = 0; i < count; i++)
+    {
+        y = FUN_438ab0(320.0f, y, 12, 4, lines[i].text, 1.25f, lines[i].color, 1) + y + 4.0f;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x45a610
 int FUN_45a610(MenuObject *object, int arg)
 {
@@ -3464,9 +3711,6 @@ void FUN_45be00(MenuHolder *object)
     Pool_Free(child);
     object->child = NULL;
 }
-
-float FUN_438a60(const char *text, float size);
-float FUN_438ab0(float x, float y, int layer, int style, char *text, float size, D3DCOLOR color, DWORD flags);
 
 // Framed block of text lines centred on (x, y).
 // FUNCTION: STUNTGP_D3D 0x45be20

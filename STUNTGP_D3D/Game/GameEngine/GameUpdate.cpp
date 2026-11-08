@@ -1802,6 +1802,68 @@ int FUN_4278a0(float *bounds, float *point)
     return *(int *)&d < 0;
 }
 
+// GLOBAL: STUNTGP_D3D 0x577a90
+float g_577a90[16];
+
+void FUN_44fbd0(Scene *scene, ObjectDef *obj, float *m);
+
+// Clips the eight corners of an object's bounding box (point indices from box[1]) against the
+// view volume: 0 outside, 1 partly visible, 2 inside.
+// FUNCTION: STUNTGP_D3D 0x427b40
+int FUN_427b40(Scene *scene, ObjectDef *obj, WORD *box)
+{
+    float *m = g_577a90;
+    FUN_44fbd0(scene, obj, m);
+    Vec4 **corner = (Vec4 **)&scene->unk40[box[1]];
+    DWORD any = 0;
+    DWORD all = 0x3f;
+    for (DWORD i = 0; i < 8; corner++, i++)
+    {
+        Vec4 *p = *corner;
+        DWORD code = 0x3f;
+        float w = m[2] * p->x + (p->y * m[6] + p->z * m[10]) + m[14];
+        float x = (m[0] * p->x + (p->y * m[4] + p->z * m[8]) + m[12]) * g_61c3e8[0];
+        float y = (m[1] * p->x + (p->y * m[5] + p->z * m[9]) + m[13]) * g_61c3e8[5];
+        float z = g_61c3e8[10] * w + g_61c3e8[14];
+        if (z <= g_4722d0->nearZ)
+        {
+            code = 0x3e;
+        }
+        if (z >= g_4722d0->unk19c)
+        {
+            code &= ~2;
+        }
+        float nw = -w;
+        if (x <= nw)
+        {
+            code &= ~4;
+        }
+        if (x >= w)
+        {
+            code &= ~8;
+        }
+        if (y <= nw)
+        {
+            code &= ~0x10;
+        }
+        if (y >= w)
+        {
+            code &= ~0x20;
+        }
+        if (code == 0x3f && all != 0x3f)
+        {
+            return 2;
+        }
+        any |= code;
+        all &= code;
+    }
+    if (all == 0x3f)
+    {
+        return 0;
+    }
+    return (any == 0x3f) + 1;
+}
+
 // STUB: STUNTGP_D3D 0x425df0
 void FUN_425df0(Scene *scene, ObjectDef *def, int type)
 {
@@ -2299,9 +2361,81 @@ int g_60f2c8;
 // GLOBAL: STUNTGP_D3D 0x60f2cc
 int g_60f2cc;
 
-// STUB: STUNTGP_D3D 0x443100
+// GLOBAL: STUNTGP_D3D 0x60f014
+DWORD g_60f014;
+
+extern int g_60d678;
+extern int g_60d67c;
+extern int g_60f284;
+extern int g_60d668;
+extern int g_60eff0;
+extern DWORD g_60eff8;
+extern int g_60f2b4;
+extern Unk4d5cc0 g_4d5cc0[6];
+void FUN_41aac0(Replay *replay);
+void FUN_41d300();
+void FUN_405350();
+void FUN_412b10(Car *car, float dist);
+void FUN_401000();
+void FUN_442c30();
+void FUN_443e10(Car *car);
+void FUN_460cb0(int a);
+void FUN_447b70(int delay);
+void FUN_442ad0(int type, int duration, int delay, int end, int from, int to, float scale);
+
+// Time trial start: hooks the ghost replays to the ghost cars, places the player on the path
+// and starts the intro fade.
+// FUNCTION: STUNTGP_D3D 0x443100
 void FUN_443100()
 {
+    g_60d678 = g_60f284;
+    g_49a1f8[0].unk7268 = (Replay *)&g_4d5cc0[0];
+    g_49a1f8[4].unk7268 = (Replay *)&g_4d5cc0[1];
+    g_49a1f8[3].unk7268 = (Replay *)&g_4d5cc0[2];
+    g_49a1f8[1].unk7268 = (Replay *)&g_4d5cc0[3];
+    g_49a1f8[2].unk7268 = (Replay *)&g_4d5cc0[4];
+    FUN_41aac0(g_49a1f8[0].unk7268);
+    FUN_41aac0(g_49a1f8[4].unk7268);
+    FUN_41aac0(g_49a1f8[3].unk7268);
+    FUN_41aac0(g_49a1f8[1].unk7268);
+    FUN_41aac0(g_49a1f8[2].unk7268);
+    for (int i = 0; i < 6; i++)
+    {
+        g_49a1f8[i].active = 0;
+    }
+    g_49a1f8[0].active = 1;
+    if (g_60f284 == 1 && !g_60d668)
+    {
+        g_60f284 = 0;
+        g_60d628[0].unk00 = 1;
+    }
+    else if (g_60d668 == 1)
+    {
+        g_60d628[1].unk00 = 1;
+    }
+    g_4d5bb8 = g_49a1f8;
+    FUN_41d300();
+    FUN_405350();
+    FUN_412b10(g_4d5bb8, g_571328->unk18 - g_60f014);
+    g_4d5bb8->unk23a8 %= 100;
+    g_4d5bb8->unk23ac %= 100;
+    g_4d5bb8->unk767c = 1;
+    g_4722d0->cam.pos = *(Vec4 *)&g_4d5bb8->posX;
+    g_4d5bb8->unk1f0c = 3;
+    FUN_442ad0(2, 240, 180, 0, 100, 0, 0.96f);
+    g_60f2c4 = 180;
+    g_4d5bb8->unk26a4 = 300;
+    FUN_442c30();
+    FUN_401000();
+    FUN_443e10(g_4d5bb8);
+    FUN_460cb0(0);
+    FUN_447b70(420);
+    g_60eff0 = 3;
+    g_60f2cc = 1;
+    g_60f2b4 = 1;
+    g_60f2b0 = 4;
+    g_60eff8 = 100;
+    g_60d67c = 240;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4434f0
@@ -2536,9 +2670,88 @@ void FUN_443f10(Car *car, int row)
 }
 #pragma optimize("", on)
 
-// STUB: STUNTGP_D3D 0x444070
+extern DWORD g_60d720;
+extern DWORD g_60d724;
+void FUN_442a40(int type, int duration, int delay, int end, int from, int to, float scale);
+void FUN_447ab0(Fader *fader);
+void FUN_447a90(Fader *fader);
+void FUN_45f8e0(int target, int step);
+void FUN_443d80();
+
+// Results sequence: shows one finisher row per second, then on the go-ahead fades the rows out
+// and leaves the race.
+// FUNCTION: STUNTGP_D3D 0x444070
 void FUN_444070()
 {
+    DWORD count;
+    g_61b740 = &g_498248[0].fx;
+    if (++g_60d720 > 60 && g_60d724 < 6)
+    {
+        Car *car = g_612948.unk040c[g_60d724];
+        if (car && car->active == 1)
+        {
+            g_498248[0].fx.faders[g_60d724 + 12].active = 1;
+            FUN_443f10(car, g_60d724);
+            FUN_461150(47, 0, 0, 63, 0, 0, 0);
+            g_60d720 = 0;
+            g_60d724++;
+        }
+    }
+    FUN_41da50((int *)&count);
+    if (g_60d724 >= count)
+    {
+        g_4d5bb8->race.unk20++;
+    }
+    if (++g_4d5bb8->race.unk24 >= 60)
+    {
+        g_4d5bb8->race.unk24 = 0;
+    }
+    FUN_447ab0(&g_61b740->faders[9]);
+    FUN_447ab0(&g_61b740->faders[11]);
+    FUN_447ab0(&g_61b740->faders[10]);
+    Fader *fader = &g_61b740->faders[12];
+    for (count = 0; count < 6; count++, fader++)
+    {
+        FUN_447ab0(fader);
+    }
+    if (FUN_443770() == 3 && !g_612948.unk001c && g_612948.unk0020 == 1 && !g_4d5bb8->race.unk2c)
+    {
+        FUN_443d80();
+        FUN_461150(48, 0, 0, 255, 0, 0, 0);
+        g_4d5bb8->race.unk28 = 0;
+        g_4d5bb8->race.unk2c = 1;
+        FUN_442a40(2, 120, 0, 0, 60, 0, 0.98f);
+        FUN_460ca0();
+        FUN_447a90(&g_61b740->faders[9]);
+        FUN_447a90(&g_61b740->faders[10]);
+        FUN_447a90(&g_61b740->faders[11]);
+        FUN_461150(46, 0, 0, 63, 0, 0, 0);
+    }
+    if (g_4d5bb8->race.unk2c)
+    {
+        if (!(g_4d5bb8->race.unk2c & 7))
+        {
+            FUN_447a90(&g_61b740->faders[g_4d5bb8->race.unk28 + 12]);
+            if (g_4d5bb8->race.unk28 < 6)
+            {
+                g_4d5bb8->race.unk28++;
+            }
+        }
+        g_4d5bb8->race.unk2c++;
+        if (g_4d5bb8->race.unk2c == 60)
+        {
+            FUN_442a40(2, 60, 0, 240, 60, 100, 0.98f);
+        }
+        if (g_4d5bb8->race.unk2c == 120)
+        {
+            FUN_45f8e0(0, -10);
+        }
+        if (g_4d5bb8->race.unk2c == 180)
+        {
+            g_612948.unk02a8 = 1;
+            FUN_441e20();
+        }
+    }
 }
 
 void FUN_447a90(Fader *fader);
@@ -2966,6 +3179,31 @@ void FUN_443e20()
     }
 }
 
+// GLOBAL: STUNTGP_D3D 0x60d720
+DWORD g_60d720;
+
+// GLOBAL: STUNTGP_D3D 0x60d724
+DWORD g_60d724;
+
+extern DWORD g_60d728;
+void FUN_449e80();
+
+// FUNCTION: STUNTGP_D3D 0x443ea0
+void FUN_443ea0()
+{
+    if (g_498248[0].data->race.unk1c == 1)
+    {
+        return;
+    }
+    FUN_461150(47, 0, 0, 63, 0, 0, 0);
+    g_60d720 = 0;
+    g_60d724 = 0;
+    g_60d728 = 0;
+    g_61b740 = &g_498248[0].fx;
+    g_498248[0].data->race.unk1c = 1;
+    FUN_449e80();
+}
+
 // FUNCTION: STUNTGP_D3D 0x444390
 void FUN_444390()
 {
@@ -2977,9 +3215,60 @@ void FUN_444390()
     }
 }
 
-// STUB: STUNTGP_D3D 0x444410
+// FUNCTION: STUNTGP_D3D 0x4443c0
+void FUN_4443c0()
+{
+    g_4d5bb8->race.unk30 = 1;
+    g_4d5bb8->race.unk34 = 0;
+    g_4d5bb8->race.unk38 = -600.0f;
+    g_4d5bb8->race.unk3c = 0.0f;
+    g_4d5bb8->race.unk40 = -1.0f;
+    FUN_461150(46, 0, 0, 63, 0, 0, 0);
+}
+
+void FUN_443d80();
+
+// Start sequence: the countdown camera swing (unk38, a damped spring) settles, then the race
+// starts after a delay or once the countdown has been skipped.
+// FUNCTION: STUNTGP_D3D 0x444410
 void FUN_444410()
 {
+    if (g_4d5bb8->race.unk30)
+    {
+        int id = g_4d5bb8->unk24e4 + 0x15;
+        if (g_612948.unk8cec != id)
+        {
+            FUN_430d40(15, id);
+        }
+        if (g_4d5bb8->race.unk34 > 30 && !g_612948.unk001c && g_612948.unk0020 == 1)
+        {
+            FUN_443d80();
+            FUN_461150(48, 0, 0, 255, 0, 0, 0);
+            g_4d5bb8->race.unk30 = 0;
+            g_4d5bb8->race.unk34 = 0;
+            FUN_443ea0();
+        }
+        if ((float)fabs(g_4d5bb8->race.unk40) < 0.25f && (float)fabs(g_4d5bb8->race.unk3c) < 0.25f &&
+            (float)fabs(g_4d5bb8->race.unk38) < 1.0f)
+        {
+            g_4d5bb8->race.unk40 = 0.0f;
+            g_4d5bb8->race.unk3c = 0.0f;
+            g_4d5bb8->race.unk38 = 0.0f;
+            if (g_4d5bb8->race.unk34 >= 240)
+            {
+                g_4d5bb8->race.unk30 = 0;
+                g_4d5bb8->race.unk34 = 0;
+                FUN_443ea0();
+            }
+        }
+        else
+        {
+            g_4d5bb8->race.unk40 = g_4d5bb8->race.unk38 * -0.01f;
+            g_4d5bb8->race.unk3c = (g_4d5bb8->race.unk40 + g_4d5bb8->race.unk3c) * 0.95f;
+            g_4d5bb8->race.unk38 = g_4d5bb8->race.unk3c + g_4d5bb8->race.unk38;
+        }
+        g_4d5bb8->race.unk34++;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x444550
@@ -3016,10 +3305,10 @@ void FUN_444590()
     Car *car = g_4d5bb8;
     car->race.unk4c = 1;
     car->race.unk50 = 1;
-    car->race.unk54 = 0.0f;
+    car->race.unk54 = 0;
     car->race.unk58 = 0.0f;
     car->race.unk5c = (float)fabs(car->unk1cf0);
-    car->race.unk60 = 0.0f;
+    car->race.unk60 = 0;
     if (car->race.unk5c < 33.333332f)
     {
         car->race.unk5c = 33.333332f;
@@ -3057,9 +3346,156 @@ int FUN_444670()
     return finished == total;
 }
 
-// STUB: STUNTGP_D3D 0x4446d0
+extern DWORD g_62f5ac;
+
+// Finish line sequence: the crossing swing (unk58 by unk5c) with its sounds, the fade out and the
+// move on to the results or the next player.
+// FUNCTION: STUNTGP_D3D 0x4446d0
 void FUN_4446d0()
 {
+    if (g_4d5bb8->race.unk1c == 1 || g_4d5bb8->race.unk30 == 1)
+    {
+        return;
+    }
+    if (g_4d5bb8->race.unk64 == 1)
+    {
+        if (++g_4d5bb8->race.unk24 >= 60)
+        {
+            g_4d5bb8->race.unk24 = 0;
+        }
+        return;
+    }
+    if (g_4d5bb8->unk24e0 == 1 && !g_4d5bb8->race.unk4c)
+    {
+        FUN_444590();
+    }
+    if (!g_4d5bb8->race.unk4c)
+    {
+        return;
+    }
+    if (g_4d5bb8->race.unk50)
+    {
+        if (g_60f2b0 != 3 && g_4d5bb8->race.unk50 == 60)
+        {
+            if (g_4d5bb8->unk24e4 == 0)
+            {
+                FUN_461150(0x15, 0, 0, 255, 0, 0, 0);
+            }
+            else if (g_4d5bb8->unk24e4 == 1)
+            {
+                FUN_461150(0x14, 0, 0, 255, 0, 0, 0);
+            }
+            else if (g_4d5bb8->unk24e4 == 2)
+            {
+                FUN_461150(0x13, 0, 0, 255, 0, 0, 0);
+            }
+        }
+        int sound = 0;
+        g_4d5bb8->race.unk50++;
+        g_4d5bb8->race.unk58 = g_4d5bb8->race.unk5c * 0.5f + g_4d5bb8->race.unk58;
+        if (g_4d5bb8->race.unk58 >= 360.0f)
+        {
+            sound = 0x2e;
+            g_4d5bb8->race.unk58 -= 360.0f;
+        }
+        g_4d5bb8->race.unk5c *= 0.98f;
+        if (g_4d5bb8->race.unk5c < 4.0f)
+        {
+            g_4d5bb8->race.unk5c = 4.0f;
+        }
+        if (g_4d5bb8->race.unk5c <= 4.0f && g_4d5bb8->race.unk58 <= 10.0f)
+        {
+            if (!g_4d5bb8->race.unk60)
+            {
+                g_4d5bb8->race.unk60 = 1;
+                sound = 0x32;
+            }
+            g_4d5bb8->race.unk58 = 0.0f;
+            g_4d5bb8->race.unk5c = 0.0f;
+            if (g_4d5bb8->race.unk50 > 360 && !g_4d5bb8->race.unk54)
+            {
+                g_4d5bb8->race.unk54 = 1;
+                FUN_442ad0(2, 240, 0, 0, 0, 60, 0.96f);
+            }
+        }
+        if (sound)
+        {
+            FUN_461150(sound, 0, 0, 127, 0, 0, 0);
+        }
+        if (g_4d5bb8->race.unk50 > 30 && !g_612948.unk001c && g_612948.unk0020 == 1)
+        {
+            FUN_443d80();
+            FUN_461150(48, 0, 0, 255, 0, 0, 0);
+            if (!g_4d5bb8->race.unk54)
+            {
+                FUN_442ad0(2, 240, 0, 0, 0, 60, 0.96f);
+            }
+            g_4d5bb8->race.unk50 = 0;
+            g_4d5bb8->race.unk54 = 480;
+        }
+        if (g_4d5bb8->race.unk54)
+        {
+            if ((++g_4d5bb8->race.unk54 >= 120 && !g_62f5ac) || g_4d5bb8->race.unk54 >= 480)
+            {
+                if (g_60df98 == 3)
+                {
+                    FUN_441e20();
+                    return;
+                }
+                g_4d5bb8->race.unk4c = 0;
+                g_4d5bb8->race.unk50 = 0;
+                g_4d5bb8->race.unk54 = 0;
+                g_4d5bb8->race.unk1c = 0;
+                if (!g_576be0)
+                {
+                    if ((unsigned int)g_4d5bb8->unk24e4 <= 2)
+                    {
+                        FUN_4443c0();
+                        FUN_45f8f0(23, 1);
+                    }
+                    else
+                    {
+                        FUN_443ea0();
+                        FUN_45f8f0(23, 1);
+                    }
+                }
+                else
+                {
+                    g_4d5bb8->race.unk64 = 1;
+                }
+            }
+        }
+    }
+    if (g_576be0 && FUN_444670() == 1)
+    {
+        FUN_443ea0();
+    }
+}
+
+void FUN_442ad0(int type, int duration, int delay, int end, int from, int to, float scale);
+
+// FUNCTION: STUNTGP_D3D 0x4449e0
+void FUN_4449e0()
+{
+    if (g_4d5bb8->race.unk04 != 1)
+    {
+        FUN_430d40(15, 25);
+        g_4d5bb8->race.unk08 = 1;
+        g_4d5bb8->race.unk04 = 1;
+        g_4d5bb8->race.unk18 = 0;
+        g_4d5bb8->race.unk0c = -256.0f;
+        g_4d5bb8->race.unk10 = 0.0f;
+        g_4d5bb8->race.unk14 = -1.0f;
+        FUN_447ba0(0);
+        FUN_442ad0(2, 60, 0, 0, 0, 60, 0.96f);
+        FUN_443dd0();
+        if (!g_576be0)
+        {
+            FUN_45f8f0(20, 0);
+            FUN_460ca0();
+        }
+        FUN_461150(47, 0, 0x4000, 63, 0, 0, 0);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x444a90
@@ -3086,9 +3522,48 @@ int FUN_444a90()
     return finished == total;
 }
 
-// STUB: STUNTGP_D3D 0x444ae0
+extern int g_60d71c;
+
+// Finish sequence: once the car is done the camera swing (unk0c, a damped spring) settles and
+// the race ends after a timeout.
+// FUNCTION: STUNTGP_D3D 0x444ae0
 void FUN_444ae0()
 {
+    CarRace *race = &g_4d5bb8->race;
+    if (g_4d5bb8->unk24e8 == 1 && !race->unk04)
+    {
+        FUN_4449e0();
+    }
+    if (FUN_444a90() == 1 && !g_60d71c)
+    {
+        g_60d71c = 1;
+        g_612948.unk02a8 = 1;
+        FUN_441e20();
+    }
+    if (race->unk04 && g_60d71c != 1)
+    {
+        if ((++race->unk08 >= 0x21c && !g_62f5ac) || race->unk08 >= 900)
+        {
+            race->unk18 = 1;
+            return;
+        }
+        if ((float)fabs(race->unk14) < 0.25f && (float)fabs(race->unk10) < 0.25f && (float)fabs(race->unk0c) < 1.0f)
+        {
+            race->unk14 = 0.0f;
+            race->unk10 = 0.0f;
+            race->unk0c = 0.0f;
+            if (race->unk08 == 420)
+            {
+                FUN_442ad0(2, 120, 0, 300, 60, 100, 1.0f);
+            }
+        }
+        else
+        {
+            race->unk14 = race->unk0c * -0.01f;
+            race->unk10 = (race->unk14 + race->unk10) * 0.95f;
+            race->unk0c = race->unk10 + race->unk0c;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x444c00

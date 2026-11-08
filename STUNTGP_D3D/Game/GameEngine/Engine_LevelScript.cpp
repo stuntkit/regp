@@ -284,6 +284,150 @@ void FUN_42ca90(char *script)
     }
 }
 
+extern char g_60dfac[0x40];
+extern int g_60dfec;
+extern float g_60dfa8;
+extern int g_60df98;
+extern DWORD g_60eff4;
+extern DWORD g_60eff8;
+extern DWORD g_60f014;
+extern int g_60f01c;
+
+// GLOBAL: STUNTGP_D3D 0x60dfa4
+int g_60dfa4;
+
+// GLOBAL: STUNTGP_D3D 0x60f024
+int g_60f024;
+
+// GLOBAL: STUNTGP_D3D 0x60f028
+int g_60f028;
+
+// Reads the level's race settings from its LvScript.cfg entry.
+// FUNCTION: STUNTGP_D3D 0x42cc20
+void FUN_42cc20(char *script)
+{
+    char text[128];
+    int ground;
+    DWORD n;
+    char *value;
+    // STRING: STUNTGP_D3D 0x47788c
+    if (Script_FindKey(script, &value, "TRACKTEXSET") == 1)
+    {
+        Script_ReadString(value, NULL, text);
+        sprintf(g_60dfac, text);
+        n = strlen(text);
+        if (n > 2)
+        {
+            g_60dfec = atol(text + n - 2);
+        }
+    }
+    else
+    {
+        g_60dfac[0] = 0;
+    }
+    // STRING: STUNTGP_D3D 0x477898
+    if (Script_FindKey(script, &value, "MUS_TRACK") == 1)
+    {
+        Script_ReadInt(value, NULL, (int *)&n);
+        g_60dfa4 = n;
+    }
+    // STRING: STUNTGP_D3D 0x4778a4
+    if (Script_FindKey(script, &value, "GROUNDLEVEL") == 1)
+    {
+        Script_ReadInt(value, NULL, &ground);
+        g_60dfa8 = ground * 100.0f;
+    }
+    else
+    {
+        g_60dfa8 = -2000.0f;
+    }
+    // STRING: STUNTGP_D3D 0x4778b0
+    if (Script_FindKey(script, &value, "GAMETYPE") == 1)
+    {
+        Script_ReadString(value, NULL, text);
+        g_60df98 = 2;
+        // STRING: STUNTGP_D3D 0x4778bc
+        if (_stricmp(text, "RACE_TYPE_1") == 0)
+        {
+            g_60df98 = 2;
+        }
+        // STRING: STUNTGP_D3D 0x4778c8
+        else if (_stricmp(text, "CHALLENGE_TYPE_1") == 0)
+        {
+            g_60df98 = 3;
+        }
+        // STRING: STUNTGP_D3D 0x4778dc
+        else if (_stricmp(text, "TIMETRIAL_TYPE_1") == 0)
+        {
+            g_60df98 = 4;
+        }
+    }
+    g_60eff4 = 0;
+    // STRING: STUNTGP_D3D 0x4778f0
+    if (Script_FindKey(script, &value, "TIME") == 1)
+    {
+        Script_ReadInt(value, NULL, (int *)&n);
+        g_60eff4 = n * 60;
+    }
+    // STRING: STUNTGP_D3D 0x4778f8
+    if (Script_FindKey(script, &value, "LAPCOUNT") == 1)
+    {
+        Script_ReadInt(value, NULL, (int *)&n);
+        if (n > 24)
+        {
+            n = 24;
+        }
+        g_60eff8 = n;
+    }
+    // STRING: STUNTGP_D3D 0x477904
+    if (Script_FindKey(script, &value, "LAPRECORD") == 1)
+    {
+        Script_ReadInt(value, &value, (int *)&n);
+        DWORD record = n * 3600;
+        Script_ReadInt(value, &value, (int *)&n);
+        record += n % 100 * 60;
+        Script_ReadInt(value, &value, (int *)&n);
+        g_60f000[0] = n % 100 * 60 / 100 + record;
+    }
+    g_60f014 = 60000;
+    // STRING: STUNTGP_D3D 0x477910
+    if (Script_FindKey(script, &value, "ROLSTARTOFFSET") == 1)
+    {
+        Script_ReadInt(value, NULL, (int *)&n);
+        n = (DWORD)(n * 100.0f);
+        g_60f014 = n;
+    }
+    g_60f024 = 0;
+    // STRING: STUNTGP_D3D 0x477920
+    if (Script_FindKey(script, &value, "OVERLAYDEMO") == 1)
+    {
+        Script_ReadInt(value, NULL, (int *)&n);
+        g_60f024 = n;
+    }
+    g_60f01c = 1;
+    // STRING: STUNTGP_D3D 0x47792c
+    if (Script_FindKey(script, &value, "CAMERAMODE") == 1)
+    {
+        Script_ReadInt(value, NULL, (int *)&n);
+        g_60f01c = n;
+    }
+    g_60f028 = 3600;
+    // STRING: STUNTGP_D3D 0x477938
+    if (Script_FindKey(script, &value, "R_DEMOLOOP") == 1)
+    {
+        Script_ReadInt(value, NULL, (int *)&n);
+        if (!n)
+        {
+            n = -1;
+        }
+        else
+        {
+            n *= 60;
+        }
+        g_60f028 = n;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x42cb00
 void FUN_42cb00(char *script)
 {

@@ -206,6 +206,167 @@ void Matrix_Multiply3(float *a, float *b)
 }
 
 
+// Builds a look-at matrix (rows side, up, back) and its transpose for a scene camera.
+// FUNCTION: STUNTGP_D3D 0x44fdb0
+void FUN_44fdb0(Camera *cam)
+{
+    Vec4 dir;
+    dir.x = cam->pos.x - cam->target.x;
+    dir.y = cam->pos.y - cam->target.y;
+    dir.z = cam->pos.z - cam->target.z;
+    Vec4 up = cam->up;
+    Vec3_Normalize(&dir.x);
+    if ((float)fabs(dir.x * up.x + dir.y * up.y + dir.z * up.z) > 0.99999f)
+    {
+        up.z += 1.0f;
+        Vec3_Normalize(&up.x);
+    }
+    float d = dir.x * up.x + dir.y * up.y + dir.z * up.z;
+    Vec4 t;
+    t.x = d * dir.x;
+    t.y = d * dir.y;
+    t.z = d * dir.z;
+    up.x -= t.x;
+    up.y -= t.y;
+    up.z -= t.z;
+    Vec3_Normalize(&up.x);
+    Vec4 side;
+    side.x = dir.y * up.z - dir.z * up.y;
+    side.y = dir.z * up.x - dir.x * up.z;
+    side.z = dir.x * up.y - dir.y * up.x;
+    side.x = -side.x;
+    side.y = -side.y;
+    side.z = -side.z;
+
+    float *m = (float *)g_renderState.unk62e4;
+    m[0] = side.x;
+    m[1] = side.y;
+    m[2] = side.z;
+    m[3] = 0.0f;
+    m[4] = up.x;
+    m[5] = up.y;
+    m[6] = up.z;
+    m[7] = 0.0f;
+    m[8] = dir.x;
+    m[9] = dir.y;
+    m[10] = dir.z;
+    m[11] = 0.0f;
+    m[12] = 0.0f;
+    m[13] = 0.0f;
+    m[14] = 0.0f;
+    m[15] = 1.0f;
+    cam->unk44 = (Vec4 *)m;
+    m += 16;
+    g_renderState.unk62e8++;
+    cam->matrix = (Vec4 *)m;
+    m[0] = side.x;
+    m[1] = up.x;
+    m[2] = dir.x;
+    m[3] = 0.0f;
+    m[4] = side.y;
+    m[5] = up.y;
+    m[6] = dir.y;
+    m[7] = 0.0f;
+    m[8] = side.z;
+    m[9] = up.z;
+    m[10] = dir.z;
+    m[11] = 0.0f;
+    m[12] = 0.0f;
+    m[13] = 0.0f;
+    m[14] = 0.0f;
+    m[15] = 1.0f;
+    m += 16;
+    g_renderState.unk62e8++;
+    g_renderState.unk62e4 = (BYTE *)m;
+}
+
+// Builds an object's rotation matrix (rows side, up, facing) and its transpose from its frame.
+// FUNCTION: STUNTGP_D3D 0x44ff90
+void FUN_44ff90(ObjectDef *obj)
+{
+    Camera *xf = (Camera *)obj->matrix;
+    Vec4 dir = xf->target;
+    Vec4 up = xf->up;
+    if ((float)fabs(dir.x * up.x + dir.y * up.y + dir.z * up.z) > 0.99999f)
+    {
+        up.z += 1.0f;
+        Vec3_Normalize(&up.x);
+    }
+    float d = dir.x * up.x + dir.y * up.y + dir.z * up.z;
+    up.x -= d * dir.x;
+    up.y -= d * dir.y;
+    up.z -= d * dir.z;
+    Vec3_Normalize(&up.x);
+    Vec4 side;
+    side.x = dir.y * up.z - dir.z * up.y;
+    side.y = dir.z * up.x - dir.x * up.z;
+    side.z = dir.x * up.y - dir.y * up.x;
+    side.x = -side.x;
+    side.y = -side.y;
+    side.z = -side.z;
+
+    float *m = (float *)g_renderState.unk62e4;
+    m[0] = side.x;
+    m[1] = side.y;
+    m[2] = side.z;
+    m[3] = 0.0f;
+    m[4] = up.x;
+    m[5] = up.y;
+    m[6] = up.z;
+    m[7] = 0.0f;
+    m[8] = dir.x;
+    m[9] = dir.y;
+    m[10] = dir.z;
+    m[11] = 0.0f;
+    m[12] = 0.0f;
+    m[13] = 0.0f;
+    m[14] = 0.0f;
+    m[15] = 1.0f;
+    xf->unk40 = (int)m;
+    m += 16;
+    g_renderState.unk62e8++;
+    m[0] = side.x;
+    m[1] = up.x;
+    m[2] = dir.x;
+    m[3] = 0.0f;
+    m[4] = side.y;
+    m[5] = up.y;
+    m[6] = dir.y;
+    m[7] = 0.0f;
+    m[8] = side.z;
+    m[9] = up.z;
+    m[10] = dir.z;
+    m[11] = 0.0f;
+    m[12] = 0.0f;
+    m[13] = 0.0f;
+    m[14] = 0.0f;
+    m[15] = 1.0f;
+    xf->unk44 = (Vec4 *)m;
+    m += 16;
+    g_renderState.unk62e8++;
+    g_renderState.unk62e4 = (BYTE *)m;
+}
+
+// Rotation matrices of the current level-of-detail objects; hidden objects get the identity.
+// FUNCTION: STUNTGP_D3D 0x450150
+void FUN_450150(Scene *scene)
+{
+    ObjectDef *obj = scene->lods[scene->lod];
+    for (DWORD i = 0; i < scene->objectCount; i++, obj++)
+    {
+        if (!obj->visible)
+        {
+            Camera *xf = (Camera *)obj->matrix;
+            xf->unk40 = (int)g_61c468;
+            xf->unk44 = (Vec4 *)g_61c468;
+        }
+        else
+        {
+            FUN_44ff90(obj);
+        }
+    }
+}
+
 // Builds the camera's view matrix and its transpose from pos, target, up and the view roll.
 // FUNCTION: STUNTGP_D3D 0x450190
 void FUN_450190(Camera *cam)
@@ -349,6 +510,38 @@ void FUN_44fb00(float *m, DWORD yaw, DWORD pitch, DWORD roll)
     m[13] = 0.0f;
     m[14] = 0.0f;
     m[15] = 1.0f;
+}
+
+// Object-to-view matrix: the object's own scale, pivot rotation and offset (multi-object scenes),
+// then the scene's, then the view camera's.
+// FUNCTION: STUNTGP_D3D 0x44fbd0
+void FUN_44fbd0(Scene *scene, ObjectDef *obj, float *m)
+{
+    Camera *cam = scene->camera;
+    Matrix_Identity(m);
+    if (scene->objectCount > 1 && obj)
+    {
+        Camera *xf = (Camera *)obj->matrix;
+        FUN_44eeb0(m, xf->scale.x, 0.0f, 0.0f, 0.0f, 0.0f, xf->scale.y, 0.0f, 0.0f, 0.0f, 0.0f, xf->scale.z, 0.0f,
+                   0.0f, 0.0f, 0.0f, 1.0f);
+        Vec4 *pivot = (Vec4 *)((BYTE *)obj + 0x10);
+        float pz = pivot->z;
+        float py = pivot->y;
+        float px = pivot->x;
+        FUN_44f150(m, -px, -py, -pz);
+        FUN_44f280(m, (float *)xf->unk40);
+        FUN_44f150(m, px, py, pz);
+        FUN_44f150(m, xf->pos.x, xf->pos.y, xf->pos.z);
+    }
+    FUN_44eeb0(m, cam->scale.x, 0.0f, 0.0f, 0.0f, 0.0f, cam->scale.y, 0.0f, 0.0f, 0.0f, 0.0f, cam->scale.z, 0.0f,
+               0.0f, 0.0f, 0.0f, 1.0f);
+    Vec4 *pivot = (Vec4 *)scene->unk10;
+    FUN_44f150(m, pivot->x, pivot->y, pivot->z);
+    FUN_44f280(m, (float *)cam->unk44);
+    FUN_44f150(m, -pivot->x, -pivot->y, -pivot->z);
+    FUN_44f150(m, cam->pos.x - g_4722d0->cam.pos.x, cam->pos.y - g_4722d0->cam.pos.y,
+               cam->pos.z - g_4722d0->cam.pos.z);
+    FUN_44f280(m, (float *)g_4722d0->cam.unk44);
 }
 
 // FUNCTION: STUNTGP_D3D 0x44eb70

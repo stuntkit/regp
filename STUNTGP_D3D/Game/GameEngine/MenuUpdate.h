@@ -50,6 +50,13 @@ struct Initials
     char c[3];
 };
 
+// Finisher name shown on the results table.
+struct MenuName
+{
+    Initials name;      // 0x00
+    BYTE unk03[0x19];   // 0x03
+};
+
 // Car%02d row of the front-end csv, read by FUN_435e30.
 struct ShopCar
 {
@@ -507,8 +514,8 @@ struct MenuState
     MenuNode nodes[19];   // 0x1a6ac, [1..18] used
     int unk1b078;          // 0x1b078, row of unk0114
     BYTE unk1b07c[0x1b080 - 0x1b07c];
-    Initials unk1b080;     // 0x1b080
-    BYTE unk1b083[0x1b140 - 0x1b083];
+    MenuName names[6];     // 0x1b080, [0] is the player
+    BYTE unk1b128[0x1b140 - 0x1b128];
     MenuRaceResult results[6]; // 0x1b140, [0] is the player
     BYTE unk1b1b8[0x1b320 - 0x1b1b8];
     MenuAiCar aiCars[21]; // 0x1b320, read by FUN_435860
@@ -559,6 +566,23 @@ struct MenuHolder
 {
     DWORD unk00[5];    // 0x00
     PoolObject *child; // 0x14
+};
+
+// Car stat screen run by FUN_453710.
+struct Unk453710
+{
+    DWORD unk00[5];    // 0x00
+    PoolObject *child; // 0x14
+    int unk18;         // 0x18
+    int unk1c;         // 0x1c
+    float unk20;       // 0x20
+    float unk24;       // 0x24
+    float unk28;       // 0x28
+    float unk2c[3];    // 0x2c, shown stat bars
+    float unk38[3];    // 0x38, stat targets
+    int unk44[3];      // 0x44
+    int unk50;         // 0x50
+    int unk54;         // 0x54
 };
 
 // Car part page with named fields; groups is laid out as in Unk451a50.
@@ -654,7 +678,8 @@ struct Unk457e70Entry
 // PageSave
 struct Unk457e70
 {
-    BYTE unk000[0x18];         // 0x000
+    BYTE unk000[0x14];         // 0x000
+    int unk14;                 // 0x014
     int unk18;                 // 0x018
     int unk1c;                 // 0x01c
     int unk20;                 // 0x020, selected entry

@@ -88,25 +88,27 @@ struct CarRace
     int unk04;        // 0x04
     DWORD unk08;      // 0x08
     float unk0c;      // 0x0c
-    BYTE unk10[0x8];  // 0x10
+    float unk10;      // 0x10
+    float unk14;      // 0x14
     int unk18;        // 0x18
     int unk1c;        // 0x1c
     int unk20;        // 0x20
     DWORD unk24;      // 0x24
-    BYTE unk28[0x4];  // 0x28
+    DWORD unk28;      // 0x28
     DWORD unk2c;      // 0x2c
     int unk30;        // 0x30
     DWORD unk34;      // 0x34
     float unk38;      // 0x38
-    BYTE unk3c[0x8];  // 0x3c
+    float unk3c;      // 0x3c
+    float unk40;      // 0x40
     int unk44;        // 0x44
     DWORD unk48;      // 0x48
     DWORD unk4c;      // 0x4c
     DWORD unk50;      // 0x50
-    float unk54;      // 0x54
+    DWORD unk54;      // 0x54
     float unk58;      // 0x58
     float unk5c;      // 0x5c
-    float unk60;      // 0x60
+    int unk60;        // 0x60
     DWORD unk64;      // 0x64
     DWORD unk68;      // 0x68
     DWORD unk6c;      // 0x6c

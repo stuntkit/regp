@@ -17,6 +17,7 @@ int g_60d61c;
 
 #include <cstdlib>
 #include <cstring>
+#include <math.h>
 
 #include "GameUpdate.h"
 #include "GameSetup.h"
@@ -521,6 +522,32 @@ void FUN_44ac90()
     g_61b740->faders[6].y += dy;
     g_61b740->faders[7].x += dx;
     g_61b740->faders[7].y += dy;
+}
+
+void FUN_449720();
+void FUN_4497b0();
+void FUN_4492d0(float value);
+void FUN_4493e0();
+void FUN_4495e0(float unused);
+
+// Speedometer panel: dial, speed readout, gauge and needle.
+// FUNCTION: STUNTGP_D3D 0x44add0
+void FUN_44add0()
+{
+    FUN_449720();
+    float speed = (float)fabs(g_4722d0->data->unk1cf0) * 2.1599998f;
+    FUN_4492d0(speed);
+    FUN_4493e0();
+    FUN_4495e0(speed);
+}
+
+// Compact speed panel for split screen.
+// FUNCTION: STUNTGP_D3D 0x44ae10
+void FUN_44ae10()
+{
+    FUN_4497b0();
+    FUN_4492d0((float)fabs(g_4722d0->data->unk1cf0) * 2.1599998f);
+    FUN_4493e0();
 }
 
 // STUB: STUNTGP_D3D 0x44ae40

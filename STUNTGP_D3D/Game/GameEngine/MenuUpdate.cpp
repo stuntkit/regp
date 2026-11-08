@@ -45,15 +45,15 @@ struct Unk454b20
     int unk18;        // 0x18
     int unk1c;        // 0x1c
     int unk20;        // 0x20
-    int unk24;        // 0x24
-    int unk28;        // 0x28
+    float unk24;      // 0x24, shown cursor column
+    float unk28;      // 0x28, shown cursor row
     int unk2c;        // 0x2c
     int unk30;        // 0x30
     int unk34;        // 0x34
     int unk38;        // 0x38
-    int unk3c;        // 0x3c
-    int unk40;        // 0x40
-    int unk44;        // 0x44
+    float unk3c;      // 0x3c, shown caret
+    float unk40;      // 0x40
+    float unk44;      // 0x44, phase
     char text[4];     // 0x48
     int unk4c;        // 0x4c
 };
@@ -3902,10 +3902,60 @@ void FUN_451fd0(int def, float x, float y, float length)
     FUN_438230(x, y, length * 8.0f, 12, def, 2);
 }
 
+// GLOBAL: STUNTGP_D3D 0x487c38
+MenuItem g_487c38[12] = {
+    {-1, 0xffc8c8ff, 0xffffffff, 0xd7, 0, 1, 0, 0},
+    {-1, 0xffc8c8ff, 0xffffffff, 0xd5, 0, 1, 0, 0},
+    {-1, 0xffc8c8ff, 0xffffffff, 0xd2, 0, 1, 0, 0},
+    {-1, 0xffc8c8ff, 0xffffffff, 0xd6, 0, 1, 0, 0},
+    {-1, 0xffc8c8ff, 0xffffffff, 0xdc, 0, 1, 0, 0},
+    {-1, 0xffc8c8ff, 0xffffffff, 0xda, 0, 1, 0, 0},
+    {-1, 0xffc8c8ff, 0xffffffff, 0xd4, 0, 1, 0, 0},
+    {-1, 0xffc8c8ff, 0xffffffff, 0xd8, 0, 1, 0, 0},
+    {-1, 0xffc8c8ff, 0xffffffff, 0xdb, 0, 1, 0, 0},
+    {-1, 0xffc8c8ff, 0xffffffff, 0xd3, 0, 1, 0, 0},
+    {-1, 0xffc8c8ff, 0xffffffff, 0xd9, 0, 1, 0, 0},
+    {0},
+};
+
+// Car stat menu; unk2c and g_4880e8 are the sprite ids of the three stat bars.
+// GLOBAL: STUNTGP_D3D 0x4880b8
+MenuDef g_4880b8 = {0xb, -1.0f, 0, 85.0f, 240.0f, 0.8f, 2, 1.1f, 1, 0x70, g_487c38, 0x3f};
+
+// GLOBAL: STUNTGP_D3D 0x4880e8
+int g_4880e8[2] = {0x3d, 0x3e};
+
+void FUN_453b20(int def, float x, float y, float length);
+
+// FUNCTION: STUNTGP_D3D 0x453a90
+void FUN_453a90(Unk453710 *object)
+{
+    for (int i = 0; i < 3; i++)
+    {
+        float y = i * 16.0f + 339.0f;
+        FUN_438be0(379.0f, y, 12, 2, i + 0x1c, 1.0f, 0xffffffff, 6);
+        FUN_453b20((&g_4880b8.unk2c)[i], 395.0f, y, object->unk2c[i] * 20.0f);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x453b20
 void FUN_453b20(int def, float x, float y, float length)
 {
     FUN_438230(x, y, length * 8.0f, 12, def, 0x102);
+}
+
+// Frame around a box.
+// FUNCTION: STUNTGP_D3D 0x453d20
+void FUN_453d20(int def, float x0, float y0, float x1, float y1)
+{
+    float width = x1 - x0;
+    float height = y1 - y0;
+    float cx = (x0 + x1) * 0.5f;
+    float cy = (y0 + y1) * 0.5f;
+    FUN_438230(cx, y0, width, 17, def, 0x103);
+    FUN_438230(cx, y1, width, 17, def, 0x103);
+    FUN_4385d0(x0, cy, height, 17, def, 0x103);
+    FUN_4385d0(x1, cy, height, 17, def, 0x103);
 }
 
 // Stat panel: a label and a bar per stat.
@@ -4252,6 +4302,50 @@ int FUN_4547e0(char c, int *column, int *row)
 }
 
 void FUN_438710(float x, float y, int layer, int def, float scale, DWORD flags);
+
+void FUN_454ac0(float x, float y, int def);
+
+// Name entry: the character grid with its cursor, then the entered name with the caret below.
+// FUNCTION: STUNTGP_D3D 0x454830
+void FUN_454830(Unk454b20 *object, float x, float y, float t)
+{
+    int column;
+    int row;
+    float left = x - 224.0f - 32.0f;
+    float top = y - 96.0f - 32.0f;
+    float x1 = x + 256.0f;
+    float y1 = y + 128.0f;
+    x -= 224.0f;
+    y -= 96.0f;
+    FUN_439450(left, top, x1, y1, 10, 0x6e, 0x40);
+    for (row = 0; row < 4; row++)
+    {
+        for (column = 0; column < 8; column++)
+        {
+            FUN_438710(column * 64.0f + x, row * 64.0f + y, 12, column + row * 8 + 0x136, 1.0f, 3);
+        }
+    }
+    FUN_454ac0(object->unk24 * 64.0f + x, object->unk28 * 64.0f + y, 0x6c);
+    y = (1.0f - t) * 200.0f + y1 + 64.0f;
+    top = y - 32.0f;
+    y1 = top + 64.0f;
+    FUN_439450(192.0f, top, 448.0f, y1, 10, 0x6f, 0x40);
+    FUN_439380(192.0f, top, 448.0f, y1, 13, 0, 0, 0.0f);
+    int i = 0;
+    while (object->text[i])
+    {
+        FUN_438710(i * 64.0f + 224.0f, y, 12, FUN_4547e0(object->text[i], &column, &row) + 0x136, 1.0f, 3);
+        i++;
+    }
+    FUN_438710(i * 64.0f + 224.0f, y, 12, FUN_4547e0(g_4881b0[object->unk20][object->unk1c], &column, &row) + 0x136, 1.0f, 3);
+    FUN_454ac0(object->unk3c * 64.0f + 224.0f, y, 0x6d);
+    if (g_menuState.unk423c > 1)
+    {
+        x = 224.0f - ((float)sin(object->unk44 * 3.1415927f) * 20.0f + 80.0f);
+        FUN_438710(x, y, 13, object->unk18 + 0x35, 1.0f, 0x203);
+        FUN_438710(x, y, 12, object->unk18 + 0x31, 1.0f, 0x103);
+    }
+}
 
 // FUNCTION: STUNTGP_D3D 0x454ac0
 void FUN_454ac0(float x, float y, int def)
@@ -5043,8 +5137,40 @@ int FUN_4586f0(Unk457e70 *object)
     return 0;
 }
 
+// Prompt panel for the pending memory card operation.
+// FUNCTION: STUNTGP_D3D 0x458730
+void FUN_458730(Unk457e70 *object)
+{
+    int textId;
+    if (object->unk1ec)
+    {
+        switch (object->unk1ec)
+        {
+        case 1:
+            textId = 0x245;
+            break;
+        case 2:
+        case 4:
+            textId = 0x244;
+            break;
+        case 3:
+        case 5:
+            textId = 0x243;
+            break;
+        case 6:
+            textId = 0x242;
+            break;
+        default:
+            return;
+        }
+        FUN_439450(40.0f, 332.0f, 600.0f, 432.0f, 10, 0x6f, 0x40);
+        FUN_439380(40.0f, 332.0f, 600.0f, 432.0f, 13, 2, 0x100, 0.0f);
+        FUN_438ba0(320.0f, 382.0f, 12, 4, textId, 1.5f, 0xffff8080, 3);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x458800
-int FUN_458800()
+int FUN_458800(Unk457e70 *object)
 {
     int screen = g_menuState.unk46c4;
     if (screen)
@@ -5060,6 +5186,39 @@ void FUN_458860(Unk458860 *object)
     object->unk1ec = 0;
     object->unk1e8 = 0;
     object->unk1f0 = 0;
+}
+
+void FUN_4588c0(Unk457e70 *object, int msg);
+void FUN_458c50(Unk457e70 *object, int msg);
+void FUN_458f30(Unk457e70 *object, int msg);
+void FUN_459160(Unk457e70 *object, int msg);
+
+// PageSave input: routed to the open prompt, if any, else to the card list.
+// FUNCTION: STUNTGP_D3D 0x458880
+void FUN_458880(Unk457e70 *object, int msg)
+{
+    if (object->unk14)
+    {
+        return;
+    }
+    if (object->unk1f0)
+    {
+        FUN_459160(object, msg);
+        return;
+    }
+    if (object->unk1ec)
+    {
+        if (object->unk1e8)
+        {
+            FUN_458f30(object, msg);
+        }
+        else
+        {
+            FUN_458c50(object, msg);
+        }
+        return;
+    }
+    FUN_4588c0(object, msg);
 }
 
 // FUNCTION: STUNTGP_D3D 0x458a60
@@ -5078,6 +5237,87 @@ void FUN_458a60(Unk458860 *object, int a, int b, int c)
     else
     {
         object->unk40->message(object->unk40, 0x1c, 0);
+    }
+}
+
+void FUN_440900();
+void FUN_440910();
+void FUN_458ad0(Unk457e70 *object, int a);
+void FUN_458b30(Unk457e70 *object, int a);
+void FUN_458b60(Unk457e70 *object, int a);
+void FUN_458bc0(Unk457e70 *object, int a);
+void FUN_458bf0(Unk457e70 *object, int a);
+
+// Card list input: pick, move the selection, act on the selected card or format.
+// FUNCTION: STUNTGP_D3D 0x4588c0
+void FUN_4588c0(Unk457e70 *object, int msg)
+{
+    int id;
+    switch (msg)
+    {
+    case 1:
+        if (g_menuState.unk46bc && !object->unk1ec && object->count)
+        {
+            FUN_440910();
+            id = object->entries[object->unk20].id;
+            switch (g_menuState.unk46c8)
+            {
+            case 5:
+                FUN_458a60(object, id, 4, 0);
+                break;
+            case 3:
+                FUN_458a60(object, id, 2, 0);
+                break;
+            case 1:
+                FUN_458a60(object, id, 3, 0);
+                break;
+            }
+            FUN_440900();
+        }
+        break;
+    case 0x11:
+        FUN_458a60(object, 0, 6, g_menuState.unk46c0);
+        break;
+    case 0x10:
+        if (object->count)
+        {
+            id = object->entries[object->unk20].id;
+            switch (g_menuState.unk46c8)
+            {
+            case 1:
+                FUN_458ad0(object, id);
+                return;
+            case 2:
+                FUN_458b30(object, id);
+                return;
+            case 3:
+                FUN_458b60(object, id);
+                return;
+            case 4:
+                FUN_458bc0(object, id);
+                return;
+            case 5:
+                FUN_458bf0(object, id);
+                return;
+            }
+        }
+        break;
+    case 0xb:
+        if (object->count && object->unk20 > 0)
+        {
+            object->unk1c = 0;
+            object->unk20--;
+            FUN_440890(msg);
+        }
+        break;
+    case 0xc:
+        if (object->count && object->unk20 < object->count - 1)
+        {
+            object->unk1c = 0;
+            object->unk20++;
+            FUN_440890(msg);
+        }
+        break;
     }
 }
 
@@ -5186,6 +5426,53 @@ void FUN_458bf0(Unk457e70 *object, int a)
     }
 }
 
+void FUN_458d00(Unk457e70 *object);
+void FUN_458d50(Unk457e70 *object, int mode, int card);
+int FUN_457a40(Unk457e70 *object);
+
+// FUNCTION: STUNTGP_D3D 0x458c50
+void FUN_458c50(Unk457e70 *object, int msg)
+{
+    switch (msg)
+    {
+    case 1:
+        if (object->unk1f8)
+        {
+            object->unk1f8--;
+            break;
+        }
+        FUN_458d50(object, object->unk1ec, object->unk1f4);
+        if (!object->unk1f0)
+        {
+            int mode = object->unk1ec;
+            if (mode != 6)
+            {
+                FUN_440880(8);
+            }
+            if (mode != 1)
+            {
+                if (mode != 6)
+                {
+                    g_menuState.unk46e0 = 1;
+                }
+                FUN_458d00(object);
+                FUN_458800(object);
+            }
+            else
+            {
+                FUN_457a40(object);
+            }
+            FUN_458860(object);
+        }
+        else
+        {
+            FUN_440880(7);
+            object->unk40->message(object->unk40, 0x1c, 0);
+        }
+        break;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x458d00
 void FUN_458d00(Unk457e70 *object)
 {
@@ -5282,6 +5569,112 @@ int FUN_458eb0()
     FUN_43d280();
     FUN_458ea0();
     return 0;
+}
+
+void FUN_459070(Unk457e70 *object, int textId);
+
+// Message handler of the memory card confirmation.
+// FUNCTION: STUNTGP_D3D 0x458f30
+void FUN_458f30(Unk457e70 *object, int msg)
+{
+    switch (msg)
+    {
+    case 0xb:
+    case 0xc:
+        object->unk40->message(object->unk40, msg, 0);
+        return;
+    case 0x11:
+        FUN_440890(msg);
+        FUN_458860(object);
+        return;
+    case 0x10:
+        switch (object->unk40->message(object->unk40, 0x1a, 0))
+        {
+        case 1:
+            FUN_440880(2);
+            FUN_458860(object);
+            return;
+        case 0:
+            FUN_440880(3);
+            object->unk1e8 = 0;
+            return;
+        }
+        break;
+    case 3:
+        if (object->unk1ec && object->unk1e8)
+        {
+            if (object->unk1ec == 6)
+            {
+                switch (g_menuState.unk46c8)
+                {
+                case 1:
+                    FUN_459070(object, 0x237);
+                    return;
+                case 2:
+                    FUN_459070(object, 0x238);
+                    return;
+                case 3:
+                    FUN_459070(object, 0x239);
+                    return;
+                case 4:
+                    FUN_459070(object, 0x23a);
+                    return;
+                case 5:
+                    FUN_459070(object, 0x23b);
+                    return;
+                }
+            }
+            else
+            {
+                FUN_459070(object, object->unk1ec + 0x230);
+            }
+        }
+        break;
+    }
+}
+
+// Yes/no confirmation panel for a memory card operation.
+// FUNCTION: STUNTGP_D3D 0x459070
+void FUN_459070(Unk457e70 *object, int textId)
+{
+    FUN_439450(440.0f, 332.0f, 600.0f, 432.0f, 10, 0x6e, 0x40);
+    FUN_439380(440.0f, 332.0f, 600.0f, 432.0f, 13, 2, 0, 0.0f);
+    FUN_439450(40.0f, 332.0f, 408.0f, 432.0f, 10, (FUN_43dd60() & 0x20) ? 0x6f : 0x70, 0x40);
+    FUN_439380(40.0f, 332.0f, 408.0f, 432.0f, 13, 2, 0x100, 0.0f);
+    FUN_438ba0(224.0f, 382.0f, 12, 4, textId, 1.5f, 0xffffffff, 0x803);
+    object->unk40->message(object->unk40, 3, 0);
+}
+
+// Message handler of the memory card error prompt.
+// FUNCTION: STUNTGP_D3D 0x459160
+void FUN_459160(Unk457e70 *object, int msg)
+{
+    switch (msg)
+    {
+    case 0xb:
+    case 0xc:
+        object->unk40->message(object->unk40, msg, 0);
+        return;
+    case 0x11:
+        FUN_440890(msg);
+        FUN_458860(object);
+        return;
+    case 0x10:
+        switch (object->unk40->message(object->unk40, 0x1a, 0))
+        {
+        case 1:
+            FUN_440880(2);
+            FUN_458860(object);
+            return;
+        case 0:
+            object->unk1f0 = 0;
+            return;
+        }
+        break;
+    case 3:
+        FUN_459070(object, object->unk1ec + 0x23b);
+        break;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x459300

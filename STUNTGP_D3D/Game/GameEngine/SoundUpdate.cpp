@@ -1,5 +1,6 @@
 #include "GameUpdate.h"
 #include "../../sound.h"
+#include "../../vecmath.h"
 
 #include <stdlib.h>
 #include <time.h>
@@ -134,6 +135,81 @@ void FUN_45f5b0()
     g_62def8 = date->tm_mday;
     g_62defc = date->tm_mon + 1;
     g_62df00 = date->tm_year + 1900;
+}
+
+// Fixed ambient sound sources mixed into the music stream's pan and volume.
+struct SoundSource
+{
+    int active; // 0x00, 0 ends the list
+    Vec4 pos;   // 0x04
+};
+
+// GLOBAL: STUNTGP_D3D 0x489960
+SoundSource g_489960[6] = {
+    {1, {-9696.43f, 377.65768f, -11996.635f, 0.0f}},
+    {1, {28197.287f, 1044.4576f, -10692.482f, 0.0f}},
+    {1, {7018.703f, 528.0027f, 11557.975f, 0.0f}},
+    {1, {-3053.0403f, 773.41156f, 1493.3982f, 0.0f}},
+    {1, {-29832.363f, 402.98206f, -2033.9105f, 0.0f}},
+    {0},
+};
+
+void FUN_45f7d0(int pan, int volume);
+
+// Pans and fades the music towards the ambient sources within 40000 units of the camera.
+// FUNCTION: STUNTGP_D3D 0x45f640
+void FUN_45f640()
+{
+    float volume = 0.0f;
+    float pan = 0.0f;
+    DWORD count = 0;
+    if (!g_489960[0].active)
+    {
+        return;
+    }
+    SoundSource *src = g_489960;
+    do
+    {
+        Vec4 pos = src->pos;
+        Vec4 d;
+        d.x = g_4722d0->cam.pos.x - pos.x;
+        d.y = g_4722d0->cam.pos.y - pos.y;
+        d.z = g_4722d0->cam.pos.z - pos.z;
+        float side = (d.x * g_4722d0->axisX.x + d.y * g_4722d0->axisX.y + d.z * g_4722d0->axisX.z) * 0.006375f;
+        float dist;
+        FUN_44eda0(&d.x, &dist);
+        if (dist < 40000.0f)
+        {
+            float level = (40000.0f - dist) * 2.5e-05f;
+            if (level > 1.0f)
+            {
+                level = 1.0f;
+            }
+            count++;
+            volume += level * 255.0f;
+            pan += side;
+        }
+        src++;
+    } while (src->active);
+    if (count)
+    {
+        float n = count;
+        pan /= n;
+        volume = volume / n + 63.0f;
+        if (volume > 255.0f)
+        {
+            volume = 255.0f;
+        }
+        if (pan < -255.0f)
+        {
+            pan = -255.0f;
+        }
+        else if (pan > 255.0f)
+        {
+            pan = 255.0f;
+        }
+        FUN_45f7d0((int)pan, (int)volume);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x45f7c0
@@ -808,6 +884,103 @@ void FUN_461300(int channel, int loop, DWORD frequency, DWORD volume, Vec4 *pos,
     }
 }
 
+// Plays a sample at a world position with distance attenuation, pan from the nearest camera and
+// Doppler from the relative velocity, or through FUN_461300 for 3D samples while 3D sound is on.
+// FUNCTION: STUNTGP_D3D 0x4614a0
+void FUN_4614a0(int channel, int loop, DWORD frequency, DWORD volume, Vec4 *pos, Vec4 *velocity, int keep,
+                int *slotIndex)
+{
+    if (g_4897b4 == 1 && g_62e118[channel].type == 2)
+    {
+        FUN_461300(channel, loop, frequency, volume, pos, velocity, keep, slotIndex);
+        return;
+    }
+    if (!g_soundInitialised)
+    {
+        return;
+    }
+    LPDIRECTSOUNDBUFFER buffer = g_62e118[channel].buffer;
+    if (!buffer)
+    {
+        return;
+    }
+    GameSlot *slot = FUN_461270(pos);
+    Vec4 d;
+    d.x = slot->cam.pos.x - pos->x;
+    d.y = slot->cam.pos.y - pos->y;
+    d.z = slot->cam.pos.z - pos->z;
+    Vec4 dir = d;
+    float dist;
+    FUN_44eda0(&d.x, &dist);
+    if (dist > g_4897a0)
+    {
+        return;
+    }
+    float att = (g_4897a0 - dist) * g_4897a8;
+    if (att > 1.0f)
+    {
+        att = 1.0f;
+    }
+    int level = (int)(volume * att);
+    if (slotIndex)
+    {
+        *slotIndex = channel;
+    }
+    if (!keep)
+    {
+        if (FUN_460f70(&buffer, channel, slotIndex) != 1)
+        {
+            return;
+        }
+    }
+    int pan = (int)((dir.x * slot->axisX.x + dir.y * slot->axisX.y + dir.z * slot->axisX.z) * (255.0f / g_4897a8));
+    if (pan < -255)
+    {
+        pan = -255;
+    }
+    else if (pan > 255)
+    {
+        pan = 255;
+    }
+    if (!frequency)
+    {
+        frequency = g_62e118[channel].rate;
+    }
+    if (velocity)
+    {
+        Vec4 rel;
+        rel.x = slot->velX - velocity->x;
+        rel.y = slot->velY - velocity->y;
+        rel.z = slot->velZ - velocity->z;
+        dist = (rel.x * d.x + rel.y * d.y + rel.z * d.z) * -0.0017647059f;
+        frequency = (DWORD)((dist + 1.0f) * frequency);
+    }
+    if (buffer->SetFrequency(frequency) != DS_OK)
+    {
+        return;
+    }
+    DWORD v = (DWORD)(g_sfxVolume * level) >> 8;
+    if (buffer->SetVolume(g_4897f8[v / 2]) != DS_OK)
+    {
+        return;
+    }
+    int value = g_4897f8[128 - ((abs(pan) + 1) >> 1)];
+    if (pan < 0)
+    {
+        value = -value;
+    }
+    if (buffer->SetPan(value) != DS_OK)
+    {
+        return;
+    }
+    if (loop == 1)
+    {
+        loop = DSBPLAY_LOOPING;
+    }
+    buffer->Play(0, 0, loop);
+    g_62f5b4++;
+}
+
 // Moves a playing 3D sound; it is stopped once it is out of range of the nearest camera.
 // FUNCTION: STUNTGP_D3D 0x461730
 void FUN_461730(int *channel, DWORD frequency, int volume, Vec4 *pos, Vec4 *velocity)
@@ -850,6 +1023,84 @@ void FUN_461730(int *channel, DWORD frequency, int volume, Vec4 *pos, Vec4 *velo
     }
     buffer->SetFrequency(frequency);
     buffer->SetVolume(g_4897f8[(DWORD)(g_sfxVolume * volume) >> 9]);
+}
+
+// Moves a playing positional sample: attenuation, pan and Doppler as in FUN_4614a0; it is stopped
+// once it is out of range of the nearest camera.
+// FUNCTION: STUNTGP_D3D 0x461850
+void FUN_461850(int *channel, DWORD frequency, DWORD volume, Vec4 *pos, Vec4 *velocity)
+{
+    if (g_4897b4 == 1 && g_62e118[*channel].type == 2)
+    {
+        FUN_461730(channel, frequency, volume, pos, velocity);
+        return;
+    }
+    if (!g_soundInitialised)
+    {
+        return;
+    }
+    SoundChannel *ch = &g_62e118[*channel];
+    LPDIRECTSOUNDBUFFER buffer = ch->buffer;
+    if (!buffer)
+    {
+        return;
+    }
+    GameSlot *slot = FUN_461270(pos);
+    Vec4 d;
+    d.x = slot->cam.pos.x - pos->x;
+    d.y = slot->cam.pos.y - pos->y;
+    d.z = slot->cam.pos.z - pos->z;
+    Vec4 dir = d;
+    float dist;
+    FUN_44eda0(&d.x, &dist);
+    if (dist > g_4897a0)
+    {
+        FUN_460d90(channel);
+        return;
+    }
+    float att = (g_4897a0 - dist) * g_4897a8;
+    if (att > 1.0f)
+    {
+        att = 1.0f;
+    }
+    int level = (int)(volume * att);
+    int pan = (int)((dir.x * slot->axisX.x + dir.y * slot->axisX.y + dir.z * slot->axisX.z) * g_4897a8 * 255.0f);
+    if (pan < -255)
+    {
+        pan = -255;
+    }
+    else if (pan > 255)
+    {
+        pan = 255;
+    }
+    if (!frequency)
+    {
+        frequency = ch->rate;
+    }
+    if (velocity)
+    {
+        Vec4 rel;
+        rel.x = slot->velX - velocity->x;
+        rel.y = slot->velY - velocity->y;
+        rel.z = slot->velZ - velocity->z;
+        dist = (rel.x * d.x + rel.y * d.y + rel.z * d.z) * -0.0017647059f;
+        frequency = (DWORD)((dist + 1.0f) * frequency);
+    }
+    if (buffer->SetFrequency(frequency) != DS_OK)
+    {
+        return;
+    }
+    DWORD v = (DWORD)(g_sfxVolume * level) >> 8;
+    if (buffer->SetVolume(g_4897f8[v / 2]) != DS_OK)
+    {
+        return;
+    }
+    int value = g_4897f8[128 - ((abs(pan) + 1) >> 1)];
+    if (pan < 0)
+    {
+        value = -value;
+    }
+    buffer->SetPan(value);
 }
 
 // FUNCTION: STUNTGP_D3D 0x461ae0

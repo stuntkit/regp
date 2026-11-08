@@ -71,7 +71,7 @@ struct Unk459790
     int unk78;         // 0x78
     int unk7c;         // 0x7c
     int unk80[8];      // 0x80
-    int unka0[8];      // 0xa0
+    float unka0[8];    // 0xa0
 };
 
 int FUN_437d20(ScoreEntry *entry, Initials *name, int score);
@@ -324,7 +324,7 @@ void FUN_4529c0(MenuHolder *object);
 int FUN_4529e0(MenuHolder *object, int msg, int arg);
 int FUN_459790(Unk459790 *object, int arg);
 void FUN_459a20(MenuHolder *object);
-int FUN_459a40(PoolObject *object, int msg, int arg);
+int FUN_459a40(Unk459790 *object, int msg, int arg);
 int FUN_45a360(MenuHolder *object, int arg);
 void FUN_45a3f0(MenuHolder *object);
 int FUN_45a410(PoolObject *object, int msg, int arg);
@@ -504,7 +504,7 @@ PoolClass g_488c90 = {(void (*)(PoolObject *))FUN_457ea0, FUN_457ec0};
 PoolClass g_488d28 = {(void (*)(PoolObject *))FUN_459300, (int (*)(PoolObject *, int, int))FUN_459320};
 
 // GLOBAL: STUNTGP_D3D 0x488dd0
-PoolClass g_488dd0 = {(void (*)(PoolObject *))FUN_459a20, FUN_459a40};
+PoolClass g_488dd0 = {(void (*)(PoolObject *))FUN_459a20, (int (*)(PoolObject *, int, int))FUN_459a40};
 
 // GLOBAL: STUNTGP_D3D 0x488e68
 PoolClass g_488e68 = {(void (*)(PoolObject *))FUN_45a3f0, FUN_45a410};
@@ -3187,19 +3187,19 @@ int FUN_459790(Unk459790 *object, int arg)
             object->unk54 = 0;
         }
     }
-    if (FUN_437d60(&g_menuState.unk0114[row][0], &g_menuState.unk1b080, g_menuState.results[0].unk04))
+    if (FUN_437d60(&g_menuState.unk0114[row][0], &g_menuState.names[0].name, g_menuState.results[0].unk04))
     {
         object->unk48 = 2;
     }
-    if (FUN_437d60(&g_menuState.unk0114[row][1], &g_menuState.unk1b080, g_menuState.results[0].unk08))
+    if (FUN_437d60(&g_menuState.unk0114[row][1], &g_menuState.names[0].name, g_menuState.results[0].unk08))
     {
         object->unk4c = 2;
     }
-    if (FUN_437d20(&g_menuState.unk0114[row][2], &g_menuState.unk1b080, g_menuState.results[0].unk0c))
+    if (FUN_437d20(&g_menuState.unk0114[row][2], &g_menuState.names[0].name, g_menuState.results[0].unk0c))
     {
         object->unk50 = 2;
     }
-    if (FUN_437d20(&g_menuState.unk0114[row][3], &g_menuState.unk1b080, g_menuState.results[0].unk10))
+    if (FUN_437d20(&g_menuState.unk0114[row][3], &g_menuState.names[0].name, g_menuState.results[0].unk10))
     {
         object->unk54 = 2;
     }
@@ -3249,10 +3249,297 @@ int FUN_459790(Unk459790 *object, int arg)
     return 1;
 }
 
-// STUB: STUNTGP_D3D 0x459a40
-int FUN_459a40(PoolObject *object, int msg, int arg)
+void FUN_459ec0(Unk459790 *object);
+void FUN_45a280(Unk459790 *object);
+void FUN_45a350();
+
+// Results screen: counts the race score, then each bonus in turn, into the total.
+// FUNCTION: STUNTGP_D3D 0x459a40
+int FUN_459a40(Unk459790 *object, int msg, int arg)
 {
+    int v;
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(1);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(0x5f, 0.3f, -0.5f);
+    case 0x14:
+        object->child->message(object->child, msg, 0);
+        return 0;
+    case 0x10:
+        object->child->message(object->child, msg, 0);
+        FUN_43bf30();
+        FUN_43eef0();
+        return 0;
+    case 2:
+    {
+        object->child->message(object->child, msg, 0);
+        float *fade = object->unka0;
+        for (int i = 8; i; i--)
+        {
+            *fade = FUN_43d810(*fade, 0.0f, 0.001f);
+            fade++;
+        }
+        return 0;
+    }
+    case 1:
+        v = object->unk24;
+        if (v)
+        {
+            int step = v;
+            if (step > 1000)
+            {
+                step = 1000;
+            }
+            int frequency = (object->unk2c - v) / 20 + 20000;
+            if (frequency > 44000)
+            {
+                frequency = 44000;
+            }
+            if (object->unk20 % 3 == 0)
+            {
+                FUN_440770(11, frequency);
+            }
+            object->unk24 = v - step;
+            object->unk28 += step;
+            object->unk20++;
+            return 0;
+        }
+        if (object->unk1c)
+        {
+            object->unk1c--;
+            return 0;
+        }
+        switch (object->unk18)
+        {
+        case 0:
+            object->unk1c = 60;
+            object->unk18 = 1;
+            return 0;
+        case 1:
+            v = object->unk30;
+            if (v)
+            {
+                object->unk74 = 15;
+                object->unk70 = v;
+                object->unk1c = 60;
+                object->unk20 = 0;
+                FUN_45a350();
+            }
+            object->unk24 = v;
+            object->unk2c = v;
+            object->unk30 = 0;
+            if (!v)
+            {
+                object->unk18 = 2;
+                return 0;
+            }
+            break;
+        case 2:
+            v = object->unk38;
+            if (v)
+            {
+                if (object->unk48 == 1)
+                {
+                    object->unka0[object->unk78] = 1.0f;
+                    object->unk80[object->unk78] = 0x4d;
+                    object->unk78++;
+                }
+                if (object->unk48 == 2)
+                {
+                    object->unka0[object->unk78] = 1.0f;
+                    object->unk80[object->unk78] = 0x51;
+                    object->unk78++;
+                }
+                v = object->unk38;
+                object->unk74 = 16;
+                object->unk70 = v;
+                object->unk1c = 60;
+                object->unk20 = 0;
+                FUN_45a350();
+            }
+            object->unk24 = v;
+            object->unk2c = v;
+            object->unk38 = 0;
+            if (!v)
+            {
+                object->unk18 = 3;
+                return 0;
+            }
+            break;
+        case 3:
+            v = object->unk3c;
+            if (v)
+            {
+                if (object->unk4c == 1)
+                {
+                    object->unka0[object->unk78] = 1.0f;
+                    object->unk80[object->unk78] = 0x50;
+                    object->unk78++;
+                }
+                if (object->unk4c == 2)
+                {
+                    object->unka0[object->unk78] = 1.0f;
+                    object->unk80[object->unk78] = 0x54;
+                    object->unk78++;
+                }
+                v = object->unk3c;
+                object->unk74 = 17;
+                object->unk70 = v;
+                object->unk1c = 60;
+                object->unk20 = 0;
+                FUN_45a350();
+            }
+            object->unk24 = v;
+            object->unk2c = v;
+            object->unk3c = 0;
+            if (!v)
+            {
+                object->unk18 = 4;
+                return 0;
+            }
+            break;
+        case 4:
+            v = object->unk44;
+            if (v)
+            {
+                if (object->unk54 == 1)
+                {
+                    object->unka0[object->unk78] = 1.0f;
+                    object->unk80[object->unk78] = 0x4f;
+                    object->unk78++;
+                }
+                if (object->unk54 == 2)
+                {
+                    object->unka0[object->unk78] = 1.0f;
+                    object->unk80[object->unk78] = 0x53;
+                    object->unk78++;
+                }
+                v = object->unk44;
+                object->unk74 = 18;
+                object->unk70 = v;
+                object->unk1c = 60;
+                object->unk20 = 0;
+                FUN_45a350();
+            }
+            object->unk24 = v;
+            object->unk2c = v;
+            object->unk44 = 0;
+            if (!v)
+            {
+                object->unk18 = 5;
+                return 0;
+            }
+            break;
+        case 5:
+            v = object->unk34;
+            if (v)
+            {
+                object->unk74 = 19;
+                object->unk70 = v;
+                object->unk1c = 60;
+                object->unk20 = 0;
+                FUN_45a350();
+            }
+            object->unk24 = v;
+            object->unk2c = v;
+            object->unk34 = 0;
+            if (!v)
+            {
+                object->unk18 = 6;
+                FUN_440880(13);
+                return 0;
+            }
+            break;
+        case 6:
+            object->unk74 = 0;
+            object->unk70 = 0;
+            return 0;
+        }
+        break;
+    case 3:
+        FUN_459ec0(object);
+        FUN_45a280(object);
+        FUN_438190(0.0f, 0.0f, 640.0f, 480.0f);
+        object->child->message(object->child, msg, 0);
+        FUN_4392b0(0x1fa, 0);
+        break;
+    }
     return 0;
+}
+
+
+void FUN_438740(int layer, int def, float x, float y, float scale, DWORD flags, float fade);
+
+// Results table: per finisher in order its position, name, two times and score, then the total
+// and the medal bonus.
+// FUNCTION: STUNTGP_D3D 0x459ec0
+void FUN_459ec0(Unk459790 *object)
+{
+    FUN_439450(120.0f, 90.0f, 520.0f, 380.0f, 10, 0x6e, 0x40);
+    FUN_439380(120.0f, 90.0f, 520.0f, 380.0f, 13, 2, 0, 0.0f);
+    FUN_438be0(150.0f, 110.0f, 12, 4, 9, 1.25f, 0xffff8080, 3);
+    FUN_438be0(200.0f, 110.0f, 12, 4, 10, 1.25f, 0xffff8080, 2);
+    FUN_438be0(320.0f, 110.0f, 12, 4, 11, 1.25f, 0xffff8080, 6);
+    FUN_438be0(410.0f, 110.0f, 12, 4, 13, 1.25f, 0xffff8080, 6);
+    FUN_438be0(500.0f, 110.0f, 12, 4, 12, 1.25f, 0xffff8080, 6);
+    float y = 130.0f;
+    int *order = object->unk58;
+    for (int n = 6; n; n--)
+    {
+        int r = *order;
+        D3DCOLOR color = r ? 0xff808080 : 0xffffffff;
+        FUN_438be0(150.0f, y, 12, 4, g_menuState.results[r].position + 2, 1.25f, color, 3);
+        FUN_438960(200.0f, y, 12, 0, 4, FUN_43d690(&g_menuState.names[r].name)->c, 1.25f, color, 2);
+        FUN_438a20(320.0f, y, 12, 0, 4, FUN_43d550(g_menuState.results[r].unk04), 1.25f, color, 6, 14.0f);
+        FUN_438a20(394.0f, y, 12, 0, 4, FUN_43d550(g_menuState.results[r].unk08), 1.25f, color, 6, 14.0f);
+        // STRING: STUNTGP_D3D 0x488de4
+        sprintf(g_627c54 + 0x40, "%d", g_menuState.results[r].unk10);
+        FUN_438a20(484.0f, y, 12, 0, 4, g_627c54 + 0x40, 1.25f, color, 6, 14.0f);
+        y += 20.0f;
+        order++;
+    }
+    y += 10.0f;
+    // STRING: STUNTGP_D3D 0x488de8
+    sprintf(g_627c54 + 0x40, "%07d", object->unk28);
+    if (object->unk18 == 6)
+    {
+        float y2 = y + 20.0f;
+        FUN_438be0(280.0f, y2, 12, 4, 14, 1.875f, 0xffff8080, 6);
+        FUN_438a20(410.0f, y2, 12, 0, 4, g_627c54 + 0x40, 1.875f, 0xffffffff, 6, 14.0f);
+    }
+    else
+    {
+        FUN_438be0(300.0f, y, 12, 4, 14, 1.25f, 0xffff8080, 6);
+        FUN_438a20(384.0f, y, 12, 0, 4, g_627c54 + 0x40, 1.25f, 0xffffffff, 6, 14.0f);
+    }
+    y += 30.0f;
+    if (object->unk74 && object->unk70)
+    {
+        FUN_438be0(300.0f, y, 12, 4, object->unk74, 1.25f, 0xffff8080, 6);
+        // STRING: STUNTGP_D3D 0x488df0
+        sprintf(g_627c54 + 0x40, "+%d", object->unk70);
+        FUN_438a20(384.0f, y, 12, 0, 4, g_627c54 + 0x40, 1.25f, 0xffffffff, 6, 14.0f);
+    }
+}
+
+// Row of medals won on the results screen.
+// FUNCTION: STUNTGP_D3D 0x45a280
+void FUN_45a280(Unk459790 *object)
+{
+    float x = 320.0f - (object->unk7c - 1) * 30.0f;
+    for (int i = 0; i < object->unk78; i++)
+    {
+        FUN_438710(x, 338.0f, 12, 0x55, 0.75f, 0x203);
+        FUN_438710(x, 338.0f, 11, object->unk80[i], 0.75f, 0x103);
+        float fade = object->unka0[i];
+        if (fade > 0.0001)
+        {
+            FUN_438740(10, 0x56, x, 338.0f, 0.75f, 0x403, fade);
+        }
+        x += 60.0f;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x45a360
@@ -3504,6 +3791,60 @@ int FUN_45a9c0(Unk45a9c0 *object, int arg)
 int FUN_45abb0(PoolObject *object, int msg, int arg)
 {
     return 0;
+}
+
+// GLOBAL: STUNTGP_D3D 0x627ed8
+char g_627ed8[0x80];
+
+Initials *FUN_43d690(Initials *name);
+
+// Championship table: per slot its name, sponsor, money and points, with a pulsing bar on the
+// selected row.
+// FUNCTION: STUNTGP_D3D 0x45af60
+void FUN_45af60(Unk45a9c0 *object)
+{
+    float slide = (object->unk24 - 1.0f) * 640.0f;
+    float x0 = slide + 40.0f;
+    float x1 = slide + 600.0f;
+    FUN_439450(x0, 91.0f, x1, 299.0f, 10, 0x6e, 0x40);
+    FUN_439380(x0, 91.0f, x1, 299.0f, 13, 2, 0, 0.0f);
+    int selected = object->unk1c;
+    float y = 111.0f;
+    float x = x0 + 100.0f - 12.0f;
+    float xi = x + 4.0f;
+    MenuSlot160 *slot = g_menuState.unk0f1c;
+    for (int i = 0; i < 8; i++, slot++)
+    {
+        D3DCOLOR color = i != selected ? 0xffffffff : 0xffff8080;
+        FUN_438be0(xi, y, 12, 4, i + 0x2f, 1.5f, color, 6);
+        if (!slot->unk000)
+        {
+            FUN_438be0(x + 16.0f, y, 12, 4, 0x37, 1.5f, color, 2);
+        }
+        else
+        {
+            FUN_438960(x + 16.0f, y, 12, 0, 4, FUN_43d690(&slot->name)->c, 1.5f, color, 2);
+            // STRING: STUNTGP_D3D 0x4890d4
+            sprintf(g_627ed8, "(%s)", FUN_441170(slot->sponsor + 0x1ea));
+            FUN_438960(x + 64.0f, y, 12, 0, 4, g_627ed8, 1.5f, color, 2);
+            FUN_438be0(x + 192.0f - 24.0f, y, 12, 4, 0x1b, 1.5f, color, 3);
+            FUN_438a20(x + 264.0f, y, 12, 0, 4, g_627cd8[0][i], 1.5f, color, 6, 14.0f);
+            FUN_438be0(x + 352.0f - 16.0f, y, 12, 4, 0x39, 1.5f, color, 6);
+            FUN_438a20(x + 376.0f, y, 12, 0, 4, g_627cd8[1][i], 1.5f, color, 6, 14.0f);
+            FUN_438be0(x + 396.0f, y, 12, 4, 0x38, 1.5f, color, 2);
+            // STRING: STUNTGP_D3D 0x4890dc
+            sprintf(g_627ed8, "%d", slot->unk008);
+            FUN_438960(x + 460.0f, y, 12, 0, 4, g_627ed8, 1.5f, color, 6);
+        }
+        y += 24.0f;
+    }
+    int pulse = (object->unk20 - 32) & 0x3f;
+    float cy = object->unk2c * 24.0f + 111.0f;
+    if (pulse >= 32)
+    {
+        pulse = 64 - pulse;
+    }
+    FUN_439380(x0, cy - 16.0f, x1, cy + 16.0f, 11, 4, 0x400, (pulse + 32) * 0.015625f);
 }
 
 // Prompt box under the slot list; the text depends on whether the slot is in use.
