@@ -13,6 +13,17 @@ struct Unk4d5cc0
     BYTE unk40[0x19d00 - 0x40];
 };
 
+// Scene to load into g_636418[slot]; the list ends at id 0.
+struct SceneLoad
+{
+    int id;   // 0x00
+    int slot; // 0x04
+};
+
+extern SceneLoad g_58c540[24];
+extern int g_58c808;
+extern int g_58c234;
+
 extern int g_589e08;
 extern int g_624984;
 

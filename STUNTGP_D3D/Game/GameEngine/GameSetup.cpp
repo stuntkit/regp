@@ -1317,6 +1317,9 @@ DWORD g_61c508;
 // GLOBAL: STUNTGP_D3D 0x61c510
 int g_61c510;
 
+// GLOBAL: STUNTGP_D3D 0x61c514
+int g_61c514;
+
 // GLOBAL: STUNTGP_D3D 0x61c520
 int g_61c520;
 
@@ -1542,9 +1545,54 @@ void FUN_42b200()
     g_6243dc = ((int)g_6243d8 - (int)g_61c5f8) / 20;
 }
 
-// STUB: STUNTGP_D3D 0x429a40
+extern int g_6244d4;
+extern int g_6244e4;
+extern int g_61c510;
+extern int g_61c514;
+extern int g_61c520;
+
+// Perspective-divides the queued vertex lists into screen space.
+// FUNCTION: STUNTGP_D3D 0x429a40
 void FUN_429a40()
 {
+    float offY;
+    float scaleY;
+    float offX;
+    float scaleX;
+    scaleX = g_576b9c;
+    scaleY = g_576ba0;
+    offX = g_576b94;
+    offY = g_576b98;
+    int n = (g_61c520 - g_61c5ec) >> 2;
+    float **list = (float **)g_61c5ec;
+    while (n-- > 0)
+    {
+        float *v = *list++;
+        float s = 1.0f / (v[7] + 1.0f);
+        v[0] = s * v[0] * scaleX + offX;
+        v[1] = s * v[1] * scaleY + offY;
+        v[7] = s * 32.0f;
+    }
+    float *v = (float *)g_6244d4;
+    n = (g_6244e4 - g_6244d4) >> 5;
+    while (n-- > 0)
+    {
+        float s = 1.0f / (v[7] + 1.0f);
+        v[0] = s * v[0] * scaleX + offX;
+        v[1] = s * v[1] * scaleY + offY;
+        v[7] = s * 32.0f;
+        v += 8;
+    }
+    n = (g_61c510 - g_61c514) >> 5;
+    v = (float *)g_61c514;
+    while (n-- > 0)
+    {
+        float s = 1.0f / (v[7] + 1.0f);
+        v[0] = s * v[0] * scaleX + offX;
+        v[1] = s * v[1] * scaleY + offY;
+        v[7] = s * 32.0f;
+        v += 8;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x42a840
@@ -1639,13 +1687,6 @@ void FUN_42e6e0()
     g_6244f8 = 1;
     g_57b41c = 0;
 }
-
-// Scene to load into g_636418[slot]; the list ends at id 0.
-struct SceneLoad
-{
-    int id;   // 0x00
-    int slot; // 0x04
-};
 
 // GLOBAL: STUNTGP_D3D 0x58c230
 int g_58c230;

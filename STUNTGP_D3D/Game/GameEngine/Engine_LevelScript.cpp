@@ -1,6 +1,7 @@
 #include "Engine_LevelScript.h"
 
 #include "../../sound.h"
+#include "GameSetup.h"
 #include "GameUpdate.h"
 
 #include <stdio.h>
@@ -143,6 +144,40 @@ void FUN_42c6f0(char *text, char **end, char *value)
             i++;
         }
         *end = &text[i + 1];
+    }
+}
+
+// Queues each car's model and shadow scene from the L_CARn keys.
+// FUNCTION: STUNTGP_D3D 0x42c880
+void FUN_42c880(char *script)
+{
+    char shadowKey[16];
+    char key[16];
+    int slot = 4;
+    for (DWORD car = 1; car <= 6; car++)
+    {
+        // STRING: STUNTGP_D3D 0x477814
+        sprintf(key, "L_CAR%d", car);
+        // STRING: STUNTGP_D3D 0x47781c
+        sprintf(shadowKey, "L_CAR%dSHADOW", car);
+        if (Script_FindKey(script, &script, key) != 1)
+        {
+            return;
+        }
+        Script_ReadString(script, &script, (char *)g_58c234);
+        g_58c540[g_58c808].id = g_58c234;
+        g_58c234 += strlen((char *)g_58c234) + 1;
+        g_58c540[g_58c808].slot = slot;
+        g_58c808++;
+        g_58c540[g_58c808].id = 0;
+        Script_FindKey(script, &script, shadowKey);
+        Script_ReadString(script, &script, (char *)g_58c234);
+        g_58c540[g_58c808].id = g_58c234;
+        g_58c540[g_58c808].slot = slot + 1;
+        g_58c234 += strlen((char *)g_58c234) + 1;
+        g_58c808++;
+        g_58c540[g_58c808].id = 0;
+        slot += 2;
     }
 }
 
