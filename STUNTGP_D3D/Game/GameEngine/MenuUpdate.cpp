@@ -22,16 +22,6 @@ struct MenuInput
     int unk14;    // 0x14
 };
 
-struct Unk450930
-{
-    DWORD unk00[5];    // 0x00
-    int unk14;         // 0x14
-    int unk18;         // 0x18
-    float unk1c;       // 0x1c
-    float unk20;       // 0x20
-    PoolObject *child; // 0x24
-};
-
 struct Unk453460
 {
     DWORD unk00[6];    // 0x00
@@ -3581,6 +3571,31 @@ void FUN_450ac0(MenuObject *object)
 {
     object->unk1c = FUN_43d7b0(object->unk1c, -31.0f, 31.0f);
     object->unk20 = FUN_43d7b0(object->unk20, -31.0f, 31.0f);
+}
+
+void FUN_438230(int layer, int def, float x, float y, float middle, DWORD flags);
+void FUN_4385d0(int layer, int def, float x, float y, float middle, DWORD flags);
+
+// Nested frames inset from the screen edge, shown while the screen position is adjusted.
+// FUNCTION: STUNTGP_D3D 0x450b00
+void FUN_450b00(MenuObject *object)
+{
+    for (int i = 16; i < 200; i += 31)
+    {
+        float x = i;
+        float y = i;
+        int def = (i & 1) ? 0x3d : 0x3f;
+        float right = 640.0f - x;
+        float bottom = 480.0f - y;
+        float width = right - x - 32.0f;
+        float height = bottom - y - 32.0f;
+        float cx = (right + x) * 0.5f;
+        FUN_438230(12, def, cx, y, width, 0x103);
+        FUN_438230(12, def, cx, bottom, width, 0x103);
+        float cy = (bottom + y) * 0.5f;
+        FUN_4385d0(12, def, x, cy, height, 0x103);
+        FUN_4385d0(12, def, right, cy, height, 0x103);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x437de0

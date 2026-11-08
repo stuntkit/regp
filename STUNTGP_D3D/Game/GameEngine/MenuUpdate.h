@@ -445,7 +445,9 @@ struct MenuState
     int unk440c[26]; // 0x440c
     int unk4474;     // 0x4474
     int unk4478; // 0x4478
-    BYTE unk447c[0x44d0 - 0x447c];
+    int unk447c; // 0x447c
+    int unk4480; // 0x4480
+    BYTE unk4484[0x44d0 - 0x4484];
     int unk44d0; // 0x44d0
     char unk44d4[4][0x40]; // 0x44d4, names entered on PageEnterName
     int unk45d4;   // 0x45d4
@@ -554,6 +556,17 @@ struct MenuHolder
 {
     DWORD unk00[5];    // 0x00
     PoolObject *child; // 0x14
+};
+
+// Screen position page; unk1c/unk20 are the offsets being adjusted.
+struct Unk450930
+{
+    DWORD unk00[5];    // 0x00
+    int unk14;         // 0x14
+    int unk18;         // 0x18
+    float unk1c;       // 0x1c
+    float unk20;       // 0x20
+    PoolObject *child; // 0x24
 };
 
 // Controls page: each field cycles through its options.
