@@ -133,14 +133,16 @@ struct Wheel
     BYTE unk0008[0x4];  // 0x0008
     float unk0c;        // 0x000c
     float unk10;        // 0x0010
-    BYTE unk0014[0x8];  // 0x0014
+    BYTE unk0014[0x4];  // 0x0014
+    float unk18;        // 0x0018
     float unk1c;        // 0x001c
     BYTE unk0020[0x10]; // 0x0020
     float unk30;        // 0x0030
     float unk34;        // 0x0034
     float unk38;        // 0x0038
     Vec4 pos;           // 0x003c world position
-    BYTE unk004c[0x24]; // 0x004c
+    Vec4 unk4c;         // 0x004c
+    BYTE unk005c[0x14]; // 0x005c
     int unk70;          // 0x0070
     int unk74;          // 0x0074
     int unk78;          // 0x0078
@@ -182,6 +184,16 @@ struct TrailParams
     BYTE unk14[0xfc]; // 0x014
 };
 
+// Damped angular spring for a body panel, driven by FUN_417f10.
+struct CarWobble
+{
+    float ang[3]; // 0x00
+    float unk0c;  // 0x0c
+    float vel[3]; // 0x10
+    float unk1c;  // 0x1c
+    Vec4 dir;     // 0x20
+};
+
 struct CarFx
 {
     int active;         // 0x000
@@ -195,12 +207,24 @@ struct CarFx
 };
 
 
+struct MeshUv;
+
+// One ring entry of a skid mark: the two edge points' centre line and the mesh slot it fills.
+struct SkidPoint
+{
+    Vec4 a;    // 0x00
+    Vec4 b;    // 0x10
+    Vec4 dir;  // 0x20
+    int index; // 0x30, first of four points in the skid mesh
+};
+
 struct SkidMark
 {
-    int unk00;          // 0x000
-    int unk04;          // 0x004
-    DWORD unk08;        // 0x008
-    BYTE unk0c[0xd04];  // 0x00c
+    int unk00;            // 0x000
+    int unk04;            // 0x004
+    DWORD unk08;          // 0x008
+    MeshUv *unk0c;        // 0x00c
+    SkidPoint points[64]; // 0x010
 };
 
 // One per car.
@@ -307,14 +331,14 @@ struct Stat
 
 struct PosSample
 {
-    Vec4 pos;  // 0x00
-    int unk10; // 0x10
+    Vec4 pos;    // 0x00
+    float unk10; // 0x10
 };
 
 struct PosHistory
 {
     PosSample samples[8]; // 0x00
-    int unka0;            // 0xa0
+    DWORD unka0;          // 0xa0, ticks since the last sample
 };
 
 // 6 entries at 0x49a1f8
@@ -495,7 +519,7 @@ struct Car
     int unk2250;              // 0x2250
     float unk2254;            // 0x2254
     float unk2258;            // 0x2258
-    float unk225c;            // 0x225c
+    int unk225c;              // 0x225c
     int unk2260;              // 0x2260
     float unk2264;            // 0x2264
     int unk2268;              // 0x2268
@@ -667,7 +691,8 @@ struct Car
     int unk28a0;              // 0x28a0
     int unk28a4;              // 0x28a4
     int unk28a8;              // 0x28a8
-    BYTE unk28ac[0xc];        // 0x28ac
+    BYTE unk28ac[0x8];        // 0x28ac
+    int unk28b4;              // 0x28b4
     int unk28b8;              // 0x28b8
     TrailSlot unk28bc[2];     // 0x28bc
     float unk2cf4[4];         // 0x2cf4
@@ -676,7 +701,8 @@ struct Car
     Vec4 unk3138;             // 0x3138
     Vec4 unk3148;             // 0x3148
     float unk3158;            // 0x3158
-    BYTE unk315c[0x130];      // 0x315c
+    CarWobble unk315c[6];     // 0x315c
+    Vec4 unk327c;             // 0x327c
     CarFx unk328c;            // 0x328c
     CarFx unk33cc;            // 0x33cc
     BYTE unk350c[0x10];       // 0x350c
@@ -1132,4 +1158,25 @@ extern Car *g_474630;
 extern Driver g_60f02c[6];
 extern DWORD g_60f2b0;
 void FUN_401220(int type, int mode, unsigned int points);
+
+// 3D billboard draw request, filled from the template g_486538.
+struct Billboard
+{
+    DWORD unk00;      // 0x00
+    short texture;    // 0x04
+    short alpha;      // 0x06
+    DWORD colors[4];  // 0x08
+    Vec4 pos;         // 0x18
+    float size[3];    // 0x28
+    int unk34;        // 0x34
+    Vec4 unk38;       // 0x38
+    Vec4 dir;         // 0x48
+    int unk58;        // 0x58
+    int unk5c;        // 0x5c
+    int unk60;        // 0x60
+    int unk64;        // 0x64
+};
+
+extern Billboard g_486538;
+void FUN_434590(Billboard *billboard);
 #endif /* GAMEUPDATE_H */

@@ -11,6 +11,7 @@
 #include "Game/GameEngine/GameUpdate.h"
 #include "Game/GameEngine/RenderState.h"
 
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -2736,6 +2737,85 @@ void FUN_44fd60()
     g_renderState.unk62e8 = 0;
 }
 
+// Screen-space vertex for the 2D clipper; flags holds the inside bits for the four clip edges.
+struct ClipVertex
+{
+    float x;        // 0x00
+    float y;        // 0x04
+    float z;        // 0x08
+    float rhw;      // 0x0c
+    float u;        // 0x10
+    float v;        // 0x14
+    BYTE color[4];  // 0x18
+    DWORD flags;    // 0x1c
+};
+
+// Point where the edge a-b crosses clip edge 1 (left), 2 (right), 4 (top) or 8 (bottom).
+// FUNCTION: STUNTGP_D3D 0x4253e0
+void FUN_4253e0(ClipVertex *a, ClipVertex *b, ClipVertex *out, int edge)
+{
+    float da;
+    float db;
+    switch (edge)
+    {
+    case 1:
+        da = a->x - g_576c14;
+        db = b->x - g_576c14;
+        break;
+    case 2:
+        da = a->x - g_576c18;
+        db = b->x - g_576c18;
+        break;
+    case 4:
+        da = a->y - g_576c1c;
+        db = b->y - g_576c1c;
+        break;
+    case 8:
+        da = a->y - g_576c20;
+        db = b->y - g_576c20;
+        break;
+    }
+    float d = db - da;
+    float t;
+    if ((float)fabs(d) <= 1.0f)
+    {
+        t = 1.0f;
+    }
+    else
+    {
+        t = -(da / d);
+    }
+    float x = (b->x - a->x) * t + a->x;
+    out->x = x;
+    float y = (b->y - a->y) * t + a->y;
+    out->y = y;
+    out->z = (b->z - a->z) * t + a->z;
+    out->u = (b->u - a->u) * t + a->u;
+    out->v = (b->v - a->v) * t + a->v;
+    int f = (int)(t * 256.0f);
+    out->color[3] = (BYTE)(((b->color[3] - a->color[3]) * f >> 8) + a->color[3]);
+    out->color[2] = (BYTE)(((b->color[2] - a->color[2]) * f >> 8) + a->color[2]);
+    out->color[1] = (BYTE)(((b->color[1] - a->color[1]) * f >> 8) + a->color[1]);
+    out->color[0] = (BYTE)(((b->color[0] - a->color[0]) * f >> 8) + a->color[0]);
+    out->flags = 0xf;
+    if (x < g_576c14)
+    {
+        out->flags = 0xe;
+    }
+    else if (x > g_576c18)
+    {
+        out->flags = 0xd;
+    }
+    if (y < g_576c1c)
+    {
+        out->flags &= ~4;
+    }
+    else if (y > g_576c20)
+    {
+        out->flags &= ~8;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x425870
 void FUN_425870()
 {
@@ -2760,6 +2840,74 @@ void FUN_425ae0()
     g_5775d0[1][1] = 10000.0f;
     g_5775d0[2][1] = -10000.0f;
     g_5775d0[3][1] = -10000.0f;
+}
+
+// Finds the four corner points of an object's mesh: corners take the UVs of points whose
+// UV record carries id, the second UV slot otherwise.
+// FUNCTION: STUNTGP_D3D 0x425b50
+void FUN_425b50(ObjectDef *obj, int id)
+{
+    Vec4 *pt = obj->points;
+    MeshUv *uvs = (MeshUv *)obj->unk2c;
+    FUN_425ae0();
+    for (unsigned int i = 0; i < obj->pointCount; i++, pt++)
+    {
+        MeshUv *uv = &uvs[i];
+        if (uv->unk0a == (WORD)id)
+        {
+            if (pt->x <= g_5775d0[0][0] && pt->y <= g_5775d0[0][1])
+            {
+                *(Vec4 *)g_5775d0[0] = *pt;
+                g_5775d0[0][4] = uv->u;
+                g_5775d0[0][5] = uv->v;
+            }
+            else if (pt->x >= g_5775d0[1][0] && pt->y <= g_5775d0[1][1])
+            {
+                *(Vec4 *)g_5775d0[1] = *pt;
+                g_5775d0[1][4] = uv->u;
+                g_5775d0[1][5] = uv->v;
+            }
+            if (pt->x <= g_5775d0[2][0] && pt->y >= g_5775d0[2][1])
+            {
+                *(Vec4 *)g_5775d0[2] = *pt;
+                g_5775d0[2][4] = uv->u;
+                g_5775d0[2][5] = uv->v;
+            }
+            else if (pt->x >= g_5775d0[3][0] && pt->y >= g_5775d0[3][1])
+            {
+                *(Vec4 *)g_5775d0[3] = *pt;
+                g_5775d0[3][4] = uv->u;
+                g_5775d0[3][5] = uv->v;
+            }
+        }
+        else
+        {
+            if (pt->x <= g_5775d0[0][0] && pt->y <= g_5775d0[0][1])
+            {
+                g_5775d0[0][6] = uv->u;
+                g_5775d0[0][7] = uv->v;
+            }
+            else if (pt->x >= g_5775d0[1][0] && pt->y <= g_5775d0[1][1])
+            {
+                g_5775d0[1][6] = uv->u;
+                g_5775d0[1][7] = uv->v;
+            }
+            if (pt->x <= g_5775d0[2][0] && pt->y >= g_5775d0[2][1])
+            {
+                g_5775d0[2][6] = uv->u;
+                g_5775d0[2][7] = uv->v;
+            }
+            else if (pt->x >= g_5775d0[3][0] && pt->y >= g_5775d0[3][1])
+            {
+                g_5775d0[3][6] = uv->u;
+                g_5775d0[3][7] = uv->v;
+            }
+        }
+    }
+    g_5775d0[0][2] = 0.0f;
+    g_5775d0[1][2] = 0.0f;
+    g_5775d0[2][2] = 0.0f;
+    g_5775d0[3][2] = 0.0f;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42e420

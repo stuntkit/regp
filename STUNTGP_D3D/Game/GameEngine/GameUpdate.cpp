@@ -1130,6 +1130,63 @@ ReplayFrame *g_570ac4;
 // GLOBAL: STUNTGP_D3D 0x4d5cb8
 ReplayFrame *g_4d5cb8;
 
+// Car basis from the replay, interpolated between the previous and current frame.
+// FUNCTION: STUNTGP_D3D 0x41a000
+void FUN_41a000()
+{
+    Vec4 py;
+    py.x = g_4d5cb8->axisY[0] * (1.0f / 127.0f);
+    py.y = g_4d5cb8->axisY[1] * (1.0f / 127.0f);
+    py.z = g_4d5cb8->axisY[2] * (1.0f / 127.0f);
+    Vec4 pz;
+    pz.x = g_4d5cb8->axisZ[0] * (1.0f / 127.0f);
+    pz.y = g_4d5cb8->axisZ[1] * (1.0f / 127.0f);
+    pz.z = g_4d5cb8->axisZ[2] * (1.0f / 127.0f);
+    Vec4 cy;
+    cy.x = g_570ac4->axisY[0] * (1.0f / 127.0f);
+    cy.y = g_570ac4->axisY[1] * (1.0f / 127.0f);
+    cy.z = g_570ac4->axisY[2] * (1.0f / 127.0f);
+    Vec4 cz;
+    cz.x = g_570ac4->axisZ[0] * (1.0f / 127.0f);
+    cz.y = g_570ac4->axisZ[1] * (1.0f / 127.0f);
+    cz.z = g_570ac4->axisZ[2] * (1.0f / 127.0f);
+    Vec4 d;
+    d.x = cy.x - py.x;
+    d.y = cy.y - py.y;
+    d.z = cy.z - py.z;
+    d.x *= g_570ac0->unk08;
+    float ty = g_570ac0->unk08;
+    d.y = ty * d.y;
+    float tz = g_570ac0->unk08;
+    d.z = tz * d.z;
+    Vec4 y;
+    y.x = d.x + py.x;
+    y.y = d.y + py.y;
+    y.z = d.z + py.z;
+    d.x = cz.x - pz.x;
+    d.y = cz.y - pz.y;
+    d.z = cz.z - pz.z;
+    d.x *= g_570ac0->unk08;
+    ty = g_570ac0->unk08;
+    d.y = ty * d.y;
+    tz = g_570ac0->unk08;
+    d.z = tz * d.z;
+    Vec4 z;
+    z.x = d.x + pz.x;
+    z.y = d.y + pz.y;
+    z.z = d.z + pz.z;
+    Vec3_Normalize(&y.x);
+    Vec3_Normalize(&z.x);
+    Vec4 x;
+    x.x = z.y * y.z - z.z * y.y;
+    x.y = z.z * y.x - z.x * y.z;
+    x.z = z.x * y.y - z.y * y.x;
+    Vec3_Normalize(&x.x);
+    g_4d5bb8->axisX = x;
+    g_4d5bb8->axisY = y;
+    g_4d5bb8->axisZ = z;
+}
+
 // FUNCTION: STUNTGP_D3D 0x41a230
 void FUN_41a230()
 {
@@ -3586,24 +3643,6 @@ void FUN_45e180(Unk62a078 *p)
     }
 }
 
-// 3D billboard draw request, filled from the template g_486538.
-struct Billboard
-{
-    DWORD unk00;      // 0x00
-    short texture;    // 0x04
-    short alpha;      // 0x06
-    DWORD colors[4];  // 0x08
-    Vec4 pos;         // 0x18
-    float size[3];    // 0x28
-    int unk34;        // 0x34
-    Vec4 unk38;       // 0x38
-    Vec4 dir;         // 0x48
-    int unk58;        // 0x58
-    int unk5c;        // 0x5c
-    int unk60;        // 0x60
-    int unk64;        // 0x64
-};
-
 // GLOBAL: STUNTGP_D3D 0x486538
 Billboard g_486538 = {0x20, 1, 0x80, {0xffffff, 0xffffff, 0xffffff, 0xffffff}, {0.0f, 0.0f, 0.0f, 0.0f},
                        {1.0f, 1.0f, 1.0f}, 0, {0.0f, 0.0f, -1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.0f}, 1, 0, 0, 2};
@@ -4126,10 +4165,187 @@ void FUN_41bdd0()
     }
 }
 
+// One-quad mesh scene in g_636418[1]: the face, its four UVs and transform.
+// GLOBAL: STUNTGP_D3D 0x4747d8
+MeshUv g_4747d8[4] = {
+    {1.0f, 0.0f, 0, 0x37, 0x3737},
+    {0.0f, 0.0f, 1, 0x37, 0x3737},
+    {1.0f, 2.0f, 2, 0x37, 0x3737},
+    {0.0f, 2.0f, 3, 0x37, 0x3737},
+};
+
+// GLOBAL: STUNTGP_D3D 0x474818
+MeshFace g_474818 = {4, 5, 0x70, 0x50, 0, 0};
+
+// GLOBAL: STUNTGP_D3D 0x474820
+Camera g_474820 = {{0.0f, 0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.0f}, 0, NULL, NULL, 0};
+
+// GLOBAL: STUNTGP_D3D 0x570ad8
+Vec4 g_570ad8;
+
+// GLOBAL: STUNTGP_D3D 0x5712d8
+DWORD *g_5712d8[2];
+
+// GLOBAL: STUNTGP_D3D 0x5712e0
+DWORD g_5712e0[4];
+
+// GLOBAL: STUNTGP_D3D 0x5712fc
+char *g_5712fc;
+
+// GLOBAL: STUNTGP_D3D 0x571300
+MeshFace *g_571300;
+
+// GLOBAL: STUNTGP_D3D 0x571304
+WORD *g_571304;
+
+// GLOBAL: STUNTGP_D3D 0x571308
+Vec4 *g_571308;
+
+// GLOBAL: STUNTGP_D3D 0x57130c
+MeshUv *g_57130c;
+
+// GLOBAL: STUNTGP_D3D 0x571310
+ObjectDef *g_571310;
+
+// GLOBAL: STUNTGP_D3D 0x571314
+Scene *g_571314;
+
+// FUNCTION: STUNTGP_D3D 0x41c530
+void FUN_41c530()
+{
+    g_571300 = (MeshFace *)Mem_Alloc(0x400, 0);
+    g_571304 = (WORD *)Mem_Alloc(0x400, 0);
+    g_571308 = (Vec4 *)Mem_Alloc(0x2000, 0);
+    g_57130c = (MeshUv *)Mem_Alloc(0x2000, 0);
+    g_571310 = (ObjectDef *)Mem_Alloc(0x40, 0);
+    g_571314 = (Scene *)Mem_Alloc(0x68, 0);
+    g_571300[0] = g_474818;
+    memcpy(g_57130c, g_4747d8, sizeof(g_4747d8));
+    g_571308[0].x = 0.0f;
+    g_571308[0].y = 0.0f;
+    g_571308[0].z = -50.0f;
+    g_571308[1].x = 0.0f;
+    g_571308[1].y = 0.0f;
+    g_571308[1].z = 50.0f;
+    g_571308[2].x = 100.0f;
+    g_571308[2].y = 0.0f;
+    g_571308[2].z = -50.0f;
+    g_571308[3].x = 100.0f;
+    g_571308[3].y = 0.0f;
+    g_571308[3].z = 50.0f;
+    memset(g_571310, 0, sizeof(ObjectDef));
+    g_571310->visible = 1;
+    g_571310->flags = 0;
+    g_571310->unk04 = 0;
+    *(WORD *)g_571310->unk06 = 0;
+    g_571310->matrix = (Vec4 *)&g_474820;
+    *(WORD *)(g_571310->unk0c + 0x14) = 0;
+    *(WORD *)(g_571310->unk0c + 0x16) = 0;
+    g_571310->vertCount = 0;
+    g_571310->unk26 = 0;
+    g_571310->pointCount = 0;
+    g_571310->unk2c = (BYTE *)g_57130c;
+    g_571310->points = g_571308;
+    g_571310->verts = (BYTE *)g_571300;
+    *(DWORD *)(g_571310->unk0c + 4) = 0;
+    *(DWORD *)(g_571310->unk0c + 8) = 0;
+    *(DWORD *)(g_571310->unk0c + 0xc) = 0;
+    g_636418[1].scene = g_571314;
+    g_5712d8[0] = g_5712e0;
+    g_5712e0[0] = 0;
+    g_5712e0[1] = 0;
+    g_5712e0[2] = 0;
+    g_570ad8.x = 0.0f;
+    g_570ad8.y = 1.0f;
+    g_570ad8.z = 0.0f;
+    memset(g_571314, 0, sizeof(Scene));
+    *(WORD *)g_571314->unk00 = 0;
+    g_571314->flags = 1;
+    g_571314->camera = NULL;
+    *(DWORD *)(g_571314->unk10 + 0) = 0;
+    *(DWORD *)(g_571314->unk10 + 4) = 0;
+    *(DWORD *)(g_571314->unk10 + 8) = 0;
+    *(WORD *)(g_571314->unk10 + 0x10) = 0;
+    *(WORD *)(g_571314->unk10 + 0x12) = 0;
+    g_571314->objectCount = 1;
+    g_571314->unk28 = (SceneEntry *)&g_570ad8;
+    g_571314->verts = (BYTE *)g_571300;
+    g_571314->unk30 = (BYTE *)g_57130c;
+    g_571314->points = g_571308;
+    g_571314->unk38 = (BYTE *)g_571304;
+    g_571314->matrices = (BYTE *)&g_474820;
+    g_571314->unk40 = (DWORD *)g_5712d8;
+    g_571314->view = (SceneView *)g_571310;
+    g_571314->lods[0] = g_571310;
+    g_571314->lods[1] = g_571310;
+    g_571314->lods[2] = g_571310;
+    g_571314->lods[3] = g_571310;
+    g_571314->maxLod = 0;
+    g_571314->lod = 0;
+    g_571314->textures = &g_5712fc;
+}
+
 // FUNCTION: STUNTGP_D3D 0x41c710
 void FUN_41c710()
 {
     g_636418[1].scene = NULL;
+}
+
+extern DWORD g_5712f4;
+
+// Builds the quad for skid point i: two points either side of its centre line at each end,
+// welded to the previous quad when close enough, faded out otherwise.
+// FUNCTION: STUNTGP_D3D 0x41cb40
+void FUN_41cb40(SkidMark *skid, int i, int unused)
+{
+    SkidPoint *p = &skid->points[i];
+    ObjectDef *obj = g_571314->lods[0];
+    Vec4 *pts = obj->points;
+    Vec4 *v = &pts[p->index];
+    MeshUv *uv = (MeshUv *)obj->unk2c + p->index;
+    Vec4 *prev = &pts[skid->points[(i - 1) & 0x3f].index];
+    Vec4 c;
+    c.x = g_4d5bb8->axisY.z * p->dir.y - p->dir.z * g_4d5bb8->axisY.y;
+    c.y = p->dir.z * g_4d5bb8->axisY.x - g_4d5bb8->axisY.z * p->dir.x;
+    c.z = g_4d5bb8->axisY.y * p->dir.x - g_4d5bb8->axisY.x * p->dir.y;
+    Vec3_Normalize(&c.x);
+    c.x = c.x * 25.0f;
+    c.y = c.y * 25.0f;
+    c.z = c.z * 25.0f;
+    v[0].x = c.x + p->a.x;
+    v[0].y = c.y + p->a.y;
+    v[0].z = c.z + p->a.z;
+    v[1].x = p->a.x - c.x;
+    v[1].y = p->a.y - c.y;
+    v[1].z = p->a.z - c.z;
+    v[2].x = c.x + p->b.x;
+    v[2].y = c.y + p->b.y;
+    v[2].z = c.z + p->b.z;
+    skid->unk0c = uv;
+    v[3].x = p->b.x - c.x;
+    v[3].y = p->b.y - c.y;
+    v[3].z = p->b.z - c.z;
+    ((MeshFace *)obj->verts)[obj->vertCount].unk01 = 5;
+    float dx = v[0].x - prev[2].x;
+    float dy = v[0].y - prev[2].y;
+    float dz = v[0].z - prev[2].z;
+    if (dx * dx + dy * dy + dz * dz < 400.0f)
+    {
+        v[0] = prev[2];
+        v[1] = prev[3];
+    }
+    else
+    {
+        ((BYTE *)&uv[0].color)[3] = 0;
+        ((BYTE *)&uv[1].color)[3] = 0;
+    }
+    if (g_5712f4 >= 0x7f)
+    {
+        g_5712f4 = 0x7f;
+    }
+    obj->vertCount = (WORD)g_5712f4;
+    obj->unk26 = (WORD)(g_5712f4 * 4);
+    obj->pointCount = (WORD)(g_5712f4 * 4);
 }
 
 // FUNCTION: STUNTGP_D3D 0x41d9c0

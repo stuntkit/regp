@@ -12,6 +12,7 @@
 #include "../../vecmath.h"
 #include "game_state.h"
 #include "RenderState.h"
+#include "../../sound.h"
 
 extern Vec4 g_482678;
 extern Vec4 g_482688;
@@ -2685,6 +2686,96 @@ void FUN_40d790()
     }
 }
 
+// For every other car alongside this car's recent trail, sets its unk1fd0 from how deep it sits
+// inside the trail's width, squared, with a floor of 0.1.
+// FUNCTION: STUNTGP_D3D 0x40e080
+void FUN_40e080()
+{
+    Car *car = g_49a1f8;
+    for (int n = 6; n != 0; n--, car++)
+    {
+        if (car != g_4d5bb8 && car->active == 1 && car->unk1cf0 > 16.666666f)
+        {
+            PosSample *s = g_4d5bb8->unk1f2c.samples;
+            Vec4 dir;
+            float len;
+            dir.x = s[0].pos.x - s[7].pos.x;
+            dir.y = s[0].pos.y - s[7].pos.y;
+            dir.z = s[0].pos.z - s[7].pos.z;
+            FUN_44eda0(&dir.x, &len);
+            Vec4 e;
+            e.x = s->pos.x - car->posX;
+            e.y = s->pos.y - car->posY;
+            e.z = s->pos.z - car->posZ;
+            float t = e.z * dir.z + e.y * dir.y + e.x * dir.x;
+            if (t > 0.0f && t < len)
+            {
+                for (unsigned int j = 0; j < 7; s++, j++)
+                {
+                    dir.x = s[0].pos.x - s[1].pos.x;
+                    dir.y = s[0].pos.y - s[1].pos.y;
+                    dir.z = s[0].pos.z - s[1].pos.z;
+                    FUN_44eda0(&dir.x, &len);
+                    if (len > 1.0f)
+                    {
+                        Vec4 q;
+                        q.x = s->pos.x - car->posX;
+                        q.y = s->pos.y - car->posY;
+                        q.z = s->pos.z - car->posZ;
+                        float d = q.z * dir.z + q.y * dir.y + q.x * dir.x;
+                        if (d > 0.0f && d < len)
+                        {
+                            Vec4 w;
+                            w.x = d * dir.x;
+                            w.y = d * dir.y;
+                            w.z = d * dir.z;
+                            q.x = q.x - w.x;
+                            q.y = q.y - w.y;
+                            q.z = q.z - w.z;
+                            float r = s[0].unk10 - (s[0].unk10 - s[1].unk10) * (d / len);
+                            r = r * r;
+                            float d2 = q.x * q.x + q.y * q.y + q.z * q.z;
+                            if (d2 < r)
+                            {
+                                d2 = d2 / r;
+                                d2 = d2 * d2;
+                                if (d2 < 0.1f)
+                                {
+                                    d2 = 0.1f;
+                                }
+                                car->unk1fd0 = d2;
+                                j = 8;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Every 8 ticks shifts the car's position trail down a slot, shrinking the older widths.
+// FUNCTION: STUNTGP_D3D 0x40e290
+void FUN_40e290()
+{
+    PosHistory *h = &g_4d5bb8->unk1f2c;
+    if (++h->unka0 >= 8)
+    {
+        for (int i = 7; i != 0; i--)
+        {
+            h->samples[i] = h->samples[i - 1];
+            h->samples[i].unk10 *= 0.95f;
+        }
+        h->samples[0].unk10 = 400.0f;
+        h->unka0 = 0;
+        h->samples[0].pos = *(Vec4 *)&g_4d5bb8->posX;
+    }
+    if (g_60f2b0 != 4 && g_4d5bb8->unk1cf0 >= 16.666666f)
+    {
+        FUN_40e080();
+    }
+}
+
 // Splits drive torque between the axles by drive mode (0 front, 1 rear, 2 4WD).
 // FUNCTION: STUNTGP_D3D 0x40e3a0
 void FUN_40e3a0(float torque)
@@ -3271,6 +3362,61 @@ void FUN_40f760(Body *body, int i, float angle, float *m)
     FUN_44efd0(rot, local, basis);
     FUN_44f8e0(rot);
     Matrix_Multiply3(m, rot);
+}
+
+extern float g_482674;
+
+// Turns body point i against the slip of its local offset under the car rotation, capped by
+// the wheel's grip.
+// FUNCTION: STUNTGP_D3D 0x40f880
+void FUN_40f880(int i)
+{
+    Vec4 s;
+    Vec4 d;
+    Vec4 r;
+    Vec4 p = g_4d5bb8->body.points[i].local;
+    float len = (float)sqrt(p.x * p.x + p.y * p.y + p.z * p.z);
+    float grip = g_482674 * g_4d5bb8->wheels[i].unk10;
+    float load = g_4d5bb8->wheels[i].unk0c;
+    if (load > g_4d5bb8->wheels[i].unk10)
+    {
+        load = g_4d5bb8->wheels[i].unk10;
+    }
+    r.x = p.x * g_4d5bb8->unk1c0c[0] + p.y * g_4d5bb8->unk1c0c[4] + p.z * g_4d5bb8->unk1c0c[8];
+    r.y = p.x * g_4d5bb8->unk1c0c[1] + p.y * g_4d5bb8->unk1c0c[5] + p.z * g_4d5bb8->unk1c0c[9];
+    r.z = p.x * g_4d5bb8->unk1c0c[2] + p.y * g_4d5bb8->unk1c0c[6] + p.z * g_4d5bb8->unk1c0c[10];
+    d.x = r.x - p.x;
+    d.y = r.y - p.y;
+    d.z = r.z - p.z;
+    float f = d.x * g_4d5bb8->wheels[0].unk4c.x + d.y * g_4d5bb8->wheels[0].unk4c.y +
+              d.z * g_4d5bb8->wheels[0].unk4c.z;
+    s.x = f * g_4d5bb8->wheels[0].unk4c.x;
+    s.y = f * g_4d5bb8->wheels[0].unk4c.y;
+    s.z = f * g_4d5bb8->wheels[0].unk4c.z;
+    Vec4 t;
+    t.x = d.x - s.x;
+    t.y = d.y - s.y;
+    t.z = d.z - s.z;
+    FUN_44eda0(&t.x, &f);
+    f = f * grip;
+    if (f > load * g_4d5bb8->wheels[i].unk34)
+    {
+        f = load * g_4d5bb8->wheels[i].unk38 * 0.5f;
+    }
+    f = f / (grip * len);
+    r.x = g_4d5bb8->axisY.y * g_4d5bb8->body.points[i].local.z - g_4d5bb8->axisY.z * g_4d5bb8->body.points[i].local.y;
+    r.y = g_4d5bb8->body.points[i].local.x * g_4d5bb8->axisY.z - g_4d5bb8->axisY.x * g_4d5bb8->body.points[i].local.z;
+    r.z = g_4d5bb8->axisY.x * g_4d5bb8->body.points[i].local.y - g_4d5bb8->body.points[i].local.x * g_4d5bb8->axisY.y;
+    Vec3_Normalize(&r.x);
+    if (g_4d5bb8->axisY.y < 0.0f)
+    {
+        f = -f;
+    }
+    if (t.x * r.x + t.y * r.y + t.z * r.z >= 0.0f)
+    {
+        f = -f;
+    }
+    FUN_40f760(&g_4d5bb8->body, i, f, g_4d5bb8->unk1c0c);
 }
 
 // FUNCTION: STUNTGP_D3D 0x40fb00
@@ -4657,9 +4803,49 @@ void FUN_414460()
     g_4d5bb8->wheels[3].pos = p;
 }
 
-// STUB: STUNTGP_D3D 0x414710
+// Rebuilds the car basis from the four corner points of the body.
+// FUNCTION: STUNTGP_D3D 0x414710
 void FUN_414710()
 {
+    BodyPoint *pts = g_4d5bb8->body.points;
+    Vec4 a;
+    Vec4 b;
+    a.x = pts[0].world.x + pts[2].world.x;
+    a.y = pts[0].world.y + pts[2].world.y;
+    a.z = pts[0].world.z + pts[2].world.z;
+    a.x *= 0.5f;
+    a.y *= 0.5f;
+    a.z *= 0.5f;
+    b.x = pts[1].world.x + pts[3].world.x;
+    b.y = pts[1].world.y + pts[3].world.y;
+    b.z = pts[1].world.z + pts[3].world.z;
+    b.x *= 0.5f;
+    b.y *= 0.5f;
+    b.z *= 0.5f;
+    g_4d5bb8->axisX.x = a.x - b.x;
+    g_4d5bb8->axisX.y = a.y - b.y;
+    g_4d5bb8->axisX.z = a.z - b.z;
+    Vec3_Normalize(&g_4d5bb8->axisX.x);
+    a.x = pts[1].world.x + pts[0].world.x;
+    a.y = pts[1].world.y + pts[0].world.y;
+    a.z = pts[1].world.z + pts[0].world.z;
+    a.x *= 0.5f;
+    a.y *= 0.5f;
+    a.z *= 0.5f;
+    b.x = pts[3].world.x + pts[2].world.x;
+    b.y = pts[3].world.y + pts[2].world.y;
+    b.z = pts[3].world.z + pts[2].world.z;
+    b.x *= 0.5f;
+    b.y *= 0.5f;
+    b.z *= 0.5f;
+    g_4d5bb8->axisZ.x = b.x - a.x;
+    g_4d5bb8->axisZ.y = b.y - a.y;
+    g_4d5bb8->axisZ.z = b.z - a.z;
+    Vec3_Normalize(&g_4d5bb8->axisZ.x);
+    g_4d5bb8->axisY.x = g_4d5bb8->axisZ.z * g_4d5bb8->axisX.y - g_4d5bb8->axisZ.y * g_4d5bb8->axisX.z;
+    g_4d5bb8->axisY.y = g_4d5bb8->axisZ.x * g_4d5bb8->axisX.z - g_4d5bb8->axisZ.z * g_4d5bb8->axisX.x;
+    g_4d5bb8->axisY.z = g_4d5bb8->axisX.x * g_4d5bb8->axisZ.y - g_4d5bb8->axisZ.x * g_4d5bb8->axisX.y;
+    Vec3_Normalize(&g_4d5bb8->axisY.x);
 }
 
 // Fades the four tyre smoke meshes, which follow the wheel meshes.
@@ -4809,6 +4995,49 @@ void FUN_4152d0()
     }
 }
 
+void FUN_415190(Car *car, Vec4 *p, Vec4 *out);
+
+// FUNCTION: STUNTGP_D3D 0x4154c0
+void FUN_4154c0()
+{
+    if (g_4d5bb8->unk28a0)
+    {
+        Billboard billboard = g_486538;
+        billboard.texture = 6;
+        billboard.unk00 = 0x60;
+        if (g_4d5bb8->unk28bc[0].active)
+        {
+            g_4d5bb8->unk28b4 = (g_4d5bb8->unk28b4 + 0x20) & 0x1fff;
+            g_4d5bb8->unk28b8 = (g_4d5bb8->unk28b8 + 2) & 0x1fff;
+            float dx = g_4d5bb8->posX - g_4722d0->cam.pos.x;
+            float dy = g_4d5bb8->posY - g_4722d0->cam.pos.y;
+            float dz = g_4d5bb8->posZ - g_4722d0->cam.pos.z;
+            float s = (float)sqrt(dx * dx + dy * dy + dz * dz) * 0.00025f + 0.1f;
+            if (s > 1.0f)
+            {
+                s = 1.0f;
+            }
+            float size = g_sinTable[g_4d5bb8->unk28b4] * 0.01f + s * 2.0f;
+            int angle = -g_4d5bb8->unk28b8 & 0x1fff;
+            billboard.alpha = (short)(s * 192.0f);
+            billboard.dir.x = g_cosTable[angle];
+            billboard.dir.z = 0.0f;
+            billboard.dir.y = g_sinTable[angle];
+            billboard.size[0] = size;
+            billboard.size[1] = size;
+            billboard.size[2] = size;
+            FUN_413b60();
+            FUN_415190(g_4d5bb8, &g_4d5bb8->unk28bc[0].trail.pos, &billboard.pos);
+            FUN_434590(&billboard);
+            if (g_4d5bb8->unk28bc[1].active)
+            {
+                FUN_415190(g_4d5bb8, &g_4d5bb8->unk28bc[1].trail.pos, &billboard.pos);
+                FUN_434590(&billboard);
+            }
+        }
+    }
+}
+
 // Fades the light mesh brightness down by 32 a tick, holding at 120 while lit.
 // FUNCTION: STUNTGP_D3D 0x415640
 void FUN_415640()
@@ -4926,9 +5155,79 @@ void FUN_4157f0(Unk62a078 *p)
     p->alpha = 255.0f;
 }
 
-// STUB: STUNTGP_D3D 0x415880
+void FUN_45e110(Unk62a078 *particle);
+
+// Tyre smoke: heat builds while a slow car spins its wheels and puffs once it passes 200.
+// FUNCTION: STUNTGP_D3D 0x415880
 void FUN_415880()
 {
+    Vec4 up;
+    up.x = g_4d5bb8->axisY.x * -30.000002f;
+    up.y = g_4d5bb8->axisY.y * -30.000002f;
+    up.z = g_4d5bb8->axisY.z * -30.000002f;
+    Wheel *w = g_4d5bb8->wheels;
+    int first = 1;
+    Unk62a078 p;
+    Vec4 *pos;
+    for (int i = 0; i < 4; i++, w++)
+    {
+        if (g_4d5bb8->unk1cf0 < 100.0f)
+        {
+            if (g_4d5bb8->wheels[i].unk30 >= 3.5f)
+            {
+                float f = (float)fabs(g_4d5bb8->wheels[i].unk30 * 0.25f);
+                if (f > 1.0f)
+                {
+                    f = 1.0f;
+                }
+                w->unk18 += f * g_4d5bb8->wheels[i].unk84 * 20.0f / g_4d5bb8->wheels[i].unk8c;
+            }
+            else
+            {
+                w->unk18 -= 2.0f;
+                if (w->unk18 < 20.0f)
+                {
+                    w->unk18 = 20.0f;
+                }
+            }
+            if (w->unk18 > 200.0f)
+            {
+                float k = g_4d5bb8->unk1cf0 * 0.001f;
+                if (k < 0.01f)
+                {
+                    k = 0.01f;
+                }
+                w->unk18 = 175.0f;
+                if (first == 1)
+                {
+                    FUN_4157f0(&p);
+                    pos = &p.pos;
+                    *(Camera *)pos = g_4864e8;
+                    first = 0;
+                }
+                pos->x = up.x + g_4d5bb8->wheels[i].pos.x;
+                pos->y = up.y + g_4d5bb8->wheels[i].pos.y;
+                pos->z = up.z + g_4d5bb8->wheels[i].pos.z;
+                p.vel[0] = k * g_4d5bb8->unk1c8c.x;
+                p.vel[1] = k * g_4d5bb8->unk1c8c.y;
+                p.vel[2] = k * g_4d5bb8->unk1c8c.z;
+                Vec4 r;
+                r.x = FUN_42f1c0(5.0f);
+                r.y = 0.0f;
+                r.z = FUN_42f1c0(5.0f);
+                p.vel[0] = r.x + p.vel[0];
+                p.vel[1] = r.y + p.vel[1];
+                p.vel[2] = r.z + p.vel[2];
+                if (i >= 2)
+                {
+                    p.size = 0.7f;
+                }
+                p.angle = FUN_42f1c0(360.0f);
+                p.spin = FUN_42f1c0(45.0f) - 22.5f;
+                FUN_45e110(&p);
+            }
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x415ac0
@@ -5049,9 +5348,64 @@ void FUN_4167a0(int index)
     }
 }
 
-// STUB: STUNTGP_D3D 0x416800
+void FUN_414d90();
+
+// FUNCTION: STUNTGP_D3D 0x416800
 void FUN_416800()
 {
+    if (g_4d5bb8->unk328c.active == 1)
+    {
+        if (g_4d5bb8->unk2254 == 0.0f && g_4d5bb8->unk2260 == 0)
+        {
+            g_4d5bb8->unk226c = 0;
+            return;
+        }
+        g_4d5bb8->unk226c = 1;
+        FUN_414d90();
+        FUN_416650();
+        if (g_4d5bb8->unk2264 > 0.02f)
+        {
+            g_4d5bb8->unk2264 -= 0.02f;
+        }
+        int level;
+        if (g_4d5bb8->unk2254 > 10.0f)
+        {
+            level = g_4d5bb8->unk2260 + 8;
+        }
+        else
+        {
+            level = g_4d5bb8->unk2260 - 2;
+        }
+        g_4d5bb8->unk2260 = level;
+        if (level > 0xff)
+        {
+            g_4d5bb8->unk2260 = 0xff;
+        }
+        else if (level < 0)
+        {
+            g_4d5bb8->unk2260 = 0;
+        }
+        g_4d5bb8->unk225c = (g_4d5bb8->unk225c + 0x200) & 0x1fff;
+        float k = g_4d5bb8->unk2260 * (1.0f / 255.0f);
+        if (k > 1.0f)
+        {
+            k = 1.0f;
+        }
+        float w = k * g_sinTable[g_4d5bb8->unk225c];
+        float a = w * 0.1f;
+        g_4d5bb8->unk328c.unk024.x = k * g_4d5bb8->unk328c.unk014.x + g_4d5bb8->unk2264 + a;
+        g_4d5bb8->unk328c.unk024.y = k * g_4d5bb8->unk328c.unk014.y + g_4d5bb8->unk2264 + a;
+        float b = w * 0.25f;
+        g_4d5bb8->unk328c.unk024.z = k * g_4d5bb8->unk328c.unk014.z * 2.0f + g_4d5bb8->unk2264 + b;
+        FUN_4167a0(0x13);
+        if (g_4d5bb8->unk33cc.active)
+        {
+            g_4d5bb8->unk33cc.unk024.x = k * g_4d5bb8->unk33cc.unk014.x + g_4d5bb8->unk2264 + a;
+            g_4d5bb8->unk33cc.unk024.y = k * g_4d5bb8->unk33cc.unk014.y + g_4d5bb8->unk2264 + a;
+            g_4d5bb8->unk33cc.unk024.z = k * g_4d5bb8->unk33cc.unk014.z * 2.0f + g_4d5bb8->unk2264 + b;
+            FUN_4167a0(0x14);
+        }
+    }
 }
 
 // GLOBAL: STUNTGP_D3D 0x4d5bc0
@@ -5103,9 +5457,61 @@ void FUN_416ea0(Unk62a078 *p)
     p->colors[0] = 0x182010;
 }
 
-// STUB: STUNTGP_D3D 0x416f30
+// Smoke from every wheel that is slipping harder than the car's weight allows.
+// FUNCTION: STUNTGP_D3D 0x416f30
 void FUN_416f30()
 {
+    if (g_4d5bb8->unk7250 >= 30.0)
+    {
+        float limit = g_482670 * g_4d5bb8->unk2618 * 0.5f;
+        int first = 1;
+        Unk62a078 p;
+        Vec4 *pos;
+        Vec4 v;
+        Vec4 t;
+        Vec4 off;
+        for (int i = 0; i < 4; i++)
+        {
+            if (g_4d5bb8->wheels[i].unk0c > limit)
+            {
+                if (first == 1)
+                {
+                    pos = &p.pos;
+                    *(Camera *)pos = g_4864e8;
+                    FUN_416ea0(&p);
+                    first = 0;
+                    v.x = g_4d5bb8->unk1c8c.x * 0.5f;
+                    v.y = g_4d5bb8->unk1c8c.y * 0.5f;
+                    v.z = g_4d5bb8->unk1c8c.z * 0.5f;
+                    t.x = g_4d5bb8->axisY.x * 1.5f;
+                    t.y = g_4d5bb8->axisY.y * 1.5f;
+                    t.z = g_4d5bb8->axisY.z * 1.5f;
+                    v.x = t.x + v.x;
+                    v.y = t.y + v.y;
+                    v.z = t.z + v.z;
+                    off.x = g_4d5bb8->axisY.x * 60.000004f;
+                    off.y = g_4d5bb8->axisY.y * 60.000004f;
+                    off.z = g_4d5bb8->axisY.z * 60.000004f;
+                }
+                pos->x = g_4d5bb8->wheels[i].pos.x - off.x;
+                pos->y = g_4d5bb8->wheels[i].pos.y - off.y;
+                pos->z = g_4d5bb8->wheels[i].pos.z - off.z;
+                float r = g_4d5bb8->wheels[i].unk0c / limit;
+                float s = r * 2.0f + (float)fabs(FUN_42f1c0(2.0f));
+                if (i & 1)
+                {
+                    s = -s;
+                }
+                t.x = s * g_4d5bb8->axisX.x;
+                t.y = s * g_4d5bb8->axisX.y;
+                t.z = s * g_4d5bb8->axisX.z;
+                p.vel[0] = t.x + v.x;
+                p.vel[1] = t.y + v.y;
+                p.vel[2] = t.z + v.z;
+                FUN_45e110(&p);
+            }
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x417130
@@ -5404,9 +5810,53 @@ void FUN_417ca0()
 }
 
 
-// STUB: STUNTGP_D3D 0x417f10
+// Swings the body panels against the car's sideways and forward acceleration.
+// FUNCTION: STUNTGP_D3D 0x417f10
 void FUN_417f10()
 {
+    if (g_4d5bb8->unk3134)
+    {
+        Vec4 v = g_4d5bb8->unk1cac;
+        Vec4 a = g_4d5bb8->unk3148;
+        Vec4 n;
+        n.x = a.z * g_4d5bb8->matrix[8] + a.y * g_4d5bb8->matrix[4] + a.x * g_4d5bb8->matrix[0];
+        n.y = a.z * g_4d5bb8->matrix[9] + a.y * g_4d5bb8->matrix[5] + a.x * g_4d5bb8->matrix[1];
+        n.z = a.z * g_4d5bb8->matrix[10] + a.y * g_4d5bb8->matrix[6] + a.x * g_4d5bb8->matrix[2];
+        float d = v.z * n.z + v.y * n.y + v.x * n.x;
+        Vec4 s;
+        s.x = d * n.x;
+        s.y = d * n.y;
+        s.z = d * n.z;
+        Vec4 t;
+        t.x = v.x - s.x;
+        t.y = v.y - s.y;
+        t.z = v.z - s.z;
+        v.x = (t.z * g_4d5bb8->axisZ.z + t.y * g_4d5bb8->axisZ.y + t.x * g_4d5bb8->axisZ.x) * -0.125f;
+        if (g_4d5bb8->unk2254 > 0.1f)
+        {
+            v.x = (g_4d5bb8->unk2254 * 4.0f / g_4d5bb8->unkd64 + 1.0f) * v.x;
+            if ((float)fabs(v.x) > 0.15f)
+            {
+                v.x = v.x < 0.0f ? -0.15f : 0.15f;
+            }
+        }
+        v.y = 0.0f;
+        v.z = (t.z * g_4d5bb8->axisX.z + t.y * g_4d5bb8->axisX.y + t.x * g_4d5bb8->axisX.x) * 0.125f;
+        CarWobble *w = g_4d5bb8->unk315c;
+        for (int k = 6; k != 0; k--, w++)
+        {
+            FUN_44ec00(w->ang, &a.x);
+            w->dir = a;
+            w->vel[0] = w->vel[0] - v.x;
+            w->vel[1] = w->vel[1] - v.y;
+            w->vel[2] = w->vel[2] - v.z;
+            w->ang[0] = w->vel[0] + w->ang[0];
+            w->ang[1] = w->vel[1] + w->ang[1];
+            w->ang[2] = w->vel[2] + w->ang[2];
+            w->vel[0] = (w->vel[0] - w->ang[0] * 0.03125f) * 0.9f;
+            w->vel[2] = (w->vel[2] - w->ang[2] * 0.03125f) * 0.9f;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x418150
@@ -5903,6 +6353,90 @@ Car *FUN_407a70(Car *self)
         ahead = behind;
     }
     return ahead;
+}
+
+// Overtaking: while closing on the car ahead, counts up and pulls the target point to its side;
+// a car not much faster in front caps the speed target instead.
+// FUNCTION: STUNTGP_D3D 0x407510
+void FUN_407510()
+{
+    if (g_4d5bb8->unk1fd8 != 0)
+    {
+        return;
+    }
+    Car *other = FUN_407a70(g_4d5bb8);
+    Vec4 d;
+    d.x = other->posX - g_4d5bb8->posX;
+    d.y = other->posY - g_4d5bb8->posY;
+    d.z = other->posZ - g_4d5bb8->posZ;
+    float dv = g_4d5bb8->unk1cf0 - other->unk1cf0;
+    if (dv >= 5.0f)
+    {
+        float k = dv * 0.024f;
+        if (k < 0.4f)
+        {
+            k = 0.4f;
+        }
+        else if (k > 1.0f)
+        {
+            k = 1.0f;
+        }
+        float fwd = d.x * g_4d5bb8->axisZ.x + d.y * g_4d5bb8->axisZ.y + d.z * g_4d5bb8->axisZ.z;
+        if (fwd >= -500.0f && fwd < k * 3500.0f &&
+            (float)fabs(d.x * g_4d5bb8->axisX.x + d.y * g_4d5bb8->axisX.y + d.z * g_4d5bb8->axisX.z) < 300.0f)
+        {
+            g_4d5bb8->unk2688 = other;
+            if (g_4d5bb8->unk268c < 120)
+            {
+                g_4d5bb8->unk268c += 6;
+            }
+            goto check;
+        }
+    }
+    else
+    {
+        if (g_4d5bb8->unk268c > 30)
+        {
+            float fwd = d.x * g_4d5bb8->axisZ.x + d.y * g_4d5bb8->axisZ.y + d.z * g_4d5bb8->axisZ.z;
+            if (fwd >= -1000.0f && fwd < 500.0f)
+            {
+                float v = other->unk1cf0 - 8.333333f;
+                if (g_499fa8 > v)
+                {
+                    g_499fa8 = v;
+                    g_4d5bb8->unk1cf8 = 0.0f;
+                }
+            }
+        }
+    }
+    g_4d5bb8->unk268c--;
+check:
+    if (g_4d5bb8->unk268c <= 0)
+    {
+        g_4d5bb8->unk268c = 0;
+        return;
+    }
+    g_4d5bb8->unk268c--;
+    Car *target = g_4d5bb8->unk2688;
+    FUN_4073e0();
+    Vec4 a;
+    a.x = target->axisX.x * g_4d5bb8->unk2690;
+    a.y = target->axisX.y * g_4d5bb8->unk2690;
+    a.z = target->axisX.z * g_4d5bb8->unk2690;
+    Vec4 b;
+    b.x = a.x + target->posX;
+    b.y = a.y + target->posY;
+    b.z = a.z + target->posZ;
+    a.x = b.x - g_49a148.x;
+    a.y = b.y - g_49a148.y;
+    a.z = b.z - g_49a148.z;
+    float s = g_4d5bb8->unk268c * 0.008333334f;
+    a.x *= s;
+    a.y *= s;
+    a.z *= s;
+    g_49a148.x = g_49a148.x + a.x;
+    g_49a148.y = g_49a148.y + a.y;
+    g_49a148.z = g_49a148.z + a.z;
 }
 
 // Like FUN_407a70 but measured the other way round the lap, with negative positions wrapped.
@@ -6441,9 +6975,48 @@ void FUN_41ded0(float *pos, CameraPath *path, int *index)
 }
 
 
-// STUB: STUNTGP_D3D 0x41e0f0
+// FUNCTION: STUNTGP_D3D 0x41e0f0
 void FUN_41e0f0()
 {
+    if (g_60f2b0 == 1 || g_60f2b0 == 3)
+    {
+        return;
+    }
+    if (g_4d5bb8->unk23b0 > g_4d5bb8->unk23b8)
+    {
+        g_4d5bb8->unk23b8 = g_4d5bb8->unk23b0;
+    }
+    if (!FUN_402590(g_4d5bb8))
+    {
+        return;
+    }
+    if (g_4d5bb8->unk24e0 == 1 || g_4d5bb8->unk24e8 == 1 || g_4d5bb8->unk7648 == 1 ||
+        (unsigned int)g_4d5bb8->unk7638 > 4)
+    {
+        if (g_4d5bb8->unk7678)
+        {
+            g_4d5bb8->unk7678--;
+        }
+        return;
+    }
+    if (g_4d5bb8->unk23b8 - g_4d5bb8->unk23b0 >= 1.0f && g_4d5bb8->unk23b0 < g_4d5bb8->unk23b4)
+    {
+        if (g_4d5bb8->unk7678 == 90)
+        {
+            FUN_461150(44, 0, 0, 0xff, 0, 1, NULL);
+        }
+        if ((unsigned int)g_4d5bb8->unk7678 > 120)
+        {
+            g_4d5bb8->unk7678 = 60;
+            return;
+        }
+        g_4d5bb8->unk7678++;
+        return;
+    }
+    if (g_4d5bb8->unk7678)
+    {
+        g_4d5bb8->unk7678--;
+    }
 }
 
 // Tracks the car along the race path and fires the lap hook once at the 99 -> 0 wrap.
@@ -7026,14 +7599,154 @@ void FUN_40bec0()
 
 
 
-// STUB: STUNTGP_D3D 0x412bf0
+// Grid slot offsets behind the start line, alternating sides, for FUN_412bf0.
+// GLOBAL: STUNTGP_D3D 0x4743f0
+Vec4 g_4743f0[6] = {
+    {500.0f, 0.0f, -2000.0f, 0.0f},
+    {-500.0f, 0.0f, -3000.0f, 0.0f},
+    {500.0f, 0.0f, -4000.0f, 0.0f},
+    {-500.0f, 0.0f, -5000.0f, 0.0f},
+    {500.0f, 0.0f, -6000.0f, 0.0f},
+    {-500.0f, 0.0f, -7000.0f, 0.0f},
+};
+
+void FUN_413490(Car *car);
+void FUN_413530(Car *car);
+void FUN_408640(Car *car, float *pos);
+extern int g_60df98;
+
+// Puts every active car on its grid slot behind the first point of the race path.
+// FUNCTION: STUNTGP_D3D 0x412bf0
 void FUN_412bf0()
 {
+    Vec4 side;
+    Vec4 pos;
+    Vec4 up;
+    Vec4 dir;
+    up.x = 0.0f;
+    up.y = 1.0f;
+    up.z = 0.0f;
+    if (!g_571328)
+    {
+        g_571328 = FUN_428800(1);
+    }
+    Vec4 *start = g_571328->points;
+    Vec4 *last = &start[g_571328->count - 1];
+    dir.x = start->x - last->x;
+    dir.y = start->y - last->y;
+    dir.z = start->z - last->z;
+    Vec3_Normalize(&dir.x);
+    g_4d5bb8 = g_49a1f8;
+    for (int i = 0; i < 6; i++)
+    {
+        Vec4 *off = &g_4743f0[i];
+        if (g_4d5bb8->active == 1)
+        {
+            FUN_413490(g_4d5bb8);
+            FUN_413530(g_4d5bb8);
+            g_4d5bb8->unk1c8c.x = 0.0f;
+            g_4d5bb8->unk1c8c.y = 0.0f;
+            g_4d5bb8->unk1c8c.z = 0.0f;
+            g_4d5bb8->unk1cac.x = 0.0f;
+            g_4d5bb8->unk1cac.y = 0.0f;
+            g_4d5bb8->unk1cac.z = 0.0f;
+            side.x = dir.y * up.z - dir.z * up.y;
+            side.y = dir.z * up.x - dir.x * up.z;
+            side.z = dir.x * up.y - dir.y * up.x;
+            Vec3_Normalize(&side.x);
+            Vec3_Normalize(&up.x);
+            Vec3_Normalize(&dir.x);
+            Matrix_Identity(g_4d5bb8->matrix);
+            *(Vec4 *)&g_4d5bb8->matrix[0] = side;
+            *(Vec4 *)&g_4d5bb8->matrix[4] = up;
+            *(Vec4 *)&g_4d5bb8->matrix[8] = dir;
+            memcpy(g_4d5bb8->body.mat0, g_4d5bb8->matrix, sizeof(g_4d5bb8->matrix));
+            g_4d5bb8->unk24ac = i;
+            if (g_60df98 == 3)
+            {
+                pos = *start;
+            }
+            else
+            {
+                pos.x = g_4d5bb8->matrix[4] * off->y + g_4d5bb8->matrix[8] * off->z + off->x * g_4d5bb8->matrix[0];
+                pos.y = g_4d5bb8->matrix[5] * off->y + g_4d5bb8->matrix[9] * off->z + off->x * g_4d5bb8->matrix[1];
+                pos.z = g_4d5bb8->matrix[6] * off->y + g_4d5bb8->matrix[10] * off->z + off->x * g_4d5bb8->matrix[2];
+                pos.x = pos.x + start->x;
+                pos.y = pos.y + start->y;
+                pos.z = pos.z + start->z;
+            }
+            FUN_408640(g_4d5bb8, &pos.x);
+        }
+        g_4d5bb8++;
+    }
+    g_4d5bb8 = g_49a1f8;
 }
 
-// STUB: STUNTGP_D3D 0x412e80
+// Grid slot offsets, alternating sides, for FUN_412e80.
+// GLOBAL: STUNTGP_D3D 0x4744f0
+Vec4 g_4744f0[6] = {
+    {300.0f, 0.0f, 0.0f, 0.0f},
+    {-300.0f, 0.0f, 0.0f, 0.0f},
+    {300.0f, 0.0f, 0.0f, 0.0f},
+    {-300.0f, 0.0f, 0.0f, 0.0f},
+    {300.0f, 0.0f, 0.0f, 0.0f},
+    {-300.0f, 0.0f, 0.0f, 0.0f},
+};
+
+// Lines the cars up along path 2, starting 87% of the way round and two points apart.
+// FUNCTION: STUNTGP_D3D 0x412e80
 void FUN_412e80()
 {
+    Vec4 up;
+    Vec4 side;
+    Vec4 dir;
+    Vec4 pos;
+    int k;
+    CameraPath *path = FUN_428800(2);
+    up.x = 0.0f;
+    up.y = 1.0f;
+    up.z = 0.0f;
+    k = 87;
+    g_4d5bb8 = g_49a1f8;
+    for (int i = 0; i < 6; i++)
+    {
+        Vec4 *off = &g_4744f0[i];
+        Vec4 *pt = &path->points[path->count * k / 100];
+        k -= 2;
+        if (g_4d5bb8->active == 1)
+        {
+            dir.x = pt[1].x - pt[0].x;
+            dir.y = pt[1].y - pt[0].y;
+            dir.z = pt[1].z - pt[0].z;
+            Vec3_Normalize(&dir.x);
+            FUN_413490(g_4d5bb8);
+            FUN_413530(g_4d5bb8);
+            g_4d5bb8->unk1c8c.x = 0.0f;
+            g_4d5bb8->unk1c8c.y = 0.0f;
+            g_4d5bb8->unk1c8c.z = 0.0f;
+            g_4d5bb8->unk1cac.x = 0.0f;
+            g_4d5bb8->unk1cac.y = 0.0f;
+            g_4d5bb8->unk1cac.z = 0.0f;
+            side.x = dir.y * up.z - dir.z * up.y;
+            side.y = dir.z * up.x - dir.x * up.z;
+            side.z = dir.x * up.y - dir.y * up.x;
+            Matrix_Identity(g_4d5bb8->matrix);
+            *(Vec4 *)&g_4d5bb8->matrix[0] = side;
+            *(Vec4 *)&g_4d5bb8->matrix[4] = up;
+            *(Vec4 *)&g_4d5bb8->matrix[8] = dir;
+            memcpy(g_4d5bb8->body.mat0, g_4d5bb8->matrix, sizeof(g_4d5bb8->matrix));
+            pos.x = g_4d5bb8->matrix[8] * off->z + g_4d5bb8->matrix[4] * off->y + off->x * g_4d5bb8->matrix[0];
+            pos.y = g_4d5bb8->matrix[5] * off->y + g_4d5bb8->matrix[9] * off->z + off->x * g_4d5bb8->matrix[1];
+            pos.z = g_4d5bb8->matrix[6] * off->y + g_4d5bb8->matrix[10] * off->z + off->x * g_4d5bb8->matrix[2];
+            pos.x = pos.x + pt->x;
+            pos.y = pos.y + pt->y;
+            pos.z = pos.z + pt->z;
+            pos.y = pos.y + 150.0f;
+            FUN_408640(g_4d5bb8, &pos.x);
+        }
+        g_4d5bb8++;
+    }
+    g_4d5bb8 = g_49a1f8;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4130d0
@@ -7528,9 +8241,59 @@ void FUN_419900()
 {
 }
 
-// STUB: STUNTGP_D3D 0x41c9b0
+void FUN_41c530();
+extern Scene *g_571314;
+
+// Builds the skid mark mesh: 128 copies of the template quad, each its own face and points.
+// FUNCTION: STUNTGP_D3D 0x41c9b0
 void FUN_41c9b0()
 {
+    FUN_41c530();
+    Scene *scene = g_571314;
+    ObjectDef *obj = scene->lods[0];
+    *(WORD *)(scene->unk10 + 0x10) = 0;
+    *(WORD *)(scene->unk10 + 0x12) = 0;
+    WORD *idx = (WORD *)scene->unk38;
+    MeshFace *faces = (MeshFace *)obj->verts;
+    MeshUv *uvs = (MeshUv *)obj->unk2c;
+    *(WORD *)(obj->unk0c + 0x14) = 0;
+    *(WORD *)(obj->unk0c + 0x16) = 0;
+    Vec4 *pts = obj->points;
+    faces[0].unk01 = 5;
+    uvs[0].color = 0xffffff;
+    uvs[1].color = 0xffffff;
+    uvs[2].color = 0xffffff;
+    uvs[3].color = 0xffffff;
+    faces[0].flags = 0x70;
+    WORD *ip = &idx[faces[0].index + 6];
+    int k = 0;
+    int v = 4;
+    for (int off = 0x40; off < 0x2000; off += 0x40)
+    {
+        k++;
+        memcpy((BYTE *)uvs + off, uvs, 0x40);
+        memcpy((BYTE *)pts + off, pts, 0x40);
+        for (int j = 0; j < 4; j++)
+        {
+            ip[-2] = v + 2;
+            ip[-1] = v;
+            ip[0] = v + 1;
+            ip[1] = v + 3;
+        }
+        g_571314->unk28[k] = g_571314->unk28[0];
+        faces[k] = faces[0];
+        faces[k].unk04 = k;
+        faces[k].index = v;
+        uvs[k * 4 + 0].point = v;
+        uvs[k * 4 + 1].point = v + 1;
+        uvs[k * 4 + 2].point = v + 2;
+        uvs[k * 4 + 3].point = v + 3;
+        ip += 4;
+        v += 4;
+    }
+    obj->vertCount = 0;
+    obj->unk26 = 0;
+    obj->pointCount = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x41d170

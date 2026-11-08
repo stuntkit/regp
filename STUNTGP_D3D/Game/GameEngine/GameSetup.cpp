@@ -21,6 +21,7 @@
 #include "Engine_LevelScript.h"
 #include "../../common.h"
 #include "RenderState.h"
+#include "../../sound.h"
 
 struct CameraPath;
 
@@ -375,6 +376,34 @@ void FUN_401030(float x, float y)
     e->y = y - e->halfHeight;
 }
 
+// Frames left before the sample started by FUN_4011c0 is played again, panned the other way.
+// GLOBAL: STUNTGP_D3D 0x497d10
+int g_497d10;
+
+// GLOBAL: STUNTGP_D3D 0x497d14
+int g_497d14;
+
+// GLOBAL: STUNTGP_D3D 0x497d18
+DWORD g_497d18;
+
+// FUNCTION: STUNTGP_D3D 0x4011c0
+void FUN_4011c0(int channel, DWORD volume)
+{
+    g_497d10 = 6;
+    g_497d14 = channel;
+    g_497d18 = volume;
+    FUN_461150(channel, 0, 0, volume, 0xff, 0, NULL);
+}
+
+// FUNCTION: STUNTGP_D3D 0x4011f0
+void FUN_4011f0()
+{
+    if (g_497d10 && --g_497d10 == 0)
+    {
+        FUN_461150(g_497d14, 0, 0, g_497d18, -0xff, 0, NULL);
+    }
+}
+
 
 struct Unk497f20
 {
@@ -674,7 +703,7 @@ void FUN_418f70()
     v.x += g_4d5bb8->unk1c8c.x;
     v.y += g_4d5bb8->unk1c8c.y;
     v.z += g_4d5bb8->unk1c8c.z;
-    FUN_415d20((Vec4 *)&g_4d5bb8->unk315c[0x120], &v, 8.0f);
+    FUN_415d20(&g_4d5bb8->unk327c, &v, 8.0f);
 }
 
 // FUNCTION: STUNTGP_D3D 0x4190b0
@@ -876,9 +905,64 @@ void FUN_401d40()
     }
 }
 
-// STUB: STUNTGP_D3D 0x402420
+CameraPath *FUN_428800(int id);
+void FUN_4025d0();
+extern float g_499f88;
+extern float g_499f8c;
+
+// FUNCTION: STUNTGP_D3D 0x402420
 void FUN_402420()
 {
+    FUN_401f00();
+    g_4722d0 = g_498248;
+    g_4722d0->preset = NULL;
+    g_4722d0->presetMode = 0;
+    g_4722d0->fovPending = 0;
+    g_4722d0->fovNext = 0.0f;
+    g_4722d0->active = 1;
+    g_4722d0->data = g_49a1f8;
+    g_4722d0->path = FUN_428800(1);
+    g_4722d0->fov = 3.2f;
+    g_4722d0->unk0b4 = 1.0f;
+    g_4722d0->unk0b8 = 128.0f;
+    g_4722d0->nearZ = 100.0f;
+    g_4722d0->unk19c = 400000.0f;
+    g_4722d0->unk0bc = 1.333f;
+    g_4722d0->unk0c0 = 1.0f;
+    g_4722d0->cam.pos.x = 0.0f;
+    g_4722d0->cam.pos.y = 0.0f;
+    g_4722d0->cam.pos.z = 0.0f;
+    g_4722d0->cam.target.x = 0.0f;
+    g_4722d0->cam.target.y = 0.0f;
+    g_4722d0->cam.target.z = 1000.0f;
+    g_4722d0->cam.up.x = 0.0f;
+    g_4722d0->cam.up.y = 1.0f;
+    g_4722d0->cam.up.z = 0.0f;
+    g_4722d0->cam.scale.x = 1.0f;
+    g_4722d0->cam.scale.y = 1.0f;
+    g_4722d0->cam.scale.z = 1.0f;
+    g_4722d0->unk1ac.x = 0.0f;
+    g_4722d0->unk1ac.y = 1.0f;
+    g_4722d0->unk1ac.z = 0.0f;
+    FUN_44f4c0();
+    g_4722d0->camMode = 1;
+    g_4722d0->angX = 0x1000000;
+    g_4722d0->angY = 0;
+    g_4722d0->angZ = 0;
+    g_4722d0->roll = 0.0f;
+    g_4722d0->fov2 = 1.0f;
+    FUN_4023d0();
+    FUN_4023f0();
+    g_499f88 = 0.0f;
+    g_499f8c = 0.0f;
+    g_4722d0->unk1cc = g_4722d8;
+    g_4722d0->unk1d0 = 10;
+    g_4722d0->unk1d4 = 1;
+    g_4722d0->unk1bc = 0;
+    g_4722d0->unk1c0 = 0.0f;
+    g_4722d0->unk1c4 = 0.0f;
+    *(DWORD *)g_4722d0->unk1c8 = 0;
+    FUN_4025d0();
 }
 
 // GLOBAL: STUNTGP_D3D 0x4d5b28
@@ -1285,13 +1369,14 @@ void FUN_42d070()
 {
 }
 
+// UV scroll record; unk00 is the mode (0 still, 2 u scrolls and v follows the wave, -1 ends the list).
 struct Unk624488
 {
     int unk00;   // 0x00
-    int unk04;   // 0x04
-    int unk08;   // 0x08
-    int unk0c;   // 0x0c
-    float unk10; // 0x10
+    float unk04; // 0x04, u offset
+    float unk08; // 0x08, v offset
+    float unk0c; // 0x0c, u speed
+    float unk10; // 0x10, v speed
 };
 
 // GLOBAL: STUNTGP_D3D 0x589628
@@ -1671,6 +1756,100 @@ void FUN_42ef80()
 {
     g_renderState.unk7fa4 = g_58c800->unk28;
     g_renderState.unk7fa8 = g_58c800->unk28 + g_58d810->unk0e4;
+}
+
+// GLOBAL: STUNTGP_D3D 0x577650
+float g_577650;
+
+// GLOBAL: STUNTGP_D3D 0x577654
+unsigned int g_577654;
+
+extern int g_577660[10];
+
+// Advances every texture UV scroll, wrapping offsets into [-1, 1].
+// FUNCTION: STUNTGP_D3D 0x4258a0
+void FUN_4258a0()
+{
+    if (g_612948.unk0004 == 1)
+    {
+        return;
+    }
+    float u;
+    float v;
+    unsigned int phase;
+    if (g_577654 >= 0x800 && g_577654 < 0x1800)
+    {
+        phase = g_577654 + 0x10;
+    }
+    else
+    {
+        phase = g_577654 + 0x20;
+    }
+    g_577654 = phase & 0x1fff;
+    g_577650 = g_sinTable[g_577654] * 0.046875f;
+    Unk624488 *r = g_renderState.unk7fa0;
+    while (r->unk00 != -1)
+    {
+        if (r->unk00 != 0)
+        {
+            if (r->unk00 == 2)
+            {
+                u = r->unk0c + r->unk04;
+                r->unk08 = g_577650;
+                r->unk04 = u;
+                if (u > 1.0f)
+                {
+                    r->unk04 = u - 1.0f;
+                }
+            }
+            else
+            {
+                u = r->unk04 + r->unk0c;
+                r->unk04 = u;
+                v = r->unk10 + r->unk08;
+                r->unk08 = v;
+                if (u > 1.0f)
+                {
+                    r->unk04 = u - 1.0f;
+                }
+                if (v > 1.0f)
+                {
+                    r->unk08 = v - 1.0f;
+                }
+                if (r->unk04 < -1.0f)
+                {
+                    r->unk04 = r->unk04 + 1.0f;
+                }
+                if (r->unk08 < -1.0f)
+                {
+                    r->unk08 = r->unk08 + 1.0f;
+                }
+            }
+        }
+        r++;
+    }
+    Unk624488 *s = (Unk624488 *)g_577660;
+    for (int i = 2; i != 0; i--, s++)
+    {
+        s->unk04 = s->unk0c + s->unk04;
+        s->unk08 = s->unk08 + s->unk10;
+        if (s->unk04 > 1.0f)
+        {
+            s->unk04 = s->unk04 - 1.0f;
+        }
+        if (s->unk08 > 1.0f)
+        {
+            s->unk08 = s->unk08 - 1.0f;
+        }
+        if (s->unk04 < -1.0f)
+        {
+            s->unk04 = s->unk04 + 1.0f;
+        }
+        if (s->unk08 < -1.0f)
+        {
+            s->unk08 = s->unk08 + 1.0f;
+        }
+    }
 }
 
 // STUB: STUNTGP_D3D 0x425ad0
