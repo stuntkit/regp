@@ -560,6 +560,95 @@ void FUN_430100(LPDIRECTDRAWSURFACE4 surface, BYTE *image, int width, int height
     }
 }
 
+// Creates an empty size x size video-memory texture (and a second-stage copy when the device
+// supports it) in the next surface slot and texture slot.
+// FUNCTION: STUNTGP_D3D 0x430730
+int FUN_430730(int size)
+{
+    DDSURFACEDESC2 desc;
+    LPDIRECTDRAWSURFACE4 sysSurface = NULL;
+    LPDIRECTDRAWSURFACE4 surface = NULL;
+    LPDIRECT3DTEXTURE2 sysTexture = NULL;
+    LPDIRECT3DTEXTURE2 texture = NULL;
+    int res;
+    SurfaceSlot *slot = &g_5ba788.surfaceSlots[g_5ba788.surfaceSlotCount++];
+    memset(&desc, 0, sizeof(desc));
+    desc.dwWidth = size;
+    desc.dwHeight = size;
+    desc.dwSize = sizeof(desc);
+    desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
+    desc.ddpfPixelFormat = *g_5ba788.textureFormat;
+    desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
+    res = g_dd4->CreateSurface(&desc, &sysSurface, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = sysSurface->QueryInterface(IID_IDirect3DTexture2, (void **)&sysTexture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = sysSurface->GetSurfaceDesc(&desc);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    desc.dwFlags = (*g_592028 ? DDSD_CKSRCBLT : 0) + 0x101007;
+    desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_ALLOCONLOAD;
+    desc.ddsCaps.dwCaps2 = 0x80;
+    desc.dwTextureStage = 0;
+    res = g_dd4->CreateSurface(&desc, &surface, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = surface->QueryInterface(IID_IDirect3DTexture2, (void **)&texture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = texture->Load(sysTexture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    slot->unk04 = (DWORD)texture;
+    slot->surface = surface;
+    g_6243b8->texture = texture;
+    g_6243b8->unk04[0] = (DWORD)texture;
+    *(WORD *)&g_6243b8->unk04[1] = size;
+    if (g_5ba788.deviceDesc[29] & 0x4000)
+    {
+        LPDIRECTDRAWSURFACE4 surface2 = NULL;
+        LPDIRECT3DTEXTURE2 texture2 = NULL;
+        desc.dwTextureStage = 1;
+        res = g_dd4->CreateSurface(&desc, &surface2, NULL);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+        res = surface2->QueryInterface(IID_IDirect3DTexture2, (void **)&texture2);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+        res = texture2->Load(sysTexture);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+        slot->unk0c = (DWORD)texture2;
+        slot->surface2 = surface2;
+        g_6243b8->unk04[0] = (DWORD)texture2;
+    }
+    FUN_4300f0(sysTexture);
+    ddReleaseSurface(&sysSurface);
+    g_6243b8++;
+    g_592028++;
+    return 1;
+}
+
 // Uploads an image into texture slot through a system-memory staging surface.
 // FUNCTION: STUNTGP_D3D 0x431560
 void FUN_431560(int slot, BYTE *image)

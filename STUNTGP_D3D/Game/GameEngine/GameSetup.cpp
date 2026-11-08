@@ -2405,9 +2405,19 @@ void FUN_4311c0(Scene *scene)
     }
 }
 
-// STUB: STUNTGP_D3D 0x4342c0
+void FUN_434090();
+void FUN_434030();
+
+// Dynamic mesh object matrix.
+// GLOBAL: STUNTGP_D3D 0x5da1e0
+float g_5da1e0[16];
+
+// FUNCTION: STUNTGP_D3D 0x4342c0
 void FUN_4342c0()
 {
+    FUN_434090();
+    FUN_434030();
+    Matrix_Identity(g_5da1e0);
 }
 
 struct MeshPolyVertex
