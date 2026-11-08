@@ -676,6 +676,83 @@ GameSlot *FUN_461270(Vec4 *pos)
     return best;
 }
 
+// GLOBAL: STUNTGP_D3D 0x4897b8
+DS3DBUFFER g_4897b8 = {sizeof(DS3DBUFFER), {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, 360, 360, {0.0f, 0.0f, 1.0f},
+                       0, 1300.0f, 7500.0f, DS3DMODE_NORMAL};
+
+// Plays a sample at a world position; nothing is played out of range of the nearest camera.
+// FUNCTION: STUNTGP_D3D 0x461300
+void FUN_461300(int channel, int loop, DWORD frequency, DWORD volume, Vec4 *pos, Vec4 *velocity, int keep,
+                int *slotIndex)
+{
+    if (!g_soundInitialised)
+    {
+        return;
+    }
+    if ((DWORD)g_62f5b4 > 0x18)
+    {
+        return;
+    }
+    SoundChannel *ch = &g_62e118[channel];
+    if (!ch->buffer)
+    {
+        return;
+    }
+    LPDIRECTSOUNDBUFFER buffer = ch->buffer;
+    LPDIRECTSOUND3DBUFFER buffer3d = ch->buffer3d;
+    if (!buffer3d)
+    {
+        return;
+    }
+    GameSlot *slot = FUN_461270(pos);
+    float dx = slot->cam.pos.x - pos->x;
+    float dy = slot->cam.pos.y - pos->y;
+    float dz = slot->cam.pos.z - pos->z;
+    if (dz * dz + dy * dy + dx * dx > g_4897a4)
+    {
+        return;
+    }
+    if (!frequency)
+    {
+        frequency = ch->rate;
+    }
+    if (slotIndex)
+    {
+        *slotIndex = channel;
+    }
+    if (!keep)
+    {
+        if (FUN_460e70(&buffer, &buffer3d, channel, slotIndex) != 1)
+        {
+            return;
+        }
+    }
+    DS3DBUFFER params = g_4897b8;
+    params.flMaxDistance = g_4897a0;
+    params.vPosition.x = pos->x;
+    params.vPosition.y = pos->y;
+    params.vPosition.z = pos->z;
+    if (velocity)
+    {
+        params.vVelocity.x = velocity->x;
+        params.vVelocity.y = velocity->y;
+        params.vVelocity.z = velocity->z;
+    }
+    buffer3d->SetAllParameters(&params, DS3D_IMMEDIATE);
+    buffer->SetFrequency(frequency);
+    buffer->SetVolume(g_4897f8[g_sfxVolume * volume >> 9]);
+    if (loop == 1)
+    {
+        buffer->Play(0, 0, DSBPLAY_LOOPING);
+        g_62f5b4++;
+    }
+    else
+    {
+        buffer->Play(0, 0, 0);
+        g_62f5b4++;
+    }
+}
+
 // Moves a playing 3D sound; it is stopped once it is out of range of the nearest camera.
 // FUNCTION: STUNTGP_D3D 0x461730
 void FUN_461730(int *channel, DWORD frequency, int volume, Vec4 *pos, Vec4 *velocity)
