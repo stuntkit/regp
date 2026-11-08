@@ -1901,6 +1901,150 @@ void FUN_426260()
     }
 }
 
+// Next free entry in the normal pool at g_renderState.unk7fa4.
+// GLOBAL: STUNTGP_D3D 0x576cc8
+Vec4 *g_576cc8;
+
+// Builds face normals for a two-sided strip (both faces of each quad) and smoothed normals
+// for its edge vertices, taking them from the normal pool.
+// FUNCTION: STUNTGP_D3D 0x426370
+void FUN_426370(Scene *scene, ObjectDef *def)
+{
+    Vec4 *normals = g_576cc8;
+    DWORD n = def->vertCount;
+    DWORD half = n >> 1;
+    Vec4 *edge = normals + n;
+    Vec4 a;
+    Vec4 nrm;
+    DWORD i;
+    Vec4 *p = def->points;
+    for (i = 0; i < half; i++)
+    {
+        a.x = p[i * 2 + 1].x - p[i * 2].x;
+        *(WORD *)(def->verts + i * 8 + 4) = ((int)&normals[i] - (int)g_renderState.unk7fa4) >> 4;
+        a.y = p[i * 2 + 1].y - p[i * 2].y;
+        a.z = p[i * 2 + 1].z - p[i * 2].z;
+        Vec4 b;
+        b.x = p[i * 2].x - p[i * 2 + 2].x;
+        b.y = p[i * 2].y - p[i * 2 + 2].y;
+        b.z = p[i * 2].z - p[i * 2 + 2].z;
+        nrm.x = b.y * a.z - b.z * a.y;
+        nrm.y = b.z * a.x - b.x * a.z;
+        nrm.z = b.x * a.y - b.y * a.x;
+        Vec3_Normalize(&nrm.x);
+        normals[i] = nrm;
+        *(WORD *)(def->verts + (half + i) * 8 + 4) = ((int)&normals[half + i] - (int)g_renderState.unk7fa4) >> 4;
+        nrm.x = -nrm.x;
+        nrm.y = -nrm.y;
+        nrm.z = -nrm.z;
+        normals[half + i] = nrm;
+    }
+    MeshUv *uv = (MeshUv *)def->unk2c;
+    int idx0 = ((int)edge - (int)g_renderState.unk7fa4) >> 4;
+    int idx1 = idx0 + half;
+    DWORD k = (def->pointCount >> 1) + 2;
+    for (i = 0; i < half - 1; i++)
+    {
+        a.x = normals[i].x + normals[i + 1].x;
+        a.y = normals[i].y + normals[i + 1].y;
+        a.z = normals[i].z + normals[i + 1].z;
+        Vec3_Normalize(&a.x);
+        edge[i] = a;
+        a.x = -a.x;
+        a.y = -a.y;
+        a.z = -a.z;
+        edge[half + i] = a;
+        uv[i * 2 + 2].unk0a = idx0;
+        uv[k + i * 2].unk0a = idx1;
+        uv[i * 2 + 3].unk0a = idx0;
+        uv[k + i * 2 + 1].unk0a = idx1;
+        idx0++;
+        idx1++;
+    }
+    g_576cc8 += n * 3 - 2;
+}
+
+// Ripples a strip along its length with a sine wave tapered at both ends, then rebuilds its normals.
+// FUNCTION: STUNTGP_D3D 0x426610
+void FUN_426610(AnimObject *obj, Scene *scene, ObjectDef *def)
+{
+    DWORD angle = obj->angleA;
+    DWORD half = def->vertCount >> 1;
+    Vec4 *p = def->points;
+    DWORD mid = def->pointCount >> 1;
+    for (DWORD i = 0; i < half; i++)
+    {
+        float amp;
+        if (i * 64 < 256)
+        {
+            amp = (float)(i * 64);
+        }
+        else if (i >= half - 4)
+        {
+            amp = (float)((half - i) * 64);
+        }
+        else
+        {
+            amp = 256.0f;
+        }
+        float y = amp * g_sinTable[angle];
+        p->z = y;
+        p[mid].z = y;
+        p++;
+        p->z = y;
+        p[mid].z = y;
+        p++;
+        angle = (angle + 0x200) & 0x1fff;
+    }
+    FUN_426370(scene, def);
+}
+
+// FUN_426610 with a faster wave; type 2 tapers only the start and covers one more segment.
+// FUNCTION: STUNTGP_D3D 0x4266e0
+void FUN_4266e0(AnimObject *obj, Scene *scene, ObjectDef *def, int type)
+{
+    DWORD angle = obj->angleA;
+    DWORD half = def->vertCount >> 1;
+    Vec4 *p = def->points;
+    DWORD mid = def->pointCount >> 1;
+    if (type == 2)
+    {
+        half++;
+    }
+    for (DWORD i = 0; i < half; i++)
+    {
+        float amp;
+        if (type == 2)
+        {
+            if (i * 32 < 256)
+            {
+                amp = (float)(i * 32);
+            }
+            else
+            {
+                amp = 256.0f;
+            }
+        }
+        else if (i >= half - 8)
+        {
+            amp = (float)((half - i) * 32);
+        }
+        else
+        {
+            amp = 256.0f;
+        }
+        float y = amp * g_sinTable[angle];
+        p->z = y;
+        p[mid].z = y;
+        p++;
+        p->z = y;
+        p[mid].z = y;
+        p++;
+        angle = (angle + 0x400) & 0x1fff;
+    }
+    FUN_426370(scene, def);
+}
+
 // FUNCTION: STUNTGP_D3D 0x4267d0
 void FUN_4267d0(AnimObject *obj, ObjectDef *def)
 {
@@ -2119,6 +2263,64 @@ void FUN_426e30(AnimObject *obj, ObjectDef *def)
     m[1].x = g_sinTable[angle] * 0.01f + 1.0f;
     m[1].y = g_sinTable[angle2] * 0.02f + 1.0f;
     m[1].z = g_sinTable[angle2] * 0.01f + 1.0f;
+}
+
+// Runs each animated object's animation (object 0 is the track itself).
+// FUNCTION: STUNTGP_D3D 0x426ed0
+void FUN_426ed0(Scene *scene)
+{
+    g_576cc8 = (Vec4 *)g_renderState.unk7fa8;
+    ObjectDef *def = scene->lods[0];
+    AnimObject *obj = g_576cd0;
+    for (DWORD i = 1; i < scene->objectCount; i++)
+    {
+        obj++;
+        def++;
+        switch (obj->type)
+        {
+        case 1:
+            FUN_426610(obj, scene, def);
+            break;
+        case 2:
+        case 3:
+            FUN_4266e0(obj, scene, def, obj->type);
+            break;
+        case 4:
+            FUN_4267d0(obj, def);
+            break;
+        case 5:
+            FUN_426880(obj, def);
+            break;
+        case 16:
+            FUN_4268f0(obj, def);
+            FUN_4267d0(obj, def);
+            FUN_426a00(obj, def);
+            break;
+        case 6:
+        case 7:
+            FUN_426c70(obj, def);
+            break;
+        case 8:
+            FUN_426d50(obj, def);
+            break;
+        case 9:
+            FUN_426d80(obj, def);
+            break;
+        case 10:
+            FUN_426db0(obj, def);
+            break;
+        case 11:
+            FUN_426df0(obj, def);
+            break;
+        case 12:
+        case 13:
+            FUN_426e30(obj, def);
+            break;
+        case 14:
+            FUN_426ca0(obj, def);
+            break;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x427010

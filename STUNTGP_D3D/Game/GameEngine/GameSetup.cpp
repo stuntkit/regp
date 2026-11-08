@@ -2621,6 +2621,25 @@ void FUN_42a220()
     FUN_42a090((PolyRef **)&g_renderState.unk7ed8[2], g_renderState.unk34, g_renderState.unk40 - g_renderState.unk34);
 }
 
+// Scene queued with its own camera; g_632cf8 and g_62f5d8 hold lists of these.
+struct SceneCamera
+{
+    Scene *scene; // 0x00
+    Camera cam;   // 0x04
+};
+
+// Queues the scene into the first render bucket, viewed through its own camera.
+// FUNCTION: STUNTGP_D3D 0x42ad30
+void FUN_42ad30(SceneCamera *e)
+{
+    Scene *scene = e->scene;
+    g_4722d0->unk19c = 5000000.0f;
+    scene->camera = &e->cam;
+    FUN_42b140((RenderList *)&g_renderState.unk7ef8[0]);
+    FUN_42a260((PolyRef **)g_renderState.unk7ed8, scene, 2);
+    FUN_42b180((int *)&g_renderState.unk7ef8[0]);
+}
+
 extern int g_624980;
 extern int g_57b41c;
 
