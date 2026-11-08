@@ -3561,6 +3561,9 @@ void FUN_450ac0(MenuObject *object)
 }
 
 void FUN_438230(int layer, int def, float x, float y, float middle, DWORD flags);
+void FUN_438a20(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color,
+                DWORD flags, float unk18);
+char *FUN_43d5f0(int value, int digits);
 void FUN_4385d0(int layer, int def, float x, float y, float middle, DWORD flags);
 
 // Nested frames inset from the screen edge, shown while the screen position is adjusted.
@@ -3837,6 +3840,93 @@ struct Unk452000
     DWORD unk24[4]; // 0x24
     float unk34;    // 0x34
 };
+
+// Car part page with named fields; groups is laid out as in Unk451a50.
+struct Unk451aa0
+{
+    DWORD unk00[5];    // 0x00
+    PoolObject *child; // 0x14
+    int unk18;         // 0x18, selected item
+    int unk1c;         // 0x1c, selected group
+    float unk20;       // 0x20
+    float unk24;       // 0x24
+    float unk28;       // 0x28
+    float unk2c;       // 0x2c
+    float unk30;       // 0x30
+    float unk34;       // 0x34
+    float unk38[3];    // 0x38, shown stat bars
+    float unk44[3];    // 0x44, stat targets
+    int groups[0x31];  // 0x50
+    char unk114[0x20]; // 0x114
+    int unk134[1];     // 0x134
+};
+
+// Sprite ids of the three stat bars.
+// GLOBAL: STUNTGP_D3D 0x4869c4
+int g_4869c4[3] = {0x3f, 0x3d, 0x3e};
+
+void FUN_438230(int layer, int def, float x, float y, float middle, DWORD flags);
+void FUN_438a20(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color,
+                DWORD flags, float unk18);
+char *FUN_43d5f0(int value, int digits);
+
+// FUNCTION: STUNTGP_D3D 0x451fd0
+void FUN_451fd0(int def, float x, float y, float length)
+{
+    FUN_438230(12, def, x, y, length * 8.0f, 2);
+}
+
+// Stat panel: a label and a bar per stat.
+// FUNCTION: STUNTGP_D3D 0x451ed0
+void FUN_451ed0(Unk451aa0 *object)
+{
+    float x0 = 81.0f;
+    float x1 = 359.0f;
+    if (g_menuState.unk423c > 1)
+    {
+        x0 = 49.0f;
+        x1 = 327.0f;
+    }
+    FUN_439450(x0, 366.0f, x1, 444.0f, 12, 0x6f, 0x40);
+    FUN_439380(x0, 366.0f, x1, 444.0f, 13, 0, 0, 0.0f);
+    x0 += 70.0f;
+    float barX = x0 + 16.0f;
+    for (int i = 0; i < 3; i++)
+    {
+        float y = i * 20 + 384.0f;
+        FUN_438be0(x0, y, 12, 2, i + 0x1c, 1.0f, 0xffffffff, 6);
+        FUN_451fd0(g_4869c4[i], barX, y, object->unk38[i] * 20.0f);
+    }
+}
+
+// Car picture swinging on a sine of the phase.
+// FUNCTION: STUNTGP_D3D 0x452130
+void FUN_452130(Unk451aa0 *object, float x, float y, float phase)
+{
+    float t = phase + 0.5f;
+    t -= (int)t;
+    FUN_43da40(7, object->groups[object->unk1c * 12 + 1], x - 100.0f + (float)sin(t * 3.1415927f) * 100.0f,
+               (0.5f - t) * 200.0f + y, 0.5f, 1);
+}
+
+// Name of the highlighted part, and in the shop its owner and price.
+// FUNCTION: STUNTGP_D3D 0x4521b0
+void FUN_4521b0(Unk451aa0 *object, int index)
+{
+    float y = 161.0f;
+    if (g_menuState.unk4230 != 5)
+    {
+        y = 208.0f;
+    }
+    FUN_438ba0(507.0f, y, 12, 4, index + 0x19f, 1.25f, 0xffffffff, 3);
+    if (g_menuState.unk4230 == 5)
+    {
+        FUN_438be0(483.0f, 291.0f, 12, 4, 0x185, 1.5f, 0xffffffff, 6);
+        FUN_438a20(583.0f, 291.0f, 12, 0, 4, object->unk114, 1.5f, 0xffffffff, 6, 14.0f);
+        FUN_438be0(483.0f, 315.0f, 12, 4, 0x186, 1.5f, 0xffffffff, 6);
+        FUN_438a20(583.0f, 315.0f, 12, 0, 4, FUN_43d5f0(object->unk134[index], 0), 1.5f, 0xffffffff, 6, 14.0f);
+    }
+}
 
 // Draws the two halves of a selector arrow, bobbing left by a sine of unk34.
 // FUNCTION: STUNTGP_D3D 0x452000
