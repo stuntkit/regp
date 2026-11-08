@@ -5459,6 +5459,72 @@ void FUN_413e10()
     }
 }
 
+// Lays the six wobble segments end to end from the anchor at unk3138 and places the tip, unk327c,
+// in world space.
+// FUNCTION: STUNTGP_D3D 0x413e60
+void FUN_413e60()
+{
+    Car *car = g_4d5bb8;
+    if (car->unk3134)
+    {
+        Vec4 v = car->unk3138;
+        int n = 6;
+        Vec4 p;
+        p.x = g_4d5b30[0] * v.x + g_4d5b30[4] * v.y + g_4d5b30[8] * v.z;
+        p.y = g_4d5b30[1] * v.x + g_4d5b30[5] * v.y + g_4d5b30[9] * v.z;
+        p.z = g_4d5b30[2] * v.x + g_4d5b30[6] * v.y + g_4d5b30[10] * v.z;
+        v.x = 0.0f;
+        v.y = car->unk288c;
+        v.z = 0.0f;
+        p.x += v.x;
+        p.y += v.y;
+        p.z += v.z;
+        CarWobble *w = car->unk315c;
+        Vec4 *m = car->unk26b0->lods[car->unk26b0->lod][11].matrix;
+        do
+        {
+            Vec4 r = w->dir;
+            v = w->dir;
+            r.x = g_4d5b30[0] * v.x + g_4d5b30[4] * v.y + g_4d5b30[8] * v.z;
+            r.y = g_4d5b30[1] * v.x + g_4d5b30[5] * v.y + g_4d5b30[9] * v.z;
+            r.z = g_4d5b30[2] * v.x + g_4d5b30[6] * v.y + g_4d5b30[10] * v.z;
+            m[2] = r;
+            v.x = r.x * car->unk3158;
+            v.y = r.y * car->unk3158;
+            v.z = r.z * car->unk3158;
+            m[0] = p;
+            p.x += v.x;
+            p.y += v.y;
+            p.z += v.z;
+            w++;
+            m += 5;
+        } while (--n);
+        Vec4 q = p;
+        float t = -q.x;
+        Vec4 a;
+        a.x = t * car->axisX.x;
+        a.y = t * car->axisX.y;
+        a.z = t * car->axisX.z;
+        t = 70.0f - q.y;
+        v.x = t * car->axisY.x;
+        v.y = t * car->axisY.y;
+        v.z = t * car->axisY.z;
+        Vec4 c;
+        c.x = q.z * car->axisZ.x;
+        c.y = q.z * car->axisZ.y;
+        c.z = q.z * car->axisZ.z;
+        a.x += v.x;
+        a.y += v.y;
+        a.z += v.z;
+        a.x += c.x;
+        a.y += c.y;
+        a.z += c.z;
+        car->unk327c.x = car->posX - a.x;
+        car->unk327c.y = car->posY - a.y;
+        car->unk327c.z = car->posZ - a.z;
+    }
+}
+
 // Places the two exhaust-flame meshes at their emitters, oriented like the body.
 // FUNCTION: STUNTGP_D3D 0x414130
 void FUN_414130()
@@ -5490,6 +5556,16 @@ void FUN_414130()
             m[0] = r;
         }
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x414350
+void FUN_414350()
+{
+    FUN_4138a0();
+    FUN_4139f0();
+    FUN_413b60();
+    FUN_413e60();
+    FUN_414130();
 }
 
 // Spins each wheel by the distance it rolled this tick.
