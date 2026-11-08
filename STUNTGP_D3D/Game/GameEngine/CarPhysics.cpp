@@ -6572,9 +6572,134 @@ void FUN_419970()
 {
 }
 
-// STUB: STUNTGP_D3D 0x41ac30
+extern Replay *g_570ac0;
+extern ReplayFrame *g_570ac4;
+void FUN_41aac0(Replay *replay);
+
+// Records the car into the next replay frame whenever the replay clock wraps.
+// FUNCTION: STUNTGP_D3D 0x41ac30
 void FUN_41ac30(Car *car)
 {
+    Replay *r = car->unk7268;
+    if (r && r->mode == 2)
+    {
+        g_570ac0 = r;
+        ReplayFrame *f = r->cur;
+        g_570ac4 = f;
+        float t = r->unk08;
+        r->unk08 = (float)fmod(r->unk0c + r->unk08, 1.0);
+        if (t <= 0.00001f)
+        {
+            f->flags = 0;
+            f->pos[0] = (int)car->posX;
+            f->pos[1] = (int)car->posY;
+            f->pos[2] = (int)car->posZ;
+            f->axisZ[0] = (char)(car->axisZ.x * 127.0f);
+            f->axisZ[1] = (char)(car->axisZ.y * 127.0f);
+            f->axisZ[2] = (char)(car->axisZ.z * 127.0f);
+            f->axisY[0] = (char)(car->axisY.x * 127.0f);
+            f->axisY[1] = (char)(car->axisY.y * 127.0f);
+            f->axisY[2] = (char)(car->axisY.z * 127.0f);
+            f->unk22 = (char)car->unk1cf4;
+            f->unk20 = (unsigned short)car->unk1cfc;
+            f->unk23 = (char)car->unk1f10;
+            int n;
+            short *out = f->wheelAngle;
+            Wheel *w = car->wheels;
+            for (n = 4; n != 0; n--)
+            {
+                *out++ = (short)w->unk94;
+                w++;
+            }
+            out = f->unk14;
+            w = car->wheels;
+            for (n = 4; n != 0; n--)
+            {
+                *out++ = (short)(w->unk0c + w->unk0c);
+                w++;
+            }
+            for (unsigned int i = 0; i < 4; i++)
+            {
+                f->unk1c[i] = (char)(car->unk2240[i] + car->unk2240[i]);
+            }
+            if (car->unk2364 == 0.0f && car->unk236c == 0)
+            {
+                f->unk25 = 0;
+            }
+            else
+            {
+                unsigned int v;
+                if (car->unk2368 == 0 && (car->unk236c == 0 || car->unk2364 > car->unk2360))
+                {
+                    v = (unsigned int)(car->unk2364 + 1.0f);
+                    if (v > 127)
+                    {
+                        v = 127;
+                    }
+                    v |= 0x80;
+                }
+                else
+                {
+                    v = (unsigned int)(car->unk2360 + 1.0f);
+                    if (v > 127)
+                    {
+                        v = 127;
+                    }
+                }
+                f->unk25 = (BYTE)v;
+            }
+            if (car->unk2250 == 1)
+            {
+                f->flags |= 2;
+            }
+            if (car->unk22bc == 1)
+            {
+                f->flags |= 4;
+            }
+            if (car->unk22c0 == 1)
+            {
+                f->flags |= 8;
+            }
+            if (car->controls[9])
+            {
+                f->flags |= 0x10;
+            }
+            unsigned int loaded = 0;
+            float limit = g_482670 * car->unk2618 * 3.0f;
+            for (n = 0; n < 4; n++)
+            {
+                if (limit < car->wheels[n].unk80)
+                {
+                    loaded++;
+                }
+            }
+            if (loaded >= 2)
+            {
+                f->flags |= 0x20;
+            }
+            int surface = 0;
+            switch (car->wheels[0].unk78)
+            {
+            case 2:
+                surface = 0x40;
+                break;
+            case 3:
+                surface = 0x80;
+                break;
+            case 4:
+                surface = 0xc0;
+                break;
+            }
+            f->flags |= surface;
+            Replay *rec = g_570ac0;
+            rec->cur++;
+            rec->cur->flags = 1;
+            if (rec->cur >= &rec->frames[2400])
+            {
+                FUN_41aac0(rec);
+            }
+        }
+    }
 }
 
 extern int g_4d5b20;
@@ -6739,9 +6864,119 @@ void FUN_41bf20()
     g_4d5bb8->unk3924 = i;
 }
 
-// STUB: STUNTGP_D3D 0x41cd30
+void FUN_41cb40(SkidMark *skid, int i, int unused);
+
+// Lays the skid mark of one wheel: while the wheel slides, extends the strip from the last point to the contact
+// point in 200 unit quads; otherwise ends it.
+// FUNCTION: STUNTGP_D3D 0x41cd30
 void FUN_41cd30(int wheel)
 {
+    if (!g_5712f8)
+    {
+        return;
+    }
+    Car *car = g_4d5bb8;
+    SkidMark *skid = &car->skids[wheel];
+    if ((car->unk1cf0 > 30.0f && car->wheels[wheel].unk30 < 8.5f) ||
+        (car->unk1cf0 < 30.0f && car->wheels[wheel].unk30 < 2.0f) || car->unk1fd8)
+    {
+        if (skid->unk00)
+        {
+            g_5712f0 = (g_5712f0 + 1) & 0x7f;
+            if (g_5712f4 < 0x80)
+            {
+                g_5712f4++;
+            }
+            skid->unk08 = g_5712f0;
+            skid->unk04++;
+        }
+        skid->unk00 = 0;
+        return;
+    }
+    Vec4 p = car->wheels[wheel].pos;
+    Vec4 d;
+    d.x = car->axisY.x * -60.0f;
+    d.y = car->axisY.y * -60.0f;
+    d.z = car->axisY.z * -60.0f;
+    p.x = p.x + d.x;
+    p.y = p.y + d.y;
+    p.z = p.z + d.z;
+    int i = skid->unk04 & 0x3f;
+    if (!skid->unk00)
+    {
+        skid->points[i].a = p;
+    }
+    skid->unk00 = 1;
+    SkidPoint *sp = &skid->points[i];
+    d.x = p.x - sp->a.x;
+    d.y = p.y - sp->a.y;
+    d.z = p.z - sp->a.z;
+    float len;
+    FUN_44eda0(&d.x, &len);
+    if (len > 800.0f)
+    {
+        skid->unk00 = 0;
+        return;
+    }
+    d.x = d.x * 200.0f;
+    d.y = d.y * 200.0f;
+    d.z = d.z * 200.0f;
+    Vec4 start = sp->a;
+    Vec4 end;
+    if (len < 200.0f)
+    {
+        end = p;
+    }
+    else
+    {
+        end.x = start.x + d.x;
+        end.y = start.y + d.y;
+        end.z = start.z + d.z;
+    }
+    float step = 200.0f;
+    int surface = car->wheels[wheel].unk78;
+    sp->a = start;
+    sp->b = end;
+    sp->dir = d;
+    sp->index = skid->unk08 << 2;
+    FUN_41cb40(skid, i, surface);
+    while (len >= 200.0f)
+    {
+        g_5712f0 = (g_5712f0 + 1) & 0x7f;
+        if (g_5712f4 < 0x80)
+        {
+            g_5712f4++;
+        }
+        skid->unk08 = g_5712f0;
+        skid->unk04++;
+        i = (i + 1) & 0x3f;
+        start.x = end.x;
+        start.y = end.y;
+        start.z = end.z;
+        end.x = end.x + d.x;
+        end.y = end.y + d.y;
+        end.z = end.z + d.z;
+        step += 200.0f;
+        if (step >= len)
+        {
+            skid->points[i].a.x = start.x;
+            skid->points[i].a.y = start.y;
+            skid->points[i].a.z = start.z;
+            skid->points[i].a.w = end.w;
+            return;
+        }
+        sp = &skid->points[i];
+        sp->a.x = start.x;
+        sp->a.y = start.y;
+        sp->a.z = start.z;
+        sp->a.w = end.w;
+        sp->b = end;
+        sp->dir = d;
+        sp->index = skid->unk08 << 2;
+        FUN_41cb40(skid, i, surface);
+    }
+    ((BYTE *)&skid->unk0c[2].color)[3] = 0;
+    ((BYTE *)&skid->unk0c[3].color)[3] = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x41d140

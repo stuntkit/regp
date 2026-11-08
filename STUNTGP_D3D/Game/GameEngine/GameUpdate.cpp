@@ -2626,9 +2626,121 @@ int FUN_428040(Scene *scene, int index)
     return FUN_427cc0(scene, obj, index, box);
 }
 
-// STUB: STUNTGP_D3D 0x425df0
+void FUN_425b50(ObjectDef *obj, int id);
+extern float g_5775d0[4][8];
+
+// Rebuilds a flat panel mesh as a strip of vertCount / 2 quads between its corners (found by FUN_425b50 from the
+// points facing -z), doubled for the back face; type 1 waves the strip vertically.
+// FUNCTION: STUNTGP_D3D 0x425df0
 void FUN_425df0(Scene *scene, ObjectDef *def, int type)
 {
+    MeshFace *faces = (MeshFace *)def->verts;
+    Vec4 *pts = def->points;
+    MeshUv *uvs = (MeshUv *)def->unk2c;
+    unsigned int half = def->vertCount;
+    unsigned int n = def->pointCount;
+    int id = -1;
+    if (n > 0)
+    {
+        WORD *normal = &uvs->unk0a;
+        do
+        {
+            unsigned int k = *normal;
+            Vec4 *v = (Vec4 *)&g_renderState.unk7fa4[k];
+            if ((float)fabs(v->x) < 0.00001f && (float)fabs(v->y) < 0.00001f && v->z < -0.99999f)
+            {
+                id = k;
+            }
+            normal += 8;
+        } while (--n);
+    }
+    FUN_425b50(def, id);
+    float t = 0.0f;
+    half >>= 1;
+    unsigned int count = half * 2 + 2;
+    float step = 1.0f / half;
+    if (count > 0)
+    {
+        float dx0 = g_5775d0[1][0] - g_5775d0[0][0];
+        float dy0 = g_5775d0[1][1] - g_5775d0[0][1];
+        float dz0 = g_5775d0[1][2] - g_5775d0[0][2];
+        float du0 = g_5775d0[1][4] - g_5775d0[0][4];
+        float dv0 = g_5775d0[1][5] - g_5775d0[0][5];
+        float dx1 = g_5775d0[3][0] - g_5775d0[2][0];
+        unsigned int wave = 0;
+        float dy1 = g_5775d0[3][1] - g_5775d0[2][1];
+        float dz1 = g_5775d0[3][2] - g_5775d0[2][2];
+        float du1 = g_5775d0[3][4] - g_5775d0[2][4];
+        float dv1 = g_5775d0[3][5] - g_5775d0[2][5];
+        float du2 = g_5775d0[1][6] - g_5775d0[0][6];
+        float dv2 = g_5775d0[1][7] - g_5775d0[0][7];
+        float du3 = g_5775d0[3][6] - g_5775d0[2][6];
+        float dv3 = g_5775d0[3][7] - g_5775d0[2][7];
+        for (unsigned int j = 1; j - 1 < count; j += 2)
+        {
+            Vec4 *a = &pts[j - 1];
+            MeshUv *ua = &uvs[j - 1];
+            Vec4 o;
+            o.x = dx0 * t;
+            o.y = dy0 * t;
+            o.z = dz0 * t;
+            ua->point = j - 1;
+            a->x = g_5775d0[0][0] + o.x;
+            a->y = g_5775d0[0][1] + o.y;
+            a->z = g_5775d0[0][2] + o.z;
+            ua->u = du0 * t + g_5775d0[0][4];
+            ua->v = dv0 * t + g_5775d0[0][5];
+            o.x = dx1 * t;
+            o.y = dy1 * t;
+            o.z = dz1 * t;
+            ua->color = 0xffffff;
+            ua[1].point = j;
+            a[1].x = g_5775d0[2][0] + o.x;
+            a[1].y = g_5775d0[2][1] + o.y;
+            a[1].z = g_5775d0[2][2] + o.z;
+            ua[1].u = du1 * t + g_5775d0[2][4];
+            ua[1].v = dv1 * t + g_5775d0[2][5];
+            ua[1].color = 0xffffff;
+            if (type == 1)
+            {
+                float s = g_sinTable[wave / count] * -256.0f;
+                a->y = g_5775d0[0][1] + s;
+                a[1].y = g_5775d0[2][1] + s;
+            }
+            pts[count + j - 1] = *a;
+            pts[count + j] = a[1];
+            uvs[count + j - 1] = *ua;
+            uvs[count + j] = ua[1];
+            uvs[count + j - 1].point = count + j - 1;
+            uvs[count + j].point = count + j;
+            uvs[count + j - 1].u = du2 * t + g_5775d0[0][6];
+            wave += 0x2000;
+            uvs[count + j - 1].v = dv2 * t + g_5775d0[0][7];
+            uvs[count + j].u = du3 * t + g_5775d0[2][6];
+            uvs[count + j].v = dv3 * t + g_5775d0[2][7];
+            t += step;
+        }
+    }
+    WORD c = 0;
+    if (half > 0)
+    {
+        WORD *base = (WORD *)scene->unk38;
+        for (unsigned int k = half; k != 0; k--)
+        {
+            faces->flags &= 0x7f;
+            WORD *idx = &base[faces->index];
+            faces++;
+            idx[1] = c + 1;
+            idx[2] = c + 3;
+            idx[3] = c + 2;
+            idx[0] = c;
+            idx[half * 4] = c + count;
+            idx[half * 4 + 1] = c + count + 1;
+            idx[half * 4 + 2] = c + count + 3;
+            idx[half * 4 + 3] = c + count + 2;
+            c += 2;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x426260
@@ -6376,6 +6488,38 @@ void FUN_41c720(Vec4 *p, D3DCOLOR color)
                    (m[0] * p->x + m[4] * p->y + m[8] * p->z + m[12]) * g_61c3e8[0] * g_576b9c * inv + g_576b94,
                    (m[1] * p->x + m[5] * p->y + m[9] * p->z + m[13]) * g_61c3e8[5] * g_576ba0 * inv + g_576b98,
                    1.0f);
+    }
+}
+
+void FUN_431f10(DWORD color, float x0, float y0, float z0, float x1, float y1, float z1);
+
+// Projects a and b through g_636418[3]'s transform and draws the line between them when both are in front of the
+// camera.
+// FUNCTION: STUNTGP_D3D 0x41c7f0
+void FUN_41c7f0(Vec4 *a, Vec4 *b, DWORD color)
+{
+    float m[16];
+    FUN_44fbd0(g_636418[3].scene, g_636418[3].scene->lods[0], m);
+    Vec4 pa;
+    pa.x = m[0] * a->x + a->y * m[4] + a->z * m[8] + m[12];
+    pa.y = m[1] * a->x + a->y * m[5] + a->z * m[9] + m[13];
+    pa.z = m[2] * a->x + a->y * m[6] + a->z * m[10] + m[14];
+    if (pa.z >= 0.0f)
+    {
+        Vec4 pb;
+        pb.x = m[0] * b->x + b->z * m[8] + b->y * m[4] + m[12];
+        pb.y = m[1] * b->x + b->z * m[9] + b->y * m[5] + m[13];
+        pb.z = m[2] * b->x + b->z * m[10] + b->y * m[6] + m[14];
+        if (pb.z >= 0.0f)
+        {
+            float inv = 1.0f / (g_61c3e8[10] * pa.z + g_61c3e8[14] + 1.0f);
+            float x0 = g_61c3e8[0] * pa.x * inv * g_576b9c + g_576b94;
+            float y0 = g_61c3e8[5] * pa.y * inv * g_576ba0 + g_576b98;
+            float z0 = inv * 32.0f;
+            inv = 1.0f / (pb.z * g_61c3e8[10] + g_61c3e8[14] + 1.0f);
+            FUN_431f10(color, x0, y0, z0, g_61c3e8[0] * pb.x * inv * g_576b9c + g_576b94,
+                       g_61c3e8[5] * pb.y * inv * g_576ba0 + g_576b98, inv * 32.0f);
+        }
     }
 }
 
