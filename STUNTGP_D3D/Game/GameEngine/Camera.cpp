@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "../../vecmath.h"
+#include "RenderState.h"
 
 void FUN_402ab0(float fov);
 void FUN_403310(float fov);
@@ -93,15 +94,15 @@ Vec4 *FUN_420b20(Vec4 *out, WORD *idx);
 // FUNCTION: STUNTGP_D3D 0x41f870
 int FUN_41f870(TrackPoly *poly)
 {
-    WORD *idx = g_624480->indices + poly->firstIndex;
-    Vec4 *a = g_624480->vertices + *idx;
+    WORD *idx = g_renderState.unk7f98->indices + poly->firstIndex;
+    Vec4 *a = g_renderState.unk7f98->vertices + *idx;
     Vec4 n;
     FUN_420b20(&n, idx);
     int flat = 1;
     unsigned int count = poly->vertexCount;
     for (unsigned int i = 0; i < count; i++)
     {
-        Vec4 *b = &g_624480->vertices[*idx];
+        Vec4 *b = &g_renderState.unk7f98->vertices[*idx];
         Vec4 d;
         d.x = b->x - a->x;
         d.y = b->y - a->y;
@@ -133,14 +134,14 @@ void FUN_41f920(TrackPoly *poly, float dist)
 // FUNCTION: STUNTGP_D3D 0x41f970
 int FUN_41f970(TrackPoly *poly, Vec4 *p)
 {
-    WORD *idx = g_624480->indices + poly->firstIndex;
-    Vec4 *b = g_624480->vertices + *idx;
+    WORD *idx = g_renderState.unk7f98->indices + poly->firstIndex;
+    Vec4 *b = g_renderState.unk7f98->vertices + *idx;
     unsigned int n = poly->vertexCount;
     for (unsigned int i = 0; i < n;)
     {
         i++;
         Vec4 *a = b;
-        b = &g_624480->vertices[idx[i % n]];
+        b = &g_renderState.unk7f98->vertices[idx[i % n]];
         Vec4 e;
         e.x = b->x - a->x;
         e.y = b->y - a->y;
@@ -191,13 +192,13 @@ int FUN_41fa80(TrackPoly *poly, Vec4 *p)
 // FUNCTION: STUNTGP_D3D 0x41fb10
 int FUN_41fb10(TrackPoly *poly, Vec4 *p)
 {
-    WORD *idx = g_624480->indices + poly->firstIndex;
+    WORD *idx = g_renderState.unk7f98->indices + poly->firstIndex;
     WORD *cur = idx;
     for (unsigned int i = 0; i < poly->vertexCount; cur++)
     {
-        Vec4 *a = &g_624480->vertices[*cur];
+        Vec4 *a = &g_renderState.unk7f98->vertices[*cur];
         i++;
-        Vec4 *b = &g_624480->vertices[idx[i % poly->vertexCount]];
+        Vec4 *b = &g_renderState.unk7f98->vertices[idx[i % poly->vertexCount]];
         Vec4 e;
         e.x = b->x - a->x;
         e.y = b->y - a->y;
@@ -232,10 +233,10 @@ int FUN_41fb10(TrackPoly *poly, Vec4 *p)
 // FUNCTION: STUNTGP_D3D 0x41fc70
 int FUN_41fc70(TrackPoly *poly, Vec4 *p)
 {
-    WORD *idx = g_624480->indices + poly->firstIndex;
+    WORD *idx = g_renderState.unk7f98->indices + poly->firstIndex;
     for (unsigned int i = 0; i < poly->vertexCount; i++, idx++)
     {
-        Vec4 *v = &g_624480->vertices[*idx];
+        Vec4 *v = &g_renderState.unk7f98->vertices[*idx];
         Vec4 d;
         d.x = v->x - p->x;
         d.y = v->y - p->y;
@@ -280,14 +281,14 @@ int FUN_41fde0(Car *car)
 // FUNCTION: STUNTGP_D3D 0x420690
 int FUN_420690(TrackPoly *poly, Vec4 *p)
 {
-    WORD *idx = g_624480->indices + poly->firstIndex;
-    Vec4 *b = g_624480->vertices + *idx;
+    WORD *idx = g_renderState.unk7f98->indices + poly->firstIndex;
+    Vec4 *b = g_renderState.unk7f98->vertices + *idx;
     unsigned int n = poly->vertexCount;
     for (unsigned int i = 0; i < n;)
     {
         i++;
         Vec4 *a = b;
-        b = &g_624480->vertices[idx[i % n]];
+        b = &g_renderState.unk7f98->vertices[idx[i % n]];
         Vec4 e;
         e.x = b->x - a->x;
         e.y = b->y - a->y;
@@ -336,7 +337,7 @@ int FUN_420a70()
 // FUNCTION: STUNTGP_D3D 0x420b20
 Vec4 *FUN_420b20(Vec4 *out, WORD *idx)
 {
-    TrackOctree *tree = g_624480;
+    TrackOctree *tree = g_renderState.unk7f98;
     Vec4 a;
     a.x = tree->vertices[idx[1]].x - tree->vertices[idx[0]].x;
     a.y = tree->vertices[idx[1]].y - tree->vertices[idx[0]].y;
@@ -368,7 +369,7 @@ void FUN_420f00(OctNode *node)
 {
     if (g_49823c == 0)
     {
-        TrackOctree *tree = g_624480;
+        TrackOctree *tree = g_renderState.unk7f98;
         for (;;)
         {
             int octant = 0;
@@ -397,7 +398,7 @@ void FUN_420f00(OctNode *node)
 // FUNCTION: STUNTGP_D3D 0x420f80
 void FUN_420f80()
 {
-    TrackOctree *tree = g_624480;
+    TrackOctree *tree = g_renderState.unk7f98;
     g_49823c = 0;
     g_498240 = 0;
     while (g_498154 > tree->roots[g_498240].key)
@@ -1339,11 +1340,11 @@ int g_5715cc;
 // FUNCTION: STUNTGP_D3D 0x420190
 void FUN_420190(TrackPoly *poly, int *hit)
 {
-    WORD *idx = g_624480->indices + poly->firstIndex;
+    WORD *idx = g_renderState.unk7f98->indices + poly->firstIndex;
     unsigned int n = poly->vertexCount;
     for (unsigned int i = 0; i < n; i++)
     {
-        int r = FUN_41ffa0(&g_624480->vertices[*idx]);
+        int r = FUN_41ffa0(&g_renderState.unk7f98->vertices[*idx]);
         *hit |= r;
         if (r == 1)
         {

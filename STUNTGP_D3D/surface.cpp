@@ -7,6 +7,7 @@
 #include "windowInit.h"
 #include "common.h"
 #include "d3drender.h"
+#include "Game/GameEngine/RenderState.h"
 
 // GLOBAL: STUNTGP_D3D 0x5ba780
 LPDIRECTDRAWSURFACE4 g_5ba780;
@@ -165,10 +166,10 @@ void FUN_4320a0()
 void FUN_4320c0(float gamma)
 {
     LPDIRECTDRAWGAMMACONTROL control = g_gammaControl;
-    if (control && fabs(gamma - g_6244f4) >= 0.01)
+    if (control && fabs(gamma - g_renderState.unk800c) >= 0.01)
     {
         float scale = (gamma - 1.0) * 0.2;
-        g_6244f4 = gamma;
+        g_renderState.unk800c = gamma;
         if (scale > 0.98)
         {
             scale = 0.98f;

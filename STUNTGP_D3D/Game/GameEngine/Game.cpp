@@ -20,6 +20,7 @@ int g_60d61c;
 
 #include "GameUpdate.h"
 #include "GameSetup.h"
+#include "RenderState.h"
 
 extern Unk4d5cc0 g_4d5cc0[6];
 extern int g_60d668;
@@ -300,13 +301,11 @@ void FUN_42e870()
     FUN_42b040();
     FUN_4277d0();
     FUN_429a40();
-    g_61c508 = (g_61c508 + 1) & 0xffff;
+    g_renderState.unk20 = (g_renderState.unk20 + 1) & 0xffff;
 }
 
 extern SlotFx *g_61b740;
 extern DWORD g_60eff4;
-extern int g_6244fc;
-extern int g_624500;
 
 // Driver icon cell in texture 14, indexed by Driver::unk14.
 struct CarIcon
@@ -459,9 +458,9 @@ void FUN_44aad0()
             left = 128.0f;
         }
         int div = 100;
-        x = left - 160.0f + g_61b740->faders[6].x + g_6244fc;
+        x = left - 160.0f + g_61b740->faders[6].x + g_renderState.unk8014;
         shown = 0;
-        y = g_624500 + (g_61b740->faders[6].y + 4.0f);
+        y = g_renderState.unk8018 + (g_61b740->faders[6].y + 4.0f);
         for (i = 0; i < 3; i++)
         {
             DWORD digit = g_60eff4 / (div * 60) % 10;
@@ -543,12 +542,6 @@ void FUN_447280(float x, float y, float width, float height);
 void FUN_446c20(float x, float y);
 void FUN_446d90(unsigned int value, float x, float y, float width, float height);
 
-// GLOBAL: STUNTGP_D3D 0x6244fc
-int g_6244fc;
-
-// GLOBAL: STUNTGP_D3D 0x624500
-int g_624500;
-
 // GLOBAL: STUNTGP_D3D 0x61b74c
 int g_61b74c;
 
@@ -564,8 +557,8 @@ void FUN_449e80();
 void FUN_448110()
 {
     g_61b740 = &g_498248[0].fx;
-    g_6244fc = 0;
-    g_624500 = 0;
+    g_renderState.unk8014 = 0;
+    g_renderState.unk8018 = 0;
     FUN_442c30();
     FUN_447a60();
     FUN_449e80();
@@ -765,8 +758,8 @@ void FUN_40df90()
 
     Font_Select(1);
     color = g_612948.unk0048 % 60 < 20 ? 0xff404000 : 0xffffff00;
-    FUN_4291f0(g_6127a0[95], 1, g_6244fc + 320.0f, 448.0f - g_624500, 0.99f, color, 2.0f, 6);
-    FUN_4291f0(g_6127a0[104], 1, g_6244fc + 320.0f, g_624500, 0.99f, color, 2.0f, 6);
+    FUN_4291f0(g_6127a0[95], 1, g_renderState.unk8014 + 320.0f, 448.0f - g_renderState.unk8018, 0.99f, color, 2.0f, 6);
+    FUN_4291f0(g_6127a0[104], 1, g_renderState.unk8014 + 320.0f, g_renderState.unk8018, 0.99f, color, 2.0f, 6);
 }
 
 void FUN_447fa0();

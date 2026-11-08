@@ -36,5 +36,4 @@ struct Ambience
     int ib;          // 0x24
 };
 
-extern Ambience g_624504;
 #endif /* ENGINE_LEVELSCRIPT_H */

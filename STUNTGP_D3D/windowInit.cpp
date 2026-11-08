@@ -1,4 +1,5 @@
 #include "windowInit.h"
+#include "Game/GameEngine/RenderState.h"
 
 // LIBRARY: STUNTGP_D3D 0x4627a4
 // _DirectDrawCreate@12
@@ -804,10 +805,10 @@ void FUN_423380(LPDIRECTDRAWSURFACE4 src, LPDIRECTDRAWSURFACE4 dst, int x, int y
 // FUNCTION: STUNTGP_D3D 0x423430
 void FUN_423430()
 {
-    if (g_6244ec != 1)
+    if (g_renderState.unk8004 != 1)
     {
         FUN_422ba0(*g_61c358);
-        g_6244ec = 1;
+        g_renderState.unk8004 = 1;
     }
 }
 

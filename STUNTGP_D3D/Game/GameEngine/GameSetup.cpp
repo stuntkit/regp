@@ -20,6 +20,7 @@
 #include "../../surface.h"
 #include "Engine_LevelScript.h"
 #include "../../common.h"
+#include "RenderState.h"
 
 struct CameraPath;
 
@@ -74,11 +75,6 @@ void FUN_45e0e0();
 extern char g_GraphicsDirectory[128];
 extern char g_GameLocation[256];
 extern int g_D3DUVFix;
-extern int g_61c50c;
-extern int g_6244c8;
-extern int g_6244cc;
-extern int g_6244d0;
-extern int g_61c5ec;
 
 // GLOBAL: STUNTGP_D3D 0x636418
 SceneSlot g_636418[16];
@@ -103,12 +99,6 @@ struct RenderMaterial
     int unk80;        // 0x80
     BYTE unk84[0xc];  // 0x84
 };
-
-// GLOBAL: STUNTGP_D3D 0x62447c
-RenderMaterial *g_62447c;
-
-// GLOBAL: STUNTGP_D3D 0x624480
-TrackOctree *g_624480;
 
 // Loaded track file; the offsets are relative to data.
 struct TrackHeader
@@ -165,34 +155,6 @@ Scene *g_58c800;
 // GLOBAL: STUNTGP_D3D 0x58d810
 TrackHeader *g_58d810;
 
-// Name of the track scene from L_TRACK.
-// GLOBAL: STUNTGP_D3D 0x624460
-int g_624460;
-
-// GLOBAL: STUNTGP_D3D 0x624464
-BYTE *g_624464;
-
-// GLOBAL: STUNTGP_D3D 0x624468
-BYTE *g_624468;
-
-// GLOBAL: STUNTGP_D3D 0x62446c
-BYTE *g_62446c;
-
-// GLOBAL: STUNTGP_D3D 0x624470
-BYTE *g_624470;
-
-// GLOBAL: STUNTGP_D3D 0x624478
-BYTE *g_624478;
-
-// GLOBAL: STUNTGP_D3D 0x62448c
-SceneEntry *g_62448c;
-
-// GLOBAL: STUNTGP_D3D 0x624490
-SceneEntry *g_624490;
-
-// GLOBAL: STUNTGP_D3D 0x6244a4
-int g_6244a4;
-
 // GLOBAL: STUNTGP_D3D 0x62497c
 int g_62497c;
 
@@ -200,30 +162,9 @@ int g_62497c;
 // GLOBAL: STUNTGP_D3D 0x582b28
 char *g_582b28[255];
 
-// GLOBAL: STUNTGP_D3D 0x6244a0
-int g_6244a0;
-
-extern void *g_6243c0;
-extern void *g_6243c8;
-extern void *g_6243d0;
-extern void *g_6243d8;
 extern int g_582724;
-extern int g_6243c4;
-extern int g_6243cc;
-extern int g_6243d4;
-extern int g_6243dc;
-extern void *g_61c5f4;
-extern void *g_61c5f8;
-extern void *g_61c5fc;
-extern void *g_61c600;
 
 struct AnimDef;
-extern CameraPath *g_624474;
-extern DWORD g_624498;
-extern AnimDef *g_624484;
-
-// GLOBAL: STUNTGP_D3D 0x62449c
-DWORD g_62449c;
 
 // GLOBAL: STUNTGP_D3D 0x6249a0
 int g_6249a0;
@@ -261,9 +202,6 @@ int g_5fd24c;
 
 // GLOBAL: STUNTGP_D3D 0x5fd254
 int g_5fd254;
-
-// GLOBAL: STUNTGP_D3D 0x6244f8
-int g_6244f8;
 
 // GLOBAL: STUNTGP_D3D 0x624980
 int g_624980;
@@ -480,7 +418,7 @@ void FUN_401de0()
     Matrix_Identity(g_472290);
 }
 
-// Camera preset record in the level data (g_624478), 0x60 bytes each.
+// Camera preset record in the level data (g_renderState.unk7f90), 0x60 bytes each.
 struct CameraRecord
 {
     int unk00;       // 0x00
@@ -502,18 +440,18 @@ int g_499f94;
 // FUNCTION: STUNTGP_D3D 0x401e50
 void FUN_401e50()
 {
-    if (g_6244a4 != 0)
+    if (g_renderState.unk7fbc != 0)
     {
-        for (DWORD i = 0; i < g_6244a4; i++)
+        for (DWORD i = 0; i < g_renderState.unk7fbc; i++)
         {
-            g_4722d8[i].pos = ((CameraRecord *)g_624478)[i].pos;
-            g_4722d8[i].target = ((CameraRecord *)g_624478)[i].target;
-            g_4722d8[i].up = ((CameraRecord *)g_624478)[i].up;
-            g_4722d8[i].fov = ((CameraRecord *)g_624478)[i].fov;
+            g_4722d8[i].pos = ((CameraRecord *)g_renderState.unk7f90)[i].pos;
+            g_4722d8[i].target = ((CameraRecord *)g_renderState.unk7f90)[i].target;
+            g_4722d8[i].up = ((CameraRecord *)g_renderState.unk7f90)[i].up;
+            g_4722d8[i].fov = ((CameraRecord *)g_renderState.unk7f90)[i].fov;
             g_4722d8[i].unk34 = 0;
             g_4722d8[i].roll = 0.0f;
         }
-        g_499f90 = g_6244a4;
+        g_499f90 = g_renderState.unk7fbc;
         g_499f94 = 0;
     }
 }
@@ -529,7 +467,7 @@ void FUN_401f00()
         return;
     }
     // STRING: STUNTGP_D3D 0x472ad8
-    sprintf(path, "%s\\Config\\Cams\\%s.cam", g_GameDirectory, g_624460);
+    sprintf(path, "%s\\Config\\Cams\\%s.cam", g_GameDirectory, g_renderState.unk7f78);
     int size = size_of_file(path);
     if (!size)
     {
@@ -1369,20 +1307,11 @@ Unk624488 g_5898f8[64];
 // GLOBAL: STUNTGP_D3D 0x589e04
 RenderMaterial *g_589e04;
 
-// GLOBAL: STUNTGP_D3D 0x624488
-Unk624488 *g_624488;
-
-// GLOBAL: STUNTGP_D3D 0x624494
-Ambience *g_624494;
-
-// GLOBAL: STUNTGP_D3D 0x62452c
-int g_62452c;
-
 // FUNCTION: STUNTGP_D3D 0x42d970
 void FUN_42d970()
 {
-    RenderMaterial *material = g_62447c;
-    for (DWORD i = 0; i < g_62449c; i++)
+    RenderMaterial *material = g_renderState.unk7f94;
+    for (DWORD i = 0; i < g_renderState.unk7fb4; i++)
     {
         if (material->unk50 == 3)
         {
@@ -1391,7 +1320,7 @@ void FUN_42d970()
         }
         material++;
     }
-    g_589e04 = g_62447c;
+    g_589e04 = g_renderState.unk7f94;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42d700
@@ -1400,14 +1329,14 @@ void FUN_42d700()
     if (g_612948.unk02a0 == 2)
     {
         g_589e04 = 0;
-        g_62447c = &g_589628;
-        g_62449c = 0;
-        g_62452c = 0;
-        g_624494 = &g_5898d0;
-        g_624488 = g_5898f8;
+        g_renderState.unk7f94 = &g_589628;
+        g_renderState.unk7fb4 = 0;
+        g_renderState.unk8044 = 0;
+        g_renderState.unk7fac = &g_5898d0;
+        g_renderState.unk7fa0 = g_5898f8;
     }
-    RenderMaterial *material = g_62447c;
-    for (DWORD i = 0; i < g_62449c; i++)
+    RenderMaterial *material = g_renderState.unk7f94;
+    for (DWORD i = 0; i < g_renderState.unk7fb4; i++)
     {
         if (material->unk00 == 1 && material->unk04 == 1)
         {
@@ -1425,7 +1354,7 @@ void FUN_42d700()
         }
         material++;
     }
-    g_624504 = *g_624494;
+    g_renderState.unk801c = *g_renderState.unk7fac;
     FUN_42d7e0();
     FUN_42d970();
 }
@@ -1457,15 +1386,15 @@ void FUN_42e240(Scene *scene)
 // FUNCTION: STUNTGP_D3D 0x42e380
 void FUN_42e380()
 {
-    SceneSlot *slot = g_6244f8 == 1 ? &g_636418[2] : g_636418;
+    SceneSlot *slot = g_renderState.unk8010 == 1 ? &g_636418[2] : g_636418;
     while (slot->scene)
     {
         FUN_42e240(slot->scene);
         slot++;
     }
-    for (DWORD i = 0; i < g_62449c; i++)
+    for (DWORD i = 0; i < g_renderState.unk7fb4; i++)
     {
-        g_62447c[i].alpha = g_62447c[i].alpha * 255.0f * (1.0f / 255.0f);
+        g_renderState.unk7f94[i].alpha = g_renderState.unk7f94[i].alpha * 255.0f * (1.0f / 255.0f);
     }
 }
 
@@ -1481,95 +1410,27 @@ void FUN_42e3e0()
     }
 }
 
-// GLOBAL: STUNTGP_D3D 0x61c594
-float g_61c594[16];
-
-// GLOBAL: STUNTGP_D3D 0x61c5f4
-void *g_61c5f4;
-
-// GLOBAL: STUNTGP_D3D 0x61c5f8
-void *g_61c5f8;
-
-// GLOBAL: STUNTGP_D3D 0x61c5fc
-void *g_61c5fc;
-
-// GLOBAL: STUNTGP_D3D 0x61c600
-void *g_61c600;
-
-// GLOBAL: STUNTGP_D3D 0x61c518
-VisIndexList *g_61c518;
-
-// GLOBAL: STUNTGP_D3D 0x61c51c
-VisIndexList *g_61c51c;
-
-// GLOBAL: STUNTGP_D3D 0x624530
-void *g_624530;
-
 // Allocates the per-frame render buffers.
 // FUNCTION: STUNTGP_D3D 0x42e430
 void FUN_42e430()
 {
-    g_61c50c = (int)Mem_Alloc(0x78000, 0);
-    g_6244c8 = (int)Mem_Alloc(0xc000, 0);
-    g_6244cc = (int)Mem_Alloc(0x2000, 0);
-    g_6244d0 = (int)Mem_Alloc(0x800, 0);
-    g_61c5ec = (int)Mem_Alloc(0xc000, 0);
-    g_61c5f4 = Mem_Alloc(0xf000, 0);
-    g_61c5f8 = Mem_Alloc(0xf000, 0);
-    g_61c5fc = Mem_Alloc(0xf000, 0);
-    g_61c600 = Mem_Alloc(0xf000, 0);
-    g_61c5f0 = (OverlayPoly *)Mem_Alloc(0x11000, 0);
-    g_61c518 = (VisIndexList *)Mem_Alloc(0x1000, 0);
-    g_61c51c = (VisIndexList *)Mem_Alloc(0x1000, 0);
-    g_624530 = Mem_Alloc(0x4800, 0);
+    g_renderState.unk24 = (int)Mem_Alloc(0x78000, 0);
+    g_renderState.unk7fe0 = (int)Mem_Alloc(0xc000, 0);
+    g_renderState.unk7fe4 = (int)Mem_Alloc(0x2000, 0);
+    g_renderState.unk7fe8 = (int)Mem_Alloc(0x800, 0);
+    g_renderState.unk104 = (int)Mem_Alloc(0xc000, 0);
+    g_renderState.unk10c = Mem_Alloc(0xf000, 0);
+    g_renderState.unk110 = Mem_Alloc(0xf000, 0);
+    g_renderState.unk114 = Mem_Alloc(0xf000, 0);
+    g_renderState.unk118 = Mem_Alloc(0xf000, 0);
+    g_renderState.unk108 = (OverlayPoly *)Mem_Alloc(0x11000, 0);
+    g_renderState.unk30 = (VisIndexList *)Mem_Alloc(0x1000, 0);
+    g_renderState.unk34 = (VisIndexList *)Mem_Alloc(0x1000, 0);
+    g_renderState.unk8048 = Mem_Alloc(0x4800, 0);
 }
 
 void FUN_41c710();
 void FUN_42eb00();
-extern BYTE g_61c7cc[0x6000];
-extern BYTE *g_6227cc;
-extern int g_6227d0;
-extern BYTE g_61c608[0x1c0];
-extern BYTE *g_61c7c8;
-extern short g_6244a8[16];
-extern int g_6244d4;
-extern int g_6244d8;
-extern int g_6244dc;
-extern int g_6244e0;
-extern int g_6244e4;
-extern int g_61c510;
-extern int g_61c514;
-extern int g_61c520;
-extern int g_624460;
-extern BYTE *g_624464;
-extern BYTE *g_624468;
-extern BYTE *g_62446c;
-extern BYTE *g_624470;
-extern CameraPath *g_624474;
-extern BYTE *g_624478;
-extern Unk624488 *g_624488;
-extern SceneEntry *g_62448c;
-extern SceneEntry *g_624490;
-extern Ambience *g_624494;
-extern DWORD g_624498;
-extern DWORD g_62449c;
-extern int g_6244a0;
-extern int g_6244a4;
-
-// GLOBAL: STUNTGP_D3D 0x61c524
-VisIndexList *g_61c524;
-
-// GLOBAL: STUNTGP_D3D 0x61c528
-VisIndexList *g_61c528;
-
-// GLOBAL: STUNTGP_D3D 0x61c52c
-Scene *g_61c52c;
-
-// GLOBAL: STUNTGP_D3D 0x61c530
-ObjectDef *g_61c530;
-
-// GLOBAL: STUNTGP_D3D 0x61c5e8
-int g_61c5e8;
 
 // Clears all scene, render-list and track pointers before a level loads.
 // FUNCTION: STUNTGP_D3D 0x42e510
@@ -1582,65 +1443,65 @@ void FUN_42e510()
         g_636418[i].size = 0;
     }
     FUN_41c710();
-    g_61c5ec = 0;
+    g_renderState.unk104 = 0;
     memset(g_62dcf0, 0, sizeof(g_62dcf0));
     memset(g_62d480, 0, sizeof(g_62d480));
-    g_61c5f4 = NULL;
-    g_61c5f8 = NULL;
-    g_61c5fc = NULL;
-    g_61c600 = NULL;
-    g_61c5f0 = NULL;
-    g_61c518 = NULL;
-    g_61c51c = NULL;
-    g_624530 = NULL;
-    memset(g_61c7cc, 0, sizeof(g_61c7cc));
-    g_6227cc = NULL;
-    g_6227d0 = 0;
-    g_61c52c = NULL;
-    g_61c530 = NULL;
-    g_61c5e4 = -1;
-    g_61c50c = 0;
-    g_61c510 = 0;
-    g_61c514 = 0;
-    g_61c5e8 = 0;
-    g_61c520 = 0;
-    g_61c604 = 0;
-    memset(g_61c608, 0, sizeof(g_61c608));
-    g_61c7c8 = NULL;
-    memset(g_6227d4, 0, 255 * sizeof(TextureSlot));
-    g_6243b8 = NULL;
-    // g_6243c0..g_6243dc are four contiguous {list, count} pairs.
-    memset(&g_6243c0, 0, 0x20);
-    memset(g_6243e0, 0, sizeof(g_6243e0));
-    g_61c524 = NULL;
-    g_61c528 = NULL;
-    memset(g_6244a8, 0, sizeof(g_6244a8));
-    g_6244c8 = 0;
-    g_6244cc = 0;
-    g_6244d0 = 0;
-    g_6244d4 = 0;
-    g_6244d8 = 0;
-    g_6244dc = 0;
-    g_6244e0 = 0;
-    g_6244e4 = 0;
-    g_624460 = 0;
-    g_624464 = NULL;
-    g_624468 = NULL;
-    g_62446c = NULL;
-    g_624470 = NULL;
-    g_624474 = NULL;
-    g_624478 = NULL;
-    g_62447c = NULL;
-    g_624480 = NULL;
-    g_624484 = NULL;
-    g_624488 = NULL;
-    g_62448c = NULL;
-    g_624490 = NULL;
-    g_624494 = NULL;
-    g_624498 = 0;
-    g_62449c = 0;
-    g_6244a0 = 0;
-    g_6244a4 = 0;
+    g_renderState.unk10c = NULL;
+    g_renderState.unk110 = NULL;
+    g_renderState.unk114 = NULL;
+    g_renderState.unk118 = NULL;
+    g_renderState.unk108 = NULL;
+    g_renderState.unk30 = NULL;
+    g_renderState.unk34 = NULL;
+    g_renderState.unk8048 = NULL;
+    memset(g_renderState.unk2e4, 0, sizeof(g_renderState.unk2e4));
+    g_renderState.unk62e4 = NULL;
+    g_renderState.unk62e8 = 0;
+    g_renderState.unk44 = NULL;
+    g_renderState.unk48 = NULL;
+    g_renderState.unkfc = -1;
+    g_renderState.unk24 = 0;
+    g_renderState.unk28 = 0;
+    g_renderState.unk2c = 0;
+    g_renderState.unk100 = 0;
+    g_renderState.unk38 = 0;
+    g_renderState.unk11c = 0;
+    memset(g_renderState.unk120, 0, sizeof(g_renderState.unk120));
+    g_renderState.unk2e0 = NULL;
+    memset(g_renderState.unk62ec, 0, 255 * sizeof(TextureSlot));
+    g_renderState.unk7ed0 = NULL;
+    // g_renderState.unk7ed8..g_renderState.unk7ef4 are four contiguous {list, count} pairs.
+    memset(&g_renderState.unk7ed8, 0, 0x20);
+    memset(g_renderState.unk7ef8, 0, sizeof(g_renderState.unk7ef8));
+    g_renderState.unk3c = NULL;
+    g_renderState.unk40 = NULL;
+    memset(g_renderState.unk7fc0, 0, sizeof(g_renderState.unk7fc0));
+    g_renderState.unk7fe0 = 0;
+    g_renderState.unk7fe4 = 0;
+    g_renderState.unk7fe8 = 0;
+    g_renderState.unk7fec = 0;
+    g_renderState.unk7ff0 = 0;
+    g_renderState.unk7ff4 = 0;
+    g_renderState.unk7ff8 = 0;
+    g_renderState.unk7ffc = 0;
+    g_renderState.unk7f78 = 0;
+    g_renderState.unk7f7c = NULL;
+    g_renderState.unk7f80 = NULL;
+    g_renderState.unk7f84 = NULL;
+    g_renderState.unk7f88 = NULL;
+    g_renderState.unk7f8c = NULL;
+    g_renderState.unk7f90 = NULL;
+    g_renderState.unk7f94 = NULL;
+    g_renderState.unk7f98 = NULL;
+    g_renderState.unk7f9c = NULL;
+    g_renderState.unk7fa0 = NULL;
+    g_renderState.unk7fa4 = NULL;
+    g_renderState.unk7fa8 = NULL;
+    g_renderState.unk7fac = NULL;
+    g_renderState.unk7fb0 = 0;
+    g_renderState.unk7fb4 = 0;
+    g_renderState.unk7fb8 = 0;
+    g_renderState.unk7fbc = 0;
     FUN_42eb00();
 }
 
@@ -1650,26 +1511,11 @@ int g_624988;
 // GLOBAL: STUNTGP_D3D 0x62498c
 int g_62498c;
 
-// GLOBAL: STUNTGP_D3D 0x61c508
-DWORD g_61c508;
-
-// GLOBAL: STUNTGP_D3D 0x61c510
-int g_61c510;
-
-// GLOBAL: STUNTGP_D3D 0x61c514
-int g_61c514;
-
-// GLOBAL: STUNTGP_D3D 0x61c520
-int g_61c520;
-
-// GLOBAL: STUNTGP_D3D 0x61c5ec
-int g_61c5ec;
-
 // FUNCTION: STUNTGP_D3D 0x42e800
 void FUN_42e800()
 {
-    g_61c510 = g_61c50c;
-    g_61c520 = g_61c5ec;
+    g_renderState.unk28 = g_renderState.unk24;
+    g_renderState.unk38 = g_renderState.unk104;
 }
 
 // Detail level from the menu setting; g_589e08 forces specular off.
@@ -1760,10 +1606,10 @@ void FUN_42eca0()
 // FUNCTION: STUNTGP_D3D 0x42ed30
 void FUN_42ed30()
 {
-    g_624470 = &g_58d810->data[g_58d810->unk088];
-    g_62446c = &g_58d810->data[g_58d810->unk07c];
-    g_624468 = &g_58d810->data[g_58d810->unk084];
-    g_624464 = &g_58d810->data[g_58d810->unk080];
+    g_renderState.unk7f88 = &g_58d810->data[g_58d810->unk088];
+    g_renderState.unk7f84 = &g_58d810->data[g_58d810->unk07c];
+    g_renderState.unk7f80 = &g_58d810->data[g_58d810->unk084];
+    g_renderState.unk7f7c = &g_58d810->data[g_58d810->unk080];
 }
 
 // FUNCTION: STUNTGP_D3D 0x42ed80
@@ -1771,7 +1617,7 @@ void FUN_42ed80()
 {
     TrackHeader *header = g_58d810;
     TrackOctree *tree = (TrackOctree *)&header->data[header->unk0a0];
-    g_624480 = tree;
+    g_renderState.unk7f98 = tree;
     tree->polyLists = (short *)&header->data[header->unk090] + (int)tree->polyLists;
     tree->indices = (WORD *)&header->data[header->unk08c] + (int)tree->indices;
     tree->vertices = (Vec4 *)&header->data[header->unk02c] + (int)tree->vertices;
@@ -1794,38 +1640,38 @@ void FUN_42ee50()
     {
         paths[i].points = (Vec4 *)&header->data[header->unk074] + (int)paths[i].points;
     }
-    g_624474 = paths;
-    g_624498 = count;
+    g_renderState.unk7f8c = paths;
+    g_renderState.unk7fb0 = count;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42eee0
 void FUN_42eee0()
 {
-    g_62449c = g_58d810->unk0fc;
-    g_6244a0 = g_58d810->unk100;
-    g_62447c = (RenderMaterial *)&g_58d810->data[g_58d810->unk070];
-    g_624494 = (Ambience *)&g_58d810->data[g_58d810->unk064];
+    g_renderState.unk7fb4 = g_58d810->unk0fc;
+    g_renderState.unk7fb8 = g_58d810->unk100;
+    g_renderState.unk7f94 = (RenderMaterial *)&g_58d810->data[g_58d810->unk070];
+    g_renderState.unk7fac = (Ambience *)&g_58d810->data[g_58d810->unk064];
 }
 
 // FUNCTION: STUNTGP_D3D 0x42ef20
 void FUN_42ef20()
 {
-    g_6244a4 = g_58d810->unk0e8;
-    g_624478 = &g_58d810->data[g_58d810->unk058];
+    g_renderState.unk7fbc = g_58d810->unk0e8;
+    g_renderState.unk7f90 = &g_58d810->data[g_58d810->unk058];
 }
 
 // FUNCTION: STUNTGP_D3D 0x42ef50
 void FUN_42ef50()
 {
-    g_624484 = (AnimDef *)&g_58d810->data[g_58d810->unk060];
-    g_624488 = (Unk624488 *)&g_58d810->data[g_58d810->unk05c];
+    g_renderState.unk7f9c = (AnimDef *)&g_58d810->data[g_58d810->unk060];
+    g_renderState.unk7fa0 = (Unk624488 *)&g_58d810->data[g_58d810->unk05c];
 }
 
 // FUNCTION: STUNTGP_D3D 0x42ef80
 void FUN_42ef80()
 {
-    g_62448c = g_58c800->unk28;
-    g_624490 = g_58c800->unk28 + g_58d810->unk0e4;
+    g_renderState.unk7fa4 = g_58c800->unk28;
+    g_renderState.unk7fa8 = g_58c800->unk28 + g_58d810->unk0e4;
 }
 
 // STUB: STUNTGP_D3D 0x425ad0
@@ -1846,49 +1692,44 @@ void FUN_42b040()
 // FUNCTION: STUNTGP_D3D 0x42b100
 void FUN_42b100()
 {
-    memset(g_6243e0, 0, sizeof(g_6243e0));
-    g_6243c0 = g_61c5fc;
-    g_6243c8 = g_61c600;
-    g_6243d0 = g_61c5f4;
-    g_6243d8 = g_61c5f8;
+    memset(g_renderState.unk7ef8, 0, sizeof(g_renderState.unk7ef8));
+    g_renderState.unk7ed8 = g_renderState.unk114;
+    g_renderState.unk7ee0 = g_renderState.unk118;
+    g_renderState.unk7ee8 = g_renderState.unk10c;
+    g_renderState.unk7ef0 = g_renderState.unk110;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42b140
 void FUN_42b140(void **out)
 {
-    out[6] = g_6243d8;
-    out[4] = g_6243d0;
-    out[0] = g_6243c0;
+    out[6] = g_renderState.unk7ef0;
+    out[4] = g_renderState.unk7ee8;
+    out[0] = g_renderState.unk7ed8;
     out[5] = 0;
     out[7] = 0;
     out[1] = 0;
-    out[2] = g_6243c8;
+    out[2] = g_renderState.unk7ee0;
     out[3] = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42b180
 void FUN_42b180(int *out)
 {
-    out[5] = ((int)g_6243d0 - out[4]) / 20;
-    out[7] = ((int)g_6243d8 - out[6]) / 20;
-    out[1] = ((int)g_6243c0 - out[0]) / 20;
-    out[3] = ((int)g_6243c8 - out[2]) / 20;
+    out[5] = ((int)g_renderState.unk7ee8 - out[4]) / 20;
+    out[7] = ((int)g_renderState.unk7ef0 - out[6]) / 20;
+    out[1] = ((int)g_renderState.unk7ed8 - out[0]) / 20;
+    out[3] = ((int)g_renderState.unk7ee0 - out[2]) / 20;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42b200
 void FUN_42b200()
 {
-    g_6243c4 = ((int)g_6243c0 - (int)g_61c5fc) / 20;
-    g_6243cc = ((int)g_6243c8 - (int)g_61c600) / 20;
-    g_6243d4 = ((int)g_6243d0 - (int)g_61c5f4) / 20;
-    g_6243dc = ((int)g_6243d8 - (int)g_61c5f8) / 20;
+    g_renderState.unk7edc = ((int)g_renderState.unk7ed8 - (int)g_renderState.unk114) / 20;
+    g_renderState.unk7ee4 = ((int)g_renderState.unk7ee0 - (int)g_renderState.unk118) / 20;
+    g_renderState.unk7eec = ((int)g_renderState.unk7ee8 - (int)g_renderState.unk10c) / 20;
+    g_renderState.unk7ef4 = ((int)g_renderState.unk7ef0 - (int)g_renderState.unk110) / 20;
 }
 
-extern int g_6244d4;
-extern int g_6244e4;
-extern int g_61c510;
-extern int g_61c514;
-extern int g_61c520;
 
 // Perspective-divides the queued vertex lists into screen space.
 // FUNCTION: STUNTGP_D3D 0x429a40
@@ -1902,8 +1743,8 @@ void FUN_429a40()
     scaleY = g_576ba0;
     offX = g_576b94;
     offY = g_576b98;
-    int n = (g_61c520 - g_61c5ec) >> 2;
-    float **list = (float **)g_61c5ec;
+    int n = (g_renderState.unk38 - g_renderState.unk104) >> 2;
+    float **list = (float **)g_renderState.unk104;
     while (n-- > 0)
     {
         float *v = *list++;
@@ -1912,8 +1753,8 @@ void FUN_429a40()
         v[1] = s * v[1] * scaleY + offY;
         v[7] = s * 32.0f;
     }
-    float *v = (float *)g_6244d4;
-    n = (g_6244e4 - g_6244d4) >> 5;
+    float *v = (float *)g_renderState.unk7fec;
+    n = (g_renderState.unk7ffc - g_renderState.unk7fec) >> 5;
     while (n-- > 0)
     {
         float s = 1.0f / (v[7] + 1.0f);
@@ -1922,8 +1763,8 @@ void FUN_429a40()
         v[7] = s * 32.0f;
         v += 8;
     }
-    n = (g_61c510 - g_61c514) >> 5;
-    v = (float *)g_61c514;
+    n = (g_renderState.unk28 - g_renderState.unk2c) >> 5;
+    v = (float *)g_renderState.unk2c;
     while (n-- > 0)
     {
         float s = 1.0f / (v[7] + 1.0f);
@@ -1935,10 +1776,7 @@ void FUN_429a40()
 }
 
 // GLOBAL: STUNTGP_D3D 0x61c4e8
-Vec4 g_61c4e8;
-
-// GLOBAL: STUNTGP_D3D 0x61c4f8
-Vec4 g_61c4f8;
+RenderState g_renderState;
 
 // FUN_429d50 for partly clipped objects: also skips polygons with every vertex outside one frustum
 // side and stores the vertices' shared outcodes in unk10.
@@ -1970,7 +1808,7 @@ void FUN_429b70(Scene *scene, ObjectDef *obj, PolyRef **lists)
             while (n-- > 0)
             {
                 e = src + *r++ * 16;
-                DWORD code = *(WORD *)(g_61c510 + *(WORD *)(e + 8) * 32 + 16);
+                DWORD code = *(WORD *)(g_renderState.unk28 + *(WORD *)(e + 8) * 32 + 16);
                 any |= code;
                 all &= code;
             }
@@ -1978,9 +1816,9 @@ void FUN_429b70(Scene *scene, ObjectDef *obj, PolyRef **lists)
             {
                 Vec4 *p = &points[*(WORD *)(e + 8)];
                 Vec4 d;
-                d.x = p->x - g_61c4e8.x;
-                d.y = p->y - g_61c4e8.y;
-                d.z = p->z - g_61c4e8.z;
+                d.x = p->x - g_renderState.unk00.x;
+                d.y = p->y - g_renderState.unk00.y;
+                d.z = p->z - g_renderState.unk00.z;
                 Vec4 *nrm = &normals[((WORD *)poly)[2]];
                 if ((int)poly[0] < 0 || d.x * nrm->x + d.y * nrm->y + d.z * nrm->z < 0.0f)
                 {
@@ -1988,7 +1826,7 @@ void FUN_429b70(Scene *scene, ObjectDef *obj, PolyRef **lists)
                     {
                         opaque->poly = poly;
                         opaque->ref = ref;
-                        opaque->verts = g_61c510;
+                        opaque->verts = g_renderState.unk28;
                         opaque->src = src;
                         opaque->unk10 = all;
                         opaque++;
@@ -1997,7 +1835,7 @@ void FUN_429b70(Scene *scene, ObjectDef *obj, PolyRef **lists)
                     {
                         blended->poly = poly;
                         blended->ref = ref;
-                        blended->verts = g_61c510;
+                        blended->verts = g_renderState.unk28;
                         blended->src = src;
                         blended->unk10 = all;
                         blended++;
@@ -2033,9 +1871,9 @@ void FUN_429d50(Scene *scene, ObjectDef *obj, PolyRef **lists)
         WORD *ref = &refs[((WORD *)poly)[3]];
         Vec4 *p = &points[*(WORD *)(src + *ref * 16 + 8)];
         Vec4 d;
-        d.x = p->x - g_61c4e8.x;
-        d.y = p->y - g_61c4e8.y;
-        d.z = p->z - g_61c4e8.z;
+        d.x = p->x - g_renderState.unk00.x;
+        d.y = p->y - g_renderState.unk00.y;
+        d.z = p->z - g_renderState.unk00.z;
         Vec4 *n = &normals[((WORD *)poly)[2]];
         if ((int)poly[0] < 0 || d.x * n->x + d.y * n->y + d.z * n->z < 0.0f)
         {
@@ -2043,7 +1881,7 @@ void FUN_429d50(Scene *scene, ObjectDef *obj, PolyRef **lists)
             {
                 opaque->ref = ref;
                 opaque->poly = poly;
-                opaque->verts = g_61c510;
+                opaque->verts = g_renderState.unk28;
                 opaque->src = src;
                 opaque++;
             }
@@ -2051,7 +1889,7 @@ void FUN_429d50(Scene *scene, ObjectDef *obj, PolyRef **lists)
             {
                 blended->ref = ref;
                 blended->poly = poly;
-                blended->verts = g_61c510;
+                blended->verts = g_renderState.unk28;
                 blended->src = src;
                 blended++;
             }
@@ -2062,29 +1900,25 @@ void FUN_429d50(Scene *scene, ObjectDef *obj, PolyRef **lists)
     lists[2] = blended;
 }
 
-// Polygons queued for the track so far.
-// GLOBAL: STUNTGP_D3D 0x61c550
-DWORD g_61c550;
-
 // FUN_42a090 for partly clipped meshes: skips polygons with every vertex outside one frustum side
 // and stores the vertices' shared outcodes in unk10.
 // FUNCTION: STUNTGP_D3D 0x429ea0
 void FUN_429ea0(PolyRef **lists, VisIndexList *vis, DWORD count)
 {
-    Vec4 *normals = (Vec4 *)g_61c52c->unk28;
-    WORD *refs = (WORD *)g_61c52c->unk38;
+    Vec4 *normals = (Vec4 *)g_renderState.unk44->unk28;
+    WORD *refs = (WORD *)g_renderState.unk44->unk38;
     PolyRef *opaque = lists[0];
-    Vec4 *points = g_61c530->points;
-    BYTE *src = g_61c530->unk2c;
+    Vec4 *points = g_renderState.unk48->points;
+    BYTE *src = g_renderState.unk48->unk2c;
     PolyRef *blended = lists[2];
-    g_61c550 += count;
+    g_renderState.unk68 += count;
     for (DWORD i = 0; i < count; i++)
     {
         WORD *idx = vis->polys;
         while (*idx != 0xffff)
         {
             DWORD any = 0;
-            DWORD *poly = (DWORD *)(g_61c530->verts + *idx * 8);
+            DWORD *poly = (DWORD *)(g_renderState.unk48->verts + *idx * 8);
             WORD *ref = &refs[((WORD *)poly)[3]];
             DWORD n = poly[0] & 0xff;
             DWORD all = 0x3f;
@@ -2095,7 +1929,7 @@ void FUN_429ea0(PolyRef **lists, VisIndexList *vis, DWORD count)
                 while (n-- > 0)
                 {
                     e = src + *r++ * 16;
-                    DWORD code = *(WORD *)(g_61c510 + *(WORD *)(e + 8) * 32 + 16);
+                    DWORD code = *(WORD *)(g_renderState.unk28 + *(WORD *)(e + 8) * 32 + 16);
                     any |= code;
                     all &= code;
                 }
@@ -2103,9 +1937,9 @@ void FUN_429ea0(PolyRef **lists, VisIndexList *vis, DWORD count)
                 {
                     Vec4 *p = &points[*(WORD *)(e + 8)];
                     Vec4 d;
-                    d.x = p->x - g_61c4e8.x;
-                    d.y = p->y - g_61c4e8.y;
-                    d.z = p->z - g_61c4e8.z;
+                    d.x = p->x - g_renderState.unk00.x;
+                    d.y = p->y - g_renderState.unk00.y;
+                    d.z = p->z - g_renderState.unk00.z;
                     Vec4 *nrm = &normals[((WORD *)poly)[2]];
                     if ((int)poly[0] < 0 || d.x * nrm->x + d.y * nrm->y + d.z * nrm->z < 0.0f)
                     {
@@ -2113,7 +1947,7 @@ void FUN_429ea0(PolyRef **lists, VisIndexList *vis, DWORD count)
                         {
                             blended->poly = poly;
                             blended->ref = ref;
-                            blended->verts = g_61c510;
+                            blended->verts = g_renderState.unk28;
                             blended->src = src;
                             blended->unk10 = all;
                             blended++;
@@ -2122,7 +1956,7 @@ void FUN_429ea0(PolyRef **lists, VisIndexList *vis, DWORD count)
                         {
                             opaque->poly = poly;
                             opaque->ref = ref;
-                            opaque->verts = g_61c510;
+                            opaque->verts = g_renderState.unk28;
                             opaque->src = src;
                             opaque->unk10 = all;
                             opaque++;
@@ -2138,29 +1972,29 @@ void FUN_429ea0(PolyRef **lists, VisIndexList *vis, DWORD count)
     lists[0] = opaque;
 }
 
-// FUN_429d50 for the track: queues the camera-facing polygons of the visible meshes of g_61c530.
+// FUN_429d50 for the track: queues the camera-facing polygons of the visible meshes of g_renderState.unk48.
 // FUNCTION: STUNTGP_D3D 0x42a090
 void FUN_42a090(PolyRef **lists, VisIndexList *vis, DWORD count)
 {
     PolyRef *blended = lists[2];
     PolyRef *opaque = lists[0];
-    Vec4 *normals = (Vec4 *)g_61c52c->unk28;
-    WORD *refs = (WORD *)g_61c52c->unk38;
-    Vec4 *points = g_61c530->points;
-    g_61c550 += count;
-    BYTE *src = g_61c530->unk2c;
+    Vec4 *normals = (Vec4 *)g_renderState.unk44->unk28;
+    WORD *refs = (WORD *)g_renderState.unk44->unk38;
+    Vec4 *points = g_renderState.unk48->points;
+    g_renderState.unk68 += count;
+    BYTE *src = g_renderState.unk48->unk2c;
     for (DWORD i = 0; i < count; i++)
     {
         WORD *idx = vis->polys;
         while (*idx != 0xffff)
         {
-            DWORD *poly = (DWORD *)(g_61c530->verts + *idx * 8);
+            DWORD *poly = (DWORD *)(g_renderState.unk48->verts + *idx * 8);
             WORD *ref = &refs[((WORD *)poly)[3]];
             Vec4 *p = &points[*(WORD *)(src + *ref * 16 + 8)];
             Vec4 d;
-            d.x = p->x - g_61c4e8.x;
-            d.y = p->y - g_61c4e8.y;
-            d.z = p->z - g_61c4e8.z;
+            d.x = p->x - g_renderState.unk00.x;
+            d.y = p->y - g_renderState.unk00.y;
+            d.z = p->z - g_renderState.unk00.z;
             Vec4 *n = &normals[((WORD *)poly)[2]];
             if ((int)poly[0] < 0 || d.x * n->x + d.y * n->y + d.z * n->z < 0.0f)
             {
@@ -2168,7 +2002,7 @@ void FUN_42a090(PolyRef **lists, VisIndexList *vis, DWORD count)
                 {
                     blended->poly = poly;
                     blended->ref = ref;
-                    blended->verts = g_61c510;
+                    blended->verts = g_renderState.unk28;
                     blended->src = src;
                     blended++;
                 }
@@ -2176,7 +2010,7 @@ void FUN_42a090(PolyRef **lists, VisIndexList *vis, DWORD count)
                 {
                     opaque->poly = poly;
                     opaque->ref = ref;
-                    opaque->verts = g_61c510;
+                    opaque->verts = g_renderState.unk28;
                     opaque->src = src;
                     opaque++;
                 }
@@ -2209,7 +2043,7 @@ int FUN_42aa70(int box)
     float r;
     float t;
     float b;
-    Vec4 *corner = (Vec4 *)(g_62446c + box * 16);
+    Vec4 *corner = (Vec4 *)(g_renderState.unk7f84 + box * 16);
     DWORD all = 0x3f;
     DWORD any = 0;
     DWORD n = 8;
@@ -2317,23 +2151,13 @@ struct Light
     int b;            // 0x80
 };
 
-// Per-object light record in g_624530, 36 bytes.
+// Per-object light record in g_renderState.unk8048, 36 bytes.
 struct LightRec
 {
     Vec4 colour; // 0x00, rotated into object space
     Vec4 half;   // 0x10
     Light *light; // 0x20
 };
-
-// Lights active for the current object (g_62452c of them) and the next free record in g_624530.
-struct LightList
-{
-    Light *lights[16]; // 0x00
-    LightRec *next;    // 0x40
-};
-
-// GLOBAL: STUNTGP_D3D 0x624534
-LightList g_624534;
 
 // Brings the active lights into the object's space: per light its rotated colour, its offset
 // from the object and the half vector towards the view.
@@ -2345,9 +2169,9 @@ void FUN_42b400(Scene *scene, ObjectDef *obj)
     Vec4 origin;
     Vec4 h;
     Camera *cam = scene->camera;
-    view.x = g_61c4f8.x * 255.0f;
-    view.y = g_61c4f8.y * 255.0f;
-    view.z = g_61c4f8.z * 255.0f;
+    view.x = g_renderState.unk10.x * 255.0f;
+    view.y = g_renderState.unk10.y * 255.0f;
+    view.z = g_renderState.unk10.z * 255.0f;
     float *rot = (float *)cam->matrix;
     if (scene->objectCount > 1)
     {
@@ -2358,31 +2182,31 @@ void FUN_42b400(Scene *scene, ObjectDef *obj)
     origin.x = xf->pos.x + cam->pos.x;
     origin.y = xf->pos.y + cam->pos.y;
     origin.z = xf->pos.z + cam->pos.z;
-    g_624534.next = (LightRec *)g_624530;
-    Light **lights = g_624534.lights;
-    for (DWORD i = 0; i < g_62452c; i++)
+    g_renderState.unk804c.next = (LightRec *)g_renderState.unk8048;
+    Light **lights = g_renderState.unk804c.lights;
+    for (DWORD i = 0; i < g_renderState.unk8044; i++)
     {
         Light *light = *lights++;
         float r = light->colour.x * 255.0f;
         float g = light->colour.y * 255.0f;
         float b = light->colour.z * 255.0f;
-        g_624534.next->colour.x = g * rot[4] + b * rot[8] + r * rot[0];
-        g_624534.next->colour.y = g * rot[5] + b * rot[9] + r * rot[1];
-        g_624534.next->colour.z = g * rot[6] + b * rot[10] + r * rot[2];
+        g_renderState.unk804c.next->colour.x = g * rot[4] + b * rot[8] + r * rot[0];
+        g_renderState.unk804c.next->colour.y = g * rot[5] + b * rot[9] + r * rot[1];
+        g_renderState.unk804c.next->colour.z = g * rot[6] + b * rot[10] + r * rot[2];
         light->local.x = light->pos.x - origin.x;
         light->local.y = light->pos.y - origin.y;
         light->local.z = light->pos.z - origin.z;
-        h.x = view.x + g_624534.next->colour.x;
-        h.y = view.y + g_624534.next->colour.y;
-        h.z = view.z + g_624534.next->colour.z;
+        h.x = view.x + g_renderState.unk804c.next->colour.x;
+        h.y = view.y + g_renderState.unk804c.next->colour.y;
+        h.z = view.z + g_renderState.unk804c.next->colour.z;
         h.x *= 765.0f;
         h.y *= 765.0f;
         h.z *= 765.0f;
-        g_624534.next->half.x = h.x * 0.5f;
-        g_624534.next->half.y = h.y * 0.5f;
-        g_624534.next->half.z = h.z * 0.5f;
-        g_624534.next->light = light;
-        g_624534.next++;
+        g_renderState.unk804c.next->half.x = h.x * 0.5f;
+        g_renderState.unk804c.next->half.y = h.y * 0.5f;
+        g_renderState.unk804c.next->half.z = h.z * 0.5f;
+        g_renderState.unk804c.next->light = light;
+        g_renderState.unk804c.next++;
     }
 }
 
@@ -2394,9 +2218,9 @@ extern int g_62497c;
 // FUNCTION: STUNTGP_D3D 0x42a320
 void FUN_42a320(Scene *scene, ObjectDef *obj)
 {
-    DWORD b = g_624504.ib;
-    DWORD r = g_624504.ir;
-    DWORD g = g_624504.ig;
+    DWORD b = g_renderState.unk801c.ib;
+    DWORD r = g_renderState.unk801c.ir;
+    DWORD g = g_renderState.unk801c.ig;
     if ((WORD)scene->unk04 > 1)
     {
         DWORD scale = (WORD)scene->unk04;
@@ -2409,7 +2233,7 @@ void FUN_42a320(Scene *scene, ObjectDef *obj)
     Vec4 *normals = (Vec4 *)scene->unk28;
     MeshUv *uv = (MeshUv *)obj->unk2c;
     DWORD n = obj->unk26;
-    for (DWORD i = (g_62497c - 1) & g_61c508; i < n; i += g_62497c)
+    for (DWORD i = (g_62497c - 1) & g_renderState.unk20; i < n; i += g_62497c)
     {
         MeshUv *e = &uv[i];
         Vec4 *p = &points[e->point];
@@ -2417,8 +2241,8 @@ void FUN_42a320(Scene *scene, ObjectDef *obj)
         Vec4 *nrm = &normals[e->unk0a];
         DWORD cg = g;
         DWORD cb = b;
-        LightRec *rec = (LightRec *)g_624530;
-        for (DWORD j = 0; j < (DWORD)g_62452c; j++)
+        LightRec *rec = (LightRec *)g_renderState.unk8048;
+        for (DWORD j = 0; j < (DWORD)g_renderState.unk8044; j++)
         {
             Light *light = rec->light;
             if (light->type == 0)
@@ -2468,8 +2292,8 @@ void FUN_42a320(Scene *scene, ObjectDef *obj)
 // FUNCTION: STUNTGP_D3D 0x42a220
 void FUN_42a220()
 {
-    FUN_429ea0((PolyRef **)&g_6243c0, g_61c518, g_61c524 - g_61c518);
-    FUN_42a090((PolyRef **)&g_6243d0, g_61c51c, g_61c528 - g_61c51c);
+    FUN_429ea0((PolyRef **)&g_renderState.unk7ed8, g_renderState.unk30, g_renderState.unk3c - g_renderState.unk30);
+    FUN_42a090((PolyRef **)&g_renderState.unk7ee8, g_renderState.unk34, g_renderState.unk40 - g_renderState.unk34);
 }
 
 extern int g_624980;
@@ -2483,7 +2307,7 @@ void FUN_42ad70()
     {
         g_57b41c = 1;
         g_62497c = 1;
-        Scene *scene = g_61c52c;
+        Scene *scene = g_renderState.unk44;
         ObjectDef *obj = scene->lods[0] + 1;
         for (DWORD i = 1; i < scene->objectCount; i++, obj++)
         {
@@ -2509,11 +2333,11 @@ void FUN_42e6e0()
     FUN_44fd60();
     FUN_4342c0();
     FUN_42f090();
-    if (!g_6244f8)
+    if (!g_renderState.unk8010)
     {
         FUN_42e6d0();
         FUN_431360();
-        g_6244f8 = 1;
+        g_renderState.unk8010 = 1;
         g_624980 = 1;
         g_624984 = 1;
     }
@@ -2529,7 +2353,7 @@ void FUN_42e6e0()
     FUN_42c510();
     WAD_FlushWadCache();
     FUN_428fa0();
-    g_6243bc = g_6243b8 - g_6227d4;
+    g_renderState.unk7ed4 = g_renderState.unk7ed0 - g_renderState.unk62ec;
     FUN_42e430();
     FUN_427270();
     FUN_42e380();
@@ -2541,16 +2365,16 @@ void FUN_42e6e0()
     FUN_45e0e0();
     FUN_401d40();
     FUN_44fd60();
-    g_6244f4 = 0;
+    g_renderState.unk800c = 0;
     FUN_4320c0(1.0f);
     if (g_636418[3].scene)
     {
         g_636418[3].scene->camera = &g_4864e8;
     }
-    g_6244f8 = 0;
+    g_renderState.unk8010 = 0;
     FUN_431420();
     FUN_4312c0();
-    g_6244f8 = 1;
+    g_renderState.unk8010 = 1;
     g_57b41c = 0;
 }
 
@@ -2673,7 +2497,6 @@ void FUN_431350()
 
 extern int g_D3DDeviceIndex;
 extern int g_D3DDriverIndex;
-extern int g_6244f0;
 extern int g_DD_DISPLAYRESHEIGHT;
 void FUN_42f300();
 void FUN_42f6a0();
@@ -2694,7 +2517,7 @@ void FUN_431360()
 {
     int device = g_D3DDeviceIndex;
     int driver = g_D3DDriverIndex;
-    g_6244f0 = 1;
+    g_renderState.unk8008 = 1;
     g_58332c = 1;
     g_477c30 = 0x3ffff8;
     g_DD_DISPLAYRESWIDTH = g_DISPLAYRESWIDTH;
@@ -2750,7 +2573,7 @@ void FUN_4312c0()
 {
     if (g_D3DUVFix)
     {
-        SceneSlot *slot = g_6244f8 == 1 ? &g_636418[2] : g_636418;
+        SceneSlot *slot = g_renderState.unk8010 == 1 ? &g_636418[2] : g_636418;
         while (slot->scene)
         {
             FUN_4311c0(slot->scene);
@@ -3293,10 +3116,10 @@ void FUN_446840(char *script)
     Script_GetInt(p, "G", &green);
     // STRING: STUNTGP_D3D 0x484ff8
     Script_GetInt(p, "B", &blue);
-    g_624504.intensity = intensity * (1.0f / 255.0f);
-    g_624504.red = red;
-    g_624504.green = green;
-    g_624504.blue = blue;
+    g_renderState.unk801c.intensity = intensity * (1.0f / 255.0f);
+    g_renderState.unk801c.red = red;
+    g_renderState.unk801c.green = green;
+    g_renderState.unk801c.blue = blue;
     FUN_42d7e0();
     // STRING: STUNTGP_D3D 0x484ffc
     p = strstr(script, "-FogColour[] =");
@@ -3627,11 +3450,11 @@ void FUN_45e110(Unk62a078 *particle)
 // FUNCTION: STUNTGP_D3D 0x45eb90
 void FUN_45eb90(int x, int y, int z)
 {
-    RenderMaterial *material = g_62447c;
+    RenderMaterial *material = g_renderState.unk7f94;
     x <<= 2;
     y <<= 2;
     z <<= 2;
-    for (int i = 0; i < g_62449c; i++, material++)
+    for (int i = 0; i < g_renderState.unk7fb4; i++, material++)
     {
         material->unk54 = (material->unk54 + x) & 0x1ffffff;
         material->unk58 = (material->unk58 + y) & 0x1ffffff;

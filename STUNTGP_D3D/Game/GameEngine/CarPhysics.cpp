@@ -11,6 +11,7 @@
 #include "../../random.h"
 #include "../../vecmath.h"
 #include "game_state.h"
+#include "RenderState.h"
 
 extern Vec4 g_482678;
 extern Vec4 g_482688;
@@ -1108,7 +1109,7 @@ void FUN_4081d0()
         Car *leader;
         FUN_408180(&leader);
         g_4d5bb8->unk2634 = 1.0f;
-        float gap = (g_4d5bb8->unk23b0 - leader->unk23b0) * g_624474->unk18 * 0.01f;
+        float gap = (g_4d5bb8->unk23b0 - leader->unk23b0) * g_renderState.unk7f8c->unk18 * 0.01f;
         g_4d5bb8->leaderGap = gap;
         g_4d5bb8->unk2634 = 1.0f;
         if (g_4d5bb8 != leader)
@@ -1220,7 +1221,7 @@ extern TrackPoly *g_498164;
 // FUNCTION: STUNTGP_D3D 0x4091e0
 void FUN_4091e0(int wheel)
 {
-    BYTE *s = (BYTE *)&g_624480->surfaces[g_498164->surface];
+    BYTE *s = (BYTE *)&g_renderState.unk7f98->surfaces[g_498164->surface];
     g_4d5bb8->wheels[wheel].unk84 = s[1] * 0.015625f;
     g_4d5bb8->wheels[wheel].unk8c = s[2];
     g_4d5bb8->wheels[wheel].unk88 = s[3];
@@ -4878,7 +4879,7 @@ void FUN_415770()
 {
     if (g_4d5bb8->unk26b0->objectCount > 10)
     {
-        DWORD count = g_624474->count;
+        DWORD count = g_renderState.unk7f8c->count;
         int pos = g_4d5bb8->unk24a4;
         DWORD wrapped;
         if (pos < 0)
@@ -5430,7 +5431,7 @@ void FUN_418320()
         side.y = g_482688.x * g_4d5bb8->unk24c0.z - g_482688.z * g_4d5bb8->unk24c0.x;
         side.z = g_482688.y * g_4d5bb8->unk24c0.x - g_482688.x * g_4d5bb8->unk24c0.y;
         Vec3_Normalize(&side.x);
-        unsigned int k = g_4d5bb8->unk24a4 * 255 / g_624474->count & 0xff;
+        unsigned int k = g_4d5bb8->unk24a4 * 255 / g_renderState.unk7f8c->count & 0xff;
         Vec4 d;
         d.x = g_4d5bb8->posX - g_4d5bb8->unk24b0.x;
         d.y = g_4d5bb8->posY - g_4d5bb8->unk24b0.y;
@@ -6025,7 +6026,7 @@ void FUN_407de0()
 // FUNCTION: STUNTGP_D3D 0x41d390
 void FUN_41d390()
 {
-    g_60f010 = FUN_428840(g_624474);
+    g_60f010 = FUN_428840(g_renderState.unk7f8c);
 }
 
 // FUNCTION: STUNTGP_D3D 0x41d3b0
