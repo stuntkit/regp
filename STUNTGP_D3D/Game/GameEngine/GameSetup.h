@@ -110,7 +110,58 @@ struct RaceEntry
     int unk028;            // 0x028
     int unk02c;            // 0x02c
     int unk030;            // 0x030
-    BYTE unk034[0x104];    // 0x034
+    int unk034;            // 0x034
+    float unk038;          // 0x038
+    float unk03c;          // 0x03c
+    float unk040;          // 0x040
+    float unk044;          // 0x044
+    float unk048;          // 0x048
+    float unk04c;          // 0x04c
+    float unk050;          // 0x050
+    float unk054;          // 0x054
+    float unk058;          // 0x058
+    float unk05c;          // 0x05c
+    int unk060;            // 0x060
+    BYTE unk064[0x4];      // 0x064
+    int unk068;            // 0x068
+    unsigned int unk06c;   // 0x06c, entries used in unk080
+    float unk070;          // 0x070
+    float unk074;          // 0x074
+    float unk078;          // 0x078
+    float unk07c;          // 0x07c
+    float unk080[8];       // 0x080
+    float unk0a0;          // 0x0a0
+    float unk0a4;          // 0x0a4
+    float unk0a8;          // 0x0a8
+    float unk0ac;          // 0x0ac, suspension: travel, damping, stiffness in then out
+    float unk0b0;          // 0x0b0
+    float unk0b4;          // 0x0b4
+    float unk0b8;          // 0x0b8
+    float unk0bc;          // 0x0bc
+    float unk0c0;          // 0x0c0
+    BYTE unk0c4[0x4];      // 0x0c4
+    float unk0c8;          // 0x0c8
+    float unk0cc;          // 0x0cc
+    float unk0d0;          // 0x0d0
+    float unk0d4;          // 0x0d4
+    float unk0d8;          // 0x0d8
+    float unk0dc;          // 0x0dc
+    float unk0e0;          // 0x0e0
+    float unk0e4;          // 0x0e4
+    float unk0e8;          // 0x0e8
+    float unk0ec;          // 0x0ec
+    float unk0f0;          // 0x0f0
+    float unk0f4;          // 0x0f4
+    float unk0f8;          // 0x0f8
+    float unk0fc;          // 0x0fc
+    float unk100;          // 0x100
+    float unk104;          // 0x104
+    float unk108;          // 0x108
+    float unk10c;          // 0x10c
+    float unk110;          // 0x110
+    float unk114;          // 0x114
+    float unk118;          // 0x118
+    DWORD unk11c[7];       // 0x11c, copied to CarRace::unk80
     RaceResult result;     // 0x138
 };
 

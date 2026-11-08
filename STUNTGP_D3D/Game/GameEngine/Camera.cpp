@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "../../vecmath.h"
+#include "GameSetup.h"
 #include "RenderState.h"
 
 void FUN_402ab0(float fov);
@@ -44,6 +45,87 @@ int g_49823c;
 
 // GLOBAL: STUNTGP_D3D 0x498240
 int g_498240;
+
+// Copies the handling set of each human player's race entry onto the car.
+// FUNCTION: STUNTGP_D3D 0x41f5d0
+void FUN_41f5d0()
+{
+    for (int i = 0; i < 6; i++)
+    {
+        RaceEntry *e = &g_60d730.entries[i];
+        if (g_60d730.entries[i].type == 2 && g_60d730.entries[i].unk034 == 1)
+        {
+            Car *car = &g_49a1f8[i];
+            car->unk220 = e->unk038;
+            car->unk224 = e->unk040;
+            car->unk228 = e->unk044;
+            car->unk22c = e->unk048;
+            car->unk220 = e->unk03c + car->unk220;
+            car->unk248 = e->unk0a8;
+            car->unk468 = e->unk04c;
+            car->unk460 = e->unk050;
+            car->unk464 = e->unk054;
+            car->unk045c = e->unk058;
+            car->unk46c = e->unk05c;
+            car->unk1f0c = e->unk060;
+            car->unkf78 = e->unk0e4;
+            car->unk1184 = e->unk0ec;
+            car->unkf80 = e->unk0e8;
+            car->unkc70 = e->unk068;
+            car->unkc74 = e->unk06c + 1;
+            car->unkca0 = e->unk070;
+            car->unkca4 = e->unk074;
+            car->unkca8 = e->unk078;
+            car->unkc7c[0] = e->unk07c;
+            car->unkc7c[1] = -2.06f;
+            car->unkc7c[2] = 2.0f;
+            for (unsigned int j = 0; j < e->unk06c; j++)
+            {
+                car->unkc7c[3 + j] = e->unk080[j];
+            }
+            car->unkd5c = e->unk0a0;
+            car->unkd58 = e->unk0a4;
+            int k;
+            for (k = 0; k < 4; k++)
+            {
+                car->unkcb8[k].z = e->unk0c8;
+                car->unkcb8[k].w = e->unk0cc;
+            }
+            for (k = 0; k < 4; k++)
+            {
+                car->suspension[k].maxTravelIn = e->unk0ac;
+                car->suspension[k].maxDampingIn = e->unk0b0;
+                car->suspension[k].maxStiffnessIn = e->unk0b4;
+                car->suspension[k].maxTravelOut = e->unk0b8;
+                car->suspension[k].maxDampingOut = e->unk0bc;
+                car->suspension[k].maxStiffnessOut = e->unk0c0;
+            }
+            car->unkcac = e->unk0d0;
+            car->unkcb0 = e->unk0d4;
+            car->unk24c = e->unk0d8;
+            car->unk254 = e->unk0dc;
+            car->unk250 = e->unk0e0;
+            car->unkd60 = e->unk0f0;
+            car->unkd64 = e->unk0f4;
+            car->unkd68 = e->unk0f8;
+            car->unkd6c = e->unk0fc;
+            car->unkf70 = e->unk100;
+            car->unkf74 = e->unk104;
+            car->unk1b94 = e->unk108;
+            car->unk1b98 = e->unk10c;
+            car->unk1b9c = e->unk110;
+            car->unk1ba0 = e->unk114;
+            car->unk1ba4 = e->unk118;
+            car->race.unk80[1] = e->unk11c[1];
+            car->race.unk80[2] = e->unk11c[2];
+            car->race.unk80[3] = e->unk11c[3];
+            car->race.unk80[0] = e->unk11c[0];
+            car->race.unk80[4] = e->unk11c[4];
+            car->race.unk80[5] = e->unk11c[5];
+            car->race.unk80[6] = e->unk11c[6];
+        }
+    }
+}
 
 Vec4 *FUN_420b20(Vec4 *out, WORD *idx);
 
