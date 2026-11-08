@@ -2407,15 +2407,15 @@ void FUN_43ac00(RaceSetup7 *src, RaceResults7 *dst)
     FUN_43a720();
     g_60d730.unk010 = 0;
     g_60d730.unk020 = 0;
-    g_60d730.unk04c = 2;
     g_60d730.unk000 = ((int(*)[6])g_menuState.unk1d618)[src->track][0];
+    g_60d730.unk04c = 2;
     g_60d730.unk01c = ((int(*)[6])g_menuState.unk1d618)[src->track][3];
     g_60d730.unk018 = src->track - 1;
     g_60d730.unk034 = src->unkcc;
     g_60d730.unk050 = 1;
     g_60d730.unk054 = 4;
-    g_60d730.unk840 = 0;
     g_60d730.unk83c = 1;
+    g_60d730.unk840 = 0;
     g_60d730.unk03c[0] = 7200;
     g_60d730.unk03c[1] = 36000;
     g_60d730.unk03c[2] = 0;
@@ -2439,24 +2439,23 @@ void FUN_43ac00(RaceSetup7 *src, RaceResults7 *dst)
     }
     for (int i = 0; i < count; i++)
     {
-        RaceSetup7Car *car = &src->cars[i];
-        int e = car->car - 1;
+        int e = src->cars[i].car - 1;
         RaceEntry *entry = &g_60d730.entries[e];
-        strcpy((char *)entry->unk010, car->name);
         entry->type = 2;
-        if (car->unk00)
+        strcpy((char *)entry->unk010, src->cars[i].name);
+        if (src->cars[i].unk00)
         {
             entry->unk004 = 0;
-            FUN_43a760(car->unk00, e, i + 1);
+            FUN_43a760(src->cars[i].unk00, e, i + 1);
             g_60d730.unk024[i] = e;
-            FUN_43a430(entry, &entry->unk034, car->unk10, 0);
+            FUN_43a430(entry, &entry->unk034, src->cars[i].unk10, 0);
         }
         else
         {
             entry->unk004 = 1;
-            entry->unk008 = car->unk1c;
-            entry->unk00c = car->unk18;
-            FUN_43a430(entry, &entry->unk034, car->unk10, car->unk14);
+            entry->unk008 = src->cars[i].unk1c;
+            entry->unk00c = src->cars[i].unk18;
+            FUN_43a430(entry, &entry->unk034, src->cars[i].unk10, src->cars[i].unk14);
         }
     }
     FUN_43d420();
