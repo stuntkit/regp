@@ -77,6 +77,22 @@ void Pool_Free(void *ptr)
     g_pool.allocCount--;
 }
 
+int FUN_43c430();
+
+// Opens the save page after a settings change, if there is anything to save to.
+// FUNCTION: STUNTGP_D3D 0x43d500
+void FUN_43d500(int a)
+{
+    if (FUN_43c430())
+    {
+        g_menuState.unk46bc = g_menuState.unk0078;
+        g_menuState.unk46c0 = 1;
+        g_menuState.unk46c8 = 3;
+        g_menuState.unk46c4 = 0;
+        FUN_43dfa0(a, 0x1b);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x43d550
 char *FUN_43d550(int frames)
 {
@@ -133,6 +149,29 @@ char *FUN_43d5f0(int value, int digits)
     }
     g_5ff368[j] = 0;
     return g_5ff368;
+}
+
+// Opens a screen on top of the current one, keeping the current one on the stack.
+// FUNCTION: STUNTGP_D3D 0x43dfa0
+int FUN_43dfa0(int a, int screen)
+{
+    if (screen <= 0 || screen >= 0x29)
+    {
+        return 0;
+    }
+    if (g_frontEnd.nextScreen)
+    {
+        g_frontEnd.nextScreenStatic = TRUE;
+        g_frontEnd.objects[g_frontEnd.objectCount] = g_frontEnd.nextScreen;
+        g_frontEnd.objectCount++;
+    }
+    else if (g_frontEnd.screen)
+    {
+        g_frontEnd.screenStatic = TRUE;
+        g_frontEnd.objects[g_frontEnd.objectCount] = g_frontEnd.screen;
+        g_frontEnd.objectCount++;
+    }
+    return FUN_43ee40(FUN_43e000(a, screen));
 }
 
 // FUNCTION: STUNTGP_D3D 0x43eef0

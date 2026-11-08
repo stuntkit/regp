@@ -647,6 +647,61 @@ void FUN_461030(int channel, int loop, DWORD frequency, DWORD volume, int pan, i
     }
 }
 
+// Plays a sample on its own buffer, or through FUN_461030 for 3D samples while 3D sound is on.
+// FUNCTION: STUNTGP_D3D 0x461150
+void FUN_461150(int channel, int loop, DWORD frequency, DWORD volume, int pan, int keep, int *slotIndex)
+{
+    if (g_4897b4 == 1 && g_62e118[channel].type == 2)
+    {
+        FUN_461030(channel, loop, frequency, volume, pan, keep, slotIndex);
+        return;
+    }
+    if (!g_soundInitialised)
+    {
+        return;
+    }
+    LPDIRECTSOUNDBUFFER buffer = g_62e118[channel].buffer;
+    if (!buffer)
+    {
+        return;
+    }
+    if (!keep)
+    {
+        if (FUN_460f70(&buffer, channel, slotIndex) != 1)
+        {
+            return;
+        }
+    }
+    if (!frequency)
+    {
+        frequency = g_62e118[channel].rate;
+    }
+    if (buffer->SetFrequency(frequency) != DS_OK)
+    {
+        return;
+    }
+    int level = g_4897f8[g_sfxVolume * volume / 255 / 2];
+    if (buffer->SetVolume(level) != DS_OK)
+    {
+        return;
+    }
+    int value = g_4897f8[128 - ((abs(pan) + 1) >> 1)];
+    if (pan < 0)
+    {
+        value = -value;
+    }
+    if (buffer->SetPan(value) != DS_OK)
+    {
+        return;
+    }
+    if (loop == 1)
+    {
+        loop = DSBPLAY_LOOPING;
+    }
+    buffer->Play(0, 0, loop);
+    g_62f5b4++;
+}
+
 // Nearest active player camera to a point, or the first one in single view.
 // FUNCTION: STUNTGP_D3D 0x461270
 GameSlot *FUN_461270(Vec4 *pos)

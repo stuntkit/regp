@@ -22,16 +22,6 @@ struct MenuInput
     int unk14;    // 0x14
 };
 
-struct Unk450930
-{
-    DWORD unk00[5];    // 0x00
-    int unk14;         // 0x14
-    int unk18;         // 0x18
-    float unk1c;       // 0x1c
-    float unk20;       // 0x20
-    PoolObject *child; // 0x24
-};
-
 struct Unk453460
 {
     DWORD unk00[6];    // 0x00
@@ -77,30 +67,6 @@ struct Unk454b40
     float unk28;      // 0x28
     float unk2c;      // 0x2c
     float unk30;      // 0x30
-};
-
-struct Unk455fc0
-{
-    DWORD unk00[5];    // 0x00
-    PoolObject *child; // 0x14
-    int unk18;        // 0x18
-    int unk1c;        // 0x1c
-    int unk20;        // 0x20
-    int unk24;        // 0x24
-    int unk28;        // 0x28
-    int unk2c;        // 0x2c
-};
-
-// Per-player front-end panel; the arrays are indexed by player, 1 to 4.
-struct Unk456070
-{
-    BYTE unk00[0x14]; // 0x00
-    int unk14;        // 0x14
-    int unk18;        // 0x18
-    int unk1c;        // 0x1c
-    int unk20[5];     // 0x20
-    int unk34[5];     // 0x34
-    int unk48[5];     // 0x48
 };
 
 void FUN_456070(Unk456070 *object);
@@ -267,7 +233,7 @@ char *g_4881b0[4] = {
 MenuInput g_menuInput[5];
 
 // GLOBAL: STUNTGP_D3D 0x5df528
-int g_5df528[13];
+RaceRequest g_5df528;
 
 // GLOBAL: STUNTGP_D3D 0x5df560
 MenuState g_menuState;
@@ -1989,7 +1955,123 @@ void FUN_439e10()
 // FUNCTION: STUNTGP_D3D 0x439e30
 void FUN_439e30()
 {
-    memset(g_5df528, 0, sizeof(g_5df528));
+    memset(&g_5df528, 0, sizeof(g_5df528));
+}
+
+// FUNCTION: STUNTGP_D3D 0x439e90
+void FUN_439e90()
+{
+    g_menuState.sfx = g_60d730.sfx;
+    g_menuState.music = g_60d730.music;
+    g_menuState.unk0084 = g_60d730.unk00c;
+    g_menuState.music = FUN_43d790(g_menuState.music, 0, 100);
+    g_menuState.sfx = FUN_43d790(g_menuState.sfx, 0, 100);
+    int detail = FUN_43d790(g_menuState.unk0084, 0, 100);
+    g_menuState.sfx -= g_menuState.sfx % 10;
+    g_menuState.music -= g_menuState.music % 10;
+    g_menuState.unk0084 = detail - detail % 10;
+    g_menuState.unk0070 = g_60d730.unk864;
+    switch (g_5df528.mode)
+    {
+    case 1:
+    {
+        RaceResults *dst = g_5df528.dst1;
+        RaceSetup1 *src = g_5df528.src1;
+        dst->won = g_60d730.unk058 == 1;
+        for (int i = 0; i < 6; i++)
+        {
+            RaceEntry *e = &g_60d730.entries[src->cars[i].car - 1];
+            dst->results[i].unk04 = e->result.unk08;
+            dst->results[i].unk08 = e->result.unk0c;
+            dst->results[i].unk0c = e->result.unk10;
+            dst->results[i].unk10 = e->result.unk14;
+            dst->results[i].position = e->result.unk04;
+            if (!dst->won && (e->result.unk04 < 1 ||
+                                 e->result.unk04 > 6))
+            {
+                dst->results[i].position = 6;
+            }
+        }
+        break;
+    }
+    case 3:
+    {
+        g_5df528.dst3->won = g_60d730.unk058 == 1;
+        g_5df528.dst3->unk10 = g_60d730.entries[0].result.unk08;
+        g_5df528.dst3->unk04 = g_60d730.unk844;
+        g_5df528.dst3->unk08 = g_60d730.unk85c;
+        g_5df528.dst3->unk0c = g_60d730.unk854;
+        break;
+    }
+    case 5:
+    {
+        RaceResults *dst = g_5df528.dst5;
+        RaceSetup5 *src = g_5df528.src5;
+        dst->won = g_60d730.unk058 == 1;
+        for (int i = 0; i < 6; i++)
+        {
+            RaceEntry *e = &g_60d730.entries[src->cars[i].car - 1];
+            dst->results[i].unk04 = e->result.unk08;
+            dst->results[i].unk08 = e->result.unk0c;
+            dst->results[i].unk0c = e->result.unk10;
+            dst->results[i].unk10 = e->result.unk14;
+            dst->results[i].position = e->result.unk04;
+            if (!dst->won && (e->result.unk04 < 1 ||
+                                 e->result.unk04 > 6))
+            {
+                dst->results[i].position = 6;
+            }
+        }
+        break;
+    }
+    case 4:
+    {
+        g_5df528.dst4->won = g_60d730.unk058 == 1;
+        g_5df528.dst4->unk04 = g_60d730.entries[0].result.unk14;
+        break;
+    }
+    case 6:
+    {
+        RaceResults6 *dst = g_5df528.dst6;
+        dst->won = g_60d730.unk058 == 1;
+        RaceSetup6 *src = g_5df528.src6;
+        dst->count = src->count;
+        for (int i = 0; i < dst->count; i++)
+        {
+            RaceEntry *e = &g_60d730.entries[src->cars[i].unk08 - 1];
+            dst->results[i].unk04 = e->result.unk08;
+            dst->results[i].unk08 = e->result.unk0c;
+            dst->results[i].unk0c = e->result.unk10;
+            dst->results[i].unk10 = e->result.unk14;
+            dst->results[i].position = e->result.unk04;
+            if (!dst->won && (e->result.unk04 < 1 ||
+                                 e->result.unk04 > 6))
+            {
+                dst->results[i].position = 6;
+            }
+        }
+        break;
+    }
+    case 7:
+        g_5df528.dst7->won = g_60d730.unk058 == 1;
+        g_5df528.dst7->count = g_5df528.src7->count;
+        for (int i = 0; i < g_5df528.dst7->count; i++)
+        {
+            RaceEntry *e = &g_60d730.entries[g_5df528.src7->cars[i].car - 1];
+            g_5df528.dst7->results[i].unk04 = e->result.unk08;
+            g_5df528.dst7->results[i].unk08 = e->result.unk0c;
+            g_5df528.dst7->results[i].unk0c = e->result.unk10;
+            g_5df528.dst7->results[i].unk10 = e->result.unk14;
+            g_5df528.dst7->results[i].position = e->result.unk04;
+            if (!g_5df528.dst7->won && (e->result.unk04 < 1 ||
+                                           e->result.unk04 > 6))
+            {
+                g_5df528.dst7->results[i].position = 6;
+            }
+        }
+        break;
+    }
+    g_5df528.mode = 0;
 }
 
 // GLOBAL: STUNTGP_D3D 0x60d730
@@ -2632,7 +2714,7 @@ void FUN_438710(float x, float y, int layer, int def, float scale, DWORD flags);
 
 // Draws a three-layer sprite (shadow, outline, fill) in one of four colour sets.
 // FUNCTION: STUNTGP_D3D 0x43da40
-void FUN_43da40(int layer, int set, float x, float y, float scale, int shadow)
+void FUN_43da40(float x, float y, float scale, int layer, int set, int shadow)
 {
     int fill;
     int outline;
@@ -3410,6 +3492,15 @@ void FUN_450510(Unk4516c0 *object)
     object->unk18 = NULL;
 }
 
+// Framed message box in the middle of the screen.
+// FUNCTION: STUNTGP_D3D 0x450760
+void FUN_450760(int textId)
+{
+    FUN_439450(170.0f, 165.0f, 470.0f, 315.0f, 10, 0x6f, 0x40);
+    FUN_439380(170.0f, 165.0f, 470.0f, 315.0f, 13, 2, 0, 0.0f);
+    FUN_438ba0(320.0f, 240.0f, 12, 4, textId, 1.25f, 0xffffffff, 3);
+}
+
 // GLOBAL: STUNTGP_D3D 0x6249d4
 char g_6249d4[0x20];
 
@@ -3467,6 +3558,34 @@ void FUN_450ac0(MenuObject *object)
 {
     object->unk1c = FUN_43d7b0(object->unk1c, -31.0f, 31.0f);
     object->unk20 = FUN_43d7b0(object->unk20, -31.0f, 31.0f);
+}
+
+void FUN_438230(float x, float y, float middle, int layer, int def, DWORD flags);
+void FUN_438a20(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color,
+                DWORD flags, float unk18);
+char *FUN_43d5f0(int value, int digits);
+void FUN_4385d0(float x, float y, float middle, int layer, int def, DWORD flags);
+
+// Nested frames inset from the screen edge, shown while the screen position is adjusted.
+// FUNCTION: STUNTGP_D3D 0x450b00
+void FUN_450b00(MenuObject *object)
+{
+    for (int i = 16; i < 200; i += 31)
+    {
+        float x = i;
+        float y = i;
+        int def = (i & 1) ? 0x3d : 0x3f;
+        float right = 640.0f - x;
+        float bottom = 480.0f - y;
+        float width = right - x - 32.0f;
+        float height = bottom - y - 32.0f;
+        float cx = (right + x) * 0.5f;
+        FUN_438230(cx, y, width, 12, def, 0x103);
+        FUN_438230(cx, bottom, width, 12, def, 0x103);
+        float cy = (bottom + y) * 0.5f;
+        FUN_4385d0(x, cy, height, 12, def, 0x103);
+        FUN_4385d0(right, cy, height, 12, def, 0x103);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x437de0
@@ -3762,6 +3881,85 @@ struct Unk452000
     float unk34;    // 0x34
 };
 
+// GLOBAL: STUNTGP_D3D 0x624b18
+MenuItem g_624b18[5];
+
+// Part menu; unk2c and g_4869c8 are the sprite ids of the three stat bars.
+// GLOBAL: STUNTGP_D3D 0x486998
+MenuDef g_486998 = {0xb, 1.0f, 0, 507.0f, 400.0f, 0.8f, 2, 1.1f, 4, 0x8c, g_624b18, 0x3f};
+
+// GLOBAL: STUNTGP_D3D 0x4869c8
+int g_4869c8[2] = {0x3d, 0x3e};
+
+void FUN_438230(float x, float y, float middle, int layer, int def, DWORD flags);
+void FUN_438a20(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color,
+                DWORD flags, float unk18);
+char *FUN_43d5f0(int value, int digits);
+
+// FUNCTION: STUNTGP_D3D 0x451fd0
+void FUN_451fd0(int def, float x, float y, float length)
+{
+    FUN_438230(x, y, length * 8.0f, 12, def, 2);
+}
+
+// FUNCTION: STUNTGP_D3D 0x453b20
+void FUN_453b20(int def, float x, float y, float length)
+{
+    FUN_438230(x, y, length * 8.0f, 12, def, 0x102);
+}
+
+// Stat panel: a label and a bar per stat.
+// FUNCTION: STUNTGP_D3D 0x451ed0
+void FUN_451ed0(Unk451aa0 *object)
+{
+    float x0 = 81.0f;
+    float x1 = 359.0f;
+    if (g_menuState.unk423c > 1)
+    {
+        x0 = 49.0f;
+        x1 = 327.0f;
+    }
+    FUN_439450(x0, 366.0f, x1, 444.0f, 12, 0x6f, 0x40);
+    FUN_439380(x0, 366.0f, x1, 444.0f, 13, 0, 0, 0.0f);
+    x0 += 70.0f;
+    float barX = x0 + 16.0f;
+    for (int i = 0; i < 3; i++)
+    {
+        float y = i * 20 + 384.0f;
+        FUN_438be0(x0, y, 12, 2, i + 0x1c, 1.0f, 0xffffffff, 6);
+        FUN_451fd0((&g_486998.unk2c)[i], barX, y, object->unk38[i] * 20.0f);
+    }
+}
+
+// Car picture swinging on a sine of the phase.
+// FUNCTION: STUNTGP_D3D 0x452130
+void FUN_452130(Unk451aa0 *object, float x, float y, float phase)
+{
+    float t = phase + 0.5f;
+    t -= (int)t;
+    FUN_43da40(x - 100.0f + (float)sin(t * 3.1415927f) * 100.0f, (0.5f - t) * 200.0f + y, 0.5f, 7,
+               object->groups[object->unk1c * 12 + 1], 1);
+}
+
+// Name of the highlighted part, and in the shop its owner and price.
+// FUNCTION: STUNTGP_D3D 0x4521b0
+void FUN_4521b0(Unk451aa0 *object, int index)
+{
+    float y = 161.0f;
+    if (g_menuState.unk4230 != 5)
+    {
+        y = 208.0f;
+    }
+    FUN_438ba0(507.0f, y, 12, 4, index + 0x19f, 1.25f, 0xffffffff, 3);
+    if (g_menuState.unk4230 == 5)
+    {
+        FUN_438be0(483.0f, 291.0f, 12, 4, 0x185, 1.5f, 0xffffffff, 6);
+        FUN_438a20(583.0f, 291.0f, 12, 0, 4, object->unk114, 1.5f, 0xffffffff, 6, 14.0f);
+        FUN_438be0(483.0f, 315.0f, 12, 4, 0x186, 1.5f, 0xffffffff, 6);
+        FUN_438a20(583.0f, 315.0f, 12, 0, 4, FUN_43d5f0(object->unk134[index], 0), 1.5f, 0xffffffff, 6, 14.0f);
+    }
+}
+
 // Draws the two halves of a selector arrow, bobbing left by a sine of unk34.
 // FUNCTION: STUNTGP_D3D 0x452000
 void FUN_452000(Unk452000 *object, float x, float y)
@@ -3784,6 +3982,17 @@ void FUN_452530(MenuHolder *object)
 int FUN_4527d0(int index)
 {
     return FUN_437a90(g_486b88[index].id);
+}
+
+
+// Description of the highlighted shop entry.
+// FUNCTION: STUNTGP_D3D 0x4527f0
+void FUN_4527f0(int entry, int category)
+{
+    if (g_486b88[category].unk88[entry])
+    {
+        FUN_438ba0(384.0f, 382.0f, 12, 4, g_486b88[category].unk88[entry], 1.5f, 0xffc8c8ff, 3);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x452940
@@ -3822,7 +4031,7 @@ void FUN_4529c0(MenuHolder *object)
 }
 
 // FUNCTION: STUNTGP_D3D 0x452ac0
-void FUN_452ac0()
+void FUN_452ac0(MenuHolder *object)
 {
     float height = FUN_438950(1.25f);
     float y = (480.0f - height * 16.0f) * 0.5f;
@@ -4244,6 +4453,53 @@ void FUN_4558c0()
     FUN_43dc40();
 }
 
+void FUN_45be20(MenuLine *lines, int count, float x, float y, float width, float spacing);
+
+// Car choice panels per player, with the instructions underneath.
+// FUNCTION: STUNTGP_D3D 0x4558e0
+void FUN_4558e0(PoolObject *object)
+{
+    MenuLine lines[10];
+    int ids[4] = {0x26f, 0x270, 0x273, 0x272};
+    int count = FUN_43d9c0(4, 4);
+    int i;
+    for (i = 1; i < count + 1; i++)
+    {
+        int joined = FUN_437090(i);
+        int car = FUN_437050(i);
+        int text = i + 0xc1;
+        float x = ((text - 0xc2) - (count - 1) * 0.5f) * 150.0f + 320.0f;
+        int def = FUN_43dcc0(joined, car ? car - 1 : 0);
+        float x0 = x - 64.0f;
+        float x1 = x + 64.0f;
+        FUN_439450(x0, 96.0f, x1, 244.0f, 10, 0x6f, 0x40);
+        FUN_439380(x0, 96.0f, x1, 244.0f, 13, 0, 0, 0.0f);
+        D3DCOLOR color;
+        if (def)
+        {
+            FUN_438710(x, 170.0f, 12, def, 0.8f, 3);
+            color = (FUN_43dd60() & 0x20) ? 0xffffffff : 0xffff8080;
+        }
+        else
+        {
+            FUN_438710(x, 170.0f, 12, 0x170, 0.8f, 3);
+            color = 0xff808080;
+        }
+        FUN_438be0(x, 110.0f, 12, 4, i + 0xc1, 1.25f, color, 3);
+        int handicap = FUN_437010(i);
+        if (def && handicap)
+        {
+            FUN_438be0(x, 230.0f, 12, 4, handicap + 0x2c7, 1.25f, color, 3);
+        }
+    }
+    for (i = 0; i < 3; i++)
+    {
+        lines[i].color = 0xffffffff;
+        lines[i].text = FUN_441170(ids[i + 1]);
+    }
+    FUN_45be20(lines, 3, 320.0f, 325.0f, 540.0f, 0.0f);
+}
+
 // FUNCTION: STUNTGP_D3D 0x455b90
 int FUN_455b90(int player)
 {
@@ -4447,6 +4703,74 @@ int FUN_456650(Unk456070 *object)
         }
     }
     return count;
+}
+
+// Flashing "more players needed" box.
+// FUNCTION: STUNTGP_D3D 0x456220
+void FUN_456220(Unk456070 *object)
+{
+    FUN_439450(120.0f, 310.0f, 520.0f, 370.0f, 3, (FUN_43dd60() & 0x20) ? 0x6f : 0x70, 0x40);
+    FUN_439380(120.0f, 310.0f, 520.0f, 370.0f, 6, 2, 0, 0.0f);
+    FUN_438ba0(320.0f, 340.0f, 5, 4, 0xce, 1.5f, 0xffffffff, 0x803);
+}
+
+void FUN_438710(float x, float y, int layer, int def, float scale, DWORD flags);
+
+// One panel per player: car picture, join state and the selected handicap.
+// FUNCTION: STUNTGP_D3D 0x4562b0
+void FUN_4562b0(Unk456070 *object)
+{
+    int count = FUN_43d9c0(4, 4);
+    int text = 0x2d4;
+    for (int i = 1; i < count + 1; i++)
+    {
+        int joined = FUN_437090(i);
+        int car = FUN_437050(i);
+        float x = ((i - 1) - (count - 1) * 0.5f) * 150.0f + 320.0f;
+        int def = FUN_43dcc0(joined, car ? car - 1 : 0);
+        float x0 = x - 64.0f;
+        float x1 = x + 64.0f;
+        FUN_439450(x0, 126.0f, x1, 274.0f, 10, 0x6f, 0x40);
+        FUN_439380(x0, 126.0f, x1, 274.0f, 13, 0, 0, 0.0f);
+        if (def)
+        {
+            FUN_438710(x, 200.0f, 12, def, 0.8f, 3);
+            FUN_43dd60();
+        }
+        else
+        {
+            FUN_438710(x, 200.0f, 12, 0x170, 0.8f, 3);
+        }
+        D3DCOLOR color = 0xffffffff;
+        if (joined)
+        {
+            int id;
+            if (!object->unk34[i])
+            {
+                color = 0xffc8c8ff;
+                id = 0x2d3;
+            }
+            else if (object->unk48[i])
+            {
+                color = 0xffffffff;
+                id = text++;
+            }
+            else
+            {
+                color = (FUN_43dd60() & 0x20) ? 0xffffffff : 0xffc8c8ff;
+                id = 0x2d2;
+            }
+            if (id)
+            {
+                FUN_438be0(x, 140.0f, 12, 4, id, 1.25f, color, 3);
+            }
+        }
+        int handicap = FUN_437010(i);
+        if (def && handicap)
+        {
+            FUN_438be0(x, 260.0f, 12, 4, handicap + 0x2c7, 1.25f, color, 3);
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x4564b0

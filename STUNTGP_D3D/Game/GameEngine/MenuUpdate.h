@@ -276,6 +276,110 @@ struct MenuLanguage
     int id;
 };
 
+// One line of a framed message, drawn by FUN_45be20.
+struct MenuLine
+{
+    DWORD color; // 0x00
+    char *text;  // 0x04
+};
+
+// Car slot of a race setup; car is the 1-based RaceState entry.
+struct RaceSetupCar
+{
+    int unk00; // 0x00
+    int unk04; // 0x04
+    int unk08; // 0x08
+    int car;   // 0x0c
+    int unk10; // 0x10
+    int unk14; // 0x14
+    int unk18; // 0x18
+};
+
+struct RaceSetup1
+{
+    RaceSetupCar cars[6]; // 0x00
+};
+
+struct RaceSetup5
+{
+    BYTE unk000[0x12c];   // 0x000
+    RaceSetupCar cars[6]; // 0x12c
+};
+
+struct RaceSetup6
+{
+    MenuRoundCar cars[4]; // 0x00, unk08 is the RaceState entry
+    int count;            // 0x30
+};
+
+struct RaceSetup7Car
+{
+    int unk00;        // 0x00
+    int car;          // 0x04
+    BYTE unk08[0x18]; // 0x08
+};
+
+struct RaceSetup7
+{
+    RaceSetup7Car cars[6]; // 0x00
+    int count;             // 0xc0
+};
+
+struct RaceResults
+{
+    int won;                   // 0x00
+    MenuRaceResult results[6]; // 0x04
+};
+
+struct RaceResults3
+{
+    int won;   // 0x00
+    int unk04; // 0x04
+    int unk08; // 0x08
+    int unk0c; // 0x0c
+    int unk10; // 0x10
+};
+
+struct RaceResults4
+{
+    int won;   // 0x00
+    int unk04; // 0x04
+};
+
+struct RaceResults6
+{
+    int won;                   // 0x00
+    MenuRaceResult results[4]; // 0x04
+    int count;                 // 0x54
+};
+
+struct RaceResults7
+{
+    int won;                   // 0x00
+    MenuRaceResult results[6]; // 0x04
+    int count;                 // 0x7c
+};
+
+// Race started from the front end; FUN_439e90 copies its results back into dst<mode>.
+struct RaceRequest
+{
+    int mode;           // 0x00
+    RaceSetup1 *src1;   // 0x04
+    RaceResults *dst1;  // 0x08
+    void *src3;         // 0x0c
+    RaceResults3 *dst3; // 0x10
+    void *src4;         // 0x14
+    RaceResults4 *dst4; // 0x18
+    RaceSetup5 *src5;   // 0x1c
+    RaceResults *dst5;  // 0x20
+    RaceSetup6 *src6;   // 0x24
+    RaceResults6 *dst6; // 0x28
+    RaceSetup7 *src7;   // 0x2c
+    RaceResults7 *dst7; // 0x30
+};
+
+extern RaceRequest g_5df528;
+
 // Front-end state, cleared as a whole by FUN_43d0b0.
 struct MenuState
 {
@@ -314,7 +418,7 @@ struct MenuState
     ScoreEntry unk1dfc[100];    // 0x1dfc
     BYTE saved[0x2114]; // 0x211c, copy of 0x0008..0x211c
     int unk4230; // 0x4230
-    BYTE unk4234[0x4];
+    int unk4234; // 0x4234, challenge state run by FUN_44b5e0
     int unk4238; // 0x4238
     int unk423c; // 0x423c, entries used in unk46ac
     int unk4240; // 0x4240
@@ -331,7 +435,7 @@ struct MenuState
     int unk4388; // 0x4388
     int unk438c; // 0x438c
     int unk4390; // 0x4390
-    BYTE unk4394[0x4398 - 0x4394];
+    int unk4394; // 0x4394, set when the car page is left without a choice
     int unk4398;     // 0x4398, entries used in unk439c
     int unk439c[20]; // 0x439c
     BYTE unk43ec[0x43f4 - 0x43ec];
@@ -341,7 +445,9 @@ struct MenuState
     int unk440c[26]; // 0x440c
     int unk4474;     // 0x4474
     int unk4478; // 0x4478
-    BYTE unk447c[0x44d0 - 0x447c];
+    int unk447c; // 0x447c
+    int unk4480; // 0x4480
+    BYTE unk4484[0x44d0 - 0x4484];
     int unk44d0; // 0x44d0
     char unk44d4[4][0x40]; // 0x44d4, names entered on PageEnterName
     int unk45d4;   // 0x45d4
@@ -350,7 +456,9 @@ struct MenuState
     float unk45e0; // 0x45e0
     float unk45e4; // 0x45e4
     int unk45e8; // 0x45e8
-    BYTE unk45ec[0x4694 - 0x45ec];
+    int unk45ec;           // 0x45ec, FUN_43dd40 id for the message page
+    MenuLine unk45f0[20];  // 0x45f0, message page lines
+    int unk4690;           // 0x4690, lines used in unk45f0
     ScoreList unk4694; // 0x4694, copied by FUN_459200
     int unk46a8; // 0x46a8
     int unk46ac[4]; // 0x46ac
@@ -453,6 +561,66 @@ struct MenuHolder
     PoolObject *child; // 0x14
 };
 
+// Car part page with named fields; groups is laid out as in Unk451a50.
+struct Unk451aa0
+{
+    DWORD unk00[5];    // 0x00
+    PoolObject *child; // 0x14
+    int unk18;         // 0x18, selected item
+    int unk1c;         // 0x1c, selected group
+    float unk20;       // 0x20
+    float unk24;       // 0x24
+    float unk28;       // 0x28
+    float unk2c;       // 0x2c
+    float unk30;       // 0x30
+    float unk34;       // 0x34
+    float unk38[3];    // 0x38, shown stat bars
+    float unk44[3];    // 0x44, stat targets
+    int groups[48];    // 0x50
+    int unk110;        // 0x110, groups in use
+    char unk114[0x20]; // 0x114
+    int unk134[22];    // 0x134
+    BYTE unk18c[1][3]; // 0x18c, stats per item
+};
+
+extern MenuDef g_486998;
+
+// Per-player front-end panel; the arrays are indexed by player, 1 to 4.
+struct Unk456070
+{
+    BYTE unk00[0x14]; // 0x00
+    int unk14;        // 0x14
+    int unk18;        // 0x18
+    int unk1c;        // 0x1c
+    int unk20[5];     // 0x20
+    int unk34[5];     // 0x34
+    int unk48[5];     // 0x48
+};
+
+// Screen position page; unk1c/unk20 are the offsets being adjusted.
+struct Unk450930
+{
+    DWORD unk00[5];    // 0x00
+    int unk14;         // 0x14
+    int unk18;         // 0x18
+    float unk1c;       // 0x1c
+    float unk20;       // 0x20
+    PoolObject *child; // 0x24
+};
+
+// Controls page: each field cycles through its options.
+struct Unk455fc0
+{
+    DWORD unk00[5];    // 0x00
+    PoolObject *child; // 0x14
+    int unk18;         // 0x18
+    int unk1c;         // 0x1c
+    int unk20;         // 0x20
+    int unk24;         // 0x24
+    int unk28;         // 0x28
+    int unk2c;         // 0x2c
+};
+
 struct Unk457770
 {
     DWORD unk00[5];    // 0x00
@@ -513,6 +681,7 @@ int FUN_43c860(MenuList *list, MenuDef *def);
 void FUN_424bd0(float x, float y);
 int FUN_43d790(int value, int min, int max);
 float FUN_43d810(float current, float target, float rate);
+void FUN_43df60(float a, float b, float c, float d, float e, float f);
 int FUN_43dd70();
 void FUN_43dd90(int player);
 void FUN_43de40();
