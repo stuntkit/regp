@@ -408,6 +408,25 @@ void FUN_4481f0(DWORD frames, DWORD *digits)
     digits[2] = rest / 10;
 }
 
+// FUN_4481f0 with a hundredths digit in front.
+// FUNCTION: STUNTGP_D3D 0x4482a0
+void FUN_4482a0(DWORD frames, DWORD *digits)
+{
+    DWORD secs = frames / 60;
+    digits[0] = frames * 10 / 6 % 10;
+    digits[1] = frames / 6 % 10;
+    DWORD hours = secs / 3600;
+    digits[6] = hours % 10;
+    digits[7] = hours / 10;
+    DWORD rest = secs % 3600;
+    DWORD mins = rest / 60;
+    digits[4] = mins % 10;
+    digits[5] = mins / 10;
+    rest %= 60;
+    digits[2] = rest % 10;
+    digits[3] = rest / 10;
+}
+
 // FUNCTION: STUNTGP_D3D 0x4473f0
 void FUN_4473f0()
 {
@@ -558,10 +577,92 @@ void FUN_443430(Car *car)
     }
 }
 
+void FUN_41aac0(Replay *replay);
+void FUN_419a60(Car *car, Replay *replay);
+GhostRecord *FUN_443300();
+void FUN_443360(Car *car);
+
+// After a recorded lap, keeps it as the ghost if it beats the slower of the two stored ghosts.
+// FUNCTION: STUNTGP_D3D 0x443480
+void FUN_443480()
+{
+    if (g_49a1f8[0].unk7268 && g_49a1f8[0].unk7268->mode == 2)
+    {
+        FUN_41aac0(g_49a1f8[0].unk7268);
+        GhostRecord *rec = FUN_443300();
+        if (g_49a1f8[0].unk23c8 < rec->time)
+        {
+            memcpy(rec->ghost, g_49a1f8[0].unk7268, sizeof(Unk4d5cc0));
+            rec->time = g_49a1f8[0].unk23c8;
+            rec->unk00 = 1;
+            rec->ghost->unk1c = g_49a1f8[0].unk23c8;
+            FUN_419a60((Car *)rec->unk04, (Replay *)rec->ghost);
+            FUN_443360(g_49a1f8);
+            FUN_443430(g_49a1f8);
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x443770
 int FUN_443770()
 {
     return g_60f2b4;
+}
+
+// Digit columns of the race clock; u is the texture column of the digit strip.
+struct ClockColumn
+{
+    float u;      // 0x00
+    float unk04;  // 0x04
+    float unk08;  // 0x08
+    float unk0c;  // 0x0c
+    float unk10;  // 0x10
+};
+
+// GLOBAL: STUNTGP_D3D 0x485560
+ClockColumn g_485560[7] = {
+    {229.0f, 0.16666667f, 1.0f, 1.0f, 180.0f},
+    {229.0f, 0.016666668f, 10.0f, 0.1f, 180.0f},
+    {242.0f, 0.0016666667f, 100.0f, 0.01f, 108.0f},
+    {216.0f, 0.00027777778f, 600.0f, 0.0016666666f, 180.0f},
+    {242.0f, 2.7777778e-05f, 6000.0f, 0.00016666666f, 108.0f},
+    {216.0f, 4.6296295e-06f, 36000.0f, 2.7777776e-05f, 180.0f},
+    {242.0f, 4.6296296e-07f, 360000.0f, 2.7777778e-06f, 180.0f},
+};
+
+// GLOBAL: STUNTGP_D3D 0x4855ec
+float g_4855ec = 242.0f;
+
+// GLOBAL: STUNTGP_D3D 0x4855f0
+int g_4855f0[7] = {0, -13, -30, -43, -60, -73, -86};
+
+// Draws the two digits of value (0..99) at x, y; alt picks the second pair of columns.
+// FUNCTION: STUNTGP_D3D 0x44a4a0
+void FUN_44a4a0(DWORD value, int alt, float x, float y)
+{
+    DWORD digits[2];
+    y += 2.4f;
+    g_spriteDesc.z = 0.95f;
+    g_spriteDesc.width = 10.400001f;
+    g_spriteDesc.height = 14.400001f;
+    g_spriteDesc.texture = 11;
+    digits[0] = value % 10;
+    digits[1] = value / 10 % 10;
+    for (int i = 0; i < 2; i++)
+    {
+        g_spriteDesc.x = g_4855f0[i] * 0.8f + x;
+        g_spriteDesc.y = y;
+        int column = i;
+        if (alt)
+        {
+            column += 2;
+        }
+        g_spriteDesc.u0 = (g_485560[column].u * 1024.0f) * 0.00390625f;
+        g_spriteDesc.v0 = ((digits[i] * 18) * 1024.0f) * 0.00390625f;
+        g_spriteDesc.u1 = g_spriteDesc.u0 + 52.0f;
+        g_spriteDesc.v1 = g_spriteDesc.v0 + 72.0f;
+        FUN_432e00(&g_spriteDesc);
+    }
 }
 
 struct QuadVertex
@@ -901,11 +1002,11 @@ void FUN_4499a0()
     DWORD t;
     DWORD alpha;
 
-    if (race->unk4c[7] != 1 || g_612948.unk8cec != 0x14)
+    if (race->unk68 != 1 || g_612948.unk8cec != 0x14)
     {
         return;
     }
-    t = race->unk4c[8];
+    t = race->unk6c;
     if (t < 30)
     {
         alpha = t * 224 / 30;
@@ -1014,7 +1115,7 @@ void FUN_449c60()
 void FUN_449ce0()
 {
     CarRace *race = &g_4722d0->data->race;
-    if (race->unk4c[6] == 1 && g_498248[0].data->race.unk1c == 0)
+    if (race->unk64 == 1 && g_498248[0].data->race.unk1c == 0)
     {
         DWORD color;
         if (race->unk24 > 30)
@@ -1029,6 +1130,72 @@ void FUN_449ce0()
         FUN_4291f0(g_6127a0[16], 1, 320.0f, 240.0f, 0.95f, color, 2.0f, 0);
         Font_Select(0);
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x449d70
+void FUN_449d70()
+{
+    CarRace *race = &g_4722d0->data->race;
+    if (!race->unk30 || (g_612948.unk8cec != 0x15 && g_612948.unk8cec != 0x16 && g_612948.unk8cec != 0x17))
+    {
+        return;
+    }
+    DWORD alpha;
+    if (race->unk34 >= 180)
+    {
+        alpha = (240 - race->unk34) * 255 / 60;
+    }
+    else
+    {
+        alpha = race->unk34 * 255 / 60;
+    }
+    if (alpha > 255)
+    {
+        alpha = 255;
+    }
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.x = 166.4f;
+    g_spriteDesc.y = 86.399994f - race->unk38;
+    g_spriteDesc.z = 0.99f;
+    g_spriteDesc.u0 = 0.0f;
+    g_spriteDesc.v0 = 0.0f;
+    g_spriteDesc.u1 = 1024.0f;
+    g_spriteDesc.v1 = 1024.0f;
+    g_spriteDesc.width = 307.2f;
+    g_spriteDesc.height = 307.2f;
+    g_spriteDesc.texture = 15;
+    g_spriteDesc.blendMode = 0x48;
+    g_spriteDesc.alpha = alpha;
+    FUN_432e00(&g_spriteDesc);
+}
+
+// FUNCTION: STUNTGP_D3D 0x44a3d0
+void FUN_44a3d0()
+{
+    CarRace *race = &g_4722d0->data->race;
+    if (!race->unk04)
+    {
+        return;
+    }
+    DWORD alpha = race->unk08 * 240 / 60;
+    if (alpha > 240)
+    {
+        alpha = 240;
+    }
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.x = 166.4f;
+    g_spriteDesc.y = race->unk0c + 102.4f;
+    g_spriteDesc.z = 0.99f;
+    g_spriteDesc.u0 = 0.0f;
+    g_spriteDesc.v0 = 0.0f;
+    g_spriteDesc.u1 = 1024.0f;
+    g_spriteDesc.v1 = 1024.0f;
+    g_spriteDesc.width = 307.2f;
+    g_spriteDesc.height = 153.6f;
+    g_spriteDesc.texture = 15;
+    g_spriteDesc.blendMode = 0x48;
+    g_spriteDesc.alpha = alpha;
+    FUN_432e00(&g_spriteDesc);
 }
 
 // FUNCTION: STUNTGP_D3D 0x40e030
@@ -1365,6 +1532,29 @@ GhostRecord *FUN_443330()
         }
     }
     return best;
+}
+
+// Ghost race messages: overtaking the ghost, and closing to within 10% of its time.
+// FUNCTION: STUNTGP_D3D 0x443360
+void FUN_443360(Car *car)
+{
+    if (g_60d66c == 1 && g_60f284 != 1)
+    {
+        int diff = car->unk23c8 - g_60d628[0].ghost->unk1c;
+        if ((g_60d628[0].unk00 == 1 || diff < 0) && g_60f284 == 0 && car->unk23c0 == 1)
+        {
+            g_60d628[0].unk00 = 1;
+            g_60f284 = 1;
+            car->unk23c0 = 0;
+            FUN_442cf0(300, g_6127a0[20], car, 0, 100);
+        }
+        if (g_60d628[0].unk00 == 0 && diff < g_60d628[0].ghost->unk1c * 10 / 100)
+        {
+            g_60d628[0].unk00 = 1;
+            FUN_442cf0(300, g_6127a0[18], car, 0, 100);
+            g_60d668 = 0;
+        }
+    }
 }
 
 extern char g_LevelScript[32];

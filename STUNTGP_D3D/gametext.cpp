@@ -507,9 +507,9 @@ void FUN_443d90()
     memset(&car->race, 0, 0x70);
     car->race.unk1c = 0;
     car->race.unk30 = 0;
-    car->race.unk4c[0] = 0;
+    car->race.unk4c = 0;
     car->race.unk04 = 0;
-    car->race.unk4c[7] = 0;
+    car->race.unk68 = 0;
     g_60d71c = 0;
     FUN_449c60();
 }
@@ -668,6 +668,33 @@ void FUN_4458f0()
         FUN_441ec0();
         memcpy(g_62dcf0, g_62d480, sizeof(g_62dcf0));
     }
+}
+
+void FUN_4320c0(float gamma);
+void FUN_442a40(int type, int duration, int delay, int end, int from, int to, float scale);
+
+// Shows the full-screen picture for a number of frames with a fade in and an optional fade out.
+// FUNCTION: STUNTGP_D3D 0x445940
+void FUN_445940(int frames, int fadeIn, int fadeOut)
+{
+    g_612948.unk8ce8 = 1;
+    FUN_4320c0(1.0f);
+    g_498248[0].active = 1;
+    g_498248[1].active = 1;
+    g_498248[2].active = 1;
+    g_498248[3].active = 1;
+    g_4722d0 = g_498248;
+    FUN_442a40(2, fadeIn, fadeIn, fadeIn, 100, 0, 1.0f);
+    for (int i = frames + 2; i != 0; i--)
+    {
+        FUN_4458f0();
+        FUN_4458b0();
+        if (i == 120 && fadeOut)
+        {
+            FUN_442a40(2, fadeOut, 0, 180, 0, 100, 1.0f);
+        }
+    }
+    g_612948.unk8ce8 = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x445ae0

@@ -1330,6 +1330,35 @@ int FUN_437100()
     return count;
 }
 
+void FUN_424340(int player, int mode);
+
+// FUNCTION: STUNTGP_D3D 0x437130
+int FUN_437130(int player, int mode)
+{
+    if (!FUN_437090(player))
+    {
+        return 0;
+    }
+    switch (mode)
+    {
+    case 1:
+        FUN_424340(player - 1, 1);
+        return 1;
+    case 2:
+        FUN_424340(player - 1, 2);
+        return 1;
+    case 3:
+        FUN_424340(player - 1, 3);
+        return 1;
+    case 4:
+        FUN_424340(player - 1, 4);
+        break;
+    case 5:
+        return 0;
+    }
+    return 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x4371c0
 int FUN_4371c0(int track, int mode)
 {
@@ -3544,6 +3573,25 @@ int FUN_451e80(Unk451a50 *object, float x, float y)
     return object->groups[row * 12 + column + 2];
 }
 
+void FUN_438710(float x, float y, int layer, int def, float scale, DWORD flags);
+
+struct Unk452000
+{
+    DWORD unk00[8]; // 0x00
+    int unk20;      // 0x20
+    DWORD unk24[4]; // 0x24
+    float unk34;    // 0x34
+};
+
+// Draws the two halves of a selector arrow, bobbing left by a sine of unk34.
+// FUNCTION: STUNTGP_D3D 0x452000
+void FUN_452000(Unk452000 *object, float x, float y)
+{
+    x -= (float)sin(object->unk34 * 3.1415927f) * 20.0f + 120.0f;
+    FUN_438710(x, y, 13, object->unk20 + 0x35, 1.0f, 0x203);
+    FUN_438710(x, y, 12, object->unk20 + 0x31, 1.0f, 0x103);
+}
+
 // FUNCTION: STUNTGP_D3D 0x452530
 void FUN_452530(MenuHolder *object)
 {
@@ -3815,6 +3863,14 @@ int FUN_4547e0(char c, int *column, int *row)
     return -1;
 }
 
+void FUN_438710(float x, float y, int layer, int def, float scale, DWORD flags);
+
+// FUNCTION: STUNTGP_D3D 0x454ac0
+void FUN_454ac0(float x, float y, int def)
+{
+    FUN_438710(x, y, 2, def, 1.0f, 0x103);
+}
+
 // FUNCTION: STUNTGP_D3D 0x454af0
 void FUN_454af0(Unk454b20 *object, char c)
 {
@@ -3996,6 +4052,28 @@ void FUN_455be0(int player, int delta)
             mode = 1;
         }
         if (FUN_437060(player, mode))
+        {
+            FUN_440880(1);
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x455c20
+void FUN_455c20(int player, int delta)
+{
+    int mode = FUN_437090(player);
+    if (mode && mode != 5)
+    {
+        mode += delta;
+        if (mode <= 0)
+        {
+            mode = 4;
+        }
+        else if (mode >= 5)
+        {
+            mode = 1;
+        }
+        if (FUN_437130(player, mode))
         {
             FUN_440880(1);
         }
@@ -4295,6 +4373,54 @@ int FUN_457a20(int value)
     return value > 0 && value <= 3;
 }
 
+int FUN_440300(int value);
+void FUN_4402f0(int value);
+int FUN_440200(int *freeSpace);
+int FUN_440320();
+int FUN_440310(int value);
+int FUN_4405c0(int ghost);
+
+// Checks a memory card for the current save/load screen; 0 bad card, 1 error, 2 no card, 3 full,
+// 4 room to save, 5 save present.
+// FUNCTION: STUNTGP_D3D 0x457bf0
+int FUN_457bf0(int card, int *freeSpace)
+{
+    if (!FUN_440300(card))
+    {
+        return 0;
+    }
+    FUN_4402f0(card);
+    *freeSpace = 0;
+    switch (FUN_440200(freeSpace))
+    {
+    case 0:
+        switch (g_menuState.unk46c8)
+        {
+        case 2:
+            return FUN_440320() == 4 ? 5 : 4;
+        case 1:
+        case 3:
+            if (FUN_440320() == 4)
+            {
+                return 5;
+            }
+            return *freeSpace >= FUN_440310(0x211c) ? 4 : 3;
+        case 4:
+            return FUN_4405c0(g_menuState.unk46cc) == 4 ? 5 : 4;
+        case 5:
+            if (FUN_4405c0(g_menuState.unk46cc) == 4)
+            {
+                return 5;
+            }
+            return *freeSpace >= FUN_4405b0(g_menuState.unk46d4) ? 4 : 3;
+        }
+        break;
+    case 1:
+        return 2;
+    }
+    return 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x457e70
 int FUN_457e70(Unk457e70 *object, int id)
 {
@@ -4498,6 +4624,42 @@ void FUN_458d00(Unk457e70 *object)
     }
 }
 
+int FUN_4406a0(void *buffer, int size, int ghost);
+int FUN_440660(void *buffer, int size, int ghost);
+int FUN_4404d0(void *buffer, int size);
+int FUN_4403a0(void *buffer, int size);
+unsigned int FUN_43d5d0(BYTE *data, int len);
+void FUN_458ea0();
+
+// FUNCTION: STUNTGP_D3D 0x458e10
+int FUN_458e10()
+{
+    return FUN_4406a0((void *)g_menuState.unk46d0, g_menuState.unk46d4, g_menuState.unk46cc);
+}
+
+// FUNCTION: STUNTGP_D3D 0x458e30
+int FUN_458e30()
+{
+    return FUN_440660((void *)g_menuState.unk46d0, g_menuState.unk46d4, g_menuState.unk46cc);
+}
+
+// Saves the setup part of the front-end state to the current card.
+// FUNCTION: STUNTGP_D3D 0x458e50
+int FUN_458e50()
+{
+    g_menuState.saveSize = 0x211c;
+    g_menuState.saveChecksum = 0;
+    g_menuState.saveChecksum = FUN_43d5d0((BYTE *)&g_menuState, 0x211c);
+    int result = FUN_4404d0(&g_menuState, 0x211c);
+    FUN_43d370();
+    if (result)
+    {
+        return result;
+    }
+    FUN_458ea0();
+    return 0;
+}
+
 void FUN_43bf30();
 
 // FUNCTION: STUNTGP_D3D 0x458ea0
@@ -4505,6 +4667,42 @@ void FUN_458ea0()
 {
     FUN_43bf30();
     FUN_43c400();
+}
+
+// Setup save as read from the card: the first 0x211c bytes of MenuState.
+struct MenuSave
+{
+    int saveSize;              // 0x0000
+    unsigned int saveChecksum; // 0x0004
+    BYTE data[0x211c - 8];     // 0x0008
+};
+
+// GLOBAL: STUNTGP_D3D 0x625938
+MenuSave g_625938;
+
+// Loads the setup save into the front-end state if its size and checksum are good.
+// FUNCTION: STUNTGP_D3D 0x458eb0
+int FUN_458eb0()
+{
+    int result = FUN_4403a0(&g_625938, 0x211c);
+    if (result)
+    {
+        return result;
+    }
+    if (g_625938.saveSize != 0x211c)
+    {
+        return 9;
+    }
+    unsigned int checksum = g_625938.saveChecksum;
+    g_625938.saveChecksum = 0;
+    if (checksum != FUN_43d5d0((BYTE *)&g_625938, 0x211c))
+    {
+        return 9;
+    }
+    memcpy(&g_menuState, &g_625938, 0x211c);
+    FUN_43d280();
+    FUN_458ea0();
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x459300

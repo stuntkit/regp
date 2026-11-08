@@ -404,6 +404,72 @@ void FUN_438590(int layer, int sub, SpriteNode *node)
     }
 }
 
+void FUN_438740(int layer, int def, float x, float y, float scale, DWORD flags, float fade);
+
+// FUNCTION: STUNTGP_D3D 0x438710
+void FUN_438710(float x, float y, int layer, int def, float scale, DWORD flags)
+{
+    FUN_438740(layer, def, x, y, scale, flags, 1.0f);
+}
+
+// Draws a scaled sprite definition; flags 1/2 centre, 4/8 right/bottom align, 0x10/0x20 mirror.
+// FUNCTION: STUNTGP_D3D 0x438740
+void FUN_438740(int layer, int def, float x, float y, float scale, DWORD flags, float fade)
+{
+    if (def != 0)
+    {
+        SpriteData s;
+        FUN_441320(&s, def);
+        s.flags = 2;
+        s.alpha = (int)(fade * 255.0f);
+        if (flags & 0x100)
+        {
+            s.blendMode = 0x58;
+        }
+        else if (flags & 0x200)
+        {
+            s.blendMode = 0x70;
+        }
+        else
+        {
+            s.blendMode = ((flags & 0x400) | 0x200) >> 4;
+        }
+        s.width *= scale;
+        s.x = x;
+        s.y = y;
+        s.height *= scale;
+        if (flags & 1)
+        {
+            s.x = x - s.width * 0.5f;
+        }
+        else if (flags & 4)
+        {
+            s.x = x - s.width;
+        }
+        if (flags & 2)
+        {
+            s.y = y - s.height * 0.5f;
+        }
+        else if (flags & 8)
+        {
+            s.y = y - s.height;
+        }
+        if (flags & 0x10)
+        {
+            float t = s.u0;
+            s.u0 = s.u1;
+            s.u1 = t;
+        }
+        if (flags & 0x20)
+        {
+            float t = s.v0;
+            s.v0 = s.v1;
+            s.v1 = t;
+        }
+        FUN_438370(&s, layer, 0);
+    }
+}
+
 // Tiles a 64-pixel texture over a rectangle, scrolled by the fractional part of u/v.
 // FUNCTION: STUNTGP_D3D 0x438830
 void FUN_438830(float x0, float y0, float x1, float y1, int layer, int def, float u, float v)
@@ -488,6 +554,43 @@ void FUN_438c20(float x, float y, int layer, int style, char c, float size, D3DC
 {
     g_4793f0[0] = c;
     FUN_438990(x, y, layer, 1, style, g_4793f0, size, color, flags, 0.0f);
+}
+
+// Frame layout for an icon style; returns its sprite id, or 0 for an unknown style.
+// FUNCTION: STUNTGP_D3D 0x438dc0
+int FUN_438dc0(int style, int *a, int *b, int *c)
+{
+    switch (style)
+    {
+    case 1:
+        *a = 0x1a;
+        *b = 0x10;
+        *c = 0x20;
+        return 0x57;
+    case 2:
+        *a = 0x1a;
+        *b = 0x10;
+        *c = 0x20;
+        return 0x5a;
+    case 3:
+        *a = 0x20;
+        *b = 0x20;
+        *c = 0x20;
+        return 0x58;
+    case 4:
+        *a = 0x20;
+        *b = 0x20;
+        *c = 0x20;
+        return 0x59;
+    case 5:
+        *a = 0x50;
+        *b = 0x30;
+        *c = 0x40;
+        return 0x5b;
+    }
+    *a = 0;
+    *b = 0;
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x439380
@@ -1008,6 +1111,80 @@ BOOL FUN_440380(char *path)
     return FALSE;
 }
 
+int FUN_440480(char *path);
+
+int FUN_4403b0(void *buffer, int size, char *name, int checkSize);
+int FUN_4404e0(void *buffer, int size, char *name);
+
+// FUNCTION: STUNTGP_D3D 0x4403a0
+int FUN_4403a0(void *buffer, int size)
+{
+    // STRING: STUNTGP_D3D 0x479a44
+    return FUN_4403b0(buffer, size, "setup.bin", 1);
+}
+
+// Reads a save file from the current card; with checkSize, the file must be exactly size bytes.
+// FUNCTION: STUNTGP_D3D 0x4403b0
+int FUN_4403b0(void *buffer, int size, char *name, int checkSize)
+{
+    char path[0x400];
+    char *dir = FUN_4401e0(g_4798bc);
+    if (!FUN_4401c0(dir))
+    {
+        return 1;
+    }
+    // STRING: STUNTGP_D3D 0x479a50
+    sprintf(path, "%s\\%s", dir, name);
+    if (FUN_440480(path) != size && checkSize)
+    {
+        return 9;
+    }
+    // STRING: STUNTGP_D3D 0x479a58
+    FILE *file = fopen(path, "rb");
+    if (!file)
+    {
+        return 6;
+    }
+    int read = fread(buffer, 1, size, file);
+    fclose(file);
+    return read != size ? 9 : 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4404d0
+int FUN_4404d0(void *buffer, int size)
+{
+    // STRING: STUNTGP_D3D 0x479a5c
+    return FUN_4404e0(buffer, size, "setup.bin");
+}
+
+// Writes a save file to the current card; an existing file must already be size bytes.
+// FUNCTION: STUNTGP_D3D 0x4404e0
+int FUN_4404e0(void *buffer, int size, char *name)
+{
+    char path[0x400];
+    char *dir = FUN_4401e0(g_4798bc);
+    if (!FUN_4401c0(dir))
+    {
+        return 1;
+    }
+    // STRING: STUNTGP_D3D 0x479a68
+    sprintf(path, "%s\\%s", dir, name);
+    int existing = FUN_440480(path);
+    if (existing >= 0 && existing != size)
+    {
+        return 9;
+    }
+    // STRING: STUNTGP_D3D 0x479a70
+    FILE *file = fopen(path, "wb");
+    if (!file)
+    {
+        return 6;
+    }
+    int written = fwrite(buffer, 1, size, file);
+    fclose(file);
+    return written != size ? 9 : 0;
+}
+
 // Size of a file, or -1 if it is missing or a directory.
 // FUNCTION: STUNTGP_D3D 0x440480
 int FUN_440480(char *path)
@@ -1038,6 +1215,24 @@ int FUN_4405c0(int ghost)
     // STRING: STUNTGP_D3D 0x479a74
     sprintf(path, "%s\\ghost%02d.bin", dir, ghost);
     return FUN_440380(path) ? 4 : 6;
+}
+
+// FUNCTION: STUNTGP_D3D 0x440660
+int FUN_440660(void *buffer, int size, int ghost)
+{
+    char name[0x40];
+    // STRING: STUNTGP_D3D 0x479a88
+    sprintf(name, "ghost%02d.bin", ghost);
+    return FUN_4403b0(buffer, size, name, 0);
+}
+
+// FUNCTION: STUNTGP_D3D 0x4406a0
+int FUN_4406a0(void *buffer, int size, int ghost)
+{
+    char name[0x40];
+    // STRING: STUNTGP_D3D 0x479a98
+    sprintf(name, "ghost%02d.bin", ghost);
+    return FUN_4404e0(buffer, size, name);
 }
 
 // FUNCTION: STUNTGP_D3D 0x4406e0
@@ -1321,7 +1516,6 @@ int size_of_file(char *path);
 int bload(char *path, char *buffer, int maxSize);
 void FUN_4623c0(char *path, void *buffer, void *arg);
 extern char g_GraphicsDirectory[128];
-extern int g_5895b0;
 
 // Loads a TGA image from the graphics directory and converts it to 16-bit.
 // FUNCTION: STUNTGP_D3D 0x430b80
@@ -1335,7 +1529,7 @@ WORD *FUN_430b80(char *name, int type)
     FUN_4623c0(path, image, &g_571fd4);
     FUN_430280(image, (WORD *)image, g_489714, g_489718);
     DWORD size = g_489714 * g_489718 * 2;
-    g_5895b0 += size;
+    g_5895b0.totalSize += size;
     result = (WORD *)Mem_Alloc(size, type);
     memcpy(result, image, size);
     Mem_Free(image);
@@ -1352,10 +1546,33 @@ BYTE *FUN_430c30(char *name, int type)
     int size = size_of_file(path);
     BYTE *buffer = (BYTE *)Mem_Alloc(size, type);
     bload(path, (char *)buffer, size);
-    g_5895b0 += size;
+    g_5895b0.totalSize += size;
     g_489714 = *(WORD *)(buffer + 6);
     g_489718 = *(WORD *)(buffer + 8);
     return buffer;
+}
+
+// Loads an image and appends it to the image table; compressed 1 is a packed .PC.
+// FUNCTION: STUNTGP_D3D 0x430ca0
+void FUN_430ca0(char *name, int compressed, int type)
+{
+    void *data;
+    if (compressed == 1)
+    {
+        data = FUN_430c30(name, type);
+    }
+    else
+    {
+        data = FUN_430b80(name, type);
+    }
+    sprintf(g_5895b0.nameCursor, name);
+    g_5895b0.entryCursor[1] = (int)g_5895b0.nameCursor;
+    g_5895b0.entryCursor[3] = g_489714;
+    g_5895b0.entryCursor[4] = g_489718;
+    g_5895b0.entryCursor[5] = compressed;
+    g_5895b0.entryCursor[2] = (int)data;
+    g_5895b0.nameCursor += strlen(name) + 1;
+    g_5895b0.entryCursor += 6;
 }
 
 // GLOBAL: STUNTGP_D3D 0x583594

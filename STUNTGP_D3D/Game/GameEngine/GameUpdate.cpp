@@ -2334,10 +2334,10 @@ void FUN_443dd0()
 // FUNCTION: STUNTGP_D3D 0x443de0
 void FUN_443de0()
 {
-    if (g_4d5bb8->race.unk4c[7] != 1)
+    if (g_4d5bb8->race.unk68 != 1)
     {
-        g_4d5bb8->race.unk4c[7] = 1;
-        g_4d5bb8->race.unk4c[8] = 0;
+        g_4d5bb8->race.unk68 = 1;
+        g_4d5bb8->race.unk6c = 0;
     }
 }
 
@@ -2493,16 +2493,16 @@ void FUN_443980()
 // FUNCTION: STUNTGP_D3D 0x443e10
 void FUN_443e10(Car *car)
 {
-    car->race.unk4c[7] = 0;
-    car->race.unk4c[8] = 0;
+    car->race.unk68 = 0;
+    car->race.unk6c = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x443e20
 void FUN_443e20()
 {
-    if (g_4d5bb8->race.unk4c[7])
+    if (g_4d5bb8->race.unk68)
     {
-        if (!g_4d5bb8->race.unk4c[8])
+        if (!g_4d5bb8->race.unk6c)
         {
             FUN_461150(47, 0, 0, 127, 0, 0, 0);
         }
@@ -2510,9 +2510,9 @@ void FUN_443e20()
         {
             FUN_430d40(15, 20);
         }
-        if (++g_4d5bb8->race.unk4c[8] > 120)
+        if (++g_4d5bb8->race.unk6c > 120)
         {
-            g_4d5bb8->race.unk4c[7] = 0;
+            g_4d5bb8->race.unk68 = 0;
         }
     }
 }
@@ -2547,6 +2547,46 @@ int FUN_444550()
     return 1;
 }
 
+void FUN_447ba0(int delay);
+
+// FUNCTION: STUNTGP_D3D 0x444590
+void FUN_444590()
+{
+    if (!g_576be0)
+    {
+        g_60f2c0 = 1;
+        if ((unsigned int)g_4d5bb8->unk24e4 <= 2)
+        {
+            FUN_45f8f0(0x15, 0);
+        }
+        else
+        {
+            FUN_45f8f0(0x16, 0);
+        }
+    }
+    Car *car = g_4d5bb8;
+    car->race.unk4c = 1;
+    car->race.unk50 = 1;
+    car->race.unk54 = 0.0f;
+    car->race.unk58 = 0.0f;
+    car->race.unk5c = (float)fabs(car->unk1cf0);
+    car->race.unk60 = 0.0f;
+    if (car->race.unk5c < 33.333332f)
+    {
+        car->race.unk5c = 33.333332f;
+    }
+    else if (car->race.unk5c > 100.0f)
+    {
+        car->race.unk5c = 100.0f;
+    }
+    FUN_447ba0(0);
+    FUN_443dd0();
+    if (!g_576be0 || FUN_444550() == 1)
+    {
+        g_60f2c0 = 1;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x444670
 int FUN_444670()
 {
@@ -2558,7 +2598,7 @@ int FUN_444670()
         if (car->active == 1)
         {
             total++;
-            if ((car->unk24e0 == 1 && car->race.unk4c[0] == 0 && car->race.unk30 == 0) || car->unk2640 == 1 ||
+            if ((car->unk24e0 == 1 && car->race.unk4c == 0 && car->race.unk30 == 0) || car->unk2640 == 1 ||
                 car->unk24e8 == 1)
             {
                 finished++;
@@ -2799,6 +2839,47 @@ void FUN_442de0()
             {
                 oldest->count--;
             }
+        }
+    }
+}
+
+extern int g_624500;
+void FUN_4291f0(const char *text, int align, float x, float y, float z, D3DCOLOR color, float size, DWORD flags);
+
+// Draws the first live message of the current slot, sliding it in and out at the bottom of the screen.
+// FUNCTION: STUNTGP_D3D 0x442e30
+void FUN_442e30()
+{
+    if (g_612948.unk0004 == 1)
+    {
+        return;
+    }
+    DWORD limit = g_624500 + 40;
+    SlotEvent *event = g_4722d0->events;
+    for (DWORD i = 0; i < 8; event++, i++)
+    {
+        if (event->count != 0 && event->count != event->duration)
+        {
+            DWORD count = event->count;
+            DWORD offset;
+            if (count < limit)
+            {
+                offset = count;
+            }
+            else
+            {
+                offset = event->duration - count;
+                if (offset > limit)
+                {
+                    offset = limit;
+                }
+            }
+            if (g_576be0)
+            {
+                offset = limit;
+            }
+            FUN_4291f0(event->text, 1, 320.0f, 480.0f - offset, 0.94f, count % 60 > 30 ? 0xff4040 : 0xffff00, 1.75f, 6);
+            return;
         }
     }
 }
