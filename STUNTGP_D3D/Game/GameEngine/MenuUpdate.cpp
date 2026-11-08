@@ -3515,6 +3515,15 @@ void FUN_450510(Unk4516c0 *object)
     object->unk18 = NULL;
 }
 
+// Framed message box in the middle of the screen.
+// FUNCTION: STUNTGP_D3D 0x450760
+void FUN_450760(int textId)
+{
+    FUN_439450(170.0f, 165.0f, 470.0f, 315.0f, 10, 0x6f, 0x40);
+    FUN_439380(170.0f, 165.0f, 470.0f, 315.0f, 13, 2, 0, 0.0f);
+    FUN_438ba0(320.0f, 240.0f, 12, 4, textId, 1.25f, 0xffffffff, 3);
+}
+
 // GLOBAL: STUNTGP_D3D 0x6249d4
 char g_6249d4[0x20];
 
@@ -3849,6 +3858,17 @@ void FUN_452530(MenuHolder *object)
 int FUN_4527d0(int index)
 {
     return FUN_437a90(g_486b88[index].id);
+}
+
+
+// Description of the highlighted shop entry.
+// FUNCTION: STUNTGP_D3D 0x4527f0
+void FUN_4527f0(int entry, int category)
+{
+    if (g_486b88[category].unk88[entry])
+    {
+        FUN_438ba0(384.0f, 382.0f, 12, 4, g_486b88[category].unk88[entry], 1.5f, 0xffc8c8ff, 3);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x452940
