@@ -676,6 +676,30 @@ void FUN_4091e0(int wheel)
     }
 }
 
+// Rotates the matrix back by the excess once an axis tilts past 45 degrees.
+// FUNCTION: STUNTGP_D3D 0x4092d0
+void FUN_4092d0(float *m)
+{
+    float v = m[9];
+    if ((float)fabs(v) > 0.70710683f)
+    {
+        float t = v < 0.0f ? v + 0.70710683f : v - 0.70710683f;
+        Matrix_RotateX(m, (float)asin(t) * 57.295776f);
+    }
+    v = m[8] * -1.0f;
+    if ((float)fabs(v) > 0.70710683f)
+    {
+        float t = v < 0.0f ? v + 0.70710683f : v - 0.70710683f;
+        Matrix_RotateY(m, (float)asin(t) * 57.295776f);
+    }
+    v = m[1] * -1.0f;
+    if ((float)fabs(v) > 0.70710683f)
+    {
+        float t = v < 0.0f ? v + 0.70710683f : v - 0.70710683f;
+        Matrix_RotateZ(m, (float)asin(t) * 57.295776f);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x40a0d0
 void FUN_40a0d0(Car *car)
 {
@@ -4924,6 +4948,47 @@ void FUN_4152c0(Car *car)
 {
     car->unk28bc[0].trail.count = 0;
     car->unk28bc[1].trail.count = 0;
+}
+
+extern float g_60dff0[0x80];
+
+// Advances the car's path knot to the next one flagged in g_60dff0 and caches its position and direction.
+// FUNCTION: STUNTGP_D3D 0x4127e0
+void FUN_4127e0(CameraPath *path, Car *car)
+{
+    int i = car->unk24a4;
+    {
+        int skipped = 0;
+        for (;;)
+        {
+            if (i < 0)
+            {
+                i = path->count - -i % path->count;
+            }
+            else
+            {
+                i = i % path->count;
+            }
+            if (g_60dff0[i * 127 / path->count] == 1.0f)
+            {
+                break;
+            }
+            i++;
+            skipped++;
+        }
+        car->unk24a4 += skipped;
+    }
+    Vec4 *points = path->points;
+    car->unk24b0 = points[i];
+    Vec4 d;
+    d.x = points[i + 1].x - points[i].x;
+    d.y = points[i + 1].y - points[i].y;
+    d.z = points[i + 1].z - points[i].z;
+    Vec3_Normalize(&d.x);
+    car->unk24c0 = d;
+    car->unk2644 = car->unk24a4;
+    car->unk264c = car->unk24a4;
+    car->unk2654 = car->unk24a4;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4128f0

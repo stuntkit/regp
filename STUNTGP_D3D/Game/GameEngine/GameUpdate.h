@@ -545,7 +545,7 @@ struct Car
     int unk24a4;              // 0x24a4
     int unk24a8;              // 0x24a8
     int unk24ac;              // 0x24ac
-    BYTE unk24b0[0x10];       // 0x24b0
+    Vec4 unk24b0;             // 0x24b0
     Vec4 unk24c0;             // 0x24c0
     BYTE unk24d0[0x10];       // 0x24d0
     int unk24e0;              // 0x24e0
