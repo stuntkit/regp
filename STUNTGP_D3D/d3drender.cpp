@@ -2265,9 +2265,132 @@ void FUN_4336c0(void *data, int count)
     }
 }
 
-// STUB: STUNTGP_D3D 0x4338e0
+// Fan-to-strip vertex order for an n-gon, indexed by n.
+// GLOBAL: STUNTGP_D3D 0x477cd0
+int g_477cd0[17][16] = {
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 0, 2, 4, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 0, 2, 5, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 0, 2, 6, 3, 5, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 0, 2, 7, 3, 6, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 0, 2, 8, 3, 7, 4, 6, 5, 0, 0, 0, 0, 0, 0, 0},
+    {1, 0, 2, 9, 3, 8, 4, 7, 5, 6, 0, 0, 0, 0, 0, 0},
+    {1, 0, 2, 10, 3, 9, 4, 8, 5, 7, 6, 0, 0, 0, 0, 0},
+    {1, 0, 2, 11, 3, 10, 4, 9, 5, 8, 6, 7, 0, 0, 0, 0},
+    {1, 0, 2, 12, 3, 11, 4, 10, 5, 9, 6, 8, 7, 0, 0, 0},
+    {1, 0, 2, 13, 3, 12, 4, 11, 5, 10, 6, 9, 7, 8, 0, 0},
+    {1, 0, 2, 14, 3, 13, 4, 12, 5, 11, 6, 10, 7, 9, 8, 0},
+    {1, 0, 2, 15, 3, 14, 4, 13, 5, 12, 6, 11, 7, 10, 8, 9},
+};
+
+// Draws the blended polygons one triangle strip at a time, switching the blend mode on
+// poly[3] & 0x78; mode 0x50 keeps the vertex alpha, the others take poly[2].
+// FUNCTION: STUNTGP_D3D 0x4338e0
 void FUN_4338e0(void *data, int count)
 {
+    PolyRef *ref = (PolyRef *)data;
+    if (!count)
+    {
+        return;
+    }
+    DWORD blend = 0xffffffff;
+    DWORD texture = 0xffffffff;
+    float *scroll;
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, FALSE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, TRUE);
+    for (DWORD i = 0; i < (DWORD)count; i++)
+    {
+        BYTE *poly = (BYTE *)ref->poly;
+        if (poly)
+        {
+            BYTE *src = ref->src;
+            BYTE *verts = (BYTE *)ref->verts;
+            WORD *r = ref->ref;
+            DWORD mode = poly[3] & 0x78;
+            if (mode != blend)
+            {
+                blend = mode;
+                switch (mode)
+                {
+                case 0x48:
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
+                    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+                    break;
+                case 0x50:
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
+                    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+                    break;
+                case 0x58:
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_ONE);
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ONE);
+                    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+                    break;
+                case 0x60:
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ONE);
+                    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+                    break;
+                case 0x70:
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_DESTCOLOR);
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ZERO);
+                    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+                    break;
+                default:
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ONE);
+                    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+                    break;
+                }
+            }
+            DWORD slot = poly[1];
+            if (slot != texture)
+            {
+                g_d3dDevice->SetTexture(0, g_6227d4[slot].texture);
+                scroll = (float *)g_624488 + g_6227d4[slot].unk04[4] * 5;
+                texture = slot;
+            }
+            DWORD n = poly[0];
+            BYTE alpha = poly[2];
+            int *order = g_477cd0[n];
+            D3DTLVERTEX2 *v = g_58d818;
+            for (DWORD k = 0; k < n; k++)
+            {
+                float *e = (float *)(src + r[*order] * 16);
+                float *p = (float *)(verts + *(WORD *)(e + 2) * 32);
+                v->sx = p[0];
+                v->sy = p[1];
+                v->rhw = v->sz = p[7];
+                v->tu1 = e[0] + scroll[1];
+                v->tv1 = e[1] + scroll[2];
+                v->specular = 0;
+                if (mode == 0x50)
+                {
+                    v->color = ((DWORD *)e)[3];
+                }
+                else
+                {
+                    v->color = ((DWORD *)e)[3] & 0xffffff | alpha << 24;
+                }
+                order++;
+                v++;
+            }
+            g_d3dDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0x2c4, g_58d818, n, 0x1c);
+        }
+        ref++;
+    }
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_ONE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ZERO);
+    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, FALSE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, TRUE);
+    FUN_432a90();
 }
 
 // STUB: STUNTGP_D3D 0x433c50
