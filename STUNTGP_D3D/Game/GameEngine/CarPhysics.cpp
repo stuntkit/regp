@@ -334,6 +334,56 @@ void FUN_405370(float *pos, CameraPath *path, int *index, float *distance)
     *distance = (t / len + i) * 100.0f / path->count;
 }
 
+void FUN_4143e0(float amount);
+void FUN_414420(float amount);
+
+// Turns a target point into steering input, scaled by speed and an initial ramp-in.
+// FUNCTION: STUNTGP_D3D 0x4054b0
+void FUN_4054b0(float *p, float amount)
+{
+    if (g_60f2b4 == 1)
+    {
+        return;
+    }
+    if (g_4d5bb8->unk26a4)
+    {
+        float f = (300 - g_4d5bb8->unk26a4) * 0.0033333334f;
+        amount = f * f * amount;
+    }
+    Vec4 d;
+    d.x = g_4d5bb8->posX - p[0];
+    d.y = g_4d5bb8->posY - p[1];
+    d.z = g_4d5bb8->posZ - p[2];
+    float h = g_482688 * d.x + g_48268c * d.y + g_482690 * d.z;
+    Vec4 u;
+    u.x = g_482688 * h;
+    u.y = g_48268c * h;
+    u.z = g_482690 * h;
+    d.x = d.x + u.x;
+    d.y = u.y + d.y;
+    d.z = u.z + d.z;
+    float side = ((d.x * g_4d5bb8->axisX.x + d.y * g_4d5bb8->axisX.y + d.z * g_4d5bb8->axisX.z) * 0.0005f) * 2.25f;
+    float m = g_4d5bb8->unk289c * g_4d5bb8->unk2660 * 0.35f;
+    if (m < 1.0f)
+    {
+        m = 1.0f;
+    }
+    side /= m;
+    if (g_4d5bb8->axisY.y < 0.0f)
+    {
+        side = -side;
+    }
+    amount = side * amount;
+    if (amount >= 0.0f)
+    {
+        FUN_4143e0(amount);
+    }
+    else
+    {
+        FUN_414420(-amount);
+    }
+}
+
 // STUB: STUNTGP_D3D 0x405610
 void FUN_405610(float amount)
 {
@@ -575,6 +625,43 @@ void FUN_406870(Vec4 *out, float dist, float side)
     d.y = d.y + centre.y;
     d.z = d.z + centre.z;
     *out = d;
+}
+
+extern int g_4d5c9c;
+
+// GLOBAL: STUNTGP_D3D 0x499fb0
+float g_499fb0;
+
+// GLOBAL: STUNTGP_D3D 0x49a148
+Vec4 g_49a148;
+
+// Near the end of the lap: drops the brake, slows the AI and ramps a blend towards the finish point.
+// FUNCTION: STUNTGP_D3D 0x406d30
+void FUN_406d30()
+{
+    if (g_4d5c9c && FUN_4064c0() != 1 && g_4d5bb8->unk26a8 != 1 && g_4d5bb8->unk23a4 < g_60eff8)
+    {
+        int lap = g_4d5bb8->unk23ac % 100;
+        g_4d5bb8->controls[8] = 0;
+        float p = lap * g_60f010 * 0.01f;
+        float start = g_60f010 - 32500.0f;
+        float end = g_60f010 - 10000.0f;
+        if (g_60f010 - 35000.0f < p && p < end)
+        {
+            g_499fa8 = 66.666664f;
+            g_499fac = 0;
+        }
+        if (p >= start && p <= end)
+        {
+            float b = ((p - start) * 20.0f) * 0.0001f;
+            if (b > 20.0f)
+            {
+                b = 20.0f;
+            }
+            g_499fb0 = b;
+            g_49a148 = *(Vec4 *)(*(BYTE **)(g_4d5c9c + 4) + 0x100);
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x406e80
@@ -2518,6 +2605,51 @@ void FUN_40ee70()
 extern float g_482670;
 
 // Static wheel loads plus the pitch and roll transfer from the current acceleration.
+// Integrates the four suspension springs, with random jitter on rough ground.
+// FUNCTION: STUNTGP_D3D 0x40efe0
+void FUN_40efe0()
+{
+    float sum = 0.0f;
+    Wheel *w = &g_4d5bb8->wheels[0];
+    for (int i = 0; i < 4; i++)
+    {
+        float v = g_4d5bb8->unk2240[i];
+        float d = w->unk0c - w->unk10;
+        sum += w->unk0c;
+        if (g_4d5bb8->wheels[i].unk88 != 0.0f && (g_612948.unk03b4 & 3) == 0)
+        {
+            d = ((FUN_42f1c0(g_4d5bb8->wheels[i].unk88 * 2.0f) - g_4d5bb8->wheels[i].unk88) * g_4d5bb8->unk1cf0 *
+                 0.0054f) *
+                    3.0f +
+                d;
+        }
+        Suspension *s = &g_4d5bb8->suspension[i];
+        if (v >= 0.0f)
+        {
+            d *= s->maxStiffnessIn;
+            v = s->maxDampingIn;
+        }
+        else
+        {
+            d *= s->maxStiffnessOut;
+            v = s->maxDampingOut;
+        }
+        g_4d5bb8->unk2240[i] = v * g_4d5bb8->unk2240[i] + d;
+        v = g_4d5bb8->unk2240[i];
+        if (v > s->maxTravelIn)
+        {
+            g_4d5bb8->unk2240[i] = s->maxTravelIn;
+        }
+        else if (v < -s->maxTravelOut)
+        {
+            g_4d5bb8->unk2240[i] = -s->maxTravelOut;
+        }
+        w++;
+    }
+    g_4d5bb8->unk2898 = sum * 0.25f;
+    FUN_40ee70();
+}
+
 // FUNCTION: STUNTGP_D3D 0x40f130
 void FUN_40f130()
 {
@@ -3340,6 +3472,47 @@ void FUN_4121c0()
 void FUN_412260()
 {
     g_4d5bb8->unk7244 = 0;
+}
+
+// Steers the velocity around the world up axis by the clamped yaw input.
+// FUNCTION: STUNTGP_D3D 0x412270
+void FUN_412270()
+{
+    if (!g_4d5bb8->unk71ec && g_4d5bb8->unk71f0 != 1)
+    {
+        float s = g_4d5bb8->unk1cf4;
+        if (s > 5.0f)
+        {
+            s = 5.0f;
+        }
+        else if (s < -5.0f)
+        {
+            s = -5.0f;
+        }
+        s *= 0.2f;
+        Vec4 v = g_4d5bb8->unk1c8c;
+        float len;
+        FUN_44eda0(&v.x, &len);
+        if (len >= 1.0f)
+        {
+            Vec4 c;
+            c.x = g_482690 * v.y - g_48268c * v.z;
+            c.y = g_482688 * v.z - g_482690 * v.x;
+            c.z = g_48268c * v.x - g_482688 * v.y;
+            len *= 0.012f;
+            if (len > 1.0f)
+            {
+                len = 1.0f;
+            }
+            float k = len * s;
+            c.x = k * c.x;
+            c.y = k * c.y;
+            c.z = k * c.z;
+            g_4d5bb8->unk1c8c.x = c.x + g_4d5bb8->unk1c8c.x;
+            g_4d5bb8->unk1c8c.y = c.y + g_4d5bb8->unk1c8c.y;
+            g_4d5bb8->unk1c8c.z = c.z + g_4d5bb8->unk1c8c.z;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x412430

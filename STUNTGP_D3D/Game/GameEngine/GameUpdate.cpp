@@ -971,6 +971,66 @@ void FUN_418d90(Car *car)
     }
     g_4d5bb8 = saved;
 }
+// Walks the segment index along the path until p projects inside the segment.
+// FUNCTION: STUNTGP_D3D 0x418e10
+void FUN_418e10(Vec4 *p, CameraPath *path, int *index)
+{
+    Vec4 *pts = path->points;
+    int i = *index;
+    int step = 0;
+    unsigned int a;
+    Vec4 d;
+    float t;
+    for (;;)
+    {
+        if (i < 0)
+        {
+            a = path->count - (unsigned int)-i % path->count;
+        }
+        else
+        {
+            a = (unsigned int)i % path->count;
+        }
+        unsigned int b = (a + 1) % path->count;
+        d.x = pts[b].x - pts[a].x;
+        d.y = pts[b].y - pts[a].y;
+        d.z = pts[b].z - pts[a].z;
+        float len;
+        FUN_44eda0(&d.x, &len);
+        Vec4 q;
+        q.x = p->x - pts[a].x;
+        q.y = p->y - pts[a].y;
+        q.z = p->z - pts[a].z;
+        t = q.x * d.x + q.y * d.y + q.z * d.z;
+        if (t < 0.0f)
+        {
+            if (step > 0)
+            {
+                break;
+            }
+            i--;
+            step = -1;
+        }
+        else
+        {
+            if (t < len || step < 0)
+            {
+                break;
+            }
+            i++;
+            step = 1;
+        }
+    }
+    *index = i;
+    d.x = t * d.x;
+    d.y = t * d.y;
+    d.z = t * d.z;
+    g_4d5bb8->unk7664.x = d.x + pts[a].x;
+    g_4d5bb8->unk7664.y = d.y + pts[a].y;
+    g_4d5bb8->unk7664.z = d.z + pts[a].z;
+    g_4d5bb8->unk7650 = i * 100 / path->count;
+}
+
 
 // GLOBAL: STUNTGP_D3D 0x570ac0
 Replay *g_570ac0;

@@ -630,7 +630,8 @@ struct Car
     int unk2694;              // 0x2694
     BYTE unk2698[0x8];        // 0x2698
     int unk26a0;              // 0x26a0
-    int unk26a4;              // 0x26a4
+    unsigned int unk26a4;     // 0x26a4
+
     int unk26a8;              // 0x26a8
     int unk26ac;              // 0x26ac
     Scene *unk26b0;        // 0x26b0
@@ -643,7 +644,8 @@ struct Car
     float unk288c;            // 0x288c
     float unk2890;            // 0x2890
     float unk2894;            // 0x2894
-    BYTE unk2898[0x4];        // 0x2898
+    float unk2898;            // 0x2898
+
     float unk289c;            // 0x289c
     int unk28a0;              // 0x28a0
     int unk28a4;              // 0x28a4
@@ -729,9 +731,12 @@ struct Car
     DWORD unk7640;            // 0x7640
     int unk7644;              // 0x7644
     int unk7648;              // 0x7648
-    BYTE unk764c[0x8];        // 0x764c
+    int unk764c;              // 0x764c, segment along g_4d5c9c
+    unsigned int unk7650;     // 0x7650, unk764c as a percentage of the path
     int unk7654;              // 0x7654
-    BYTE unk7658[0x1c];       // 0x7658
+    BYTE unk7658[0xc];        // 0x7658
+    Vec4 unk7664;             // 0x7664, nearest point on the path
+
     int unk7674;              // 0x7674
     int unk7678;              // 0x7678
     int unk767c;              // 0x767c
