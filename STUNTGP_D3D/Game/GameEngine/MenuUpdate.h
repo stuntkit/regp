@@ -307,6 +307,15 @@ struct RaceSetup1
     RaceSetupCar cars[6]; // 0x00
 };
 
+struct RaceSetup4
+{
+    Initials name; // 0x00
+    int car;       // 0x04
+    int track;     // 0x08, 1-based
+    int unk0c;     // 0x0c
+    int minutes;   // 0x10
+};
+
 struct RaceSetup5
 {
     BYTE unk000[0x12c];   // 0x000
