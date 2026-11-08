@@ -4686,3 +4686,16 @@ void FUN_41d300()
     g_4d5bb8->unk24e0 = 0;
     g_4d5bb8->unk24e4 = 0;
 }
+
+// FUNCTION: STUNTGP_D3D 0x41d980
+void FUN_41d980()
+{
+    g_4d5bb8 = g_49a1f8;
+    for (int i = 0; i < 6; i++)
+    {
+        FUN_41d300();
+        g_4d5bb8++;
+    }
+    g_4d5bb8 = g_49a1f8;
+    FUN_41d390();
+}

@@ -309,6 +309,31 @@ void FUN_42d170(char *script)
     }
 }
 
+int size_of_file(char *path);
+int bload(char *path, char *buffer, int maxSize);
+int FUN_44aff0(char *name, void *data, int size);
+
+// Stores the lap record into this level's entry in LvScript.cfg.
+// FUNCTION: STUNTGP_D3D 0x42d240
+void FUN_42d240()
+{
+    char path[128];
+    char *value;
+    // STRING: STUNTGP_D3D 0x4779a4
+    sprintf(path, "%s\\Config\\LvScript.cfg", g_GameDirectory);
+    int size = size_of_file(path);
+    char *buffer = (char *)Mem_Alloc(size + 0x20, 0);
+    bload(path, buffer, size);
+    // STRING: STUNTGP_D3D 0x4779bc
+    FUN_42d060(buffer, "ClogMeister");
+    g_ScriptSectionEnd = NULL;
+    value = buffer;
+    Script_FindKey(buffer, &value, g_LevelScript);
+    FUN_42d170(value);
+    FUN_44aff0(path, buffer, size);
+    Mem_Free(buffer);
+}
+
 // FUNCTION: STUNTGP_D3D 0x42d2e0
 void Script_ParseGameSettings(char *script)
 {
