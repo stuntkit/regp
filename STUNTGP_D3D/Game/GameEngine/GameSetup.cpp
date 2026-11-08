@@ -89,7 +89,8 @@ struct RenderMaterial
     DWORD unk0c;      // 0x0c
     Vec4 pos;         // 0x10
     Vec4 local;       // 0x20, pos relative to the camera
-    BYTE unk30[0x20]; // 0x30
+    Vec4 colour;      // 0x30, direction for directional lights
+    BYTE unk40[0x10]; // 0x40
     int unk50;        // 0x50
     DWORD unk54;      // 0x54
     DWORD unk58;      // 0x58
@@ -2149,9 +2150,23 @@ void FUN_425ad0()
 {
 }
 
-// STUB: STUNTGP_D3D 0x42dcf0
+// Collects the frame's lights and turns each one's angles (unk54..unk5c) into its direction.
+// FUNCTION: STUNTGP_D3D 0x42dcf0
 void FUN_42dcf0()
 {
+    FUN_42d9b0();
+    g_589df8 = (g_589df8 + 0x20) & 0x1fff;
+    g_589dfc = (g_589dfc + 2) & 0x1fff;
+    g_renderState.unk804c.next = (LightRec *)g_renderState.unk8048;
+    Light **lights = g_renderState.unk804c.lights;
+    for (DWORD i = 0; i < (DWORD)g_renderState.unk8044; i++)
+    {
+        RenderMaterial *light = (RenderMaterial *)*lights++;
+        light->colour.x = 0.0f;
+        light->colour.y = 0.0f;
+        light->colour.z = 1.0f;
+        FUN_44eb70(light->unk54, light->unk58, light->unk5c, &light->colour.x, &light->colour.y, &light->colour.z);
+    }
 }
 
 void FUN_42b100();
