@@ -616,7 +616,8 @@ struct Car
     float unk265c;            // 0x265c
     float unk2660;            // 0x2660
     unsigned int unk2664;     // 0x2664
-    BYTE unk2668[0x4];        // 0x2668
+    float unk2668;            // 0x2668
+
     float unk266c;            // 0x266c steering bias, -1..1
     BYTE unk2670[0x4];        // 0x2670
     int unk2674;              // 0x2674

@@ -1470,6 +1470,42 @@ void FUN_40b750(char *text)
     Script_GetFloat(section, "Acceleration", &g_4d5bb8->unkd58);
 }
 
+// FUNCTION: STUNTGP_D3D 0x40b7a0
+void FUN_40b7a0(char *text)
+{
+    char key[32];
+    // STRING: STUNTGP_D3D 0x4735f8
+    char *section = strstr(text, "-TYRES[] =");
+    // STRING: STUNTGP_D3D 0x473604
+    Script_GetFloatArray(section, "TyreFrictionEnv", g_4d5bb8->tyreFrictionEnv, 128);
+    for (int i = 0; i < 4; i++)
+    {
+        // STRING: STUNTGP_D3D 0x473614
+        sprintf(key, "-TYRE %d", i);
+        section = strstr(text, key);
+        // STRING: STUNTGP_D3D 0x473620
+        Script_GetFloat(section, "Radius", &g_4d5bb8->unkcb8[i].x);
+        // STRING: STUNTGP_D3D 0x473628
+        Script_GetFloat(section, "Pressure", &g_4d5bb8->unkcb8[i].y);
+        // STRING: STUNTGP_D3D 0x473634
+        Script_GetFloat(section, "Cs", &g_4d5bb8->unkcb8[i].z);
+        // STRING: STUNTGP_D3D 0x473638
+        Script_GetFloat(section, "Ck", &g_4d5bb8->unkcb8[i].w);
+        // STRING: STUNTGP_D3D 0x47363c
+        Script_GetFloat(section, "MaxTravelIn", &g_4d5bb8->suspension[i].maxTravelIn);
+        // STRING: STUNTGP_D3D 0x473648
+        Script_GetFloat(section, "MaxDampingIn", &g_4d5bb8->suspension[i].maxDampingIn);
+        // STRING: STUNTGP_D3D 0x473658
+        Script_GetFloat(section, "MaxStiffnessIn", &g_4d5bb8->suspension[i].maxStiffnessIn);
+        // STRING: STUNTGP_D3D 0x473668
+        Script_GetFloat(section, "MaxTravelOut", &g_4d5bb8->suspension[i].maxTravelOut);
+        // STRING: STUNTGP_D3D 0x473678
+        Script_GetFloat(section, "MaxDampingOut", &g_4d5bb8->suspension[i].maxDampingOut);
+        // STRING: STUNTGP_D3D 0x473688
+        Script_GetFloat(section, "MaxStiffnessOut", &g_4d5bb8->suspension[i].maxStiffnessOut);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x40b930
 void FUN_40b930(char *text)
 {
@@ -2825,6 +2861,71 @@ void FUN_40f570()
     car->unk1cf4 *= car->unk258[i];
 }
 
+// Clips a tyre's slip forces to its friction circle; unk30 gets the slip ratio.
+// FUNCTION: STUNTGP_D3D 0x40f5b0
+void FUN_40f5b0(float *fx, float *fy, float grip, float scale, float load, int i)
+{
+    load /= g_4d5bb8->unk2618 * 0.25f;
+    grip *= g_4d5bb8->wheels[i].unk84;
+    scale *= g_4d5bb8->wheels[i].unk84;
+    float x = *fx;
+    float y = *fy;
+    float s = (float)sqrt(x * x + y * y * 0.64000005f);
+    unsigned int idx = s;
+    if (idx >= 128)
+    {
+        idx = 127;
+    }
+    float mu = load * g_4d5bb8->tyreFrictionEnv[idx];
+    float lim = mu * grip;
+    if ((float)fabs(lim) < 0.01f)
+    {
+        lim = 0.01f;
+    }
+    g_4d5bb8->wheels[i].unk30 = (float)fabs(s / lim);
+    if (s > lim)
+    {
+        float t = (float)fabs(x);
+        if (t >= mu)
+        {
+            t = mu;
+        }
+        t *= scale;
+        if (x < 0.0f)
+        {
+            x = t + x;
+        }
+        else
+        {
+            x = x - t;
+        }
+        if (y > 0.0f)
+        {
+            mu *= 3.0f;
+        }
+        load = (float)fabs(y);
+        if (load >= mu)
+        {
+            load = mu;
+        }
+        load *= scale;
+        if (y < 0.0f)
+        {
+            y = -load;
+        }
+        else
+        {
+            y = load;
+        }
+    }
+    else
+    {
+        x = 0.0f;
+    }
+    *fx = x;
+    *fy = y;
+}
+
 // FUNCTION: STUNTGP_D3D 0x40f730
 void FUN_40f730()
 {
@@ -3441,6 +3542,117 @@ void FUN_4118d0()
     car->unk6dac = car->unk6da4;
     car->unk6db0 = car->unk6da8;
     FUN_4118b0();
+}
+
+// Entry of the 0x98-byte trick table at 0x473a40; the input sequences end with -1.
+struct TrickDef
+{
+    int unk00;         // 0x00, 0 ends the table
+    BYTE unk04[0x14];  // 0x04
+    char seqA[0x40];   // 0x18, matched against Car::unk6fb4
+    char seqB[0x40];   // 0x58, matched against Car::unk70b4
+};
+
+// Counts how often the trick's input sequence was completed, capped at 3; 0 on a stray input.
+// FUNCTION: STUNTGP_D3D 0x411c10
+int FUN_411c10(TrickDef *trick)
+{
+    int j = 0;
+    int hitsA = 0;
+    int hitsB = 0;
+    int result = 0;
+    int i = 1;
+    if (trick->seqA[0] != -1)
+    {
+        int n = g_4d5bb8->unk6dac;
+        for (; i <= n; i++)
+        {
+            int k = g_4d5bb8->unk6fb4[i];
+            if (k == trick->seqA[j])
+            {
+                j++;
+                hitsA++;
+                if (trick->seqA[j] == -1)
+                {
+                    j = 1;
+                    result++;
+                }
+            }
+            else
+            {
+                if (j >= 4)
+                {
+                    return 0;
+                }
+                j = 0;
+                while (k != trick->seqA[j])
+                {
+                    if (j >= 4)
+                    {
+                        return 0;
+                    }
+                    j++;
+                }
+                if (j >= 4)
+                {
+                    return 0;
+                }
+                j++;
+            }
+        }
+        if (hitsA != 0 && g_4d5bb8->unk6db0 >= hitsA)
+        {
+            return 0;
+        }
+    }
+    else if (trick->seqB[0] != -1)
+    {
+        int n = g_4d5bb8->unk6db0;
+        for (i = 1; i <= n; i++)
+        {
+            int k = g_4d5bb8->unk70b4[i];
+            if (k == trick->seqB[j])
+            {
+                j++;
+                hitsB++;
+                if (trick->seqB[j] == -1)
+                {
+                    j = 1;
+                    result++;
+                }
+            }
+            else
+            {
+                if (j >= 4)
+                {
+                    return 0;
+                }
+                j = 0;
+                while (k != trick->seqB[j])
+                {
+                    if (j >= 4)
+                    {
+                        return 0;
+                    }
+                    j++;
+                }
+                if (j >= 4)
+                {
+                    return 0;
+                }
+                j++;
+            }
+        }
+        if (hitsB != 0 && g_4d5bb8->unk6dac >= hitsB)
+        {
+            return 0;
+        }
+    }
+    if (result > 3)
+    {
+        result = 3;
+    }
+    return result;
 }
 
 // GLOBAL: STUNTGP_D3D 0x474290
@@ -5042,6 +5254,40 @@ Car *FUN_407b20(Car *self)
 void FUN_407dd0()
 {
 }
+// When closing on a slower car just ahead, mirrors the finish target across it to swing out and pass.
+// FUNCTION: STUNTGP_D3D 0x407de0
+void FUN_407de0()
+{
+    if (g_4d5bb8->unk1fd8)
+    {
+        return;
+    }
+    Car *other = FUN_407b20(g_4d5bb8);
+    if ((float)fabs(g_4d5bb8->unk2668) <= 25.0f && other->unk1cf0 - g_4d5bb8->unk1cf0 >= 1.6666666f &&
+        g_4d5bb8->unk25f4[other - g_49a1f8] >= (g_4d5bb8->unk23a4 + 1) * 3)
+    {
+        Vec4 d;
+        d.x = other->posX - g_4d5bb8->posX;
+        d.y = other->posY - g_4d5bb8->posY;
+        d.z = other->posZ - g_4d5bb8->posZ;
+        float gap = (other->unk23b0 - g_4d5bb8->unk23b0) * g_60f010 * 0.01f;
+        if (gap >= -1500.0f && gap <= 0.0f)
+        {
+            float t = d.y * g_4d5bb8->unk24d0.y;
+            t += d.z * g_4d5bb8->unk24d0.z;
+            t += d.x * g_4d5bb8->unk24d0.x;
+            t = t + t;
+            d.x = t * g_4d5bb8->unk24d0.x;
+            d.y = t * g_4d5bb8->unk24d0.y;
+            d.z = t * g_4d5bb8->unk24d0.z;
+            g_499fb0 *= 5.0f;
+            g_49a148.x = g_49a148.x + d.x;
+            g_49a148.y = g_49a148.y + d.y;
+            g_49a148.z = g_49a148.z + d.z;
+        }
+    }
+}
+
 
 // FUNCTION: STUNTGP_D3D 0x41d390
 void FUN_41d390()
