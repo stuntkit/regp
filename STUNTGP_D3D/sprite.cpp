@@ -543,6 +543,44 @@ float FUN_438a60(const char *text, float size)
     return height * lines;
 }
 
+// Draws text split into lines at '|' or 0xff; flag 2 centres the block vertically.
+// FUNCTION: STUNTGP_D3D 0x438ab0
+float FUN_438ab0(float x, float y, int layer, int style, char *text, float size, D3DCOLOR color, DWORD flags)
+{
+    int lines = 1;
+    float height = FUN_438950(size) * g_4793d8;
+    int i;
+    for (i = 0; text[i]; i++)
+    {
+        if (text[i] == '|' || text[i] == (char)0xff)
+        {
+            lines++;
+        }
+    }
+    if (flags & 2)
+    {
+        y -= (lines - 1) * height * 0.5f;
+    }
+    int start = 0;
+    for (i = 0; text[start]; i++)
+    {
+        char c = text[i];
+        if (c == '|' || c == (char)0xff || c == 0)
+        {
+            text[i] = 0;
+            FUN_438990(x, y, layer, 1, style, text + start, size, color, flags, 0.0f);
+            text[i] = c;
+            if (!c)
+            {
+                break;
+            }
+            y += height;
+            start = i + 1;
+        }
+    }
+    return lines * height;
+}
+
 // FUNCTION: STUNTGP_D3D 0x438be0
 void FUN_438be0(float x, float y, int layer, int style, int textId, float size, D3DCOLOR color, DWORD flags)
 {

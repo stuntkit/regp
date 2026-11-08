@@ -82,6 +82,38 @@ void FUN_4288d0(CameraPath *path, Vec4 *out, float dist)
     out->z += d.z;
 }
 
+// FUN_4288d0 that also reports the knot it started from.
+// FUNCTION: STUNTGP_D3D 0x4289a0
+void FUN_4289a0(CameraPath *path, Vec4 *out, float dist, DWORD *knot)
+{
+    DWORD count = path->count;
+    dist = (float)count * dist / path->unk18;
+    int i = (int)dist;
+    DWORD a;
+    if (i < 0)
+    {
+        a = count - (DWORD)-i % count;
+    }
+    else
+    {
+        a = (DWORD)i % count;
+    }
+    DWORD b = (a + 1) % count;
+    *out = path->points[a];
+    Vec4 d;
+    d.x = path->points[b].x - out->x;
+    d.y = path->points[b].y - out->y;
+    d.z = path->points[b].z - out->z;
+    double f = fmod(dist, 1.0);
+    d.x *= f;
+    *knot = a;
+    d.y *= f;
+    d.z *= f;
+    out->x += d.x;
+    out->y += d.y;
+    out->z += d.z;
+}
+
 // FUNCTION: STUNTGP_D3D 0x402ad0
 void FUN_402ad0()
 {

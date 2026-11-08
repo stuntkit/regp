@@ -932,6 +932,26 @@ void FUN_42ba00(int from, int to)
     }
 }
 
+extern char *g_582f28[255];
+
+// Remaps scene texture indices from load order to their slot in the texture table.
+// FUNCTION: STUNTGP_D3D 0x42ba90
+void FUN_42ba90()
+{
+    for (int i = 0; g_582b28[i]; i++)
+    {
+        int j = 0;
+        while (strcmp(g_582b28[i], g_582f28[j]))
+        {
+            j++;
+        }
+        if (i != j)
+        {
+            FUN_42ba00(i, j);
+        }
+    }
+}
+
 // Camera height for the race scene list.
 // GLOBAL: STUNTGP_D3D 0x60dfa8
 float g_60dfa8;

@@ -50,6 +50,21 @@ struct TextureSlot
     DWORD unk04[6];
 };
 
+// One Direct3D driver of a DirectDraw device, 0x478 bytes apart from devices[i] + 0x2274.
+struct D3DDriver
+{
+    GUID guid;                  // 0x000
+    BYTE unk010[0x50];          // 0x010
+    int hardware;               // 0x060
+    BYTE unk064[0x70];          // 0x064
+    DWORD rasterCaps;           // 0x0d4
+    BYTE unk0d8[0x8c];          // 0x0d8
+    LPDIRECT3DDEVICE3 device;   // 0x164
+    BYTE unk168[8];             // 0x168
+    DWORD textureFormatCount;   // 0x170
+    BYTE unk174[0x478 - 0x174]; // 0x174
+};
+
 // Image table bookkeeping; the loaders append names and 0x18-byte entries.
 struct ImageLoader
 {

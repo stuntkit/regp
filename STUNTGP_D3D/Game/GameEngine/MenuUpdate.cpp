@@ -2531,6 +2531,48 @@ float FUN_43da20(float a, float b)
     return b;
 }
 
+void FUN_438710(float x, float y, int layer, int def, float scale, DWORD flags);
+
+// Draws a three-layer sprite (shadow, outline, fill) in one of four colour sets.
+// FUNCTION: STUNTGP_D3D 0x43da40
+void FUN_43da40(int layer, int set, float x, float y, float scale, int shadow)
+{
+    int fill;
+    int outline;
+    int back;
+    switch (set)
+    {
+    case 1:
+        fill = 1;
+        outline = 5;
+        back = 9;
+        break;
+    case 2:
+        fill = 2;
+        outline = 6;
+        back = 10;
+        break;
+    case 3:
+        fill = 3;
+        outline = 7;
+        back = 11;
+        break;
+    case 4:
+        fill = 4;
+        outline = 8;
+        back = 12;
+        break;
+    default:
+        return;
+    }
+    if (shadow)
+    {
+        FUN_438710(x + 8.0f, y + 8.0f, layer + 2, back, scale, 0x203);
+    }
+    FUN_438710(x, y, layer + 1, outline, scale, 0x203);
+    FUN_438710(x, y, layer, fill, scale, 0x103);
+}
+
 // Reads the detail level and language overrides next to the executable.
 // FUNCTION: STUNTGP_D3D 0x43d280
 void FUN_43d280()

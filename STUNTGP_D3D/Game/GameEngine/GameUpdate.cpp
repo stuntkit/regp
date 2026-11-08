@@ -2025,9 +2025,44 @@ void FUN_443590()
     }
 }
 
-// STUB: STUNTGP_D3D 0x443630
+// GLOBAL: STUNTGP_D3D 0x60d67c
+int g_60d67c;
+
+// GLOBAL: STUNTGP_D3D 0x60d678
+int g_60d678;
+
+extern int g_60d674;
+void FUN_443480();
+
+// FUNCTION: STUNTGP_D3D 0x443630
 void FUN_443630()
 {
+    Car *car = g_4722d0->data;
+    if (g_60d67c && --g_60d67c == 0)
+    {
+        FUN_442cf0(180, g_6127a0[0x62], g_4d5bb8, 2, 0);
+    }
+    if (car->unk24a8 == 1)
+    {
+        FUN_443480();
+        FUN_41ab40(car, car->unk7268);
+        FUN_443590();
+        FUN_443530();
+        car->unk23a4 = 1;
+        if (g_60d678 == 1 && car->unk23bc < 1)
+        {
+            FUN_442cf0(300, g_6127a0[0x12], car, 0, 100);
+            g_60d674 = 1;
+            FUN_443560();
+            return;
+        }
+    }
+    else
+    {
+        FUN_443590();
+        FUN_4434f0();
+    }
+    FUN_443560();
 }
 
 // GLOBAL: STUNTGP_D3D 0x60f2b4

@@ -17,6 +17,33 @@ DDGAMMARAMP g_gammaRamp;
 // GLOBAL: STUNTGP_D3D 0x5da1dc
 LPDIRECTDRAWGAMMACONTROL g_gammaControl;
 
+void FUN_42fe90(int device, int driver);
+
+// Creates the z-buffer surface unless the driver does hidden-surface removal without one.
+// FUNCTION: STUNTGP_D3D 0x42ff20
+void FUN_42ff20(int device, int driver)
+{
+    if (((D3DDriver *)&g_5ba788.devices[device][0x2274])[driver].rasterCaps & D3DPRASTERCAPS_ZBUFFERLESSHSR)
+    {
+        return;
+    }
+    DDSURFACEDESC2 desc;
+    memset(&desc, 0, sizeof(desc));
+    desc.dwWidth = g_DD_DISPLAYRESWIDTH;
+    desc.dwHeight = g_DD_DISPLAYRESHEIGHT;
+    desc.dwSize = sizeof(desc);
+    desc.ddsCaps.dwCaps = (((D3DDriver *)&g_5ba788.devices[device][0x2274])[driver].hardware != 1 ? DDSCAPS_SYSTEMMEMORY : 0) + DDSCAPS_ZBUFFER;
+    desc.dwFlags = DDSD_CAPS | DDSD_WIDTH | DDSD_HEIGHT | DDSD_PIXELFORMAT;
+    FUN_42fe90(device, driver);
+    desc.ddpfPixelFormat = *g_5ba788.zbufferFormat;
+    int res = g_dd4->CreateSurface(&desc, &g_5ba780, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    FUN_422a00(&g_5ba780);
+}
+
 // FUNCTION: STUNTGP_D3D 0x42fff0
 void FUN_42fff0()
 {
@@ -25,6 +52,42 @@ void FUN_42fff0()
     {
         exitError(ddGetErrMessage(res));
     }
+}
+
+HRESULT WINAPI FUN_42f780(LPDDPIXELFORMAT format, LPVOID context);
+
+// GLOBAL: STUNTGP_D3D 0x46efd0
+// IID_IDirect3D3
+
+// FUNCTION: STUNTGP_D3D 0x430020
+int FUN_430020(int device, int driver)
+{
+    BYTE *dev = g_5ba788.devices[device];
+    LPDIRECT3D3 *d3d = (LPDIRECT3D3 *)(dev + 0x2264);
+    D3DDriver *drv = (D3DDriver *)(dev + 0x2274) + driver;
+    if (*d3d)
+    {
+        (*d3d)->Release();
+    }
+    if (drv->device)
+    {
+        drv->device->Release();
+    }
+    int res = g_dd4->QueryInterface(IID_IDirect3D3, (void **)d3d);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = (*d3d)->CreateDevice(drv->guid, g_surface2, &drv->device, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    g_5ba788.device = dev;
+    g_5ba788.deviceDesc = (int *)drv;
+    drv->textureFormatCount = 0;
+    drv->device->EnumTextureFormats(FUN_42f780, drv);
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4300f0
