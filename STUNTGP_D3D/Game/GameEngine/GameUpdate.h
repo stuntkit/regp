@@ -202,7 +202,10 @@ struct Driver
     int unk18;        // 0x18
     int unk1c;        // 0x1c
     int unk20;        // 0x20
-    char name[0x40];  // 0x24
+    char name[0x10];  // 0x24
+    char time1[0x10]; // 0x34, results-table texts written by FUN_443f10
+    char time2[0x10]; // 0x44
+    char score[0x10]; // 0x54
 };
 
 // Collision point of a car body, offsets relative to the body position.

@@ -3566,9 +3566,49 @@ int FUN_437230(int car, int mode)
     return 0;
 }
 
-// STUB: STUNTGP_D3D 0x44bd00
+void FUN_44be80(MenuSlot20 *slots, int count);
+char *FUN_43d5f0(int value, int digits);
+
+// AI driver initials, indexed by MenuSlot160::unk110[i][2].
+// GLOBAL: STUNTGP_D3D 0x4863f4
+// STRING: STUNTGP_D3D 0x486410
+// STRING: STUNTGP_D3D 0x486414
+// STRING: STUNTGP_D3D 0x486418
+// STRING: STUNTGP_D3D 0x48641c
+// STRING: STUNTGP_D3D 0x486420
+// STRING: STUNTGP_D3D 0x486424
+// STRING: STUNTGP_D3D 0x486428
+char *g_4863f4[7] = {"...", "TGR", "RLN", "ITX", "CAL", "TTN", "MYS"};
+
+// Fills the championship standings table from the player and the five AI drivers, sorts it,
+// and formats the player's money and car value.
+// FUNCTION: STUNTGP_D3D 0x44bd00
 void FUN_44bd00()
 {
+    strcpy(g_menuState.unk1a544[0].name, (char *)FUN_43d690(&g_menuState.unk19d7c.name));
+    g_menuState.unk1a544[0].unk04 = g_menuState.unk19d7c.unk100;
+    g_menuState.unk1a544[0].unk08 = g_menuState.unk19d7c.unk104;
+    g_menuState.unk1a544[0].unk00 = 1;
+    g_menuState.unk1a544[0].unk1c = g_menuState.unk19d7c.sponsor;
+    g_menuState.unk1a544[0].unk10 = g_menuState.unk19d7c.unk10c;
+    g_menuState.unk1a544[0].unk0c = -1;
+    for (int i = 0; i < 5; i++)
+    {
+        int *ai = g_menuState.unk19d7c.unk110[i];
+        strcpy(g_menuState.unk1a544[i + 1].name, g_4863f4[ai[2]]);
+        g_menuState.unk1a544[i + 1].unk00 = 0;
+        g_menuState.unk1a544[i + 1].unk04 = ai[0];
+        g_menuState.unk1a544[i + 1].unk08 = ai[1];
+        g_menuState.unk1a544[i + 1].unk1c = ai[2];
+        g_menuState.unk1a544[i + 1].unk10 = ai[3];
+        g_menuState.unk1a544[i + 1].unk0c = 0xff808080;
+    }
+    FUN_44be80(g_menuState.unk1a544, 6);
+    int value = FUN_437de0(g_menuState.unk19d7c.sponsor, g_menuState.unk19d7c.car, &g_menuState.unk19d7c.carSetup);
+    strcpy(g_menuState.unk1a608, FUN_43d5f0(g_menuState.unk19d7c.money, 0));
+    strcpy(g_menuState.unk1a64c, FUN_43d5f0(value, 0));
+    g_menuState.unk1a648 = value;
+    g_menuState.unk1a604 = g_menuState.unk19d7c.money;
 }
 
 void FUN_450db0(Unk4516c0 *object);

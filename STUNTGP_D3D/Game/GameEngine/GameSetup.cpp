@@ -1948,6 +1948,122 @@ void FUN_42a870(Scene *scene, ObjectDef *object)
     }
 }
 
+// Brings the view position into the object's local space (out) and gives its direction (dir).
+// FUNCTION: STUNTGP_D3D 0x42b2a0
+void FUN_42b2a0(Vec4 *out, Vec4 *dir, Scene *scene, ObjectDef *obj)
+{
+    Vec4 t;
+    Camera *cam = scene->camera;
+    float dx = g_4722d0->cam.pos.x - cam->pos.x;
+    float dy = g_4722d0->cam.pos.y - cam->pos.y;
+    float dz = g_4722d0->cam.pos.z - cam->pos.z;
+    float *m = (float *)cam->matrix;
+    t.x = dz * m[8] + dy * m[4] + dx * m[0];
+    t.y = dz * m[9] + dy * m[5] + dx * m[1];
+    t.z = dz * m[10] + dy * m[6] + dx * m[2];
+    Camera *xf = (Camera *)obj->matrix;
+    t.x -= xf->pos.x;
+    t.y -= xf->pos.y;
+    t.z -= xf->pos.z;
+    if (scene->objectCount > 1)
+    {
+        Vec4 *pivot = (Vec4 *)((BYTE *)obj + 0x10);
+        float *r = (float *)xf->unk44;
+        t.x -= pivot->x;
+        t.y -= pivot->y;
+        t.z -= pivot->z;
+        out->x = t.z * r[8] + t.y * r[4] + t.x * r[0] + pivot->x;
+        out->y = t.z * r[9] + t.y * r[5] + t.x * r[1] + pivot->y;
+        out->z = t.z * r[10] + t.y * r[6] + t.x * r[2] + pivot->z;
+    }
+    else
+    {
+        *out = t;
+    }
+    t = *out;
+    Vec3_Normalize(&t.x);
+    *dir = t;
+}
+
+void FUN_44efd0(float *out, float *a, float *b);
+
+struct Light
+{
+    BYTE unk00[0x10]; // 0x00
+    Vec4 pos;         // 0x10
+    Vec4 local;       // 0x20, pos relative to the current object
+    Vec4 colour;      // 0x30
+};
+
+// Per-object light record in g_624530, 36 bytes.
+struct LightRec
+{
+    Vec4 colour; // 0x00, rotated into object space
+    Vec4 half;   // 0x10
+    Light *light; // 0x20
+};
+
+// Lights active for the current object (g_62452c of them) and the next free record in g_624530.
+struct LightList
+{
+    Light *lights[16]; // 0x00
+    LightRec *next;    // 0x40
+};
+
+// GLOBAL: STUNTGP_D3D 0x624534
+LightList g_624534;
+
+// Brings the active lights into the object's space: per light its rotated colour, its offset
+// from the object and the half vector towards the view.
+// FUNCTION: STUNTGP_D3D 0x42b400
+void FUN_42b400(Scene *scene, ObjectDef *obj)
+{
+    float m[16];
+    Vec4 view;
+    Vec4 origin;
+    Vec4 h;
+    Camera *cam = scene->camera;
+    view.x = g_61c4f8.x * 255.0f;
+    view.y = g_61c4f8.y * 255.0f;
+    view.z = g_61c4f8.z * 255.0f;
+    float *rot = (float *)cam->matrix;
+    if (scene->objectCount > 1)
+    {
+        FUN_44efd0(m, rot, (float *)((Camera *)obj->matrix)->unk44);
+        rot = m;
+    }
+    Camera *xf = (Camera *)obj->matrix;
+    origin.x = xf->pos.x + cam->pos.x;
+    origin.y = xf->pos.y + cam->pos.y;
+    origin.z = xf->pos.z + cam->pos.z;
+    g_624534.next = (LightRec *)g_624530;
+    Light **lights = g_624534.lights;
+    for (DWORD i = 0; i < g_62452c; i++)
+    {
+        Light *light = *lights++;
+        float r = light->colour.x * 255.0f;
+        float g = light->colour.y * 255.0f;
+        float b = light->colour.z * 255.0f;
+        g_624534.next->colour.x = g * rot[4] + b * rot[8] + r * rot[0];
+        g_624534.next->colour.y = g * rot[5] + b * rot[9] + r * rot[1];
+        g_624534.next->colour.z = g * rot[6] + b * rot[10] + r * rot[2];
+        light->local.x = light->pos.x - origin.x;
+        light->local.y = light->pos.y - origin.y;
+        light->local.z = light->pos.z - origin.z;
+        h.x = view.x + g_624534.next->colour.x;
+        h.y = view.y + g_624534.next->colour.y;
+        h.z = view.z + g_624534.next->colour.z;
+        h.x *= 765.0f;
+        h.y *= 765.0f;
+        h.z *= 765.0f;
+        g_624534.next->half.x = h.x * 0.5f;
+        g_624534.next->half.y = h.y * 0.5f;
+        g_624534.next->half.z = h.z * 0.5f;
+        g_624534.next->light = light;
+        g_624534.next++;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x42e6d0
 void FUN_42e6d0()
 {

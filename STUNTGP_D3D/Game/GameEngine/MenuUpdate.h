@@ -388,7 +388,10 @@ struct MenuState
     MenuRound rounds[21];        // 0x19fa8
     BYTE unk1a53c[0x1a544 - 0x1a53c];
     MenuSlot20 unk1a544[6]; // 0x1a544
-    BYTE unk1a604[0x1a68c - 0x1a604];
+    int unk1a604;           // 0x1a604
+    char unk1a608[0x40];    // 0x1a608
+    int unk1a648;           // 0x1a648
+    char unk1a64c[0x40];    // 0x1a64c
     // Read by FUN_435980; names are the csv keys.
     int nodePositions[6]; // 0x1a68c
     int gold;             // 0x1a6a4

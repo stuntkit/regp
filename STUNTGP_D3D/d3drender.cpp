@@ -1018,9 +1018,57 @@ HRESULT WINAPI FUN_42f3c0(LPDDSURFACEDESC2 desc, LPVOID context)
     return DDENUMRET_OK;
 }
 
-// STUB: STUNTGP_D3D 0x42f530
+HRESULT WINAPI FUN_42f420(GUID *guid, LPSTR description, LPSTR name, LPD3DDEVICEDESC hw, LPD3DDEVICEDESC hel, LPVOID context);
+
+// Records one DirectDraw device: its caps, display modes and, when it has Direct3D, its drivers.
+// FUNCTION: STUNTGP_D3D 0x42f530
 BOOL WINAPI FUN_42f530(GUID *guid, LPSTR description, LPSTR name, LPVOID context, HMONITOR monitor)
 {
+    DisplayDevices *devices = (DisplayDevices *)context;
+    LPDIRECTDRAW dd;
+    LPDIRECT3D3 d3d;
+    LPDIRECTDRAW4 dd4;
+    BYTE *dev = devices->devices[devices->count];
+    int res = DirectDrawCreate(guid, &dd, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = dd->QueryInterface(IID_IDirectDraw4, (LPVOID *)&dd4);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    if (guid)
+    {
+        *(GUID *)(dev + 0x300) = *guid;
+    }
+    strncpy((char *)dev + 0x310, description, 0x40);
+    strncpy((char *)dev + 0x350, name, 0x10);
+    DDCAPS *driverCaps = (DDCAPS *)(dev + 8);
+    memset(driverCaps, 0, sizeof(DDCAPS));
+    DDCAPS *helCaps = (DDCAPS *)(dev + 0x184);
+    memset(helCaps, 0, sizeof(DDCAPS));
+    driverCaps->dwSize = sizeof(DDCAPS);
+    helCaps->dwSize = sizeof(DDCAPS);
+    dd4->GetCaps(driverCaps, helCaps);
+    ((DisplayModeList *)dev)->count = 0;
+    dd4->EnumDisplayModes(DDEDM_REFRESHRATES, NULL, dev, FUN_42f3c0);
+    *(int *)dev = guid == NULL;
+    if (dd4->QueryInterface(IID_IDirect3D3, (LPVOID *)&d3d) == DD_OK)
+    {
+        *(int *)(dev + 4) = 1;
+        *(LPDIRECT3D3 *)(dev + 0x2264) = d3d;
+        *(DWORD *)(dev + 0x2270) = 0;
+        d3d->EnumDevices(FUN_42f420, dev);
+    }
+    else
+    {
+        *(int *)(dev + 4) = 0;
+    }
+    devices->count++;
+    dd4->Release();
+    dd->Release();
     return TRUE;
 }
 
