@@ -202,6 +202,7 @@ extern void *g_6243c0;
 extern void *g_6243c8;
 extern void *g_6243d0;
 extern void *g_6243d8;
+extern int g_582724;
 extern int g_6243c4;
 extern int g_6243cc;
 extern int g_6243d4;
@@ -846,6 +847,29 @@ int FUN_42b9a0(const char *name)
     return result;
 }
 
+// Offsets the texture index of every vertex by g_582724, once per shared vertex list.
+// FUNCTION: STUNTGP_D3D 0x42b900
+void FUN_42b900(Scene *scene)
+{
+    ObjectDef **lods = scene->lods;
+    for (DWORD lod = 0; lod < scene->maxLod + 1; lod++, lods++)
+    {
+        ObjectDef *def = *lods;
+        for (DWORD i = 0; i < scene->objectCount; i++, def++)
+        {
+            BYTE *verts = def->verts;
+            if (!FUN_42b8b0(scene, i, lod))
+            {
+                BYTE *texture = verts + 1;
+                for (DWORD j = 0; j < def->vertCount; j++, texture += 8)
+                {
+                    *texture += g_582724;
+                }
+            }
+        }
+    }
+}
+
 // Replaces texture index `from` with `to` in the vertices of every loaded track scene.
 // FUNCTION: STUNTGP_D3D 0x42ba00
 void FUN_42ba00(int from, int to)
@@ -874,6 +898,95 @@ void FUN_42ba00(int from, int to)
 // Camera height for the race scene list.
 // GLOBAL: STUNTGP_D3D 0x60dfa8
 float g_60dfa8;
+
+// FUNCTION: STUNTGP_D3D 0x42b620
+void FUN_42b620(Scene *scene)
+{
+    GameSlot *slot = g_4722d0;
+    Vec4 *pos = &scene->camera->pos;
+    Vec4 d;
+    d.x = pos->x - slot->cam.pos.x;
+    d.y = pos->y - slot->cam.pos.y;
+    d.z = pos->z - slot->cam.pos.z;
+    float depth = (d.x * slot->axisZ.x + d.y * slot->axisZ.y + d.z * slot->axisZ.z) * 3.2f / slot->fov;
+    scene->unk64 = scene->lod;
+    if (depth > 5000.0f)
+    {
+        if (depth > 10000.0f)
+        {
+            scene->lod = 3;
+        }
+        else
+        {
+            scene->lod = 2;
+        }
+    }
+    else if (depth > 3000.0f)
+    {
+        scene->lod = 1;
+    }
+    else
+    {
+        scene->lod = 0;
+    }
+    if (g_612948.unk0034 < 25)
+    {
+        scene->lod += 2;
+    }
+    else if (g_612948.unk0034 < 50)
+    {
+        scene->lod++;
+    }
+    if (scene->lod > 3)
+    {
+        scene->lod = 3;
+    }
+}
+
+// Level of detail for a point, from its depth in front of the camera and the frame rate.
+// FUNCTION: STUNTGP_D3D 0x42b580
+DWORD FUN_42b580(Vec4 *pos)
+{
+    GameSlot *slot = g_4722d0;
+    Vec4 d;
+    d.x = pos->x - slot->cam.pos.x;
+    d.y = pos->y - slot->cam.pos.y;
+    d.z = pos->z - slot->cam.pos.z;
+    float depth = (d.x * slot->axisZ.x + d.y * slot->axisZ.y + d.z * slot->axisZ.z) * 3.2f / slot->fov;
+    DWORD lod;
+    if (depth > 5000.0f)
+    {
+        if (depth > 10000.0f)
+        {
+            lod = 3;
+        }
+        else
+        {
+            lod = 2;
+        }
+    }
+    else if (depth > 3000.0f)
+    {
+        lod = 1;
+    }
+    else
+    {
+        lod = 0;
+    }
+    if (g_612948.unk0034 < 25)
+    {
+        lod += 2;
+    }
+    else if (g_612948.unk0034 < 50)
+    {
+        lod++;
+    }
+    if (lod > 3)
+    {
+        lod = 3;
+    }
+    return lod;
+}
 
 // FUNCTION: STUNTGP_D3D 0x42b6e0
 void FUN_42b6e0()

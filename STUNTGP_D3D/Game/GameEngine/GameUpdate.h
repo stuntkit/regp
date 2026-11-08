@@ -896,7 +896,7 @@ struct Scene
     SceneView *view;     // 0x44
     ObjectDef *lods[4];  // 0x48, object list per level of detail
     DWORD maxLod;        // 0x58, last valid index into lods
-    int lod;             // 0x5c, current level of detail
+    DWORD lod;           // 0x5c, current level of detail
     char **textures;     // 0x60, NULL-terminated
     int unk64;           // 0x64
 };
