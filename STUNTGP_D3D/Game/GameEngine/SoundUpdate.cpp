@@ -149,7 +149,7 @@ void FUN_45f7d0(int pan, int volume)
     {
         g_62e110 = pan;
         g_62e0fc = volume;
-        if (g_musicBuffer)
+        if (g_musicStream.buffer)
         {
             int value = g_4897f8[128 - ((abs(pan) + 1) >> 1)];
             if (pan < 0)
@@ -159,7 +159,7 @@ void FUN_45f7d0(int pan, int volume)
             if (value != g_62f5bc)
             {
                 g_62f5bc = value;
-                if (g_musicBuffer->SetPan(value) != DS_OK)
+                if (g_musicStream.buffer->SetPan(value) != DS_OK)
                 {
                     return;
                 }
@@ -168,7 +168,7 @@ void FUN_45f7d0(int pan, int volume)
             if (value != g_62f5b8)
             {
                 g_62f5b8 = value;
-                g_musicBuffer->SetVolume(g_4897f8[value >> 1]);
+                g_musicStream.buffer->SetVolume(g_4897f8[value >> 1]);
             }
         }
     }
