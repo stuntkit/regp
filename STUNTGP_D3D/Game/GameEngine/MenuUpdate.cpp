@@ -1735,6 +1735,66 @@ int FUN_437920(int index)
     return g_menuState.nodes[index].unk04;
 }
 
+// Maps a node id to the pair of entries it joins; returns 0 for ids without one.
+// FUNCTION: STUNTGP_D3D 0x437930
+int FUN_437930(int id, int *from, int *to)
+{
+    *from = 0;
+    *to = 0;
+    switch (id)
+    {
+    case 7:
+        *to = 2;
+        *from = 1;
+        return 1;
+    case 8:
+        *to = 3;
+        *from = 2;
+        return 1;
+    case 9:
+        *to = 4;
+        *from = 3;
+        return 1;
+    case 10:
+        *to = 5;
+        *from = 4;
+        return 1;
+    case 11:
+        *to = 6;
+        *from = 5;
+        return 1;
+    case 12:
+        *to = 8;
+        *from = 7;
+        return 1;
+    case 13:
+        *to = 9;
+        *from = 8;
+        return 1;
+    case 14:
+        *to = 10;
+        *from = 9;
+        return 1;
+    case 15:
+        *to = 11;
+        *from = 10;
+        return 1;
+    case 16:
+        *to = 13;
+        *from = 12;
+        return 1;
+    case 17:
+        *to = 14;
+        *from = 13;
+        return 1;
+    case 18:
+        *to = 15;
+        *from = 14;
+        return 1;
+    }
+    return 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x437a90
 int FUN_437a90(int id)
 {
