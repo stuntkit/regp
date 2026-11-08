@@ -1229,6 +1229,89 @@ void FUN_408f90()
     }
 }
 
+void FUN_411490(Car *car);
+void FUN_418510();
+
+// Reacts to the flags of the surface under the car: camera handoffs, the path start (type 10), launch
+// pads and stuck detection, counting ticks spent stuck or upside down (up below 0.707).
+// FUNCTION: STUNTGP_D3D 0x408fc0
+void FUN_408fc0(float up)
+{
+    int idx = g_cameraSweep.unka4->surface;
+    int stuck = 0;
+    unsigned int type = (BYTE)g_renderState.unk7f98->surfaces[idx] & 0xf;
+    if (type > 0)
+    {
+        if (type > 4)
+        {
+            if (type == 10 && !g_4d5bb8->unk7648 && !g_4d5bb8->unk1fd8)
+            {
+                g_4d5bb8->unk764c = 0;
+                g_4d5bb8->unk7654 = g_4d5bb8->unk2278;
+                g_4d5bb8->unk7648 = 1;
+                g_4d5bb8->unk7660 = 0;
+                g_4d5bb8->unk7658 = 0;
+                g_4d5bb8->unk765c = 0;
+                g_4d5bb8->unk7674 = g_4d5bb8->unk24a4;
+            }
+        }
+        else
+        {
+            g_4722d0 = FUN_402590(g_4d5bb8);
+            if (g_4722d0)
+            {
+                FUN_408f90();
+            }
+            else
+            {
+                g_4d5bb8->unk762c = 0;
+            }
+            FUN_402580();
+        }
+    }
+    if (g_renderState.unk7f98->surfaces[idx] & 0x40)
+    {
+        g_4722d0 = FUN_402590(g_4d5bb8);
+        if (g_4722d0)
+        {
+            FUN_408e90();
+        }
+        else
+        {
+            g_4d5bb8->unk762c = 1;
+        }
+        FUN_402580();
+        if (g_4d5bb8->unk1cf0 < 500.0f / 60.0f)
+        {
+            stuck = 0x80;
+        }
+    }
+    else
+    {
+        g_4d5bb8->race.unk78 = 0;
+    }
+    if (g_renderState.unk7f98->surfaces[idx] & 0x80)
+    {
+        stuck = 0x80;
+        FUN_411490(g_4d5bb8);
+    }
+    if ((g_renderState.unk7f98->surfaces[idx] & 0x20) && g_4d5bb8->unk1cf0 < 100.0f / 60.0f)
+    {
+        stuck = 0x80;
+    }
+    FUN_418510();
+    if (!stuck && up > 0.70710677f)
+    {
+        g_4d5bb8->unk7638 = 0;
+        return;
+    }
+    if ((DWORD)++g_4d5bb8->unk7638 >= 180)
+    {
+        g_4d5bb8->unk763c = 1;
+        g_4d5bb8->unk7638 = 0;
+    }
+}
+
 extern int g_60dfec;
 
 // FUNCTION: STUNTGP_D3D 0x409180
