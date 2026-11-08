@@ -317,6 +317,8 @@ void FUN_452070(int id, float x, float y);
 void FUN_458d50(Unk457e70 *object, int mode, int card);
 void FUN_45cba0(int index, float pos);
 void FUN_45da70(Unk45d2e0 *object, int index, float pos);
+void FUN_45c320(float x, float y);
+void FUN_45c3d0(float x, float y);
 // GLOBAL: STUNTGP_D3D 0x627b54
 GhostHeader g_627b54;
 
@@ -756,6 +758,12 @@ MenuItem g_488c00[3] = {
 
 // GLOBAL: STUNTGP_D3D 0x488c60
 MenuDef g_488c60 = {0xb, 0.0f, 0, 520.0f, 382.0f, 1.0f, 2, 1.25f, 1, 0x50, g_488c00, 0};
+
+// GLOBAL: STUNTGP_D3D 0x489290
+float g_489290 = 201.0f;
+
+// GLOBAL: STUNTGP_D3D 0x489294
+float g_489294 = 172.0f;
 
 // STUB: STUNTGP_D3D 0x450550
 int FUN_450550(PoolObject *object, int msg, int arg)
@@ -2332,6 +2340,24 @@ void FUN_45da70(Unk45d2e0 *object, int index, float pos)
     int node = object->unk34[index];
     FUN_438710(pos, 82.0f, 0x11, node + 0xd9, 1.0f, 0);
     FUN_438710(pos + 255.0f, 82.0f, 0x11, node + 0xf1, 1.0f, 0);
+}
+
+// FUNCTION: STUNTGP_D3D 0x45c320
+void FUN_45c320(float x, float y)
+{
+    FUN_438710(x, y, 0xd, 0x21, 1.0f, 0x200);
+    FUN_438710(g_489290 + x, y, 0xd, 0x22, 1.0f, 0x200);
+    FUN_438710(x, g_489294 + y, 0xd, 0x23, 1.0f, 0x200);
+    FUN_438710(g_489290 + x, g_489294 + y, 0xd, 0x24, 1.0f, 0x200);
+}
+
+// FUNCTION: STUNTGP_D3D 0x45c3d0
+void FUN_45c3d0(float x, float y)
+{
+    FUN_438710(x, y, 0xc, 0x1d, 1.0f, 0x100);
+    FUN_438710(g_489290 + x, y, 0xc, 0x1e, 1.0f, 0x100);
+    FUN_438710(x, g_489294 + y, 0xc, 0x1f, 1.0f, 0x100);
+    FUN_438710(g_489290 + x, g_489294 + y, 0xc, 0x20, 1.0f, 0x100);
 }
 
 typedef int (*ScreenInit)(PoolObject *object, int arg);
