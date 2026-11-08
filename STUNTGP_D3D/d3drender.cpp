@@ -515,7 +515,7 @@ void FUN_430100(LPDIRECTDRAWSURFACE4 surface, BYTE *image, int width, int height
 // video-memory texture (and a second-stage copy when the device supports it) in the next
 // surface slot and texture slot.
 // FUNCTION: STUNTGP_D3D 0x4303a0
-int FUN_4303a0(int width, int height, int unk1, int unk2, char *path)
+int FUN_4303a0(int width, int height, int index, int unk, char *path)
 {
     DDSURFACEDESC2 desc;
     LPDIRECTDRAWSURFACE4 sysSurface = NULL;
@@ -611,6 +611,33 @@ int FUN_4303a0(int width, int height, int unk1, int unk2, char *path)
     g_renderState.unk7ed0++;
     g_592028++;
     return 1;
+}
+
+void FUN_42be20(char *path);
+
+// Loads count textures from path (at least one), through FUN_4303a0 when g_58332c is set;
+// returns the number loaded.
+// FUNCTION: STUNTGP_D3D 0x4306c0
+DWORD FUN_4306c0(int width, int height, DWORD count, int unk, char *path)
+{
+    FUN_42be20(path);
+    DWORD i = 0;
+    if (count)
+    {
+        count--;
+    }
+    do
+    {
+        if (g_58332c == 1)
+        {
+            FUN_4303a0(width, height, i, unk, path);
+        }
+        else
+        {
+            FUN_4306b0(width, height, i, unk, (int)path);
+        }
+    } while (i++ < count);
+    return i;
 }
 
 // Creates an empty size x size video-memory texture (and a second-stage copy when the device

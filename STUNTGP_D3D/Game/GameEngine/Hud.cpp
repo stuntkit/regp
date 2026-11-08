@@ -13,9 +13,29 @@
 #include "GameSetup.h"
 #include "RenderState.h"
 
-// STUB: STUNTGP_D3D 0x431f10
+int FUN_431be0(float *x0, float *y0, float *z0, float *x1, float *y1, float *z1);
+
+// Draws a screen-space line, clipped to the display.
+// FUNCTION: STUNTGP_D3D 0x431f10
 void FUN_431f10(DWORD color, float x0, float y0, float z0, float x1, float y1, float z1)
 {
+    if (FUN_431be0(&x0, &y0, &z0, &x1, &y1, &z1))
+    {
+        g_58d818[0].sx = x0;
+        g_58d818[0].sy = y0;
+        g_58d818[0].rhw = g_58d818[0].sz = z0;
+        g_58d818[0].color = color;
+        g_58d818[0].specular = 0xff000000;
+        g_58d818[1].sx = x1;
+        g_58d818[1].sy = y1;
+        g_58d818[1].rhw = g_58d818[1].sz = z1;
+        g_58d818[1].color = color;
+        g_58d818[1].specular = 0xff000000;
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 1);
+        g_d3dDevice->SetTexture(0, NULL);
+        g_d3dDevice->DrawPrimitive(D3DPT_LINELIST, FVF_TLVERTEX2, g_58d818, 2, D3DDP_DONOTCLIP | D3DDP_DONOTLIGHT);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 0xa0);
+    }
 }
 
 // Draws a line given in 640x480 screen units.
