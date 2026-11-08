@@ -3442,6 +3442,35 @@ void FUN_4137b0()
     }
 }
 
+// Points the steering wheel meshes along the current steering input.
+// FUNCTION: STUNTGP_D3D 0x4138a0
+void FUN_4138a0()
+{
+    ObjectDef *meshes = g_4d5bb8->unk26b0->lods[g_4d5bb8->unk26b0->lod];
+    Vec4 a;
+    a.x = g_4d5bb8->unk2894;
+    a.y = 1.0f;
+    a.z = 0.0f;
+    Vec3_Normalize(&a.x);
+    Vec4 b;
+    b.x = 0.0f;
+    b.y = g_4d5bb8->unk2890;
+    b.z = 1.0f;
+    Vec3_Normalize(&b.x);
+    meshes[0].matrix[3] = a;
+    meshes[0].matrix[2] = b;
+    meshes[0].matrix[0].y = g_4d5bb8->unk288c;
+    meshes[5].matrix[3] = a;
+    meshes[5].matrix[2] = b;
+    meshes[5].matrix[0].y = g_4d5bb8->unk288c;
+    if (g_4d5bb8->unk28a0 == 1)
+    {
+        meshes[10].matrix[3] = a;
+        meshes[10].matrix[2] = b;
+        meshes[10].matrix[0].y = g_4d5bb8->unk288c;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x416590
 void FUN_416590(Vec4 *pos, Vec4 *vel)
 {
@@ -4285,6 +4314,36 @@ void FUN_4176f0(Unk62a078 *p)
 // STUB: STUNTGP_D3D 0x417800
 void FUN_417800()
 {
+}
+
+// FUNCTION: STUNTGP_D3D 0x417b50
+void FUN_417b50(Vec4 *pos, Vec4 *vel, float speed)
+{
+    if ((DWORD)g_612948.unk0454 >= 32)
+    {
+        g_612948.unk0454 = 0;
+    }
+    Unk612da4 *p = &((Unk612da4 *)g_612948.unk045c)[g_612948.unk0454];
+    p->pos = *pos;
+    p->unk04 = 4;
+    p->life = FUN_42f1f0(30) + 60;
+    p->unk28 = 0.99f;
+    p->unk438 = 1.0f;
+    p->unk43c = p->life;
+    p->unk430 = 0;
+    p->unk434 = 0;
+    p->unk2c = (float)fabs(speed) * 0.25f + 0.5f;
+    Vec4 r;
+    r.x = FUN_42f1c0(0.41666666f);
+    r.y = (float)fabs(FUN_42f1c0(0.8333333f) + (g_4d5bb8->unk1cf0 * 0.033333335f) * 2.5f);
+    p->vel.x = r.y * g_4d5bb8->matrix[4] + r.x * g_4d5bb8->matrix[0];
+    p->vel.y = r.y * g_4d5bb8->matrix[5] + r.x * g_4d5bb8->matrix[1];
+    p->vel.z = r.y * g_4d5bb8->matrix[6] + r.x * g_4d5bb8->matrix[2];
+    p->vel.x += vel->x;
+    p->vel.y = vel->y + p->vel.y;
+    p->vel.z = vel->z + p->vel.z;
+    g_612948.unk0454++;
+    g_612948.unk0450++;
 }
 
 // STUB: STUNTGP_D3D 0x417ca0
