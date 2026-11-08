@@ -4926,13 +4926,13 @@ void FUN_41e510(Vec4 *ring, DWORD *head, DWORD *count, Vec4 *pos, TrailParams *p
     a.x = a.x + v.x;
     a.y = a.y + v.y;
     a.z = a.z + v.z;
+    DWORD size = params->size;
     a.x = c.x + a.x;
     a.y = c.y + a.y;
     a.z = c.z + a.z;
     w.x = g_4d5bb8->posX - a.x;
     w.y = g_4d5bb8->posY - a.y;
     w.z = g_4d5bb8->posZ - a.z;
-    DWORD size = params->size;
     if (*count < size)
     {
         (*count)++;
