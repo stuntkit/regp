@@ -838,29 +838,17 @@ int FUN_443770()
     return g_60f2b4;
 }
 
-// Digit columns of the race clock; u is the texture column of the digit strip.
-struct ClockColumn
-{
-    float u;      // 0x00
-    float unk04;  // 0x04
-    float unk08;  // 0x08
-    float unk0c;  // 0x0c
-    float unk10;  // 0x10
+// GLOBAL: STUNTGP_D3D 0x485550
+ClockColumn g_485550[8] = {
+    {1.6666666f, 0.1f, 10.0f, 180.0f, 229.0f},
+    {0.16666667f, 1.0f, 1.0f, 180.0f, 229.0f},
+    {0.016666668f, 10.0f, 0.1f, 180.0f, 242.0f},
+    {0.0016666667f, 100.0f, 0.01f, 108.0f, 216.0f},
+    {0.00027777778f, 600.0f, 0.0016666666f, 180.0f, 242.0f},
+    {2.7777778e-05f, 6000.0f, 0.00016666666f, 108.0f, 216.0f},
+    {4.6296295e-06f, 36000.0f, 2.7777776e-05f, 180.0f, 242.0f},
+    {4.6296296e-07f, 360000.0f, 2.7777778e-06f, 180.0f, 242.0f},
 };
-
-// GLOBAL: STUNTGP_D3D 0x485560
-ClockColumn g_485560[7] = {
-    {229.0f, 0.16666667f, 1.0f, 1.0f, 180.0f},
-    {229.0f, 0.016666668f, 10.0f, 0.1f, 180.0f},
-    {242.0f, 0.0016666667f, 100.0f, 0.01f, 108.0f},
-    {216.0f, 0.00027777778f, 600.0f, 0.0016666666f, 180.0f},
-    {242.0f, 2.7777778e-05f, 6000.0f, 0.00016666666f, 108.0f},
-    {216.0f, 4.6296295e-06f, 36000.0f, 2.7777776e-05f, 180.0f},
-    {242.0f, 4.6296296e-07f, 360000.0f, 2.7777778e-06f, 180.0f},
-};
-
-// GLOBAL: STUNTGP_D3D 0x4855ec
-float g_4855ec = 242.0f;
 
 // GLOBAL: STUNTGP_D3D 0x4855f0
 int g_4855f0[7] = {0, -13, -30, -43, -60, -73, -86};
@@ -886,7 +874,7 @@ void FUN_44a4a0(DWORD value, int alt, float x, float y)
         {
             column += 2;
         }
-        g_spriteDesc.u0 = (g_485560[column].u * 1024.0f) * 0.00390625f;
+        g_spriteDesc.u0 = (g_485550[column].u * 1024.0f) * 0.00390625f;
         g_spriteDesc.v0 = ((digits[i] * 18) * 1024.0f) * 0.00390625f;
         g_spriteDesc.u1 = g_spriteDesc.u0 + 52.0f;
         g_spriteDesc.v1 = g_spriteDesc.v0 + 72.0f;

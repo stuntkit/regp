@@ -1158,6 +1158,20 @@ void FUN_442030();
 extern Car g_49a1f8[6];
 extern Car *g_4d5bb8;
 extern Camera g_4864e8;
+
+// Digit column of the race clock (0x14 bytes); u is the texture column of the digit strip and
+// range its wrap height, rate the column's turns per frame.
+struct ClockColumn
+{
+    float rate;  // 0x00
+    float unk04; // 0x04
+    float unk08; // 0x08
+    float range; // 0x0c
+    float u;     // 0x10
+};
+
+extern ClockColumn g_485550[8];
+extern int g_4855f0[7];
 void FUN_410a10(int index);
 extern Car *g_474630;
 extern Driver g_60f02c[6];
