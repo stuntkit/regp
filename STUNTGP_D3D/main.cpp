@@ -644,15 +644,6 @@ extern int g_582b24;
 extern int g_58271c;
 extern int g_582720;
 
-// Texture list entry: type 1 is an image (arg: compressed), 2 and 3 an empty texture (arg: size
-// code), anything else a texture file.
-struct TextureEntry
-{
-    char *name; // 0x00
-    int type;   // 0x04
-    int arg;    // 0x08
-};
-
 void FUN_42c0a0(int arg, int sizeCode);
 extern int g_587990;
 

@@ -8,6 +8,7 @@
 #include "Game/GameEngine/io_wad.h"
 #include "Game/GameEngine/GameUpdate.h"
 #include "sprite.h"
+#include "Game/GameEngine/RenderState.h"
 
 extern BYTE g_62dcf0[256];
 void FUN_441ec0();
@@ -592,6 +593,22 @@ void Gameplay_LoadIfNeeded()
     }
 }
 
+// Textures of the loading screen.
+// GLOBAL: STUNTGP_D3D 0x483498
+TextureEntry g_483498[6] = {
+    // STRING: STUNTGP_D3D 0x48358c
+    {"Loading\\Fade", 0, 0},
+    // STRING: STUNTGP_D3D 0x48359c
+    {"Loading\\Load1a", 0, 0},
+    // STRING: STUNTGP_D3D 0x4835ac
+    {"Loading\\Load1b", 0, 0},
+    // STRING: STUNTGP_D3D 0x4835bc
+    {"Loading\\Load1c", 0, 0},
+    // STRING: STUNTGP_D3D 0x4835cc
+    {"Loading\\Load1d", 0, 0},
+    {NULL, 0, 0},
+};
+
 struct ScreenTile
 {
     float x;
@@ -695,6 +712,21 @@ void FUN_445940(int frames, int fadeIn, int fadeOut)
         }
     }
     g_612948.unk8ce8 = 0;
+}
+
+void FUN_42c480();
+void FUN_431810();
+
+// Loads the loading-screen textures and shows the first picture for 30 frames.
+// FUNCTION: STUNTGP_D3D 0x4459e0
+void FUN_4459e0()
+{
+    FUN_42c480();
+    FUN_42c340(g_483498);
+    g_renderState.unk7ed4 = g_renderState.unk7ed0 - g_renderState.unk62ec;
+    g_612948.unk8ce0 = 1;
+    FUN_445940(30, 15, 0);
+    FUN_431810();
 }
 
 // FUNCTION: STUNTGP_D3D 0x445ae0
