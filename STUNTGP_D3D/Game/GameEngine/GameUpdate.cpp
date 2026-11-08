@@ -1008,6 +1008,50 @@ int g_4d5ca8;
 // GLOBAL: STUNTGP_D3D 0x4d5cac
 int g_4d5cac;
 
+GameSlot *FUN_402590(Car *car);
+void FUN_4614a0(int channel, int loop, DWORD frequency, DWORD volume, Vec4 *pos, Vec4 *velocity, int keep,
+                int *slotIndex);
+
+// Crowd: a cheer when g_4d5ca8 runs out and a random murmur every 30 ticks, halfway between car and camera.
+// FUNCTION: STUNTGP_D3D 0x418bd0
+void FUN_418bd0()
+{
+    if (g_4d5bb8->unk7648 == 1)
+    {
+        Vec4 pos;
+        g_4722d0 = FUN_402590(g_4d5bb8);
+        if (g_4722d0)
+        {
+            pos.x = g_4d5bb8->posX - g_4722d0->cam.pos.x;
+            pos.y = g_4d5bb8->posY - g_4722d0->cam.pos.y;
+            pos.z = g_4d5bb8->posZ - g_4722d0->cam.pos.z;
+            pos.x *= 0.5f;
+            pos.y *= 0.5f;
+            pos.z *= 0.5f;
+            pos.x += g_4722d0->cam.pos.x;
+            pos.y += g_4722d0->cam.pos.y;
+            pos.z += g_4722d0->cam.pos.z;
+        }
+        else
+        {
+            pos = *(Vec4 *)&g_4d5bb8->posX;
+        }
+        FUN_402580();
+        if (g_4d5ca8 && --g_4d5ca8 == 0)
+        {
+            FUN_4614a0(0x27, 0, 0, 0xff, &pos, NULL, 1, NULL);
+            g_4d5ca8 = 30;
+        }
+        if (--g_4d5cac <= 0)
+        {
+            g_4d5cac = 30;
+            int n = FUN_42f1f0(0x3ff) & 3;
+            n += 0x28;
+            FUN_4614a0(n, 0, 0, 0xaa, &pos, NULL, 1, NULL);
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x418d10
 void FUN_418d10()
 {
@@ -4834,6 +4878,38 @@ void FUN_41b2f0()
             int idx = g_570acc++ & 3;
             FUN_4614a0(g_474774[idx], 0, 0, (int)(v * (1.0f / 255.0f)), (Vec4 *)&g_4d5bb8->posX, NULL, 0,
                        &g_4d5bb8->unk2370);
+        }
+    }
+}
+
+// GLOBAL: STUNTGP_D3D 0x474784
+int g_474784[4] = {12, 13, 14, 12};
+
+// Collision sounds: the scrape/crunch of FUN_41b2f0, then a bump for a hard enough landing, at most every 4 ticks.
+// FUNCTION: STUNTGP_D3D 0x41b510
+void FUN_41b510()
+{
+    if (g_4d5bb8->unk2368)
+    {
+        g_4d5bb8->unk2368--;
+    }
+    FUN_41b2f0();
+    float hit = g_4d5bb8->unk2364;
+    g_4d5bb8->unk2364 = 0.0f;
+    if (hit >= 4.0f)
+    {
+        float v = hit * 4.0f;
+        v *= 255.0f;
+        v = v * (1.0f / 255.0f) + 16.0f;
+        if (v > 255.0f)
+        {
+            v = 255.0f;
+        }
+        if (!g_4d5bb8->unk2368)
+        {
+            int idx = g_570acc++ & 3;
+            FUN_4614a0(g_474784[idx], 0, 0, (int)v, (Vec4 *)&g_4d5bb8->posX, NULL, 0, NULL);
+            g_4d5bb8->unk2368 = 4;
         }
     }
 }
