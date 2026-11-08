@@ -381,6 +381,37 @@ void FUN_424a90(int mode)
 {
 }
 
+extern int g_576bdc;
+
+// Centres the projection on the display and resets the clip rectangle.
+// FUNCTION: STUNTGP_D3D 0x424aa0
+void FUN_424aa0()
+{
+    int halfW = g_DD_DISPLAYRESWIDTH / 2;
+    g_576b9c = (float)halfW + 0.5f;
+    int halfH = g_DD_DISPLAYRESHEIGHT / 2;
+    g_576b90 = halfH;
+    g_576bac = -halfW;
+    g_576bb0 = -halfH;
+    g_576bb8 = halfH;
+    g_576ba0 = (float)halfH + 0.5f;
+    g_576ba4 = (float)g_DD_DISPLAYRESWIDTH - 0.5f;
+    g_576bdc = 1;
+    g_576bd8 = 0;
+    g_576be0 = 0;
+    g_576bc4 = g_DD_DISPLAYRESWIDTH;
+    g_576bc8 = g_DD_DISPLAYRESHEIGHT;
+    g_576b8c = halfW;
+    g_576bb4 = halfW;
+    g_576bc0 = g_DD_DISPLAYRESDEPTH / 8;
+    g_624988 = 0;
+    g_62498c = 1;
+    g_576ba8 = (float)g_DD_DISPLAYRESHEIGHT - 0.5f;
+    g_576b94 = g_576b9c - 0.5f;
+    g_576b98 = g_576ba0 - 0.5f;
+    FUN_4250a0(0.0f, 0.0f, 640.0f, 480.0f);
+}
+
 // FUNCTION: STUNTGP_D3D 0x424bd0
 void FUN_424bd0(float x, float y)
 {

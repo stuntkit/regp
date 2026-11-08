@@ -211,7 +211,7 @@ struct BodyPoint
     Vec4 local;       // 0x00
     Vec4 world;       // 0x10
     Vec4 prev;        // 0x20
-    BYTE unk30[0x10]; // 0x30
+    Vec4 unk30;       // 0x30
     DWORD unk40;      // 0x40
     float unk44;      // 0x44
     float radius;     // 0x48
@@ -586,7 +586,7 @@ struct Car
     float unk2614;            // 0x2614
     float unk2618;            // 0x2618
     float unk261c;            // 0x261c
-    BYTE unk2620[0x4];        // 0x2620
+    int unk2620;              // 0x2620
     int unk2624;              // 0x2624
     int unk2628;              // 0x2628
     int unk262c;              // 0x262c
@@ -714,7 +714,7 @@ struct Car
     unsigned int unk7634;     // 0x7634
     int unk7638;              // 0x7638
     int unk763c;              // 0x763c
-    int unk7640;              // 0x7640
+    DWORD unk7640;            // 0x7640
     int unk7644;              // 0x7644
     int unk7648;              // 0x7648
     BYTE unk764c[0x8];        // 0x764c

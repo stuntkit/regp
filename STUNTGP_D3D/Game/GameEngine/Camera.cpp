@@ -89,6 +89,76 @@ int g_49823c;
 // GLOBAL: STUNTGP_D3D 0x498240
 int g_498240;
 
+// Same test as FUN_420690.
+// FUNCTION: STUNTGP_D3D 0x41f970
+int FUN_41f970(TrackPoly *poly, Vec4 *p)
+{
+    WORD *idx = g_624480->indices + poly->firstIndex;
+    Vec4 *b = g_624480->vertices + *idx;
+    unsigned int n = poly->vertexCount;
+    for (unsigned int i = 0; i < n;)
+    {
+        i++;
+        Vec4 *a = b;
+        b = &g_624480->vertices[idx[i % n]];
+        Vec4 e;
+        e.x = b->x - a->x;
+        e.y = b->y - a->y;
+        e.z = b->z - a->z;
+        Vec4 side;
+        side.x = e.y * g_498160->z - e.z * g_498160->y;
+        side.y = e.z * g_498160->x - e.x * g_498160->z;
+        side.z = e.x * g_498160->y - e.y * g_498160->x;
+        float d;
+        FUN_44eda0(&side.x, &d);
+        Vec4 q;
+        q.x = p->x - a->x;
+        q.y = p->y - a->y;
+        q.z = p->z - a->z;
+        d = q.x * side.x + q.y * side.y + q.z * side.z;
+        if (d > 0.0f)
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+// 1 when the point lies inside every edge of the polygon, seen along the g_498160 normal.
+// FUNCTION: STUNTGP_D3D 0x420690
+int FUN_420690(TrackPoly *poly, Vec4 *p)
+{
+    WORD *idx = g_624480->indices + poly->firstIndex;
+    Vec4 *b = g_624480->vertices + *idx;
+    unsigned int n = poly->vertexCount;
+    for (unsigned int i = 0; i < n;)
+    {
+        i++;
+        Vec4 *a = b;
+        b = &g_624480->vertices[idx[i % n]];
+        Vec4 e;
+        e.x = b->x - a->x;
+        e.y = b->y - a->y;
+        e.z = b->z - a->z;
+        Vec4 side;
+        side.x = e.y * g_498160->z - e.z * g_498160->y;
+        side.y = e.z * g_498160->x - e.x * g_498160->z;
+        side.z = e.x * g_498160->y - e.y * g_498160->x;
+        float d;
+        FUN_44eda0(&side.x, &d);
+        Vec4 q;
+        q.x = p->x - a->x;
+        q.y = p->y - a->y;
+        q.z = p->z - a->z;
+        d = q.x * side.x + q.y * side.y + q.z * side.z;
+        if (d > 0.0f)
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
 // 0 when both sweep points are further than the sphere radius from the plane.
 // FUNCTION: STUNTGP_D3D 0x420a70
 int FUN_420a70()
@@ -108,6 +178,37 @@ int FUN_420a70()
         return 0;
     }
     return 1;
+}
+
+// Unit normal of a track polygon; falls back to the next edge when the first two are parallel.
+// FUNCTION: STUNTGP_D3D 0x420b20
+Vec4 *FUN_420b20(Vec4 *out, WORD *idx)
+{
+    TrackOctree *tree = g_624480;
+    Vec4 a;
+    a.x = tree->vertices[idx[1]].x - tree->vertices[idx[0]].x;
+    a.y = tree->vertices[idx[1]].y - tree->vertices[idx[0]].y;
+    a.z = tree->vertices[idx[1]].z - tree->vertices[idx[0]].z;
+    Vec4 b;
+    b.x = tree->vertices[idx[2]].x - tree->vertices[idx[1]].x;
+    b.y = tree->vertices[idx[2]].y - tree->vertices[idx[1]].y;
+    b.z = tree->vertices[idx[2]].z - tree->vertices[idx[1]].z;
+    Vec4 n;
+    n.x = b.z * a.y - b.y * a.z;
+    n.y = b.x * a.z - b.z * a.x;
+    n.z = b.y * a.x - b.x * a.y;
+    if (n.x * n.x + n.y * n.y + n.z * n.z < 0.0001f)
+    {
+        b.x = tree->vertices[idx[3]].x - tree->vertices[idx[2]].x;
+        b.y = tree->vertices[idx[3]].y - tree->vertices[idx[2]].y;
+        b.z = tree->vertices[idx[3]].z - tree->vertices[idx[2]].z;
+        n.x = b.z * a.y - b.y * a.z;
+        n.y = b.x * a.z - b.z * a.x;
+        n.z = b.y * a.x - b.x * a.y;
+    }
+    Vec3_Normalize(&n.x);
+    *out = n;
+    return out;
 }
 
 // FUNCTION: STUNTGP_D3D 0x420f00
@@ -165,6 +266,72 @@ int FUN_4215b0()
     return 0;
 }
 
+// True when two cars are close enough, given their speeds, to possibly touch.
+// FUNCTION: STUNTGP_D3D 0x421830
+int FUN_421830(Car *a, Car *b)
+{
+    Vec4 d;
+    d.x = a->posX - b->posX;
+    d.y = a->posY - b->posY;
+    d.z = a->posZ - b->posZ;
+    float r = a->body.radius + b->body.radius;
+    float bz;
+    float by;
+    float bx;
+    float az;
+    float ay;
+    float ax;
+    az = a->unk1c8c.z;
+    ay = a->unk1c8c.y;
+    ax = a->unk1c8c.x;
+    bz = b->unk1c8c.z;
+    by = b->unk1c8c.y;
+    bx = b->unk1c8c.x;
+    if (d.x * d.x + d.y * d.y + d.z * d.z < r * r + (ax * ax + ay * ay + az * az) + (bx * bx + by * by + bz * bz))
+    {
+        return 1;
+    }
+    return 0;
+}
+
+// GLOBAL: STUNTGP_D3D 0x49a1f4
+Car *g_49a1f4;
+
+// Finds another active car within 300 units of the current car.
+// FUNCTION: STUNTGP_D3D 0x421b80
+int FUN_421b80()
+{
+    if (g_60f2b0 != 4)
+    {
+        Car *self = g_4d5bb8;
+        g_49a1f4 = NULL;
+        Car *car = g_49a1f8;
+        for (unsigned int i = 0; i < 6; car++, i++)
+        {
+            if (car != self && car->active == 1)
+            {
+                Vec4 d;
+                d.x = self->unk1bbc.x - car->unk1bbc.x;
+                d.y = self->unk1bbc.y - car->unk1bbc.y;
+                d.z = self->unk1bbc.z - car->unk1bbc.z;
+                if (d.x * d.x + d.y * d.y + d.z * d.z < 90000.0f)
+                {
+                    if (car->unk7640 == 0)
+                    {
+                        g_49a1f4 = car;
+                        return 1;
+                    }
+                    if (car->unk7640 < 10)
+                    {
+                        car->unk7640 += 60;
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x421c30
 void FUN_421c30(float bounce)
 {
@@ -176,6 +343,43 @@ void FUN_421c30(float bounce)
     g_4980e8.x -= push.x;
     g_4980e8.y -= push.y;
     g_4980e8.z -= push.z;
+}
+
+// Moves a body point to its new world position, keeping the old one.
+// FUNCTION: STUNTGP_D3D 0x421cc0
+void FUN_421cc0(Body *body, int i)
+{
+    body->points[i].prev = body->points[i].world;
+    Vec4 l = body->points[i].local;
+    Vec4 w;
+    w.x = l.x * body->mat0[0] + l.y * body->mat0[4] + l.z * body->mat0[8];
+    w.y = l.x * body->mat0[1] + l.y * body->mat0[5] + l.z * body->mat0[9];
+    w.z = l.x * body->mat0[2] + l.y * body->mat0[6] + l.z * body->mat0[10];
+    w.x += body->pos.x;
+    w.y += body->pos.y;
+    w.z += body->pos.z;
+    body->points[i].world = w;
+}
+
+// Velocity of a body point: the rotation step applied to its offset, plus the body velocity.
+// FUNCTION: STUNTGP_D3D 0x421d90
+void FUN_421d90(Body *body, int i)
+{
+    Vec4 d;
+    d.x = body->points[i].world.x - body->pos.x;
+    d.y = body->points[i].world.y - body->pos.y;
+    d.z = body->points[i].world.z - body->pos.z;
+    Vec4 r;
+    r.x = d.x * body->mat1[0] + d.y * body->mat1[4] + d.z * body->mat1[8];
+    r.y = d.x * body->mat1[1] + d.y * body->mat1[5] + d.z * body->mat1[9];
+    r.z = d.x * body->mat1[2] + d.y * body->mat1[6] + d.z * body->mat1[10];
+    r.x -= d.x;
+    r.y -= d.y;
+    r.z -= d.z;
+    r.x += body->vel[0];
+    r.y += body->vel[1];
+    r.z += body->vel[2];
+    body->points[i].unk30 = r;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4031e0

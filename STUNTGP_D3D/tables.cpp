@@ -59,3 +59,46 @@ void FUN_422420()
         x += 1.0;
     }
 }
+
+// Applies the per-channel gamma table and then the overall brightness curve to a colour.
+// FUNCTION: STUNTGP_D3D 0x4224e0
+void FUN_4224e0(float *r, float *g, float *b)
+{
+    float vr = *r;
+    float vg = *g;
+    float vb = *b;
+    unsigned int i = vr * 0.5f;
+    if (i > 127)
+    {
+        i = 127;
+    }
+    vr = (g_5715d4[i] + g_5715d4[i] + 0.25f) * vr;
+    i = vg * 0.5f;
+    if (i > 127)
+    {
+        i = 127;
+    }
+    vg = (g_5715d4[i] + g_5715d4[i] + 0.25f) * vg;
+    i = vb * 0.5f;
+    if (i > 127)
+    {
+        i = 127;
+    }
+    vb = (g_5715d4[i] + g_5715d4[i] + 0.25f) * vb;
+    if (vr > 255.0f)
+    {
+        vr = 255.0f;
+    }
+    if (vg > 255.0f)
+    {
+        vg = 255.0f;
+    }
+    if (vb > 255.0f)
+    {
+        vb = 255.0f;
+    }
+    int j = ((vg * 5.0f + vr * 3.0f + vb) * 0.11111111f) * 0.5f;
+    *r = vr * g_5717d4[j];
+    *g = vg * g_5717d4[j];
+    *b = vb * g_5717d4[j];
+}

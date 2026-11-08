@@ -1460,6 +1460,32 @@ void FUN_41e2d0()
     }
 }
 
+extern float g_61c594[16];
+
+// Projects a world point to the screen; fails when it is in front of the near plane.
+// FUNCTION: STUNTGP_D3D 0x41e410
+int FUN_41e410(Vec4 *p, float *out)
+{
+    Vec4 t;
+    t.x = g_61c594[0] * p->x + p->z * g_61c594[8] + p->y * g_61c594[4] + g_61c594[12];
+    t.y = g_61c594[1] * p->x + p->z * g_61c594[9] + p->y * g_61c594[5] + g_61c594[13];
+    t.z = g_61c594[2] * p->x + p->z * g_61c594[10] + p->y * g_61c594[6] + g_61c594[14];
+    if (t.z < g_4722d0->nearZ)
+    {
+        return 0;
+    }
+    Vec4 s;
+    s.x = t.x * g_61c3e8[0];
+    s.y = g_61c3e8[5] * t.y;
+    float inv = 1.0f / (t.z + 1.0f);
+    s.x = g_576b9c * inv * s.x + g_576b94;
+    s.y = g_576ba0 * inv * s.y + g_576b98;
+    out[0] = s.x;
+    out[1] = s.y;
+    out[2] = inv * 32.0f;
+    return 1;
+}
+
 // GLOBAL: STUNTGP_D3D 0x477658
 float g_477658[6][4] = {
     {-1.0f, 0.0f, 0.0f, 0.0f},
