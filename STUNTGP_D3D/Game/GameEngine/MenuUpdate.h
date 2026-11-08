@@ -305,6 +305,20 @@ struct RaceSetupCar
 struct RaceSetup1
 {
     RaceSetupCar cars[6]; // 0x00
+    int track;            // 0xa8, 1-based
+    int unkac;            // 0xac
+    int unkb0;            // 0xb0
+    int unkb4;            // 0xb4
+    int unkb8;            // 0xb8
+    int unkbc;            // 0xbc
+};
+
+struct RaceSetup2
+{
+    RaceSetupCar cars[6]; // 0x00
+    int count;            // 0xa8
+    int track;            // 0xac, 1-based
+    int unkb0;            // 0xb0
 };
 
 struct RaceSetup3
@@ -329,8 +343,14 @@ struct RaceSetup4
 
 struct RaceSetup5
 {
-    BYTE unk000[0x12c];   // 0x000
+    ShopItem item;        // 0x000, stats of the human cars
     RaceSetupCar cars[6]; // 0x12c
+    int track;            // 0x1d4, 1-based
+    int unk1d8;           // 0x1d8
+    int unk1dc;           // 0x1dc
+    int unk1e0;           // 0x1e0
+    int unk1e4;           // 0x1e4
+    int unk1e8;           // 0x1e8
 };
 
 struct RaceSetup6
@@ -343,15 +363,22 @@ struct RaceSetup6
 
 struct RaceSetup7Car
 {
-    int unk00;        // 0x00
-    int car;          // 0x04
-    BYTE unk08[0x18]; // 0x08
+    int unk00;    // 0x00, player number, 0 for an AI car
+    int car;      // 0x04
+    char name[8]; // 0x08
+    int unk10;    // 0x10
+    int unk14;    // 0x14
+    int unk18;    // 0x18
+    int unk1c;    // 0x1c
 };
 
 struct RaceSetup7
 {
     RaceSetup7Car cars[6]; // 0x00
     int count;             // 0xc0
+    int players;           // 0xc4
+    int track;             // 0xc8, 1-based
+    int unkcc;             // 0xcc
 };
 
 struct RaceResults

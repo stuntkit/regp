@@ -4123,7 +4123,7 @@ void FUN_43d070(ObjectHolder *holder)
 }
 
 // FUNCTION: STUNTGP_D3D 0x43d0a0
-int FUN_43d0a0()
+int FUN_43d0a0(int count, int track)
 {
     return 0;
 }

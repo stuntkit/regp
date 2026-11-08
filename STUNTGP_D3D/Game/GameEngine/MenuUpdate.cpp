@@ -716,7 +716,7 @@ void FUN_436400(const char *name, int *value)
 }
 
 // FUNCTION: STUNTGP_D3D 0x436410
-void FUN_436410()
+void FUN_436410(const char *name, ShopItem *item)
 {
 }
 
@@ -2081,6 +2081,58 @@ void FUN_439e90()
 RaceState g_60d730;
 
 void FUN_43a4a0(RaceEntry *entry, int *out, ShopItem *item, int car, int team);
+void FUN_43a430(RaceEntry *entry, int *out, int car, int team);
+void FUN_43a720();
+void FUN_43a760(int player, int a, int b);
+Initials *FUN_43d690(Initials *name);
+
+// Starts a mode-1 race for the six cars of src; unk00 marks the human car.
+// FUNCTION: STUNTGP_D3D 0x43a2a0
+void FUN_43a2a0(RaceSetup1 *src, RaceResults *dst)
+{
+    g_5df528.src1 = src;
+    g_5df528.mode = 1;
+    g_5df528.dst1 = dst;
+    FUN_43d420();
+    FUN_43a720();
+    g_60d730.unk010 = 1;
+    g_60d730.unk04c = 2;
+    g_60d730.unk050 = 1;
+    g_60d730.unk054 = 4;
+    g_60d730.unk83c = 1;
+    g_60d730.unk000 = ((int(*)[6])g_menuState.unk1d618)[src->track][0];
+    g_60d730.unk01c = ((int(*)[6])g_menuState.unk1d618)[src->track][1];
+    g_60d730.unk018 = src->track - 1;
+    g_60d730.unk034 = src->unkac;
+    g_60d730.unk020 = 0;
+    g_60d730.unk840 = 0;
+    g_60d730.unk03c[0] = src->unkb0;
+    g_60d730.unk03c[1] = src->unkb4;
+    g_60d730.unk03c[2] = src->unkb8;
+    g_60d730.unk03c[3] = src->unkbc;
+    for (int i = 0; i < 6; i++)
+    {
+        RaceSetupCar *car = &src->cars[i];
+        int e = car->car - 1;
+        RaceEntry *entry = &g_60d730.entries[e];
+        strcpy((char *)entry->unk010, (char *)FUN_43d690((Initials *)&car->unk04));
+        entry->type = 2;
+        if (car->unk00)
+        {
+            entry->unk004 = 0;
+            FUN_43a760(g_menuState.unk4244, e, 1);
+            g_60d730.unk024[0] = e;
+        }
+        else
+        {
+            entry->unk004 = 1;
+            entry->unk008 = car->unk18;
+            entry->unk00c = car->unk14;
+        }
+        FUN_43a430(entry, &entry->unk034, car->unk08, car->unk10);
+    }
+    FUN_43d420();
+}
 
 // Race entry for a shop car: its stats as bought with its standard parts.
 // FUNCTION: STUNTGP_D3D 0x43a430
@@ -2190,6 +2242,53 @@ void FUN_43a760(int player, int a, int b)
     FUN_45ecc0(player - 1, a, b);
 }
 
+// Starts a mode-2 race for the first count cars of src.
+// FUNCTION: STUNTGP_D3D 0x43a780
+void FUN_43a780(RaceSetup2 *src)
+{
+    g_5df528.mode = 2;
+    int count = src->count;
+    FUN_43d420();
+    FUN_43a720();
+    g_60d730.unk010 = 0;
+    g_60d730.unk020 = 0;
+    g_60d730.unk04c = 2;
+    g_60d730.unk000 = ((int(*)[6])g_menuState.unk1d618)[src->track][0];
+    g_60d730.unk01c = ((int(*)[6])g_menuState.unk1d618)[src->track][2];
+    g_60d730.unk018 = src->track - 1;
+    g_60d730.unk034 = src->unkb0;
+    g_60d730.unk050 = 1;
+    g_60d730.unk054 = 4;
+    g_60d730.unk840 = 0;
+    g_60d730.unk83c = 1;
+    g_60d730.unk03c[0] = 7200;
+    g_60d730.unk03c[1] = 36000;
+    g_60d730.unk03c[2] = 0;
+    g_60d730.unk03c[3] = 0;
+    for (int i = 0; i < src->count; i++)
+    {
+        RaceSetupCar *car = &src->cars[i];
+        int e = car->car - 1;
+        RaceEntry *entry = &g_60d730.entries[e];
+        strcpy((char *)entry->unk010, (char *)FUN_43d690((Initials *)&car->unk04));
+        entry->type = 2;
+        if (car->unk00)
+        {
+            entry->unk004 = 0;
+            FUN_43a760(g_menuState.unk4244, e, 1);
+            g_60d730.unk024[0] = e;
+        }
+        else
+        {
+            entry->unk004 = 1;
+            entry->unk008 = car->unk18;
+            entry->unk00c = car->unk14;
+        }
+        FUN_43a430(entry, &entry->unk034, car->unk08, car->unk10);
+    }
+    FUN_43d420();
+}
+
 Initials *FUN_43d690(Initials *name);
 
 // Starts a mode-3 race from src.
@@ -2296,6 +2395,73 @@ void FUN_43aa50(RaceSetup6 *src, RaceResults6 *dst)
     FUN_43d420();
 }
 
+// Starts a mode-7 race for the count cars of src, players of them human.
+// FUNCTION: STUNTGP_D3D 0x43ac00
+void FUN_43ac00(RaceSetup7 *src, RaceResults7 *dst)
+{
+    g_5df528.mode = 7;
+    g_5df528.src7 = src;
+    int count = src->count;
+    g_5df528.dst7 = dst;
+    FUN_43d420();
+    FUN_43a720();
+    g_60d730.unk010 = 0;
+    g_60d730.unk020 = 0;
+    g_60d730.unk04c = 2;
+    g_60d730.unk000 = ((int(*)[6])g_menuState.unk1d618)[src->track][0];
+    g_60d730.unk01c = ((int(*)[6])g_menuState.unk1d618)[src->track][3];
+    g_60d730.unk018 = src->track - 1;
+    g_60d730.unk034 = src->unkcc;
+    g_60d730.unk050 = 1;
+    g_60d730.unk054 = 4;
+    g_60d730.unk840 = 0;
+    g_60d730.unk83c = 1;
+    g_60d730.unk03c[0] = 7200;
+    g_60d730.unk03c[1] = 36000;
+    g_60d730.unk03c[2] = 0;
+    g_60d730.unk03c[3] = 0;
+    switch (src->players)
+    {
+    case 1:
+        g_60d730.unk020 = 0;
+        break;
+    case 2:
+        g_60d730.unk020 = 2;
+        break;
+    case 3:
+        g_60d730.unk020 = 3;
+        break;
+    case 4:
+        g_60d730.unk020 = 4;
+        break;
+    default:
+        return;
+    }
+    for (int i = 0; i < count; i++)
+    {
+        RaceSetup7Car *car = &src->cars[i];
+        int e = car->car - 1;
+        RaceEntry *entry = &g_60d730.entries[e];
+        strcpy((char *)entry->unk010, car->name);
+        entry->type = 2;
+        if (car->unk00)
+        {
+            entry->unk004 = 0;
+            FUN_43a760(car->unk00, e, i + 1);
+            g_60d730.unk024[i] = e;
+            FUN_43a430(entry, &entry->unk034, car->unk10, 0);
+        }
+        else
+        {
+            entry->unk004 = 1;
+            entry->unk008 = car->unk1c;
+            entry->unk00c = car->unk18;
+            FUN_43a430(entry, &entry->unk034, car->unk10, car->unk14);
+        }
+    }
+    FUN_43d420();
+}
+
 // Starts a mode-4 race from src: the player's car alone on the track against the clock.
 // FUNCTION: STUNTGP_D3D 0x43ae00
 void FUN_43ae00(RaceSetup4 *src, RaceResults4 *dst)
@@ -2327,6 +2493,57 @@ void FUN_43ae00(RaceSetup4 *src, RaceResults4 *dst)
     g_60d730.entries[0].unk004 = 0;
     FUN_43a430(&g_60d730.entries[0], &g_60d730.entries[0].unk034, src->car, 8);
     g_60d730.unk024[0] = 0;
+    FUN_43d420();
+}
+
+// Starts a mode-5 race for the six cars of src; the human car takes src's own stats.
+// FUNCTION: STUNTGP_D3D 0x43af20
+void FUN_43af20(RaceSetup5 *src, RaceResults *dst)
+{
+    g_5df528.dst5 = dst;
+    g_5df528.mode = 5;
+    g_5df528.src5 = src;
+    // STRING: STUNTGP_D3D 0x479410
+    FUN_436410("PlayerDynamics", &src->item);
+    FUN_43d420();
+    FUN_43a720();
+    g_60d730.unk010 = 1;
+    g_60d730.unk04c = 2;
+    g_60d730.unk050 = 1;
+    g_60d730.unk000 = ((int(*)[6])g_menuState.unk1d618)[src->track][0];
+    g_60d730.unk054 = 4;
+    g_60d730.unk83c = 1;
+    g_60d730.unk01c = ((int(*)[6])g_menuState.unk1d618)[src->track][5];
+    g_60d730.unk018 = src->track - 1;
+    g_60d730.unk034 = src->unk1d8;
+    g_60d730.unk020 = 0;
+    g_60d730.unk840 = 0;
+    g_60d730.unk03c[0] = src->unk1dc;
+    g_60d730.unk03c[1] = src->unk1e0;
+    g_60d730.unk03c[2] = src->unk1e4;
+    g_60d730.unk03c[3] = src->unk1e8;
+    for (int i = 0; i < 6; i++)
+    {
+        RaceSetupCar *car = &src->cars[i];
+        int e = car->car - 1;
+        RaceEntry *entry = &g_60d730.entries[e];
+        strcpy((char *)entry->unk010, (char *)FUN_43d690((Initials *)&car->unk04));
+        entry->type = 2;
+        if (car->unk00)
+        {
+            FUN_43a760(g_menuState.unk4244, e, 1);
+            g_60d730.unk024[0] = e;
+            entry->unk004 = 0;
+            FUN_43a4a0(entry, &entry->unk034, &src->item, car->unk08, car->unk10);
+        }
+        else
+        {
+            entry->unk004 = 1;
+            entry->unk008 = car->unk18;
+            entry->unk00c = car->unk14;
+            FUN_43a430(entry, &entry->unk034, car->unk08, car->unk10);
+        }
+    }
     FUN_43d420();
 }
 
