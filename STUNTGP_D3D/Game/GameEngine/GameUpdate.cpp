@@ -4674,6 +4674,69 @@ void FUN_41af70()
     FUN_460d90(&car->unk237c);
 }
 
+// GLOBAL: STUNTGP_D3D 0x47475c
+int g_47475c[6] = {0, 24, 29, 29, 29, 24};
+
+// Rolling noise: loudness from the load on each grounded wheel, pitch from the car's speed.
+// FUNCTION: STUNTGP_D3D 0x41b0d0
+void FUN_41b0d0()
+{
+    float sum = 0.0f;
+    int muted = 0;
+    unsigned int surface = 0;
+    for (int i = 0; i < 4; i++)
+    {
+        Wheel *w = &g_4d5bb8->wheels[i];
+        if (w->unk0c > 0.0f)
+        {
+            float s = w->unk04 * w->unk04 * 0.125f;
+            if (s < 1.0f)
+            {
+                float k = s * 160.0f;
+                s += k;
+            }
+            else
+            {
+                s += 160.0f;
+            }
+            muted |= w->unk7c;
+            float v = (w->unk0c / w->unk10) * s;
+            if ((unsigned int)w->unk78 > surface)
+            {
+                surface = w->unk78;
+            }
+            if (v > 255.0f)
+            {
+                v = 255.0f;
+            }
+            sum += v;
+        }
+    }
+    if (sum < 1.0f)
+    {
+        FUN_460d90(&g_4d5bb8->unk2384);
+        return;
+    }
+    float vol = sum * 0.09411765f;
+    float pitch = (float)fabs(g_4d5bb8->unk1cf0) * 0.0108f;
+    if (pitch > 1.0f)
+    {
+        pitch = 1.0f;
+    }
+    pitch = pitch * 33792.0f + 11264.0f;
+    if (muted)
+    {
+        FUN_460d90(&g_4d5bb8->unk2384);
+    }
+    if (!g_4d5bb8->unk2384)
+    {
+        FUN_4614a0(g_47475c[surface], 1, (int)pitch, (int)vol, (Vec4 *)&g_4d5bb8->posX, NULL, 0,
+                   &g_4d5bb8->unk2384);
+        return;
+    }
+    FUN_461850(&g_4d5bb8->unk2384, (int)pitch, (int)vol, (Vec4 *)&g_4d5bb8->posX, NULL);
+}
+
 // FUNCTION: STUNTGP_D3D 0x41b250
 void FUN_41b250()
 {
@@ -4697,6 +4760,81 @@ void FUN_41b250()
         }
         FUN_4614a0(0x1c, 0, 0, vol + 32, (Vec4 *)&car->posX, NULL, 0, NULL);
         g_4d5bb8->unk2374 = g_4d5bb8->unk2378;
+    }
+}
+
+// GLOBAL: STUNTGP_D3D 0x474714
+int g_474714[6] = {0, 25, 27, 25, 25, 25};
+
+// GLOBAL: STUNTGP_D3D 0x474774
+int g_474774[4] = {12, 13, 14, 12};
+
+// GLOBAL: STUNTGP_D3D 0x570acc
+unsigned int g_570acc;
+
+// Scrape loop while unk236c counts down, plus a one-shot crunch for a hard enough hit.
+// FUNCTION: STUNTGP_D3D 0x41b2f0
+void FUN_41b2f0()
+{
+    if (!g_4d5bb8->unk236c)
+    {
+        FUN_460d90(&g_4d5bb8->unk2380);
+        g_4d5bb8->unk236c = 0;
+        g_4d5bb8->unk2370 = 0;
+        return;
+    }
+    float hit = g_4d5bb8->unk2360;
+    g_4d5bb8->unk2360 = 0.0f;
+    g_4d5bb8->unk236c--;
+    if (g_4d5bb8->unk1cf0 > 100.0f / 60.0f && g_4d5bb8->unk236c > 0)
+    {
+        float a = (float)fabs(hit);
+        if (a > 1.0f)
+        {
+            a = 1.0f;
+        }
+        a *= 128.0f;
+        float speed = (float)fabs(g_4d5bb8->unk1cf0);
+        float b = speed * (1.0f / 60.0f);
+        if (b > 1.0f)
+        {
+            b = 1.0f;
+        }
+        float vol = b * a;
+        int channel = g_474714[g_4d5bb8->wheels[0].unk78];
+        float c = speed * 0.012f;
+        if (c > 1.0f)
+        {
+            c = 1.0f;
+        }
+        float freq = c * 17408.0f + 5120.0f;
+        if (!g_4d5bb8->unk2380)
+        {
+            FUN_4614a0(channel, 1, (int)freq, (int)vol, (Vec4 *)&g_4d5bb8->posX, NULL, 0, &g_4d5bb8->unk2380);
+        }
+        else
+        {
+            FUN_461850(&g_4d5bb8->unk2380, (int)freq, (int)vol, (Vec4 *)&g_4d5bb8->posX, NULL);
+        }
+    }
+    else if (g_4d5bb8->unk1cf0 < 100.0f / 60.0f)
+    {
+        FUN_460d90(&g_4d5bb8->unk2380);
+    }
+    if (hit >= 4.0f)
+    {
+        float v = hit * 8.0f + 64.0f;
+        if (v > 255.0f)
+        {
+            v = 255.0f;
+        }
+        if (!g_4d5bb8->unk2370)
+        {
+            v *= 255.0f;
+            int idx = g_570acc++ & 3;
+            FUN_4614a0(g_474774[idx], 0, 0, (int)(v * (1.0f / 255.0f)), (Vec4 *)&g_4d5bb8->posX, NULL, 0,
+                       &g_4d5bb8->unk2370);
+        }
     }
 }
 
@@ -4744,6 +4882,64 @@ void FUN_41b680()
         }
         FUN_4614a0(g_47472c[g_4d5bb8->wheels[0].unk78], 0, 0, vol + 32, (Vec4 *)&g_4d5bb8->posX, NULL, 0, NULL);
     }
+}
+
+GameSlot *FUN_402590(Car *car);
+
+// GLOBAL: STUNTGP_D3D 0x4746c4
+int g_4746c4[5] = {34, 35, 36, 37, 38};
+
+// Peak volume of the gear change clunk per gear.
+// GLOBAL: STUNTGP_D3D 0x474794
+unsigned int g_474794[9] = {160, 160, 136, 112, 80, 48, 32, 24, 19};
+
+// FUNCTION: STUNTGP_D3D 0x41b710
+void FUN_41b710()
+{
+    if (g_4d5bb8->unk2394)
+    {
+        float t = g_4d5bb8->unk2398;
+        float f = t * 11025.0f;
+        FUN_4614a0(0x17, 0, (int)(f + 11025.0f), (int)(t * 255.0f), (Vec4 *)&g_4d5bb8->posX, NULL, 0, NULL);
+        g_4d5bb8->unk2394 = 0;
+    }
+    if (g_4d5bb8->controls[9])
+    {
+        if (!g_4d5bb8->unk2338)
+        {
+            FUN_4614a0(g_4746c4[g_4d5bb8->race.unk80[0]], 1, 0, 0xe0, (Vec4 *)&g_4d5bb8->posX, &g_4d5bb8->unk1c8c,
+                       0, &g_4d5bb8->unk2338);
+        }
+        else
+        {
+            FUN_461850(&g_4d5bb8->unk2338, 0, 0xe0, (Vec4 *)&g_4d5bb8->posX, &g_4d5bb8->unk1c8c);
+        }
+    }
+    else if (g_4d5bb8->unk2338)
+    {
+        FUN_460d90(&g_4d5bb8->unk2338);
+    }
+    g_4722d0 = FUN_402590(g_4d5bb8);
+    if (g_4722d0 && g_4d5bb8->unk23a0 == 1)
+    {
+        g_4d5bb8->unk23a0 = 0;
+        int gear = abs((int)g_4d5bb8->unk1f10);
+        Vec4 d;
+        d.x = g_4722d0->cam.pos.x - g_4d5bb8->posX;
+        d.y = g_4722d0->cam.pos.y - g_4d5bb8->posY;
+        d.z = g_4722d0->cam.pos.z - g_4d5bb8->posZ;
+        float v = (7500.0f - (float)sqrt(d.x * d.x + d.y * d.y + d.z * d.z)) * 0.00013333333f;
+        if (v > 0.0f)
+        {
+            v += 0.1f;
+            if (v > 1.0f)
+            {
+                v = 1.0f;
+            }
+            FUN_461150(0x21, 0, 0, (int)(g_474794[gear] * (v * v)), 0, 1, 0);
+        }
+    }
+    FUN_402580();
 }
 
 // FUNCTION: STUNTGP_D3D 0x41bdd0

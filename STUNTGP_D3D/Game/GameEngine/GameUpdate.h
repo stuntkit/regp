@@ -599,7 +599,8 @@ struct Car
     float unk2328;            // 0x2328
     float unk232c;            // 0x232c
     float unk2330;            // 0x2330
-    BYTE unk2334[0x8];        // 0x2334
+    BYTE unk2334[0x4];        // 0x2334
+    int unk2338;              // 0x2338
     int unk233c[4];           // 0x233c
     int unk234c;              // 0x234c
     int unk2350;              // 0x2350
@@ -610,7 +611,7 @@ struct Car
     float unk2360;            // 0x2360
     float unk2364;            // 0x2364
     int unk2368;              // 0x2368
-    int unk236c;              // 0x236c
+    unsigned int unk236c;     // 0x236c
     int unk2370;              // 0x2370
     int unk2374;              // 0x2374
     int unk2378;              // 0x2378
