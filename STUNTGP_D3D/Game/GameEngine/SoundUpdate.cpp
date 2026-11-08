@@ -756,8 +756,8 @@ void FUN_461150(int channel, int loop, DWORD frequency, DWORD volume, int pan, i
     {
         return;
     }
-    int level = g_4897f8[g_sfxVolume * volume / 255 / 2];
-    if (buffer->SetVolume(level) != DS_OK)
+    DWORD v = g_sfxVolume * volume / 255;
+    if (buffer->SetVolume(g_4897f8[v / 2]) != DS_OK)
     {
         return;
     }
