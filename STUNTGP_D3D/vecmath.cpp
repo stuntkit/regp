@@ -733,7 +733,9 @@ void Matrix_FromRows(float *r0, float *r1, float *r2, float *m)
     m[11] = r2[3];
 }
 
+struct Unk4516c0;
+
 // FUNCTION: STUNTGP_D3D 0x4516f0
-void FUN_4516f0()
+void FUN_4516f0(Unk4516c0 *object)
 {
 }

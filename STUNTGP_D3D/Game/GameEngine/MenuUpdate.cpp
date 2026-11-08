@@ -3825,6 +3825,70 @@ void FUN_450e10(Unk4516c0 *object)
     object->unk18 = NULL;
 }
 
+// GLOBAL: STUNTGP_D3D 0x624a14
+char g_624a14[0x100];
+
+char *FUN_441170(int id);
+void FUN_438960(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color,
+                DWORD flags);
+
+// Results table: a heading, then per slot its name, car, two scores and position, then the money lines.
+// FUNCTION: STUNTGP_D3D 0x450e50
+void FUN_450e50(int a, int b, float x, float y)
+{
+    float x0 = x - 160.0f;
+    float y0 = y - 123.0f;
+    x += 160.0f;
+    y += 123.0f;
+    FUN_439450(x0, y0, x, y, 10, 0x6e, 0x40);
+    FUN_439380(x0, y0, x, y, 13, 2, 0, 0.0f);
+    y = y0 + 24.0f;
+    sprintf(g_624a14, FUN_441170(0xa7), a, b >= a ? b : a);
+    float cx = (x0 + x) * 0.5f;
+    FUN_438960(cx, y, 12, 0, 4, g_624a14, 1.25f, 0xffffffff, 3);
+    y += 26.0f;
+    x = x0 + 18.0f;
+    FUN_438be0(x, y, 12, 4, 0xaa, 1.25f, 0xffff8080, 2);
+    float x2 = x0 + 80.0f;
+    FUN_438be0(x2, y, 12, 4, 0xab, 1.25f, 0xffff8080, 2);
+    float x3 = x0 + 244.0f;
+    FUN_438be0(x3, y, 12, 4, 0xac, 1.25f, 0xffff8080, 6);
+    float x4 = x0 + 190.0f;
+    FUN_438be0(x4, y, 12, 4, 0xad, 1.25f, 0xffff8080, 6);
+    float x5 = x0 + 290.0f;
+    FUN_438be0(x5, y, 12, 4, 0xae, 1.25f, 0xffff8080, 3);
+    y += 20.0f;
+    for (int i = 0; i < 6; i++)
+    {
+        MenuSlot20 *slot = &g_menuState.unk1a544[i];
+        D3DCOLOR color = slot->unk0c;
+        FUN_438960(x, y, 12, 0, 4, slot->name, 1.25f, color, 2);
+        FUN_438be0(x2, y, 12, 4, slot->unk1c + 0x1ea, 1.25f, color, 2);
+        // STRING: STUNTGP_D3D 0x4868f0
+        sprintf(g_624a14, "%d", slot->unk04);
+        FUN_438a20(x3, y, 12, 0, 4, g_624a14, 1.25f, color, 6, 14.0f);
+        // STRING: STUNTGP_D3D 0x4868f4
+        sprintf(g_624a14, "%d", slot->unk08);
+        FUN_438a20(x4, y, 12, 0, 4, g_624a14, 1.25f, color, 6, 14.0f);
+        FUN_438be0(x5, y, 12, 4, slot->unk10 + 2, 1.25f, color, 3);
+        y += 16.0f;
+    }
+    y += 10.0f;
+    x = x0 + 88.0f;
+    FUN_438be0(cx, y, 12, 4, 0xa8, 1.25f, 0xffffffff, 3);
+    y += 26.0f;
+    float label = x + 32.0f;
+    FUN_438be0(label, y, 12, 4, 0xaf, 1.25f, 0xffc8c8ff, 6);
+    float sign = x + 64.0f;
+    FUN_438be0(sign, y, 12, 4, 0x1b, 1.25f, 0xffc8c8ff, 3);
+    x += 160.0f;
+    FUN_438a20(x, y, 12, 0, 4, g_menuState.unk1a608, 1.25f, 0xffc8c8ff, 6, 14.0f);
+    y += 20.0f;
+    FUN_438be0(label, y, 12, 4, 0xb0, 1.25f, 0xffc8c8ff, 6);
+    FUN_438be0(sign, y, 12, 4, 0x1b, 1.25f, 0xffc8c8ff, 3);
+    FUN_438a20(x, y, 12, 0, 4, g_menuState.unk1a64c, 1.25f, 0xffc8c8ff, 6, 14.0f);
+}
+
 // FUNCTION: STUNTGP_D3D 0x451680
 void FUN_451680(Unk4516c0 *object)
 {

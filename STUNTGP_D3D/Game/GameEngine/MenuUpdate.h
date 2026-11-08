@@ -501,7 +501,8 @@ struct MenuState
     MenuSponsor sponsors[7];     // 0x19f10, [1..6] used
     int positions[6][4];         // 0x19f48
     MenuRound rounds[21];        // 0x19fa8
-    BYTE unk1a53c[0x1a544 - 0x1a53c];
+    int unk1a53c; // 0x1a53c
+    int unk1a540; // 0x1a540
     MenuSlot20 unk1a544[6]; // 0x1a544
     int unk1a604;           // 0x1a604
     char unk1a608[0x40];    // 0x1a608
@@ -527,7 +528,11 @@ struct MenuState
     int unk1d630[25][6];          // 0x1d630, read by FUN_434f60
     MenuCarEntry unk1d888[3][4];  // 0x1d888, Easy, Medium, Hard; read by FUN_434e90
     int unk1d9a8; // 0x1d9a8
-    BYTE unk1d9ac[0x1da5c - 0x1d9ac];
+    int unk1d9ac;           // 0x1d9ac, FUN_43dd40 id of the results page
+    MenuLine unk1d9b0[20];  // 0x1d9b0
+    int unk1da50;           // 0x1da50, lines in unk1d9b0
+    int unk1da54;           // 0x1da54
+    int unk1da58;           // 0x1da58
     int unk1da5c[6][2];           // 0x1da5c, read by FUN_434e10
     int unk1da8c;                 // 0x1da8c
     int unk1da90[4][2];           // 0x1da90

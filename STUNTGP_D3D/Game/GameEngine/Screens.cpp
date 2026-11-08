@@ -996,9 +996,151 @@ int FUN_450950(Unk450930 *object, int msg, int arg)
     return 0;
 }
 
-// STUB: STUNTGP_D3D 0x4512b0
-int FUN_4512b0(PoolObject *object, int msg, int arg)
+void FUN_450db0(Unk4516c0 *object);
+void FUN_450dd0(Unk4516c0 *object);
+void FUN_450e50(int a, int b, float x, float y);
+void FUN_451680(Unk4516c0 *object);
+void FUN_4516c0(Unk4516c0 *object);
+void FUN_4516f0(Unk4516c0 *object);
+
+// Championship hub: the round menu (unk14) and its confirm box (unk18) over the results table.
+// FUNCTION: STUNTGP_D3D 0x4512b0
+int FUN_4512b0(PoolObject *base, int msg, int arg)
 {
+    Unk4516c0 *object = (Unk4516c0 *)base;
+    PoolObject *child;
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(1);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(0x5f, 0.3f, -0.5f);
+        object->unk14->message(object->unk14, msg, 0);
+        return 0;
+    case 0x10:
+        if (object->unk28)
+        {
+            child = object->unk18;
+            child->message(child, msg, 0);
+            if (child->message(child, 0x1a, 0) == 1)
+            {
+                FUN_4516c0(object);
+                return 0;
+            }
+            g_menuState.unk1a53c = 2;
+            if (g_menuState.unk19d7c.unk008 > 1)
+            {
+                FUN_43eef0();
+                return 0;
+            }
+            FUN_43eef0();
+            return 0;
+        }
+        else
+        {
+            child = object->unk14;
+            switch (child->message(child, 0x1a, 0))
+            {
+            case 0:
+                child->message(child, msg, 0);
+                g_menuState.unk1a53c = 4;
+                FUN_43eef0();
+                return 0;
+            case 1:
+                child->message(child, msg, 0);
+                FUN_43dfa0(0x16, 7);
+                object->unk20 = 1;
+                return 0;
+            case 2:
+                if (g_menuState.unk4398 > 0)
+                {
+                    object->unk1c = 1;
+                    child->message(child, msg, 0);
+                    FUN_43dfa0(0x14, 10);
+                    return 0;
+                }
+                FUN_440880(9);
+                return 0;
+            case 3:
+                child->message(child, msg, 0);
+                g_menuState.unk46bc = 0;
+                g_menuState.unk46c0 = 0;
+                g_menuState.unk46c8 = 3;
+                g_menuState.unk46c4 = 0;
+                object->unk24 = 1;
+                FUN_43dfa0(0, 0x1b);
+                return 0;
+            case 4:
+                FUN_451680(object);
+                object->unk14->message(object->unk14, msg, 0);
+                return 0;
+            }
+        }
+        break;
+    case 0x11:
+        if (object->unk28)
+        {
+            FUN_4516c0(object);
+            FUN_440890(msg);
+            return 0;
+        }
+        FUN_440890(msg);
+        FUN_451680(object);
+        return 0;
+    case 0xb:
+    case 0xc:
+        if (object->unk28)
+        {
+            child = object->unk18;
+            child->message(child, msg, 0);
+            return 0;
+        }
+        child = object->unk14;
+        child->message(child, msg, 0);
+        return 0;
+    case 2:
+        object->unk14->message(object->unk14, msg, 0);
+        child = object->unk18;
+        child->message(child, msg, 0);
+        return 0;
+    case 1:
+        FUN_450dd0(object);
+        if (object->unk24)
+        {
+            object->unk24 = 0;
+            if (g_menuState.unk46e0)
+            {
+                g_menuState.unk1a540 = 0;
+                object->unk14->message(object->unk14, 0x1c, 0);
+            }
+        }
+        if (object->unk1c)
+        {
+            object->unk1c = 0;
+            if (g_menuState.unk4394)
+            {
+                break;
+            }
+            int car = g_menuState.unk43f4[g_menuState.unk4238];
+            int refund = FUN_437de0(g_menuState.unk19d7c.sponsor, g_menuState.unk19d7c.car,
+                                    &g_menuState.unk19d7c.carSetup);
+            int price = FUN_437de0(g_menuState.unk19d7c.sponsor, car, &g_menuState.cars[car]);
+            g_menuState.unk19d7c.money += refund;
+            g_menuState.unk19d7c.car = car;
+            object->unk20 = 1;
+            g_menuState.unk19d7c.carSetup = g_menuState.cars[car];
+            g_menuState.unk19d7c.money -= price;
+        }
+        FUN_450db0(object);
+        return 0;
+    case 3:
+        FUN_4392b0(0x9b, 0);
+        object->unk14->message(object->unk14, msg, 0);
+        object->unk18->message(object->unk18, msg, 0);
+        FUN_4516f0(object);
+        FUN_450e50(g_menuState.unk19d7c.unk008, g_menuState.numberOfRounds, 192.0f, 240.0f);
+        break;
+    }
     return 0;
 }
 
@@ -3744,9 +3886,40 @@ int FUN_45a360(MenuHolder *object, int arg)
     return 1;
 }
 
-// STUB: STUNTGP_D3D 0x45a410
-int FUN_45a410(PoolObject *object, int msg, int arg)
+void FUN_450e50(int a, int b, float x, float y);
+void FUN_45a500(MenuLine *lines, int count);
+
+// Results page: its text lines over the results table; any key leaves.
+// FUNCTION: STUNTGP_D3D 0x45a410
+int FUN_45a410(PoolObject *base, int msg, int arg)
 {
+    MenuHolder *object = (MenuHolder *)base;
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(1);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(g_menuState.unk1d9ac, 0.3f, -0.5f);
+    case 2:
+    case 0xb:
+    case 0xc:
+    case 0x14:
+        object->child->message(object->child, msg, 0);
+        return 0;
+    case 0x11:
+        FUN_440890(msg);
+        g_menuState.unk1d9a8 = 1;
+        FUN_43eef0();
+        return 0;
+    case 0x10:
+        object->child->message(object->child, msg, 0);
+        FUN_43eef0();
+        return 0;
+    case 3:
+        FUN_45a500(g_menuState.unk1d9b0, g_menuState.unk1da50);
+        FUN_450e50(g_menuState.unk1da54, g_menuState.unk1da58, 320.0f, 180.0f);
+        break;
+    }
     return 0;
 }
 
