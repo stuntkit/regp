@@ -246,19 +246,20 @@ int g_4d5ca0;
 struct Unk496990
 {
     int unk00;        // 0x00
-    BYTE unk04[0x4];  // 0x04
+    Car *unk04;       // 0x04
     int unk08;        // 0x08
-    BYTE unk0c[0x4];  // 0x0c
+    int unk0c;        // 0x0c
     int unk10;        // 0x10
     float unk14;      // 0x14
     float unk18;      // 0x18
-    BYTE unk1c[0x8];  // 0x1c
+    int unk1c;        // 0x1c
+    BYTE unk20[0x4];  // 0x20
     float unk24;      // 0x24
     int unk28;        // 0x28
     int unk2c;        // 0x2c
     BYTE unk30[0x4];  // 0x30
     int unk34;        // 0x34
-    BYTE unk38[0x8];  // 0x38
+    char unk38[0x8];  // 0x38, score text
     int unk40;        // 0x40
     float unk44;      // 0x44
     float unk48;      // 0x48
@@ -272,18 +273,30 @@ struct Unk496990
     float unk68;      // 0x68
     float unk6c;      // 0x6c
     float unk70;      // 0x70
-    BYTE unk74[0x18]; // 0x74
+    float unk74;      // 0x74
+    float unk78;      // 0x78
+    DWORD unk7c;      // 0x7c, colours
+    DWORD unk80;      // 0x80
+    DWORD unk84;      // 0x84
+    int unk88;        // 0x88
     int unk8c;        // 0x8c
-    BYTE unk90[0x8];  // 0x90
+    int unk90;        // 0x90
+    int unk94;        // 0x94
     int unk98;        // 0x98
-    BYTE unk9c[0x10]; // 0x9c
+    int unk9c;        // 0x9c
+    float unka0;      // 0xa0
+    float unka4;      // 0xa4
+    float unka8;      // 0xa8
     int unkac;        // 0xac
     float x;          // 0xb0
     float y;          // 0xb4
     float unkb8;      // 0xb8
     float width;      // 0xbc
     float height;     // 0xc0
-    BYTE unkc4[0x10]; // 0xc4
+    float u0;         // 0xc4
+    float v0;         // 0xc8
+    float u1;         // 0xcc
+    float v1;         // 0xd0
     int unkd4;        // 0xd4
     int unkd8;        // 0xd8
     int unkdc;        // 0xdc
@@ -394,6 +407,224 @@ void FUN_4011c0(int channel, DWORD volume)
     g_497d14 = channel;
     g_497d18 = volume;
     FUN_461150(channel, 0, 0, volume, 0xff, 0, NULL);
+}
+
+extern int g_60f2b4;
+extern int g_60d680;
+extern HudDigit g_472030[6];
+GameSlot *FUN_402590(Car *car);
+
+// Spawns a score popup for the current car and adds the points to its total: type picks the sprite,
+// sound and colour, kind how the popup moves.
+// FUNCTION: STUNTGP_D3D 0x401220
+void FUN_401220(int type, int kind, unsigned int points)
+{
+    if (g_60f2b4 != 2 || g_4d5bb8->unk24e0 == 1 || g_60f2b0 == 4 || (g_60f2b0 == 3 && g_60d680))
+    {
+        return;
+    }
+    g_4d5bb8->unk260c += points;
+    if (!FUN_402590(g_4d5bb8) || g_612948.unk0054 == 1)
+    {
+        return;
+    }
+    int i = 0;
+    Unk496990 *e = g_496990;
+    while (e->unk00 == 1)
+    {
+        i++;
+        if (i >= 16)
+        {
+            return;
+        }
+        e++;
+    }
+    HudDigit *d = &g_472030[type];
+    e->unk14 = 0.0f;
+    e->unk18 = 0.0f;
+    e->unk1c = 0;
+    e->unk34 = points;
+    // STRING: STUNTGP_D3D 0x47220c
+    sprintf(e->unk38, "%d", points);
+    int sample = 0x2f;
+    if (type > 2)
+    {
+        sample = 0x2e;
+    }
+    FUN_4011c0(sample, 0xc0);
+    switch (kind)
+    {
+    case 0:
+        e->unkd4 = d->texture;
+        e->width = d->width;
+        e->height = d->height;
+        e->u0 = d->u0;
+        e->v0 = d->v0;
+        e->u1 = d->u1;
+        e->v1 = d->v1;
+        e->unk10 = 0x18;
+        e->unk40 = 1;
+        e->unk2c = 60;
+        e->unk18 = -5.0f;
+        e->unk24 = -0.025f;
+        e->unk70 = 0.0f;
+        e->unk64 = 8.0f;
+        e->unk68 = 0.0f;
+        e->unk6c = 15.0f;
+        e->unk44 = 2.0f;
+        e->unk48 = 60.0f;
+        e->unk4c = 0.0f;
+        e->unk54 = 255.0f;
+        e->unk58 = 15.0f;
+        e->unk5c = 15.0f;
+        e->unk8c = 9;
+        e->unk88 = 15;
+        e->unk90 = 0x3f;
+        e->unk94 = 0;
+        e->unk98 = 0;
+        break;
+    case 1:
+        e->unkd4 = d->texture;
+        e->width = d->width;
+        e->height = d->height;
+        e->u0 = d->u0;
+        e->v0 = d->v0;
+        e->u1 = d->u1;
+        e->v1 = d->v1;
+        e->unk10 = 0x19;
+        e->unk40 = 1;
+        e->unk24 = -0.025f;
+        e->unk2c = 60;
+        e->unk18 = -5.0f;
+        e->unk70 = 0.0f;
+        e->unk64 = -8.0f;
+        e->unk68 = 0.0f;
+        e->unk6c = 15.0f;
+        e->unk44 = 2.0f;
+        e->unk48 = 60.0f;
+        e->unk4c = 0.0f;
+        e->unk54 = 255.0f;
+        e->unk58 = 15.0f;
+        e->unk5c = 15.0f;
+        e->unk8c = 9;
+        e->unk88 = 15;
+        e->unk90 = 0x55;
+        e->unk94 = 0;
+        e->unk98 = 0;
+        break;
+    case 2:
+        e->unkd4 = d->texture;
+        e->width = d->width;
+        e->height = d->height;
+        e->u0 = d->u0;
+        e->v0 = d->v0;
+        e->u1 = d->u1;
+        e->v1 = d->v1;
+        e->unk10 = 0x39;
+        e->unk40 = 1;
+        e->unk2c = 120;
+        e->unk24 = 0.025f;
+        e->unk70 = 0.0f;
+        e->unk64 = -11.75f;
+        e->unk68 = 60.0f;
+        e->unk6c = 0.0f;
+        e->unk44 = 2.0f;
+        e->unk48 = 30.0f;
+        e->unk4c = 0.0f;
+        e->unk54 = 255.0f;
+        e->unk58 = 0.0f;
+        e->unk5c = 15.0f;
+        e->unk8c = 9;
+        e->unk88 = 16;
+        e->unk90 = 0x3f;
+        e->unk94 = 0;
+        e->unk98 = 0;
+        break;
+    case 3:
+        e->unkd4 = d->texture;
+        e->width = d->width;
+        e->height = d->height;
+        e->u0 = d->u0;
+        e->v0 = d->v0;
+        e->u1 = d->u1;
+        e->v1 = d->v1;
+        e->unk10 = 0x39;
+        e->unk40 = 1;
+        e->unk2c = 120;
+        e->unk24 = 0.025f;
+        e->unk70 = 0.0f;
+        e->unk64 = -11.75f;
+        e->unk68 = 60.0f;
+        e->unk6c = 0.0f;
+        e->unk44 = 2.0f;
+        e->unk48 = 30.0f;
+        e->unk4c = 0.0f;
+        e->unk54 = 255.0f;
+        e->unk58 = 0.0f;
+        e->unk5c = 15.0f;
+        e->unk8c = 9;
+        e->unk88 = 16;
+        e->unk90 = 0x7f;
+        e->unk94 = 0;
+        e->unk74 = 30.0f;
+        e->unk78 = 15.0f;
+        e->unk7c = 0;
+        e->unk80 = 0xffffff;
+        e->unk84 = 0xc0c0c0;
+        e->unk98 = 1;
+        e->unk9c = 0;
+        e->unka0 = 30.0f;
+        e->unka4 = 15.0f;
+        e->unka8 = 15.0f;
+        break;
+    default:
+        return;
+    }
+    e->unk10 |= 0x20;
+    e->unk74 = 6.0f;
+    e->unk78 = 6.0f;
+    DWORD colour;
+    if (type == 0 || type == 3)
+    {
+        colour = 0xffa000;
+    }
+    else if (type == 1 || type == 4)
+    {
+        colour = 0xe0f0ff;
+    }
+    else if (type == 2 || type == 5)
+    {
+        colour = 0xffdc00;
+    }
+    else
+    {
+        goto place;
+    }
+    e->unk7c = colour;
+    e->unk80 = colour;
+    e->unk84 = colour;
+place:
+    e->unk00 = 1;
+    e->unk04 = g_4d5bb8;
+    e->unk08 = kind;
+    e->unk0c = type;
+    e->unk28 = 0;
+    e->unkd8 = 0x48;
+    e->unkac = e->unk10;
+    e->unkdc = 0;
+    e->unke0 = 0;
+    e->unkec = 1.0f;
+    e->unkf0 = 1.0f;
+    float hw = e->width * 0.5f;
+    float hh = e->height * 0.5f;
+    if (type == 0 || type == 1 || type == 2)
+    {
+        hw = e->width;
+    }
+    e->halfWidth = hw;
+    e->halfHeight = hh;
+    e->x = 320.0f - hw;
+    e->y = 240.0f - hh;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4011f0

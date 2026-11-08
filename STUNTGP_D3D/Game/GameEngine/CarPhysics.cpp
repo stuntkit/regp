@@ -112,11 +112,6 @@ DWORD g_5712f4;
 // GLOBAL: STUNTGP_D3D 0x5712f8
 int g_5712f8;
 
-// STUB: STUNTGP_D3D 0x401220
-void FUN_401220(int type, int mode, unsigned int points)
-{
-}
-
 // Returns the player slot driving this car, or NULL for AI cars.
 // FUNCTION: STUNTGP_D3D 0x402590
 GameSlot *FUN_402590(Car *car)

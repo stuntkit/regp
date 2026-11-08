@@ -465,6 +465,18 @@ struct StuntKnot
     int grade;          // 0x08
 };
 
+// Cell of a HUD texture: texture, source rectangle and on-screen size.
+struct HudDigit
+{
+    int texture;  // 0x00
+    float u0;     // 0x04
+    float v0;     // 0x08
+    float u1;     // 0x0c
+    float v1;     // 0x10
+    float width;  // 0x14
+    float height; // 0x18
+};
+
 struct Car
 {
     BYTE unk0000[0x20];       // 0x0000

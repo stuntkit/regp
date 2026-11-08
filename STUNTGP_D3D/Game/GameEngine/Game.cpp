@@ -406,16 +406,15 @@ void FUN_44a800()
     }
 }
 
-// Cell of the large HUD digit texture.
-struct HudDigit
-{
-    int texture;  // 0x00
-    float u0;     // 0x04
-    float v0;     // 0x08
-    float u1;     // 0x0c
-    float v1;     // 0x10
-    float width;  // 0x14
-    float height; // 0x18
+// Score popup sprite per popup type.
+// GLOBAL: STUNTGP_D3D 0x472030
+HudDigit g_472030[6] = {
+    {13, 4.0f, 4.0f, 512.0f, 400.0f, 128.0f, 100.0f},
+    {13, 4.0f, 4.0f, 512.0f, 400.0f, 128.0f, 100.0f},
+    {13, 4.0f, 4.0f, 512.0f, 400.0f, 128.0f, 100.0f},
+    {13, 4.0f, 416.0f, 852.0f, 1020.0f, 213.0f, 151.0f},
+    {13, 4.0f, 416.0f, 852.0f, 1020.0f, 213.0f, 151.0f},
+    {13, 4.0f, 416.0f, 852.0f, 1020.0f, 213.0f, 151.0f},
 };
 
 // GLOBAL: STUNTGP_D3D 0x4720d8
