@@ -46,6 +46,10 @@ float g_498154;
 // GLOBAL: STUNTGP_D3D 0x498158
 float g_498158;
 
+// Polygon hit by the last ray cast.
+// GLOBAL: STUNTGP_D3D 0x498164
+TrackPoly *g_498164;
+
 // GLOBAL: STUNTGP_D3D 0x498198
 Vec4 g_498198;
 
