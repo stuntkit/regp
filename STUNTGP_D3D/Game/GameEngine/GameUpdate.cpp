@@ -1486,6 +1486,23 @@ int FUN_41e410(Vec4 *p, float *out)
     return 1;
 }
 
+// Pushes a position into a trail ring; slot size mirrors the newest point.
+// FUNCTION: STUNTGP_D3D 0x41e6e0
+void FUN_41e6e0(Vec4 *ring, DWORD *head, DWORD *count, Vec4 *pos, TrailParams *params)
+{
+    if (*count < params->size)
+    {
+        (*count)++;
+    }
+    *head = (*head + 1) % params->size;
+    ring[params->size] = *pos;
+    ring[*head] = *pos;
+    if (!params->unk10)
+    {
+        FUN_41e410(pos, &ring[*head].x);
+    }
+}
+
 // GLOBAL: STUNTGP_D3D 0x477658
 float g_477658[6][4] = {
     {-1.0f, 0.0f, 0.0f, 0.0f},

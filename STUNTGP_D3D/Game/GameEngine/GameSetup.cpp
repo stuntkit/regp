@@ -521,6 +521,48 @@ void FUN_413670()
     FUN_4130d0(1);
 }
 
+void FUN_415c00(Vec4 *pos, Vec4 *vel, float unused);
+void FUN_415d20(Vec4 *pos, Vec4 *vel, float unused);
+
+// Throws two random sparks off the car, forward and off to the side.
+// FUNCTION: STUNTGP_D3D 0x418f70
+void FUN_418f70()
+{
+    Vec4 v;
+    float r = FUN_42f1c0(83.333336f);
+    v.x = r * g_4d5bb8->axisX.x;
+    v.y = r * g_4d5bb8->axisX.y;
+    v.z = r * g_4d5bb8->axisX.z;
+    v.x += g_4d5bb8->unk1c8c.x;
+    v.y += g_4d5bb8->unk1c8c.y;
+    v.z += g_4d5bb8->unk1c8c.z;
+    FUN_415c00((Vec4 *)&g_4d5bb8->posX, &v, 8.0f);
+    float s = FUN_42f1c0(6.6666665f);
+    if (s < 0.0f)
+    {
+        s -= 6.6666665f;
+    }
+    else
+    {
+        s += 6.6666665f;
+    }
+    v.x = s * g_4d5bb8->axisX.x;
+    v.y = s * g_4d5bb8->axisX.y;
+    v.z = s * g_4d5bb8->axisX.z;
+    float u = (float)fabs(FUN_42f1c0(6.6666665f));
+    Vec4 t;
+    t.x = u * g_4d5bb8->axisY.x;
+    t.y = u * g_4d5bb8->axisY.y;
+    t.z = u * g_4d5bb8->axisY.z;
+    v.x = t.x + v.x;
+    v.y = t.y + v.y;
+    v.z = t.z + v.z;
+    v.x += g_4d5bb8->unk1c8c.x;
+    v.y += g_4d5bb8->unk1c8c.y;
+    v.z += g_4d5bb8->unk1c8c.z;
+    FUN_415d20((Vec4 *)&g_4d5bb8->unk315c[0x120], &v, 8.0f);
+}
+
 // FUNCTION: STUNTGP_D3D 0x4190b0
 void FUN_4190b0(Car *car, unsigned int percent)
 {

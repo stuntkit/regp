@@ -171,6 +171,17 @@ struct TrailSlot
     Trail trail; // 0x004
 };
 
+// Static description of a trail's look; the ring length is size.
+struct TrailParams
+{
+    int unk00;        // 0x000
+    DWORD size;       // 0x004
+    int unk08;        // 0x008
+    int unk0c;        // 0x00c
+    void *unk10;      // 0x010
+    BYTE unk14[0xfc]; // 0x014
+};
+
 struct CarFx
 {
     int active;         // 0x000
@@ -564,7 +575,8 @@ struct Car
     int unk24e0;              // 0x24e0
     int unk24e4;              // 0x24e4
     int unk24e8;              // 0x24e8
-    BYTE unk24ec[0x4];        // 0x24ec
+    int unk24ec;              // 0x24ec, current split
+
     DWORD unk24f0[10];        // 0x24f0
     DWORD unk2518[10];        // 0x2518
     DWORD unk2540[10];        // 0x2540

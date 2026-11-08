@@ -3775,17 +3775,6 @@ void FUN_414b30()
     }
 }
 
-// Static description of a trail's look; the ring length is size.
-struct TrailParams
-{
-    int unk00;        // 0x000
-    DWORD size;       // 0x004
-    int unk08;        // 0x008
-    int unk0c;        // 0x00c
-    void *unk10;      // 0x010
-    BYTE unk14[0xfc]; // 0x014
-};
-
 // GLOBAL: STUNTGP_D3D 0x474c08
 TrailParams g_474c08 = {1, 16, 2, 8};
 
@@ -4044,7 +4033,8 @@ void FUN_415c00(Vec4 *pos, Vec4 *vel, float unused)
 }
 
 // FUNCTION: STUNTGP_D3D 0x415d20
-void FUN_415d20(Vec4 *pos, Vec4 *vel, int unused)
+void FUN_415d20(Vec4 *pos, Vec4 *vel, float unused)
+
 {
     if (g_612948.unk0458 == 2)
     {
@@ -4824,6 +4814,30 @@ void FUN_41d3f0(int time, char *out)
         sprintf(out, "%d.%d%d", d[2], d[1], d[0]);
     }
 }
+// Records the split time and shows the gap to the previous lap's split.
+// FUNCTION: STUNTGP_D3D 0x41d4b0
+void FUN_41d4b0()
+{
+    int split = g_4d5bb8->unk24ec;
+    g_4d5bb8->unk24f0[split] = g_4d5bb8->unk23a4 * 12000 + g_4d5bb8->unk23c4;
+    if (g_4d5bb8->unk23bc > 0)
+    {
+        int index = g_4d5bb8 - g_49a1f8;
+        int diff = g_4d5bb8->unk24f0[split] - g_4d5bb8->unk2518[split];
+        int gap = abs(diff);
+        if (gap <= 1800)
+        {
+            char time[16];
+            char text[32];
+            FUN_41d3f0(gap, time);
+            // STRING: STUNTGP_D3D 0x4748cc
+            sprintf(text, "%s %s %s %s ", g_60f02c[index].name, g_6127a0[25], time, g_6127a0[26]);
+            strcat(text, diff < 0 ? g_6127a0[29] : g_6127a0[30]);
+            FUN_442cf0(180, text, g_4d5bb8, 0, 0);
+        }
+    }
+}
+
 
 // FUNCTION: STUNTGP_D3D 0x41d8a0
 void FUN_41d8a0()
@@ -5056,14 +5070,17 @@ void FUN_421e70(Body *body)
             return;
         }
     }
-    Vec4 up = *(Vec4 *)&body->mat1[8];
-    if ((float)fabs(up.x + 0.0f) <= 0.05f && (float)fabs(up.y + 0.0f) <= 0.05f)
+    Vec4 r2 = *(Vec4 *)&body->mat1[8];
+    Vec4 ref = {0.0f, 0.0f, 1.0f, 0.0f};
+    float dx = r2.x;
+    dx += ref.x * r2.z;
+    if ((float)fabs(dx) <= 0.05f && (float)fabs(r2.y + ref.y * r2.z) <= 0.05f)
     {
         Vec4 r0 = *(Vec4 *)&body->mat1[0];
         r0.x *= 1.5f;
         Vec4 r1 = *(Vec4 *)&body->mat1[4];
         r1.y *= 1.5f;
-        Vec4 r2 = *(Vec4 *)&body->mat1[8];
+        r2 = *(Vec4 *)&body->mat1[8];
         r2.z *= 1.5f;
         Vec3_Normalize(&r0.x);
         Vec3_Normalize(&r1.x);
@@ -5083,7 +5100,10 @@ void FUN_421fa0(Body *body)
         }
     }
     Vec4 up = *(Vec4 *)&body->mat1[8];
-    if ((float)fabs(up.x - 0.0f) <= 0.002f && (float)fabs(up.y - 0.0f) <= 0.002f)
+    Vec4 ref = {0.0f, 0.0f, 1.0f, 0.0f};
+    float dx = up.x;
+    dx += ref.x * up.z;
+    if ((float)fabs(dx) <= 0.002f && (float)fabs(up.y + ref.y * up.z) <= 0.002f)
     {
         Matrix_Identity(body->mat1);
     }

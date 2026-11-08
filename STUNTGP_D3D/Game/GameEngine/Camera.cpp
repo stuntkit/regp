@@ -89,6 +89,34 @@ int g_49823c;
 // GLOBAL: STUNTGP_D3D 0x498240
 int g_498240;
 
+Vec4 *FUN_420b20(Vec4 *out, WORD *idx);
+
+// 1 when every vertex of the polygon lies within 0.1 of its plane.
+// FUNCTION: STUNTGP_D3D 0x41f870
+int FUN_41f870(TrackPoly *poly)
+{
+    WORD *idx = g_624480->indices + poly->firstIndex;
+    Vec4 *a = g_624480->vertices + *idx;
+    Vec4 n;
+    FUN_420b20(&n, idx);
+    int flat = 1;
+    unsigned int count = poly->vertexCount;
+    for (unsigned int i = 0; i < count; i++)
+    {
+        Vec4 *b = &g_624480->vertices[*idx];
+        Vec4 d;
+        d.x = b->x - a->x;
+        d.y = b->y - a->y;
+        d.z = b->z - a->z;
+        if ((float)fabs(n.x * d.x + n.y * d.y + n.z * d.z) > 0.1f)
+        {
+            flat = 0;
+        }
+        idx++;
+    }
+    return flat;
+}
+
 // Same test as FUN_420690.
 // FUNCTION: STUNTGP_D3D 0x41f970
 int FUN_41f970(TrackPoly *poly, Vec4 *p)
