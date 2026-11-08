@@ -4659,6 +4659,20 @@ void FUN_452830(float x, float y)
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x45c480
+void FUN_45c480()
+{
+    FUN_438ba0(320.0f, 44.0f, 12, 4, 2, 1.0f, 0xffffffff, 3);
+}
+
+int FUN_437920(int index);
+
+// FUNCTION: STUNTGP_D3D 0x45da40
+void FUN_45da40(int index)
+{
+    FUN_438ba0(507.0f, 208.0f, 12, 4, FUN_437920(index) + 0x1d0, 1.25f, 0xffffffff, 3);
+}
+
 // FUNCTION: STUNTGP_D3D 0x45cc40
 void FUN_45cc40(int track)
 {

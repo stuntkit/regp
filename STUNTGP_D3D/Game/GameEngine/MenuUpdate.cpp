@@ -3560,11 +3560,11 @@ void FUN_450ac0(MenuObject *object)
     object->unk20 = FUN_43d7b0(object->unk20, -31.0f, 31.0f);
 }
 
-void FUN_438230(int layer, int def, float x, float y, float middle, DWORD flags);
+void FUN_438230(float x, float y, float middle, int layer, int def, DWORD flags);
 void FUN_438a20(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color,
                 DWORD flags, float unk18);
 char *FUN_43d5f0(int value, int digits);
-void FUN_4385d0(int layer, int def, float x, float y, float middle, DWORD flags);
+void FUN_4385d0(float x, float y, float middle, int layer, int def, DWORD flags);
 
 // Nested frames inset from the screen edge, shown while the screen position is adjusted.
 // FUNCTION: STUNTGP_D3D 0x450b00
@@ -3580,11 +3580,11 @@ void FUN_450b00(MenuObject *object)
         float width = right - x - 32.0f;
         float height = bottom - y - 32.0f;
         float cx = (right + x) * 0.5f;
-        FUN_438230(12, def, cx, y, width, 0x103);
-        FUN_438230(12, def, cx, bottom, width, 0x103);
+        FUN_438230(cx, y, width, 12, def, 0x103);
+        FUN_438230(cx, bottom, width, 12, def, 0x103);
         float cy = (bottom + y) * 0.5f;
-        FUN_4385d0(12, def, x, cy, height, 0x103);
-        FUN_4385d0(12, def, right, cy, height, 0x103);
+        FUN_4385d0(x, cy, height, 12, def, 0x103);
+        FUN_4385d0(right, cy, height, 12, def, 0x103);
     }
 }
 
@@ -3851,7 +3851,7 @@ MenuDef g_486998 = {0xb, 1.0f, 0, 507.0f, 400.0f, 0.8f, 2, 1.1f, 4, 0x8c, g_624b
 // GLOBAL: STUNTGP_D3D 0x4869c8
 int g_4869c8[2] = {0x3d, 0x3e};
 
-void FUN_438230(int layer, int def, float x, float y, float middle, DWORD flags);
+void FUN_438230(float x, float y, float middle, int layer, int def, DWORD flags);
 void FUN_438a20(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color,
                 DWORD flags, float unk18);
 char *FUN_43d5f0(int value, int digits);
@@ -3859,7 +3859,13 @@ char *FUN_43d5f0(int value, int digits);
 // FUNCTION: STUNTGP_D3D 0x451fd0
 void FUN_451fd0(int def, float x, float y, float length)
 {
-    FUN_438230(12, def, x, y, length * 8.0f, 2);
+    FUN_438230(x, y, length * 8.0f, 12, def, 2);
+}
+
+// FUNCTION: STUNTGP_D3D 0x453b20
+void FUN_453b20(int def, float x, float y, float length)
+{
+    FUN_438230(x, y, length * 8.0f, 12, def, 0x102);
 }
 
 // Stat panel: a label and a bar per stat.

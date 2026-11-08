@@ -305,7 +305,7 @@ float FUN_438950(float size)
 // Horizontally stretched sprite: the left and right halves of the image with `middle` pixels
 // of the centre column between them. Flags 1/4 centre/right-align, 2/8 centre/bottom-align.
 // FUNCTION: STUNTGP_D3D 0x438230
-void FUN_438230(int layer, int def, float x, float y, float middle, DWORD flags)
+void FUN_438230(float x, float y, float middle, int layer, int def, DWORD flags)
 {
     SpriteData s;
     if (!def)
@@ -470,7 +470,7 @@ void FUN_438590(int layer, int sub, SpriteNode *node)
 // Vertically stretched counterpart of FUN_438230: top and bottom halves with `middle` pixels
 // of the centre row between them.
 // FUNCTION: STUNTGP_D3D 0x4385d0
-void FUN_4385d0(int layer, int def, float x, float y, float middle, DWORD flags)
+void FUN_4385d0(float x, float y, float middle, int layer, int def, DWORD flags)
 {
     SpriteData s;
     if (!def)
