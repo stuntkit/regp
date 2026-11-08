@@ -4942,6 +4942,123 @@ void FUN_41b710()
     FUN_402580();
 }
 
+// Wind volume scale: eases down while unk1cf8 is above 0.2, back up to 1 otherwise.
+// GLOBAL: STUNTGP_D3D 0x4747b8
+float g_4747b8 = 0.75f;
+
+// FUNCTION: STUNTGP_D3D 0x41b8e0
+void FUN_41b8e0()
+{
+    if (FUN_402590(g_4d5bb8))
+    {
+        if (g_4d5bb8->unk1cf0 < 500.0f / 60.0f)
+        {
+            FUN_460d90(&g_4d5bb8->unk239c);
+            return;
+        }
+        float sum = 0.0f;
+        for (int i = 0; i < 4; i++)
+        {
+            sum += g_4d5bb8->wheels[i].unk04;
+        }
+        float v = (float)fabs(sum) * 0.25f;
+        v *= 0.01f;
+        if (v > 1.0f)
+        {
+            v = 1.0f;
+        }
+        float freq = v * 14000.0f + 6000.0f;
+        if (g_4d5bb8->unk1cf8 > 0.2f)
+        {
+            if (g_4747b8 > 0.75f)
+            {
+                g_4747b8 -= 0.05f;
+            }
+        }
+        else if (g_4747b8 < 1.0f)
+        {
+            g_4747b8 += 0.025f;
+        }
+        float vol = v * g_4747b8 * 80.0f;
+        if (!g_4d5bb8->unk239c)
+        {
+            FUN_4614a0(0x1e, 1, (int)freq, (int)vol, (Vec4 *)&g_4d5bb8->posX, NULL, 0, &g_4d5bb8->unk239c);
+        }
+        else
+        {
+            FUN_461850(&g_4d5bb8->unk239c, (int)freq, (int)vol, (Vec4 *)&g_4d5bb8->posX, NULL);
+        }
+    }
+}
+
+// GLOBAL: STUNTGP_D3D 0x4746c0
+int g_4746c0 = 100;
+
+// GLOBAL: STUNTGP_D3D 0x4746d8
+int g_4746d8[5] = {1, 2, 3, 4, 5};
+
+// GLOBAL: STUNTGP_D3D 0x4746ec
+int g_4746ec[5] = {6, 7, 8, 9, 10};
+
+// Engine: a low idle layer that fades out by 4096 revs and the main layer, both pitched by the revs.
+// FUNCTION: STUNTGP_D3D 0x41ba40
+void FUN_41ba40()
+{
+    float freq = (float)fabs(g_4d5bb8->unk1cfc) * 4.0f + 11025.0f;
+    if (freq > 81900.0f)
+    {
+        freq = 81900.0f;
+    }
+    float load = (g_4d5bb8->unk1cfc / g_4d5bb8->unk045c * 0.6f + g_4d5bb8->unk1cf8 * 0.4f + 0.2f) * 255.0f;
+    if (g_4746c0 == 100 && g_4d5bb8->unk1cfc < 4096.0f)
+    {
+        float k = g_4d5bb8->unk1cfc / 4096.0f;
+        k *= 0.5f;
+        load = (k + 0.5f) * load;
+        float vol = ((4096.0f - g_4d5bb8->unk1cfc) / 4096.0f + 0.5f) * 100.0f;
+        if (vol > 255.0f)
+        {
+            vol = 255.0f;
+        }
+        vol *= 100.0f / 255.0f;
+        freq += 14000.0f;
+        if (freq > 81900.0f)
+        {
+            freq = 81900.0f;
+        }
+        if (!g_4d5bb8->unk238c)
+        {
+            FUN_4614a0(g_4746ec[g_4d5bb8->race.unk80[2]], 1, (int)freq, (int)vol, (Vec4 *)&g_4d5bb8->posX,
+                       &g_4d5bb8->unk1c8c, 0, &g_4d5bb8->unk238c);
+        }
+        else
+        {
+            FUN_461850(&g_4d5bb8->unk238c, (int)freq, (int)vol, (Vec4 *)&g_4d5bb8->posX, &g_4d5bb8->unk1c8c);
+        }
+    }
+    else
+    {
+        FUN_460d90(&g_4d5bb8->unk238c);
+    }
+    if (load < 63.0f)
+    {
+        load = 63.0f;
+    }
+    float vol = load * 100.0f;
+    vol *= 1.0f / 255.0f;
+    if (vol > 100.0f)
+    {
+        vol = 100.0f;
+    }
+    if (!g_4d5bb8->unk2390)
+    {
+        FUN_4614a0(g_4746d8[g_4d5bb8->race.unk80[1]], 1, (int)freq, (int)vol, (Vec4 *)&g_4d5bb8->posX,
+                   &g_4d5bb8->unk1c8c, 0, &g_4d5bb8->unk2390);
+        return;
+    }
+    FUN_461850(&g_4d5bb8->unk2390, (int)freq, (int)vol, (Vec4 *)&g_4d5bb8->posX, &g_4d5bb8->unk1c8c);
+}
+
 // FUNCTION: STUNTGP_D3D 0x41bdd0
 void FUN_41bdd0()
 {
