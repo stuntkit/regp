@@ -366,6 +366,10 @@ void FUN_45c3d0(float x, float y);
 void FUN_452830(float x, float y);
 void FUN_45cf10(int row);
 void FUN_45cd60(int table);
+void FUN_456c80(Unk4516c0 *object);
+// GLOBAL: STUNTGP_D3D 0x6250f8
+char g_6250f8[0x40];
+
 // GLOBAL: STUNTGP_D3D 0x627b54
 GhostHeader g_627b54;
 
@@ -2707,6 +2711,87 @@ void FUN_45cd60(int table)
         FUN_438be0(433.0f, 422.0f, 0xc, 4, 0x23, 1.25f, 0xffffffff, 2);
         FUN_438960(497.0f, 422.0f, 0xc, 0, 4, g_menuState.unk4714, 1.25f, 0xffffffff, 3);
         FUN_438a20(581.0f, 422.0f, 0xc, 0, 4, FUN_43d550(g_menuState.unk4704), 1.25f, 0xffffffff, 6, 14.0f);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x456c80
+void FUN_456c80(Unk4516c0 *object)
+{
+    FUN_439450(160.0f, 120.0f, 480.0f, 280.0f, 0xa, 0x6e, 0x40);
+    FUN_439380(160.0f, 120.0f, 480.0f, 280.0f, 0xd, 2, 0, 0.0f);
+    switch (g_menuState.unk4230)
+    {
+    default:
+        g_6250f8[0] = 0;
+        break;
+    case 7:
+    {
+        int index = g_menuState.unk00e8;
+        if (index < 0)
+        {
+            break;
+        }
+        if (index > 2)
+        {
+            if (index == 3)
+            {
+                sprintf(g_6250f8, FUN_441170(0x2a9), g_menuState.unk1dae0);
+            }
+        }
+        else
+        {
+            int target = (&g_4888c0.unk2c)[index];
+            if (g_menuState.unk1dae0 >= target)
+            {
+                sprintf(g_6250f8, FUN_441170(0x2af), g_menuState.unk1dae0);
+            }
+            else
+            {
+                sprintf(g_6250f8, FUN_441170(0x2a8), g_menuState.unk1dae0, target);
+            }
+        }
+        break;
+    }
+    case 6:
+        sprintf(g_6250f8, FUN_441170(0x2a9), g_menuState.unk1dae0);
+        break;
+    }
+    FUN_438960(320.0f, 140.0f, 0xc, 0, 4, g_6250f8, 1.25f, 0xffffffff, 3);
+    FUN_438be0(259.0f, 160.0f, 0xc, 4, 0x2aa, 1.25f, 0xffff8080, 6);
+    int id = 0x2ab;
+    if (g_menuState.unk4230 == 7)
+    {
+        switch (g_menuState.unk00e0)
+        {
+        case 2:
+            id = 0x2ad;
+            break;
+        case 1:
+            id = 0x2ac;
+            break;
+        case 0:
+            id = 0x2ab;
+            break;
+        }
+    }
+    FUN_438be0(350.0f, 160.0f, 0xc, 4, id, 1.25f, 0xffff8080, 6);
+    FUN_438be0(405.0f, 160.0f, 0xc, 4, 0xae, 1.25f, 0xffff8080, 3);
+    float y = 180.0f;
+    for (int i = 0; i < g_menuState.unk423c; i++)
+    {
+        sprintf(g_6250f8, FUN_441170(0x1f), g_menuState.unk1dab0[i].unk00 + 1);
+        FUN_438960(243.0f, y, 0xc, 0, 4, g_6250f8, 1.25f, 0xffc8c8ff, 6);
+        // STRING: STUNTGP_D3D 0x488918
+        sprintf(g_6250f8, "%d", g_menuState.unk1dab0[i].unk04);
+        FUN_438a20(350.0f, y, 0xc, 0, 4, g_6250f8, 1.25f, 0xffc8c8ff, 6, 14.0f);
+        // STRING: STUNTGP_D3D 0x48891c
+        sprintf(g_6250f8, "%d", g_menuState.unk1dab0[i].unk08);
+        FUN_438a20(405.0f, y, 0xc, 0, 4, g_6250f8, 1.25f, 0xffc8c8ff, 6, 14.0f);
+        y += 20.0f;
+    }
+    if (object->unk24)
+    {
+        FUN_438be0(320.0f, y, 0xc, 4, g_menuState.unk1dab0[0].unk00 + 0x2b0, 1.25f, 0xffffffff, 3);
     }
 }
 
