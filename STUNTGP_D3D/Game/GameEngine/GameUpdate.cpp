@@ -2939,6 +2939,29 @@ void FUN_446110()
     }
 }
 
+// Dumps the sound zone boxes in level script syntax.
+// FUNCTION: STUNTGP_D3D 0x446180
+void FUN_446180()
+{
+    // STRING: STUNTGP_D3D 0x484aa4
+    fprintf(g_5da2e4, "-LevelBoxList[] =\n");
+    for (SoundZone *zone = g_483f98; zone->id != -1; zone++)
+    {
+        // STRING: STUNTGP_D3D 0x484ab8
+        fprintf(g_5da2e4, "   -Type = %d\n", zone->id);
+        // STRING: STUNTGP_D3D 0x484ac8
+        fprintf(g_5da2e4, "   -Position = %12f %12f %12f\n", zone->bounds[0], zone->bounds[1], zone->bounds[2]);
+        // STRING: STUNTGP_D3D 0x484ae8
+        fprintf(g_5da2e4, "   -Scale    = %12f %12f %12f\n", zone->bounds[4], zone->bounds[5], zone->bounds[6]);
+        // STRING: STUNTGP_D3D 0x484b08
+        fprintf(g_5da2e4, "   -V        = %12f %12f %12f\n", zone->bounds[8], zone->bounds[9], zone->bounds[10]);
+        // STRING: STUNTGP_D3D 0x484b28
+        fprintf(g_5da2e4, "   -N        = %12f %12f %12f\n", zone->bounds[12], zone->bounds[13], zone->bounds[14]);
+        // STRING: STUNTGP_D3D 0x484b48
+        fprintf(g_5da2e4, "\n");
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x446340
 void FUN_446340()
 {

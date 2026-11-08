@@ -4,6 +4,7 @@
 
 #include <direct.h>
 #include <io.h>
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -1741,6 +1742,61 @@ int FUN_430ff0()
         exitError(ddGetErrMessage(res));
     }
     return 1;
+}
+
+// Nudges texture coordinates that sit on a texel boundary half a step inwards.
+// FUNCTION: STUNTGP_D3D 0x4310a0
+void FUN_4310a0(float *uv)
+{
+    double f;
+    if (uv[0] < 0.0f)
+    {
+        f = fmod(-uv[0], 1.0);
+        if (f <= 0.001)
+        {
+            uv[0] += 0.005;
+        }
+        if (f >= 0.999)
+        {
+            uv[0] -= 0.005;
+        }
+    }
+    else
+    {
+        f = fmod(uv[0], 1.0);
+        if (f <= 0.001)
+        {
+            uv[0] += 0.005;
+        }
+        if (f >= 0.999)
+        {
+            uv[0] -= 0.005;
+        }
+    }
+    if (uv[1] < 0.0f)
+    {
+        f = fmod(-uv[1], 1.0);
+        if (f <= 0.001)
+        {
+            uv[1] += 0.005;
+        }
+        if (f >= 0.999)
+        {
+            uv[1] -= 0.005;
+        }
+    }
+    else
+    {
+        f = fmod(uv[1], 1.0);
+        if (f <= 0.001)
+        {
+            uv[1] += 0.005;
+        }
+        if (f >= 0.999)
+        {
+            uv[1] -= 0.005;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x437e20

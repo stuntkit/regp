@@ -504,9 +504,39 @@ void FUN_4234e0(BYTE *dst, BYTE *src)
 {
 }
 
-// STUB: STUNTGP_D3D 0x430100
-void FUN_430100(LPDIRECTDRAWSURFACE4 surface, BYTE *image, DWORD width, DWORD height, int bits)
+// Copies a packed image into a locked surface row by row, honouring its pitch.
+// FUNCTION: STUNTGP_D3D 0x430100
+void FUN_430100(LPDIRECTDRAWSURFACE4 surface, BYTE *image, int width, int height, int bits)
 {
+    DDSURFACEDESC2 desc;
+    desc.dwSize = sizeof(desc);
+    int res = surface->Lock(NULL, &desc, DDLOCK_WAIT, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    if (desc.dwFlags & DDSD_PITCH)
+    {
+        int bpp = bits / 8;
+        int pitch = desc.lPitch;
+        BYTE *dst = (BYTE *)desc.lpSurface;
+        int rowBytes = bpp * width;
+        for (int y = 0; y < height; y++)
+        {
+            int offset = 0;
+            for (int x = 0; x < width; x++)
+            {
+                for (int k = 0; k < bpp; k++)
+                {
+                    dst[offset] = image[offset];
+                    offset++;
+                }
+            }
+            image += rowBytes;
+            dst += pitch;
+        }
+        surface->Unlock(NULL);
+    }
 }
 
 // Uploads an image into texture slot through a system-memory staging surface.
