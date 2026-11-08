@@ -187,11 +187,18 @@ DWORD *g_4955e0;
 // GLOBAL: STUNTGP_D3D 0x4955e4
 DWORD *g_4955e4;
 
+// Scene queued with its own camera; g_632cf8 and g_62f5d8 hold lists of these.
+struct SceneCamera
+{
+    Scene *scene; // 0x00
+    Camera cam;   // 0x04
+};
+
 // GLOBAL: STUNTGP_D3D 0x62f5d8
-DWORD g_62f5d8;
+SceneCamera g_62f5d8[168];
 
 // GLOBAL: STUNTGP_D3D 0x632cf8
-DWORD g_632cf8;
+SceneCamera g_632cf8[168];
 
 void FUN_42e240(Scene *scene);
 void FUN_4311c0(Scene *scene);
@@ -1059,10 +1066,10 @@ void FUN_413220()
 // FUNCTION: STUNTGP_D3D 0x42b740
 void FUN_42b740()
 {
-    g_4955e4 = &g_632cf8;
-    g_4955e0 = &g_62f5d8;
-    g_632cf8 = 0;
-    g_62f5d8 = 0;
+    g_4955e4 = (DWORD *)g_632cf8;
+    g_4955e0 = (DWORD *)g_62f5d8;
+    g_632cf8[0].scene = NULL;
+    g_62f5d8[0].scene = NULL;
     if (g_612948.unk02a0 != 2)
     {
         if (g_636418[3].scene)
@@ -1963,9 +1970,45 @@ void FUN_42dcf0()
 {
 }
 
-// STUB: STUNTGP_D3D 0x42b040
+void FUN_42b100();
+void FUN_42b140(RenderList *out);
+void FUN_42b180(int *out);
+void FUN_42b200();
+void FUN_42ac70(Scene *scene);
+void FUN_42ad30(SceneCamera *e);
+void FUN_42af30(SceneCamera *e);
+void FUN_42af90(SceneCamera *e);
+void FUN_42add0();
+void FUN_44fbd0(Scene *scene, ObjectDef *obj, float *m);
+
+// Builds the frame's render buckets: the track (entry 0 of g_632cf8), entry 1 on its own, the
+// rest of g_632cf8 with the track's animated objects, then the g_62f5d8 list.
+// FUNCTION: STUNTGP_D3D 0x42b040
 void FUN_42b040()
 {
+    SceneCamera *list = g_632cf8;
+    g_6249ac = 0;
+    FUN_44fbd0(g_636418[3].scene, (ObjectDef *)g_636418[3].scene->view, g_renderState.unkac);
+    FUN_42b100();
+    FUN_42b140((RenderList *)&g_renderState.unk7ef8[2]);
+    list[0].scene->camera = &list[0].cam;
+    FUN_42ac70(list[0].scene);
+    FUN_42b180((int *)&g_renderState.unk7ef8[2]);
+    g_renderState.unk2c = g_renderState.unk28;
+    FUN_42ad30(&list[1]);
+    g_4722d0->unk19c = 500000.0f;
+    FUN_42b140((RenderList *)&g_renderState.unk7ef8[4]);
+    FUN_42af30(&list[2]);
+    if (g_612948.unk0034 >= 25)
+    {
+        FUN_42add0();
+    }
+    FUN_42b180((int *)&g_renderState.unk7ef8[4]);
+    FUN_42b140((RenderList *)&g_renderState.unk7ef8[6]);
+    FUN_42af90(g_62f5d8);
+    FUN_42b180((int *)&g_renderState.unk7ef8[6]);
+    FUN_42b740();
+    FUN_42b200();
 }
 
 // FUNCTION: STUNTGP_D3D 0x42b100
@@ -2514,6 +2557,46 @@ void FUN_42a8c0(PolyRef **lists, Scene *scene, int mode)
     }
 }
 
+void FUN_42a570(Scene *scene, ObjectDef *obj);
+
+// FUN_42a8c0 that lights objects with specular bits (flags & 3) through FUN_42a570.
+// FUNCTION: STUNTGP_D3D 0x42a990
+void FUN_42a990(PolyRef **lists, Scene *scene, int mode)
+{
+    ObjectDef *obj = scene->lods[scene->lod];
+    for (DWORD i = 0; i < scene->objectCount; obj++, i++)
+    {
+        if (obj->visible == 1)
+        {
+            FUN_42b2a0(&g_renderState.unk00, &g_renderState.unk10, scene, obj);
+            FUN_44fbd0(scene, obj, g_61c428);
+            if (!mode)
+            {
+                FUN_429660(obj->points, obj->pointCount);
+                FUN_429d50(scene, obj, lists);
+            }
+            else
+            {
+                FUN_429520(obj->points, obj->pointCount);
+                FUN_429b70(scene, obj, lists);
+            }
+            if (obj->flags & 4)
+            {
+                FUN_42a870(scene, obj);
+                if (obj->flags & 3)
+                {
+                    FUN_42a570(scene, obj);
+                }
+                else
+                {
+                    FUN_42a320(scene, obj);
+                }
+            }
+            g_renderState.unk28 += obj->pointCount * 0x20;
+        }
+    }
+}
+
 // Brings the view position into the object's local space (out) and gives its direction (dir).
 // FUNCTION: STUNTGP_D3D 0x42b2a0
 void FUN_42b2a0(Vec4 *out, Vec4 *dir, Scene *scene, ObjectDef *obj)
@@ -2792,13 +2875,6 @@ void FUN_42a220()
     FUN_42a090((PolyRef **)&g_renderState.unk7ed8[2], g_renderState.unk34, g_renderState.unk40 - g_renderState.unk34);
 }
 
-// Scene queued with its own camera; g_632cf8 and g_62f5d8 hold lists of these.
-struct SceneCamera
-{
-    Scene *scene; // 0x00
-    Camera cam;   // 0x04
-};
-
 // Queues the scene into the first render bucket, viewed through its own camera.
 // FUNCTION: STUNTGP_D3D 0x42ad30
 void FUN_42ad30(SceneCamera *e)
@@ -2843,6 +2919,57 @@ void FUN_42af30(SceneCamera *e)
     }
 }
 
+
+// FUN_42af30 for scenes that may be lit: with lighting on (g_624980), LOD 0 gets the specular
+// path and LOD 1 the plain one; coarser LODs are never lit.
+// FUNCTION: STUNTGP_D3D 0x42af90
+void FUN_42af90(SceneCamera *e)
+{
+    void (*lod1)(PolyRef **, Scene *, int) = FUN_42a8c0;
+    void (*lod0)(PolyRef **, Scene *, int) = FUN_42a990;
+    if (!g_624980)
+    {
+        lod1 = FUN_42a260;
+        lod0 = FUN_42a260;
+    }
+    Scene *scene;
+    while ((scene = e->scene) != NULL)
+    {
+        scene->camera = &e->cam;
+        int vis = FUN_428040(scene, -1);
+        if (vis != 1)
+        {
+            if (scene->maxLod)
+            {
+                FUN_42b620(scene);
+            }
+            void (*queue)(PolyRef **, Scene *, int);
+            if (scene->lod >= 2)
+            {
+                queue = FUN_42a260;
+            }
+            else if (scene->lod >= 1)
+            {
+                queue = lod1;
+            }
+            else
+            {
+                queue = lod0;
+            }
+            if (vis == 0)
+            {
+                queue((PolyRef **)&g_renderState.unk7ed8[2], scene, vis);
+            }
+            else
+            {
+                queue((PolyRef **)g_renderState.unk7ed8, scene, vis);
+            }
+            g_6249ac++;
+        }
+        e++;
+    }
+}
+
 extern int g_624980;
 extern int g_57b41c;
 
@@ -2861,6 +2988,77 @@ void FUN_42ad70()
             if (obj->flags & 4)
             {
                 FUN_42a320(scene, obj);
+            }
+        }
+    }
+}
+
+// Queues the track's animated objects one by one, culling each with FUN_428040 (culled ones are
+// flagged 0x10) and relighting them when full-rate lighting is on.
+// FUNCTION: STUNTGP_D3D 0x42add0
+void FUN_42add0()
+{
+    FUN_42ad70();
+    Scene *scene = g_renderState.unk44;
+    ObjectDef *obj = scene->lods[0] + 1;
+    void (*plain)(Scene *, ObjectDef *);
+    void (*spec)(Scene *, ObjectDef *);
+    if (g_624980 == 1 && g_612948.unk0034 == 100)
+    {
+        FUN_42a840(scene);
+        plain = FUN_42a320;
+        if (g_624984 == 1)
+        {
+            spec = FUN_42a570;
+        }
+        else
+        {
+            spec = FUN_42a320;
+        }
+    }
+    else
+    {
+        g_624984 = 0;
+        plain = NULL;
+    }
+    scene->camera = &g_4864e8;
+    for (DWORD i = 1; i < scene->objectCount; obj++, i++)
+    {
+        if (obj->visible == 1)
+        {
+            int vis = FUN_428040(scene, i);
+            if (vis != 1)
+            {
+                obj->flags &= ~0x10;
+                FUN_42b2a0(&g_renderState.unk00, &g_renderState.unk10, scene, obj);
+                FUN_44fbd0(scene, obj, g_61c428);
+                if (vis == 0)
+                {
+                    FUN_429660(obj->points, obj->pointCount);
+                    FUN_429d50(scene, obj, (PolyRef **)&g_renderState.unk7ed8[2]);
+                }
+                else
+                {
+                    FUN_429520(obj->points, obj->pointCount);
+                    FUN_429b70(scene, obj, (PolyRef **)g_renderState.unk7ed8);
+                }
+                if (plain && (obj->flags & 4))
+                {
+                    if (obj->flags & 3)
+                    {
+                        spec(scene, obj);
+                    }
+                    else
+                    {
+                        plain(scene, obj);
+                    }
+                }
+                g_renderState.unk28 += obj->pointCount * 0x20;
+                g_6249ac++;
+            }
+            else
+            {
+                obj->flags |= 0x10;
             }
         }
     }
