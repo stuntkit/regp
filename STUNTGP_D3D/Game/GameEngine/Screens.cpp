@@ -3287,7 +3287,7 @@ int FUN_459a40(Unk459790 *object, int msg, int arg)
         v = object->unk24;
         if (v)
         {
-            int step = v;
+            int step = object->unk24;
             if (step > 1000)
             {
                 step = 1000;
@@ -3318,27 +3318,25 @@ int FUN_459a40(Unk459790 *object, int msg, int arg)
             object->unk18 = 1;
             return 0;
         case 1:
-            v = object->unk30;
-            if (v)
+            if (object->unk30)
             {
                 object->unk74 = 15;
-                object->unk70 = v;
+                object->unk70 = object->unk30;
                 object->unk1c = 60;
                 object->unk20 = 0;
                 FUN_45a350();
             }
-            object->unk24 = v;
-            object->unk2c = v;
+            object->unk24 = object->unk30;
+            object->unk2c = object->unk30;
             object->unk30 = 0;
-            if (!v)
+            if (!object->unk24)
             {
                 object->unk18 = 2;
                 return 0;
             }
             break;
         case 2:
-            v = object->unk38;
-            if (v)
+            if (object->unk38)
             {
                 if (object->unk48 == 1)
                 {
@@ -3352,25 +3350,23 @@ int FUN_459a40(Unk459790 *object, int msg, int arg)
                     object->unk80[object->unk78] = 0x51;
                     object->unk78++;
                 }
-                v = object->unk38;
                 object->unk74 = 16;
-                object->unk70 = v;
+                object->unk70 = object->unk38;
                 object->unk1c = 60;
                 object->unk20 = 0;
                 FUN_45a350();
             }
-            object->unk24 = v;
-            object->unk2c = v;
+            object->unk24 = object->unk38;
+            object->unk2c = object->unk38;
             object->unk38 = 0;
-            if (!v)
+            if (!object->unk24)
             {
                 object->unk18 = 3;
                 return 0;
             }
             break;
         case 3:
-            v = object->unk3c;
-            if (v)
+            if (object->unk3c)
             {
                 if (object->unk4c == 1)
                 {
@@ -3384,25 +3380,23 @@ int FUN_459a40(Unk459790 *object, int msg, int arg)
                     object->unk80[object->unk78] = 0x54;
                     object->unk78++;
                 }
-                v = object->unk3c;
                 object->unk74 = 17;
-                object->unk70 = v;
+                object->unk70 = object->unk3c;
                 object->unk1c = 60;
                 object->unk20 = 0;
                 FUN_45a350();
             }
-            object->unk24 = v;
-            object->unk2c = v;
+            object->unk24 = object->unk3c;
+            object->unk2c = object->unk3c;
             object->unk3c = 0;
-            if (!v)
+            if (!object->unk24)
             {
                 object->unk18 = 4;
                 return 0;
             }
             break;
         case 4:
-            v = object->unk44;
-            if (v)
+            if (object->unk44)
             {
                 if (object->unk54 == 1)
                 {
@@ -3416,36 +3410,34 @@ int FUN_459a40(Unk459790 *object, int msg, int arg)
                     object->unk80[object->unk78] = 0x53;
                     object->unk78++;
                 }
-                v = object->unk44;
                 object->unk74 = 18;
-                object->unk70 = v;
+                object->unk70 = object->unk44;
                 object->unk1c = 60;
                 object->unk20 = 0;
                 FUN_45a350();
             }
-            object->unk24 = v;
-            object->unk2c = v;
+            object->unk24 = object->unk44;
+            object->unk2c = object->unk44;
             object->unk44 = 0;
-            if (!v)
+            if (!object->unk24)
             {
                 object->unk18 = 5;
                 return 0;
             }
             break;
         case 5:
-            v = object->unk34;
-            if (v)
+            if (object->unk34)
             {
                 object->unk74 = 19;
-                object->unk70 = v;
+                object->unk70 = object->unk34;
                 object->unk1c = 60;
                 object->unk20 = 0;
                 FUN_45a350();
             }
-            object->unk24 = v;
-            object->unk2c = v;
+            object->unk24 = object->unk34;
+            object->unk2c = object->unk34;
             object->unk34 = 0;
-            if (!v)
+            if (!object->unk24)
             {
                 object->unk18 = 6;
                 FUN_440880(13);
