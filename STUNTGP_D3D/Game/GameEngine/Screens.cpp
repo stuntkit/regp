@@ -366,7 +366,7 @@ int FUN_457cf0(Unk457e70 *object, int mode);
 void FUN_455af0(PoolObject *object);
 void FUN_452070(int id, float x, float y);
 void FUN_458d50(Unk457e70 *object, int mode, int card);
-void FUN_45cba0(int index, float pos);
+void FUN_45cba0(float pos, int index);
 void FUN_45da70(Unk45d2e0 *object, int index, float pos);
 void FUN_45c320(float x, float y);
 void FUN_45c3d0(float x, float y);
@@ -4080,7 +4080,7 @@ int FUN_45c6a0(Unk45c6a0 *object, int msg, int arg)
         break;
     case 3:
         sel = object->unk1c;
-        FUN_45cba0(sel, object->unk20);
+        FUN_45cba0(object->unk20, sel);
         FUN_438190(0.0f, 0.0f, 640.0f, 480.0f);
         if (g_menuState.unk4408 == 1)
         {
@@ -4575,7 +4575,7 @@ void FUN_458d50(Unk457e70 *object, int mode, int card)
 }
 
 // FUNCTION: STUNTGP_D3D 0x45cba0
-void FUN_45cba0(int index, float pos)
+void FUN_45cba0(float pos, int index)
 {
     pos -= (int)pos;
     if (pos >= 0.5f)
