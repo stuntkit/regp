@@ -3163,19 +3163,19 @@ int FUN_459790(Unk459790 *object, int arg)
             object->unk54 = 0;
         }
     }
-    if (FUN_437d60(&g_menuState.unk0114[row][0], &g_menuState.unk1b080, g_menuState.results[0].unk04))
+    if (FUN_437d60(&g_menuState.unk0114[row][0], &g_menuState.names[0].name, g_menuState.results[0].unk04))
     {
         object->unk48 = 2;
     }
-    if (FUN_437d60(&g_menuState.unk0114[row][1], &g_menuState.unk1b080, g_menuState.results[0].unk08))
+    if (FUN_437d60(&g_menuState.unk0114[row][1], &g_menuState.names[0].name, g_menuState.results[0].unk08))
     {
         object->unk4c = 2;
     }
-    if (FUN_437d20(&g_menuState.unk0114[row][2], &g_menuState.unk1b080, g_menuState.results[0].unk0c))
+    if (FUN_437d20(&g_menuState.unk0114[row][2], &g_menuState.names[0].name, g_menuState.results[0].unk0c))
     {
         object->unk50 = 2;
     }
-    if (FUN_437d20(&g_menuState.unk0114[row][3], &g_menuState.unk1b080, g_menuState.results[0].unk10))
+    if (FUN_437d20(&g_menuState.unk0114[row][3], &g_menuState.names[0].name, g_menuState.results[0].unk10))
     {
         object->unk54 = 2;
     }
@@ -3232,6 +3232,58 @@ int FUN_459a40(PoolObject *object, int msg, int arg)
 }
 
 void FUN_438740(int layer, int def, float x, float y, float scale, DWORD flags, float fade);
+
+// Results table: per finisher in order its position, name, two times and score, then the total
+// and the medal bonus.
+// FUNCTION: STUNTGP_D3D 0x459ec0
+void FUN_459ec0(Unk459790 *object)
+{
+    FUN_439450(120.0f, 90.0f, 520.0f, 380.0f, 10, 0x6e, 0x40);
+    FUN_439380(120.0f, 90.0f, 520.0f, 380.0f, 13, 2, 0, 0.0f);
+    FUN_438be0(150.0f, 110.0f, 12, 4, 9, 1.25f, 0xffff8080, 3);
+    FUN_438be0(200.0f, 110.0f, 12, 4, 10, 1.25f, 0xffff8080, 2);
+    FUN_438be0(320.0f, 110.0f, 12, 4, 11, 1.25f, 0xffff8080, 6);
+    FUN_438be0(410.0f, 110.0f, 12, 4, 13, 1.25f, 0xffff8080, 6);
+    FUN_438be0(500.0f, 110.0f, 12, 4, 12, 1.25f, 0xffff8080, 6);
+    float y = 130.0f;
+    int *order = object->unk58;
+    for (int n = 6; n; n--)
+    {
+        int r = *order;
+        D3DCOLOR color = r ? 0xff808080 : 0xffffffff;
+        FUN_438be0(150.0f, y, 12, 4, g_menuState.results[r].position + 2, 1.25f, color, 3);
+        FUN_438960(200.0f, y, 12, 0, 4, FUN_43d690(&g_menuState.names[r].name)->c, 1.25f, color, 2);
+        FUN_438a20(320.0f, y, 12, 0, 4, FUN_43d550(g_menuState.results[r].unk04), 1.25f, color, 6, 14.0f);
+        FUN_438a20(394.0f, y, 12, 0, 4, FUN_43d550(g_menuState.results[r].unk08), 1.25f, color, 6, 14.0f);
+        // STRING: STUNTGP_D3D 0x488de4
+        sprintf(g_627c54 + 0x40, "%d", g_menuState.results[r].unk10);
+        FUN_438a20(484.0f, y, 12, 0, 4, g_627c54 + 0x40, 1.25f, color, 6, 14.0f);
+        y += 20.0f;
+        order++;
+    }
+    y += 10.0f;
+    // STRING: STUNTGP_D3D 0x488de8
+    sprintf(g_627c54 + 0x40, "%07d", object->unk28);
+    if (object->unk18 == 6)
+    {
+        float y2 = y + 20.0f;
+        FUN_438be0(280.0f, y2, 12, 4, 14, 1.875f, 0xffff8080, 6);
+        FUN_438a20(410.0f, y2, 12, 0, 4, g_627c54 + 0x40, 1.875f, 0xffffffff, 6, 14.0f);
+    }
+    else
+    {
+        FUN_438be0(300.0f, y, 12, 4, 14, 1.25f, 0xffff8080, 6);
+        FUN_438a20(384.0f, y, 12, 0, 4, g_627c54 + 0x40, 1.25f, 0xffffffff, 6, 14.0f);
+    }
+    y += 30.0f;
+    if (object->unk74 && object->unk70)
+    {
+        FUN_438be0(300.0f, y, 12, 4, object->unk74, 1.25f, 0xffff8080, 6);
+        // STRING: STUNTGP_D3D 0x488df0
+        sprintf(g_627c54 + 0x40, "+%d", object->unk70);
+        FUN_438a20(384.0f, y, 12, 0, 4, g_627c54 + 0x40, 1.25f, 0xffffffff, 6, 14.0f);
+    }
+}
 
 // Row of medals won on the results screen.
 // FUNCTION: STUNTGP_D3D 0x45a280

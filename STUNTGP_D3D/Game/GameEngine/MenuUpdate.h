@@ -50,6 +50,13 @@ struct Initials
     char c[3];
 };
 
+// Finisher name shown on the results table.
+struct MenuName
+{
+    Initials name;      // 0x00
+    BYTE unk03[0x19];   // 0x03
+};
+
 // Car%02d row of the front-end csv, read by FUN_435e30.
 struct ShopCar
 {
@@ -507,8 +514,8 @@ struct MenuState
     MenuNode nodes[19];   // 0x1a6ac, [1..18] used
     int unk1b078;          // 0x1b078, row of unk0114
     BYTE unk1b07c[0x1b080 - 0x1b07c];
-    Initials unk1b080;     // 0x1b080
-    BYTE unk1b083[0x1b140 - 0x1b083];
+    MenuName names[6];     // 0x1b080, [0] is the player
+    BYTE unk1b128[0x1b140 - 0x1b128];
     MenuRaceResult results[6]; // 0x1b140, [0] is the player
     BYTE unk1b1b8[0x1b320 - 0x1b1b8];
     MenuAiCar aiCars[21]; // 0x1b320, read by FUN_435860
