@@ -207,12 +207,24 @@ struct CarFx
 };
 
 
+struct MeshUv;
+
+// One ring entry of a skid mark: the two edge points' centre line and the mesh slot it fills.
+struct SkidPoint
+{
+    Vec4 a;    // 0x00
+    Vec4 b;    // 0x10
+    Vec4 dir;  // 0x20
+    int index; // 0x30, first of four points in the skid mesh
+};
+
 struct SkidMark
 {
-    int unk00;          // 0x000
-    int unk04;          // 0x004
-    DWORD unk08;        // 0x008
-    BYTE unk0c[0xd04];  // 0x00c
+    int unk00;            // 0x000
+    int unk04;            // 0x004
+    DWORD unk08;          // 0x008
+    MeshUv *unk0c;        // 0x00c
+    SkidPoint points[64]; // 0x010
 };
 
 // One per car.

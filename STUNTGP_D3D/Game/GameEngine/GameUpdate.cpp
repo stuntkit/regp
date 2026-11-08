@@ -4302,6 +4302,63 @@ void FUN_41c710()
     g_636418[1].scene = NULL;
 }
 
+extern DWORD g_5712f4;
+
+// Builds the quad for skid point i: two points either side of its centre line at each end,
+// welded to the previous quad when close enough, faded out otherwise.
+// FUNCTION: STUNTGP_D3D 0x41cb40
+void FUN_41cb40(SkidMark *skid, int i, int unused)
+{
+    SkidPoint *p = &skid->points[i];
+    ObjectDef *obj = g_571314->lods[0];
+    Vec4 *pts = obj->points;
+    Vec4 *v = &pts[p->index];
+    MeshUv *uv = (MeshUv *)obj->unk2c + p->index;
+    Vec4 *prev = &pts[skid->points[(i - 1) & 0x3f].index];
+    Vec4 c;
+    c.x = g_4d5bb8->axisY.z * p->dir.y - p->dir.z * g_4d5bb8->axisY.y;
+    c.y = p->dir.z * g_4d5bb8->axisY.x - g_4d5bb8->axisY.z * p->dir.x;
+    c.z = g_4d5bb8->axisY.y * p->dir.x - g_4d5bb8->axisY.x * p->dir.y;
+    Vec3_Normalize(&c.x);
+    c.x = c.x * 25.0f;
+    c.y = c.y * 25.0f;
+    c.z = c.z * 25.0f;
+    v[0].x = c.x + p->a.x;
+    v[0].y = c.y + p->a.y;
+    v[0].z = c.z + p->a.z;
+    v[1].x = p->a.x - c.x;
+    v[1].y = p->a.y - c.y;
+    v[1].z = p->a.z - c.z;
+    v[2].x = c.x + p->b.x;
+    v[2].y = c.y + p->b.y;
+    v[2].z = c.z + p->b.z;
+    skid->unk0c = uv;
+    v[3].x = p->b.x - c.x;
+    v[3].y = p->b.y - c.y;
+    v[3].z = p->b.z - c.z;
+    ((MeshFace *)obj->verts)[obj->vertCount].unk01 = 5;
+    float dx = v[0].x - prev[2].x;
+    float dy = v[0].y - prev[2].y;
+    float dz = v[0].z - prev[2].z;
+    if (dx * dx + dy * dy + dz * dz < 400.0f)
+    {
+        v[0] = prev[2];
+        v[1] = prev[3];
+    }
+    else
+    {
+        ((BYTE *)&uv[0].color)[3] = 0;
+        ((BYTE *)&uv[1].color)[3] = 0;
+    }
+    if (g_5712f4 >= 0x7f)
+    {
+        g_5712f4 = 0x7f;
+    }
+    obj->vertCount = (WORD)g_5712f4;
+    obj->unk26 = (WORD)(g_5712f4 * 4);
+    obj->pointCount = (WORD)(g_5712f4 * 4);
+}
+
 // FUNCTION: STUNTGP_D3D 0x41d9c0
 void FUN_41d9c0(int value)
 {
