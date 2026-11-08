@@ -6,6 +6,7 @@
 #include "windowInit.h"
 #include "vecmath.h"
 #include "surface.h"
+#include "mem.h"
 #include "Game/GameEngine/io_wad.h"
 #include "Game/GameEngine/GameSetup.h"
 #include "Game/GameEngine/GameUpdate.h"
@@ -510,6 +511,108 @@ void FUN_430100(LPDIRECTDRAWSURFACE4 surface, BYTE *image, int width, int height
     }
 }
 
+// Loads a width x height image (RLE packed when g_583330 is set, else a TGA) into a new
+// video-memory texture (and a second-stage copy when the device supports it) in the next
+// surface slot and texture slot.
+// FUNCTION: STUNTGP_D3D 0x4303a0
+int FUN_4303a0(int width, int height, int unk1, int unk2, char *path)
+{
+    DDSURFACEDESC2 desc;
+    LPDIRECTDRAWSURFACE4 sysSurface = NULL;
+    LPDIRECTDRAWSURFACE4 surface = NULL;
+    LPDIRECT3DTEXTURE2 sysTexture = NULL;
+    LPDIRECT3DTEXTURE2 texture = NULL;
+    int res;
+    BYTE *image = (BYTE *)Mem_Alloc(width * height * 3 + 0x100, 0);
+    if (g_583330 == 1)
+    {
+        FUN_430330(path, image);
+    }
+    else
+    {
+        FUN_4623c0(path, image, &g_571fd4);
+        FUN_430280(image, (WORD *)image, width, height);
+    }
+    SurfaceSlot *slot = &g_5ba788.surfaceSlots[g_5ba788.surfaceSlotCount++];
+    memset(&desc, 0, sizeof(desc));
+    desc.dwWidth = width;
+    desc.dwSize = sizeof(desc);
+    desc.dwHeight = height;
+    desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
+    desc.ddpfPixelFormat = *g_5ba788.textureFormat;
+    desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
+    res = g_dd4->CreateSurface(&desc, &sysSurface, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    FUN_430100(sysSurface, image, width, height, 16);
+    Mem_Free(image);
+    res = sysSurface->QueryInterface(IID_IDirect3DTexture2, (void **)&sysTexture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = sysSurface->GetSurfaceDesc(&desc);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    desc.dwFlags = (*g_592028 ? DDSD_CKSRCBLT : 0) + 0x101007;
+    desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_ALLOCONLOAD;
+    desc.ddsCaps.dwCaps2 = 0x80;
+    desc.dwTextureStage = 0;
+    res = g_dd4->CreateSurface(&desc, &surface, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = surface->QueryInterface(IID_IDirect3DTexture2, (void **)&texture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = texture->Load(sysTexture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    slot->unk04 = (DWORD)texture;
+    slot->surface = surface;
+    g_renderState.unk7ed0->texture = texture;
+    g_renderState.unk7ed0->unk04[0] = (DWORD)texture;
+    *(WORD *)&g_renderState.unk7ed0->unk04[1] = width;
+    if (g_5ba788.deviceDesc[29] & 0x4000)
+    {
+        LPDIRECTDRAWSURFACE4 surface2 = NULL;
+        LPDIRECT3DTEXTURE2 texture2 = NULL;
+        desc.dwTextureStage = 1;
+        res = g_dd4->CreateSurface(&desc, &surface2, NULL);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+        res = surface2->QueryInterface(IID_IDirect3DTexture2, (void **)&texture2);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+        res = texture2->Load(sysTexture);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+        slot->unk0c = (DWORD)texture2;
+        slot->surface2 = surface2;
+        g_renderState.unk7ed0->unk04[0] = (DWORD)texture2;
+    }
+    FUN_4300f0(sysTexture);
+    ddReleaseSurface(&sysSurface);
+    g_renderState.unk7ed0++;
+    g_592028++;
+    return 1;
+}
+
 // Creates an empty size x size video-memory texture (and a second-stage copy when the device
 // supports it) in the next surface slot and texture slot.
 // FUNCTION: STUNTGP_D3D 0x430730
@@ -947,6 +1050,76 @@ void FUN_431b40(float t)
     g_592030.x -= step.x;
     g_592030.y -= step.y;
     g_592030.z -= step.z;
+}
+
+// Clips the screen-space segment (x0, y0, z0)-(x1, y1, z1) to the display inset by a pixel,
+// in place; returns 0 when it lies wholly outside.
+// FUNCTION: STUNTGP_D3D 0x431be0
+int FUN_431be0(float *x0, float *y0, float *z0, float *x1, float *y1, float *z1)
+{
+    float right = g_576ba4 - 1.0f;
+    float bottom = g_576ba8 - 1.0f;
+    g_592040.x = *x0;
+    g_592040.y = *y0;
+    g_592040.z = *z0;
+    g_592030.x = *x1;
+    g_592030.y = *y1;
+    g_592030.z = *z1;
+    if (g_592040.x < 1.0f && g_592030.x < 1.0f)
+    {
+        return 0;
+    }
+    if (g_592040.x > right && g_592030.x > right)
+    {
+        return 0;
+    }
+    if (g_592040.y < 1.0f && g_592030.y < 1.0f)
+    {
+        return 0;
+    }
+    if (g_592040.y > bottom && g_592030.y > bottom)
+    {
+        return 0;
+    }
+    if (g_592040.x < 1.0f)
+    {
+        FUN_431aa0((1.0f - g_592040.x) / (float)fabs(g_592030.x - g_592040.x));
+    }
+    if (g_592030.x < 1.0f)
+    {
+        FUN_431b40((1.0f - g_592030.x) / (float)fabs(g_592030.x - g_592040.x));
+    }
+    if (g_592040.x > right)
+    {
+        FUN_431aa0((g_592040.x - right) / (float)fabs(g_592030.x - g_592040.x));
+    }
+    if (g_592030.x > right)
+    {
+        FUN_431b40((g_592030.x - right) / (float)fabs(g_592030.x - g_592040.x));
+    }
+    if (g_592040.y < 1.0f)
+    {
+        FUN_431aa0((1.0f - g_592040.y) / (float)fabs(g_592030.y - g_592040.y));
+    }
+    if (g_592030.y < 1.0f)
+    {
+        FUN_431b40((1.0f - g_592030.y) / (float)fabs(g_592030.y - g_592040.y));
+    }
+    if (g_592040.y > bottom)
+    {
+        FUN_431aa0((g_592040.y - bottom) / (float)fabs(g_592030.y - g_592040.y));
+    }
+    if (g_592030.y > bottom)
+    {
+        FUN_431b40((g_592030.y - bottom) / (float)fabs(g_592030.y - g_592040.y));
+    }
+    *x0 = g_592040.x;
+    *y0 = g_592040.y;
+    *z0 = g_592040.z;
+    *x1 = g_592030.x;
+    *y1 = g_592030.y;
+    *z1 = g_592030.z;
+    return 1;
 }
 
 // Outlines the display area with four lines; ends are nudged half a pixel so the corners close.
