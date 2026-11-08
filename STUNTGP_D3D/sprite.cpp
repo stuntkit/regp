@@ -302,6 +302,68 @@ float FUN_438950(float size)
 }
 
 // Clips a sprite against the integer clip rectangle and queues it.
+// Horizontally stretched sprite: the left and right halves of the image with `middle` pixels
+// of the centre column between them. Flags 1/4 centre/right-align, 2/8 centre/bottom-align.
+// FUNCTION: STUNTGP_D3D 0x438230
+void FUN_438230(int layer, int def, float x, float y, float middle, DWORD flags)
+{
+    SpriteData s;
+    if (!def)
+    {
+        return;
+    }
+    if (middle < 0.0f)
+    {
+        return;
+    }
+    FUN_441320(&s, def);
+    s.flags = 2;
+    s.alpha = 0xff;
+    if (flags & 0x100)
+    {
+        s.blendMode = 0x58;
+    }
+    else
+    {
+        s.blendMode = (flags & 0x200) ? 0x70 : 0x20;
+    }
+    float half = s.width * 0.5f;
+    s.x = x;
+    s.y = y;
+    float u1 = s.u1;
+    float total = s.width + middle;
+    if (flags & 1)
+    {
+        s.x = x - total * 0.5f;
+    }
+    else if (flags & 4)
+    {
+        s.x = x - total;
+    }
+    if (flags & 2)
+    {
+        s.y = y - s.height * 0.5f;
+    }
+    else if (flags & 8)
+    {
+        s.y = y - s.height;
+    }
+    s.u1 = half * 4.0f + s.u0;
+    s.width = half;
+    FUN_438370(&s, layer, 0);
+    s.x = half + s.x;
+    if (middle != 0.0f)
+    {
+        s.u0 = s.u1;
+        s.width = middle;
+        FUN_438370(&s, layer, 0);
+        s.x = s.x + middle;
+    }
+    s.width = half;
+    s.u1 = u1;
+    FUN_438370(&s, layer, 0);
+}
+
 // FUNCTION: STUNTGP_D3D 0x438370
 void FUN_438370(SpriteData *src, int layer, int sub)
 {

@@ -1647,7 +1647,7 @@ int FUN_42aa70(int box)
         float dx = corner->x - g_4722d0->cam.pos.x;
         float dy = corner->y - g_4722d0->cam.pos.y;
         float dz = corner->z - g_4722d0->cam.pos.z;
-        l = dz * g_4722d0->planeLeft.z + dy * g_4722d0->planeLeft.y + dx * g_4722d0->planeLeft.x;
+        l = dx * g_4722d0->planeLeft.x + (dy * g_4722d0->planeLeft.y + dz * g_4722d0->planeLeft.z);
         r = dx * g_4722d0->planeRight.x + dz * g_4722d0->planeRight.z + dy * g_4722d0->planeRight.y;
         t = dz * g_4722d0->planeTop.z + dy * g_4722d0->planeTop.y + dx * g_4722d0->planeTop.x;
         b = dx * g_4722d0->planeBottom.x + (dy * g_4722d0->planeBottom.y + dz * g_4722d0->planeBottom.z);

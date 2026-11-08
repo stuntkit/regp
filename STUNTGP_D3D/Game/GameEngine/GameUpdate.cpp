@@ -1884,11 +1884,12 @@ extern int g_61c510;
 // FUNCTION: STUNTGP_D3D 0x429520
 void FUN_429520(Vec4 *in, DWORD count)
 {
+    float d[5];
+    Vec4 t;
     float *out = (float *)g_61c510;
     float nearZ = g_4722d0->nearZ;
     for (DWORD i = 0; i < count; i++)
     {
-        Vec4 t;
         t.x = g_61c428[8] * in->z + g_61c428[4] * in->y + g_61c428[0] * in->x + g_61c428[12];
         t.y = g_61c428[9] * in->z + g_61c428[5] * in->y + g_61c428[1] * in->x + g_61c428[13];
         t.z = g_61c428[10] * in->z + g_61c428[6] * in->y + g_61c428[2] * in->x + g_61c428[14];
@@ -1898,14 +1899,14 @@ void FUN_429520(Vec4 *in, DWORD count)
         out[1] = sy;
         float sz = g_61c3e8[10] * t.z + g_61c3e8[14];
         out[2] = sz;
-        float d0 = nearZ - sz;
-        float d1 = -t.z - sx;
-        float d2 = sx - t.z;
-        float d3 = -t.z - sy;
-        float d4 = sy - t.z;
+        d[0] = nearZ - sz;
+        d[1] = -t.z - sx;
+        d[2] = sx - t.z;
+        d[3] = -t.z - sy;
+        d[4] = sy - t.z;
         out[7] = t.z;
-        *(WORD *)(out + 4) = ((*(DWORD *)&d4 >> 26) & 0x20) | ((*(DWORD *)&d3 >> 27) & 0x10) |
-                             ((*(DWORD *)&d2 >> 28) & 8) | ((*(DWORD *)&d1 >> 29) & 4) | (*(DWORD *)&d0 >> 31) | 2;
+        *(WORD *)(out + 4) = ((*(DWORD *)&d[4] >> 26) & 0x20) | ((*(DWORD *)&d[3] >> 27) & 0x10) |
+                             ((*(DWORD *)&d[2] >> 28) & 8) | ((*(DWORD *)&d[1] >> 29) & 4) | (*(DWORD *)&d[0] >> 31) | 2;
         in++;
         out += 8;
     }
