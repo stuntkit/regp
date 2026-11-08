@@ -740,6 +740,40 @@ void FUN_419180()
     FUN_442cf0(180, text, g_4d5bb8, 1, 0);
 }
 
+extern float g_60f2d0[31];
+void FUN_418bd0();
+void FUN_418d10();
+
+// While the car is between 40% and 65% of the path: crowd and messages, and every third tick a boost to
+// unk2570 from unk1184, capped by g_60f2d0[6].
+// FUNCTION: STUNTGP_D3D 0x4191f0
+void FUN_4191f0()
+{
+    if ((int)g_4d5bb8->unk7650 >= 40 && (int)g_4d5bb8->unk7650 < 65)
+    {
+        if (!g_4d5bb8->unk7660)
+        {
+            FUN_419110();
+        }
+        FUN_418f70();
+        FUN_418bd0();
+        if (++g_4d5bb8->unk7660 % 3)
+        {
+            return;
+        }
+        if (g_4d5bb8->unk7658 < g_60f2d0[6] * g_4d5bb8->unk1184 && g_4d5bb8->unk2570 < g_4d5bb8->unk2574)
+        {
+            unsigned int add = (int)(g_4d5bb8->unk1184 * 10.0f);
+            g_4d5bb8->unk7658 += add;
+            g_4d5bb8->unk2570 += add;
+        }
+    }
+    if ((int)g_4d5bb8->unk7650 >= 65)
+    {
+        FUN_418d10();
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x4199a0
 void FUN_4199a0()
 {

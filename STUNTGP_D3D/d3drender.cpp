@@ -3063,6 +3063,17 @@ int FUN_4255e0(OverlayPoly *poly)
     return 1;
 }
 
+// Queues a screen-space polygon after clipping it; dropped when the clip rejects it.
+// FUNCTION: STUNTGP_D3D 0x425830
+void FUN_425830(OverlayPoly *src)
+{
+    g_renderState.unk108[g_renderState.unk11c] = *src;
+    if (FUN_4255e0(&g_renderState.unk108[g_renderState.unk11c]))
+    {
+        g_renderState.unk11c++;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x425870
 void FUN_425870()
 {

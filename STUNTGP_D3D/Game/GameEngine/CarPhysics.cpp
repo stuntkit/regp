@@ -6140,9 +6140,51 @@ void FUN_41ac30(Car *car)
 {
 }
 
-// STUB: STUNTGP_D3D 0x41bea0
+extern int g_4d5b20;
+extern int g_4746c0;
+void FUN_460d20(unsigned int n);
+void FUN_41bdd0();
+void FUN_41af70();
+void FUN_41b0d0();
+void FUN_41b250();
+void FUN_41b510();
+void FUN_41b5d0();
+void FUN_41b680();
+void FUN_41b710();
+void FUN_41b8e0();
+void FUN_41ba40();
+void FUN_41bc80();
+
+// Per-tick sound update for the current car; g_4d5b20 == 1 silences everything instead.
+// FUNCTION: STUNTGP_D3D 0x41bea0
 void FUN_41bea0()
 {
+    if (g_4d5b20 == 1)
+    {
+        FUN_460dd0();
+        FUN_41bdd0();
+        return;
+    }
+    if (FUN_402590(g_4d5bb8))
+    {
+        FUN_460d20(15000);
+        g_4746c0 = 100;
+    }
+    else
+    {
+        g_4746c0 = 50;
+    }
+    FUN_41ba40();
+    FUN_41b5d0();
+    FUN_41af70();
+    FUN_41b0d0();
+    FUN_41b8e0();
+    FUN_41b510();
+    FUN_41bc80();
+    FUN_41b250();
+    FUN_41b680();
+    FUN_41b710();
+    FUN_460d20(7500);
 }
 
 // STUB: STUNTGP_D3D 0x41bf20

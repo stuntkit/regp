@@ -829,7 +829,9 @@ struct Car
     int unk764c;              // 0x764c, segment along g_4d5c9c
     unsigned int unk7650;     // 0x7650, unk764c as a percentage of the path
     int unk7654;              // 0x7654
-    BYTE unk7658[0xc];        // 0x7658
+    int unk7658;              // 0x7658
+    BYTE unk765c[0x4];        // 0x765c
+    int unk7660;              // 0x7660
     Vec4 unk7664;             // 0x7664, nearest point on the path
 
     int unk7674;              // 0x7674
