@@ -1868,6 +1868,78 @@ void FUN_429d50(Scene *scene, ObjectDef *obj, PolyRef **lists)
 // GLOBAL: STUNTGP_D3D 0x61c550
 DWORD g_61c550;
 
+// FUN_42a090 for partly clipped meshes: skips polygons with every vertex outside one frustum side
+// and stores the vertices' shared outcodes in unk10.
+// FUNCTION: STUNTGP_D3D 0x429ea0
+void FUN_429ea0(PolyRef **lists, VisIndexList *vis, DWORD count)
+{
+    Vec4 *normals = (Vec4 *)g_61c52c->unk28;
+    WORD *refs = (WORD *)g_61c52c->unk38;
+    PolyRef *opaque = lists[0];
+    Vec4 *points = g_61c530->points;
+    BYTE *src = g_61c530->unk2c;
+    PolyRef *blended = lists[2];
+    g_61c550 += count;
+    for (DWORD i = 0; i < count; i++)
+    {
+        WORD *idx = vis->polys;
+        while (*idx != 0xffff)
+        {
+            DWORD any = 0;
+            DWORD *poly = (DWORD *)(g_61c530->verts + *idx * 8);
+            WORD *ref = &refs[((WORD *)poly)[3]];
+            DWORD n = poly[0] & 0xff;
+            DWORD all = 0x3f;
+            if (n)
+            {
+                WORD *r = ref;
+                BYTE *e;
+                while (n-- > 0)
+                {
+                    e = src + *r++ * 16;
+                    DWORD code = *(WORD *)(g_61c510 + *(WORD *)(e + 8) * 32 + 16);
+                    any |= code;
+                    all &= code;
+                }
+                if (any == 0x3f)
+                {
+                    Vec4 *p = &points[*(WORD *)(e + 8)];
+                    Vec4 d;
+                    d.x = p->x - g_61c4e8.x;
+                    d.y = p->y - g_61c4e8.y;
+                    d.z = p->z - g_61c4e8.z;
+                    Vec4 *nrm = &normals[((WORD *)poly)[2]];
+                    if ((int)poly[0] < 0 || d.x * nrm->x + d.y * nrm->y + d.z * nrm->z < 0.0f)
+                    {
+                        if (poly[0] & 0x40000000)
+                        {
+                            blended->poly = poly;
+                            blended->ref = ref;
+                            blended->verts = g_61c510;
+                            blended->src = src;
+                            blended->unk10 = all;
+                            blended++;
+                        }
+                        else
+                        {
+                            opaque->poly = poly;
+                            opaque->ref = ref;
+                            opaque->verts = g_61c510;
+                            opaque->src = src;
+                            opaque->unk10 = all;
+                            opaque++;
+                        }
+                    }
+                }
+            }
+            idx++;
+        }
+        vis++;
+    }
+    lists[2] = blended;
+    lists[0] = opaque;
+}
+
 // FUN_429d50 for the track: queues the camera-facing polygons of the visible meshes of g_61c530.
 // FUNCTION: STUNTGP_D3D 0x42a090
 void FUN_42a090(PolyRef **lists, VisIndexList *vis, DWORD count)
