@@ -593,6 +593,60 @@ int FUN_460f70(LPDIRECTSOUNDBUFFER *buffer, int channel, int *slotIndex)
     return 1;
 }
 
+// Plays a sample on a 2D channel; the 3D processing is switched off.
+// FUNCTION: STUNTGP_D3D 0x461030
+void FUN_461030(int channel, int loop, DWORD frequency, DWORD volume, int pan, int keep, int *slotIndex)
+{
+    if (!g_soundInitialised)
+    {
+        return;
+    }
+    if ((DWORD)g_62f5b4 > 0x18)
+    {
+        return;
+    }
+    LPDIRECTSOUNDBUFFER buffer = g_62e118[channel].buffer;
+    if (!buffer)
+    {
+        return;
+    }
+    LPDIRECTSOUND3DBUFFER buffer3d = g_62e118[channel].buffer3d;
+    if (!buffer3d)
+    {
+        return;
+    }
+    if (!keep)
+    {
+        if (FUN_460e70(&buffer, &buffer3d, channel, slotIndex) != 1)
+        {
+            return;
+        }
+    }
+    buffer3d->SetMode(DS3DMODE_DISABLE, DS3D_IMMEDIATE);
+    if (!frequency)
+    {
+        frequency = g_62e118[channel].rate;
+    }
+    buffer->SetFrequency(frequency);
+    buffer->SetVolume(g_4897f8[g_sfxVolume * volume >> 9]);
+    int value = g_4897f8[128 - ((abs(pan) + 1) >> 1)];
+    if (pan < 0)
+    {
+        value = -value;
+    }
+    buffer->SetPan(value);
+    if (loop == 1)
+    {
+        buffer->Play(0, 0, DSBPLAY_LOOPING);
+        g_62f5b4++;
+    }
+    else
+    {
+        buffer->Play(0, 0, 0);
+        g_62f5b4++;
+    }
+}
+
 // Nearest active player camera to a point, or the first one in single view.
 // FUNCTION: STUNTGP_D3D 0x461270
 GameSlot *FUN_461270(Vec4 *pos)
