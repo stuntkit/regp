@@ -5059,6 +5059,57 @@ void FUN_41ba40()
     FUN_461850(&g_4d5bb8->unk2390, (int)freq, (int)vol, (Vec4 *)&g_4d5bb8->posX, &g_4d5bb8->unk1c8c);
 }
 
+// GLOBAL: STUNTGP_D3D 0x570ac8
+float g_570ac8;
+
+// GLOBAL: STUNTGP_D3D 0x570ad0
+int g_570ad0;
+
+// GLOBAL: STUNTGP_D3D 0x570ad4
+unsigned int g_570ad4;
+
+// Brake squeal while nearly stopped: sounds whenever unk1cf4 moves, then fades out over 8 ticks.
+// FUNCTION: STUNTGP_D3D 0x41bc80
+void FUN_41bc80()
+{
+    if (FUN_402590(g_4d5bb8))
+    {
+        if (g_4d5bb8->unk1cf0 <= 500.0f / 60.0f && (float)fabs(g_570ac8 - g_4d5bb8->unk1cf4) >= 0.1f)
+        {
+            if (!g_570ad0)
+            {
+                FUN_4614a0(0x20, 1, 0, 0x30, (Vec4 *)&g_4d5bb8->posX, &g_4d5bb8->unk1c8c, 0, &g_570ad0);
+            }
+            else if (g_570ac8 < g_4d5bb8->unk1cf4)
+            {
+                FUN_461850(&g_570ad0, 0x4800, 0x30, (Vec4 *)&g_4d5bb8->posX, NULL);
+            }
+            else
+            {
+                FUN_461850(&g_570ad0, 0, 0x30, (Vec4 *)&g_4d5bb8->posX, NULL);
+            }
+            g_570ad4 = 8;
+            g_570ac8 = g_4d5bb8->unk1cf4;
+            return;
+        }
+        if (g_570ad4 > 0)
+        {
+            if (g_570ad0)
+            {
+                FUN_461850(&g_570ad0, 0, g_570ad4 * 48 / 8, (Vec4 *)&g_4d5bb8->posX, NULL);
+            }
+            g_570ad4--;
+            g_570ac8 = g_4d5bb8->unk1cf4;
+            return;
+        }
+        if (g_570ad0)
+        {
+            FUN_460d90(&g_570ad0);
+        }
+        g_570ac8 = g_4d5bb8->unk1cf4;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x41bdd0
 void FUN_41bdd0()
 {
@@ -5095,6 +5146,31 @@ void FUN_41bdd0()
             g_49a1f8[i].unk239c = 0;
             g_49a1f8[i].unk23a0 = 0;
         }
+    }
+}
+
+void FUN_42b7f0(Scene *scene, Camera *camera, int arg);
+
+// Draws the car's unk26b4 scene from the car's own camera, then puts it back at unk26b0's position.
+// FUNCTION: STUNTGP_D3D 0x41c420
+void FUN_41c420()
+{
+    if (g_4d5bb8->unk3928)
+    {
+        Camera cam = g_4864e8;
+        cam.pos = g_4d5bb8->unk3934;
+        cam.target = g_4d5bb8->unk3954;
+        cam.up = g_4d5bb8->unk3944;
+        cam.scale.x = g_4d5bb8->unk392c;
+        cam.scale.y = g_4d5bb8->unk392c;
+        cam.scale.z = g_4d5bb8->unk392c;
+        cam.target.x += cam.pos.x;
+        cam.target.y += cam.pos.y;
+        cam.target.z += cam.pos.z;
+        Scene *scene = g_4d5bb8->unk26b4;
+        scene->verts[3] = (scene->verts[3] & 0xf7) | 0x70;
+        FUN_42b7f0(scene, &cam, 0);
+        *(Vec4 *)g_4d5bb8->unk26b4->unk10 = *(Vec4 *)g_4d5bb8->unk26b0->unk10;
     }
 }
 
@@ -5222,6 +5298,25 @@ void FUN_41c530()
 void FUN_41c710()
 {
     g_636418[1].scene = NULL;
+}
+
+void FUN_431ff0(D3DCOLOR color, float x, float y, float z);
+
+// Projects p through g_636418[3]'s transform and draws a dot there when it is in front of the camera.
+// FUNCTION: STUNTGP_D3D 0x41c720
+void FUN_41c720(Vec4 *p, D3DCOLOR color)
+{
+    float m[16];
+    FUN_44fbd0(g_636418[3].scene, g_636418[3].scene->lods[0], m);
+    float z = m[2] * p->x + m[6] * p->y + m[10] * p->z + m[14];
+    if (z > 0.0f)
+    {
+        float inv = 1.0f / (z + 1.0f);
+        FUN_431ff0(color,
+                   (m[0] * p->x + m[4] * p->y + m[8] * p->z + m[12]) * g_61c3e8[0] * g_576b9c * inv + g_576b94,
+                   (m[1] * p->x + m[5] * p->y + m[9] * p->z + m[13]) * g_61c3e8[5] * g_576ba0 * inv + g_576b98,
+                   1.0f);
+    }
 }
 
 extern DWORD g_5712f4;

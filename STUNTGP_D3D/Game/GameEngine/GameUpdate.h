@@ -753,7 +753,11 @@ struct Car
     DWORD unk3920;            // 0x3920
     int unk3924;              // 0x3924
     int unk3928;              // 0x3928
-    BYTE unk392c[0x38];       // 0x392c
+    float unk392c;            // 0x392c
+    BYTE unk3930[0x4];        // 0x3930
+    Vec4 unk3934;             // 0x3934
+    Vec4 unk3944;             // 0x3944
+    Vec4 unk3954;             // 0x3954
     SkidMark skids[4];        // 0x3964
     int unk6da4;              // 0x6da4
     int unk6da8;              // 0x6da8
