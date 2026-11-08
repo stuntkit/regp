@@ -187,6 +187,72 @@ DWORD *g_4955e0;
 // GLOBAL: STUNTGP_D3D 0x4955e4
 DWORD *g_4955e4;
 
+// Textures of a race.
+// GLOBAL: STUNTGP_D3D 0x4955e8
+TextureEntry g_4955e8[31] = {
+    // STRING: STUNTGP_D3D 0x49575c
+    {"Misc\\LIGHT1", 0, 0},
+    // STRING: STUNTGP_D3D 0x495768
+    {"Misc\\Light2", 0, 0},
+    // STRING: STUNTGP_D3D 0x495774
+    {"Misc\\Flare2", 0, 0},
+    // STRING: STUNTGP_D3D 0x495780
+    {"Misc\\Hexflare3", 0, 0},
+    // STRING: STUNTGP_D3D 0x495790
+    {"Misc\\Spark", 0, 0},
+    // STRING: STUNTGP_D3D 0x49579c
+    {"Misc\\Skidmark2", 0, 0},
+    // STRING: STUNTGP_D3D 0x4957ac
+    {"Misc\\Corona5", 0, 0},
+    // STRING: STUNTGP_D3D 0x4957bc
+    {"Misc\\Smoke1", 0, 0},
+    // STRING: STUNTGP_D3D 0x4957c8
+    {"Misc\\Trail1", 0, 0},
+    // STRING: STUNTGP_D3D 0x4957d4
+    {"Misc\\Dust1", 0, 0},
+    // STRING: STUNTGP_D3D 0x4957e0
+    {"Overlays\\Fade", 0, 0},
+    // STRING: STUNTGP_D3D 0x4957f0
+    {"Overlays\\Dial", 0, 0},
+    // STRING: STUNTGP_D3D 0x495800
+    {"Overlays\\Bonus1", 0, 0},
+    // STRING: STUNTGP_D3D 0x495810
+    {"Overlays\\Bonus2", 0, 0},
+    // STRING: STUNTGP_D3D 0x495820
+    {"Overlays\\Gear", 0, 0},
+    // STRING: STUNTGP_D3D 0x495830
+    {"empty", 2, 8},
+    // STRING: STUNTGP_D3D 0x495838
+    {"Overlays\\Start0", 1, 1},
+    // STRING: STUNTGP_D3D 0x495848
+    {"Overlays\\Start1", 1, 1},
+    // STRING: STUNTGP_D3D 0x495858
+    {"Overlays\\Start2", 1, 1},
+    // STRING: STUNTGP_D3D 0x495868
+    {"Overlays\\Start3", 1, 1},
+    // STRING: STUNTGP_D3D 0x495878
+    {"Overlays\\LapRecord", 1, 1},
+    // STRING: STUNTGP_D3D 0x49588c
+    {"Overlays\\Result1", 1, 1},
+    // STRING: STUNTGP_D3D 0x4958a0
+    {"Overlays\\Result2", 1, 1},
+    // STRING: STUNTGP_D3D 0x4958b4
+    {"Overlays\\Result3", 1, 1},
+    // STRING: STUNTGP_D3D 0x4958c8
+    {"Overlays\\Finish", 1, 1},
+    // STRING: STUNTGP_D3D 0x4958d8
+    {"Overlays\\GameOver", 1, 1},
+    // STRING: STUNTGP_D3D 0x4958ec
+    {"Overlays\\BoxBack", 1, 1},
+    // STRING: STUNTGP_D3D 0x495900
+    {"Overlays\\BoxBack2", 1, 1},
+    // STRING: STUNTGP_D3D 0x495914
+    {"Overlays\\logo-add", 1, 1},
+    // STRING: STUNTGP_D3D 0x495928
+    {"Overlays\\logo-sub", 1, 1},
+    {NULL, 0, 0},
+};
+
 // Scene queued with its own camera; g_632cf8 and g_62f5d8 hold lists of these.
 struct SceneCamera
 {
@@ -1411,9 +1477,33 @@ void FUN_434030()
     g_5da25c->pointCount = 0;
 }
 
-// STUB: STUNTGP_D3D 0x42c510
+void FUN_42bdd0();
+void FUN_445a40();
+void FUN_42c480();
+void FUN_42c440(char **names);
+extern int g_DisplayBootGfx;
+
+// Loads the textures: the boot screens when enabled, the front-end or race texture list, then
+// the textures of each scene not yet loaded.
+// FUNCTION: STUNTGP_D3D 0x42c510
 void FUN_42c510()
 {
+    FUN_42bdd0();
+    if (g_DisplayBootGfx == 1)
+    {
+        FUN_445a40();
+    }
+    FUN_42c480();
+    FUN_42c340(g_612948.unk02a0 == 2 ? (TextureEntry *)g_47f318 : g_4955e8);
+    for (SceneSlot *slot = &g_636418[2]; slot->scene; slot++)
+    {
+        if (slot->unk04 == 0)
+        {
+            FUN_42c440(slot->scene->textures);
+            FUN_42b900(slot->scene);
+        }
+    }
+    FUN_42ba90();
 }
 
 // STUB: STUNTGP_D3D 0x42d070
