@@ -245,7 +245,7 @@ struct MenuDef
 {
     int unk00;       // 0x00
     float unk04;     // 0x04
-    int unk08;       // 0x08
+    float unk08;     // 0x08
     float x;         // 0x0c
     float y;         // 0x10
     float scale;     // 0x14
@@ -274,7 +274,7 @@ struct MenuList
     float unkb8;     // 0xb8, MenuDef::x
     float unkbc;     // 0xbc, MenuDef::y
     float unkc0;     // 0xc0
-    int unkc4;       // 0xc4
+    float unkc4;     // 0xc4, pointer bob phase
 };
 
 struct MenuLanguage
@@ -476,7 +476,10 @@ struct MenuState
     int unk4478; // 0x4478
     int unk447c; // 0x447c
     int unk4480; // 0x4480
-    BYTE unk4484[0x44d0 - 0x4484];
+    int unk4484;     // 0x4484
+    int unk4488;     // 0x4488
+    int unk448c;     // 0x448c, entries used in unk4490
+    int unk4490[16]; // 0x4490, nodes visited, the last is the current one
     int unk44d0; // 0x44d0
     char unk44d4[4][0x40]; // 0x44d4, names entered on PageEnterName
     int unk45d4;   // 0x45d4
@@ -523,7 +526,8 @@ struct MenuState
     MenuSponsor sponsors[7];     // 0x19f10, [1..6] used
     int positions[6][4];         // 0x19f48
     MenuRound rounds[21];        // 0x19fa8
-    BYTE unk1a53c[0x1a544 - 0x1a53c];
+    int unk1a53c; // 0x1a53c
+    int unk1a540; // 0x1a540
     MenuSlot20 unk1a544[6]; // 0x1a544
     int unk1a604;           // 0x1a604
     char unk1a608[0x40];    // 0x1a608
@@ -549,7 +553,11 @@ struct MenuState
     int unk1d630[25][6];          // 0x1d630, read by FUN_434f60
     MenuCarEntry unk1d888[3][4];  // 0x1d888, Easy, Medium, Hard; read by FUN_434e90
     int unk1d9a8; // 0x1d9a8
-    BYTE unk1d9ac[0x1da5c - 0x1d9ac];
+    int unk1d9ac;           // 0x1d9ac, FUN_43dd40 id of the results page
+    MenuLine unk1d9b0[20];  // 0x1d9b0
+    int unk1da50;           // 0x1da50, lines in unk1d9b0
+    int unk1da54;           // 0x1da54
+    int unk1da58;           // 0x1da58
     int unk1da5c[6][2];           // 0x1da5c, read by FUN_434e10
     int unk1da8c;                 // 0x1da8c
     int unk1da90[4][2];           // 0x1da90
@@ -590,6 +598,24 @@ struct MenuHolder
     PoolObject *child; // 0x14
 };
 
+// FUN_453480 copies the entries of g_487db8 (up to the one with track 0) whose 16-byte entry at
+// 0x5f9300 is in use into g_624db8, then fills unk08..unk3c from it; FUN_453680/FUN_453710/
+// FUN_453dd0/FUN_454150 index g_624db8 by entry * 0x40.
+struct TrackRecord
+{
+    int unk00;    // 0x00
+    int track;    // 0x04
+    int unk08[5]; // 0x08
+    int unk1c[5]; // 0x1c
+    float unk30;  // 0x30
+    int unk34;    // 0x34
+    int unk38;    // 0x38
+    int unk3c;    // 0x3c
+};
+
+extern TrackRecord g_487db8[12];
+extern TrackRecord g_624db8[12];
+
 // Car stat screen run by FUN_453710.
 struct Unk453710
 {
@@ -614,7 +640,7 @@ struct Unk451aa0
     PoolObject *child; // 0x14
     int unk18;         // 0x18, selected item
     int unk1c;         // 0x1c, selected group
-    float unk20;       // 0x20
+    int unk20;         // 0x20, player
     float unk24;       // 0x24
     float unk28;       // 0x28
     float unk2c;       // 0x2c
@@ -708,8 +734,8 @@ struct Unk457e70
     int unk24;                 // 0x024
     float unk28;               // 0x028
     float unk2c;               // 0x02c
-    int unk30;                 // 0x030
-    int unk34;                 // 0x034
+    float unk30;               // 0x030, prompt slide
+    float unk34;               // 0x034
     float unk38;               // 0x038
     float unk3c;               // 0x03c
     PoolObject *unk40;         // 0x040

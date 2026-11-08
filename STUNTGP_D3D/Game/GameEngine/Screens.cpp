@@ -90,6 +90,7 @@ int FUN_440160();
 int FUN_4402e0();
 int FUN_440660(void *buffer, int size, int ghost);
 char *FUN_43d550(int frames);
+float FUN_43d8f0(float current, float target, float step);
 int FUN_457a20(int value);
 int FUN_457bf0(int card, int *freeSpace);
 int FUN_457e70(Unk457e70 *object, int id);
@@ -427,21 +428,6 @@ PoolClass g_487a50 = {FUN_452fd0, FUN_452fe0};
 
 // GLOBAL: STUNTGP_D3D 0x487c18
 PoolClass g_487c18 = {(void (*)(PoolObject *))FUN_4531d0, (int (*)(PoolObject *, int, int))FUN_453210};
-
-// FUN_453480 copies the entries of g_487db8 (up to the one with track 0) whose 16-byte entry at
-// 0x5f9300 is in use into g_624db8, then fills unk08..unk3c from it; FUN_453680/FUN_453710/
-// FUN_453dd0/FUN_454150 index g_624db8 by entry * 0x40.
-struct TrackRecord
-{
-    int unk00;    // 0x00
-    int track;    // 0x04
-    int unk08[5]; // 0x08
-    int unk1c[5]; // 0x1c
-    float unk30;  // 0x30
-    int unk34;    // 0x34
-    int unk38;    // 0x38
-    int unk3c;    // 0x3c
-};
 
 // GLOBAL: STUNTGP_D3D 0x487db8
 TrackRecord g_487db8[12] = {
@@ -1011,16 +997,289 @@ int FUN_450950(Unk450930 *object, int msg, int arg)
     return 0;
 }
 
-// STUB: STUNTGP_D3D 0x4512b0
-int FUN_4512b0(PoolObject *object, int msg, int arg)
+void FUN_450db0(Unk4516c0 *object);
+void FUN_450dd0(Unk4516c0 *object);
+void FUN_450e50(int a, int b, float x, float y);
+void FUN_451680(Unk4516c0 *object);
+void FUN_4516c0(Unk4516c0 *object);
+void FUN_4516f0(Unk4516c0 *object);
+
+// Championship hub: the round menu (unk14) and its confirm box (unk18) over the results table.
+// FUNCTION: STUNTGP_D3D 0x4512b0
+int FUN_4512b0(PoolObject *base, int msg, int arg)
 {
+    Unk4516c0 *object = (Unk4516c0 *)base;
+    PoolObject *child;
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(1);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(0x5f, 0.3f, -0.5f);
+        object->unk14->message(object->unk14, msg, 0);
+        return 0;
+    case 0x10:
+        if (object->unk28)
+        {
+            child = object->unk18;
+            child->message(child, msg, 0);
+            if (child->message(child, 0x1a, 0) == 1)
+            {
+                FUN_4516c0(object);
+                return 0;
+            }
+            g_menuState.unk1a53c = 2;
+            if (g_menuState.unk19d7c.unk008 > 1)
+            {
+                FUN_43eef0();
+                return 0;
+            }
+            FUN_43eef0();
+            return 0;
+        }
+        else
+        {
+            child = object->unk14;
+            switch (child->message(child, 0x1a, 0))
+            {
+            case 0:
+                child->message(child, msg, 0);
+                g_menuState.unk1a53c = 4;
+                FUN_43eef0();
+                return 0;
+            case 1:
+                child->message(child, msg, 0);
+                FUN_43dfa0(0x16, 7);
+                object->unk20 = 1;
+                return 0;
+            case 2:
+                if (g_menuState.unk4398 > 0)
+                {
+                    object->unk1c = 1;
+                    child->message(child, msg, 0);
+                    FUN_43dfa0(0x14, 10);
+                    return 0;
+                }
+                FUN_440880(9);
+                return 0;
+            case 3:
+                child->message(child, msg, 0);
+                g_menuState.unk46bc = 0;
+                g_menuState.unk46c0 = 0;
+                g_menuState.unk46c8 = 3;
+                g_menuState.unk46c4 = 0;
+                object->unk24 = 1;
+                FUN_43dfa0(0, 0x1b);
+                return 0;
+            case 4:
+                FUN_451680(object);
+                object->unk14->message(object->unk14, msg, 0);
+                return 0;
+            }
+        }
+        break;
+    case 0x11:
+        if (object->unk28)
+        {
+            FUN_4516c0(object);
+            FUN_440890(msg);
+            return 0;
+        }
+        FUN_440890(msg);
+        FUN_451680(object);
+        return 0;
+    case 0xb:
+    case 0xc:
+        if (object->unk28)
+        {
+            child = object->unk18;
+            child->message(child, msg, 0);
+            return 0;
+        }
+        child = object->unk14;
+        child->message(child, msg, 0);
+        return 0;
+    case 2:
+        object->unk14->message(object->unk14, msg, 0);
+        child = object->unk18;
+        child->message(child, msg, 0);
+        return 0;
+    case 1:
+        FUN_450dd0(object);
+        if (object->unk24)
+        {
+            object->unk24 = 0;
+            if (g_menuState.unk46e0)
+            {
+                g_menuState.unk1a540 = 0;
+                object->unk14->message(object->unk14, 0x1c, 0);
+            }
+        }
+        if (object->unk1c)
+        {
+            object->unk1c = 0;
+            if (g_menuState.unk4394)
+            {
+                break;
+            }
+            int car = g_menuState.unk43f4[g_menuState.unk4238];
+            int refund = FUN_437de0(g_menuState.unk19d7c.sponsor, g_menuState.unk19d7c.car,
+                                    &g_menuState.unk19d7c.carSetup);
+            int price = FUN_437de0(g_menuState.unk19d7c.sponsor, car, &g_menuState.cars[car]);
+            g_menuState.unk19d7c.money += refund;
+            g_menuState.unk19d7c.car = car;
+            object->unk20 = 1;
+            g_menuState.unk19d7c.carSetup = g_menuState.cars[car];
+            g_menuState.unk19d7c.money -= price;
+        }
+        FUN_450db0(object);
+        return 0;
+    case 3:
+        FUN_4392b0(0x9b, 0);
+        object->unk14->message(object->unk14, msg, 0);
+        object->unk18->message(object->unk18, msg, 0);
+        FUN_4516f0(object);
+        FUN_450e50(g_menuState.unk19d7c.unk008, g_menuState.numberOfRounds, 192.0f, 240.0f);
+        break;
+    }
     return 0;
 }
 
-// STUB: STUNTGP_D3D 0x451700
-int FUN_451700(PoolObject *object, int arg)
+// GLOBAL: STUNTGP_D3D 0x4868f8
+MenuItem g_4868f8[5] = {
+    {0, 0xffc8c8ff, 0xffffffff, 0x187, 0, 1, 0, 0},
+    {1, 0xffc8c8ff, 0xffffffff, 0x189, 0, 1, 0, 0},
+    {2, 0xffc8c8ff, 0xffffffff, 0x188, 0, 1, 0, 0},
+    {3, 0xffc8c8ff, 0xffffffff, 0x18a, 0, 1, 0, 0},
+    {0},
+};
+
+// One car group of Unk451aa0::groups: its size, its id (1 to 4), then its cars.
+struct CarGroup
 {
-    return 0;
+    int count;     // 0x00
+    int id;        // 0x04
+    int cars[10];  // 0x08
+};
+
+extern MenuItem g_624b18[5];
+int FUN_437cc0(int track);
+struct Unk451a50;
+void FUN_451a50(Unk451a50 *object, int value, int group);
+void FUN_436d60(ShopCar *car, int *stat0, int *stat1, int *stat2);
+
+// Car select init: groups the unlocked cars, drops empty groups, finds the current car and
+// caches each car's price and stats.
+// FUNCTION: STUNTGP_D3D 0x451700
+int FUN_451700(PoolObject *base, int arg)
+{
+    Unk451aa0 *object = (Unk451aa0 *)base;
+    CarGroup *groups = (CarGroup *)object->groups;
+    int i;
+    int j;
+    int stat0;
+    int stat1;
+    int stat2;
+    object->unk18 = 0;
+    object->unk1c = 0;
+    object->unk34 = 0;
+    for (i = 0; i < 3; i++)
+    {
+        object->unk38[i] = 0;
+        object->unk44[i] = 0;
+    }
+    object->unk20 = g_menuState.unk4238;
+    g_menuState.unk4394 = 0;
+    FUN_437710(g_menuState.unk439c, g_menuState.unk4398);
+    for (i = 0; i < 4; i++)
+    {
+        groups[i].id = i + 1;
+        groups[i].count = 0;
+    }
+    object->unk110 = 4;
+    for (i = 0; i < g_menuState.unk4398; i++)
+    {
+        int car = g_menuState.unk439c[i];
+        FUN_451a50((Unk451a50 *)object, car, FUN_437cc0(car));
+    }
+    for (i = 0; i < object->unk110; i++)
+    {
+        if (groups[i].count <= 0)
+        {
+            for (j = i; j < object->unk110 - 1; j++)
+            {
+                groups[j] = groups[j + 1];
+            }
+            object->unk110--;
+            i--;
+        }
+    }
+    if (g_menuState.unk43f4)
+    {
+        for (i = 0; i < object->unk110; i++)
+        {
+            for (j = 0; j < groups[i].count; j++)
+            {
+                if (groups[i].cars[j] == g_menuState.unk43f4[g_menuState.unk4238])
+                {
+                    object->unk18 = j;
+                    object->unk1c = i;
+                    break;
+                }
+            }
+        }
+    }
+    object->unk2c = object->unk24 = object->unk18;
+    int group = object->unk1c;
+    object->unk30 = object->unk28 = group;
+    for (i = 0; i < object->unk110; i++)
+    {
+        g_624b18[i] = g_4868f8[groups[i].id - 1];
+        g_624b18[i].id = i;
+    }
+    g_624b18[i] = g_4868f8[4];
+    MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
+    memset(list, 0, sizeof(MenuList));
+    list->base.type = 0x29;
+    // STRING: STUNTGP_D3D 0x4869d8
+    list->base.name = "MenuText";
+    list->base.unk08 = 0;
+    *(PoolClass *)&list->base.destroy = g_menuListClass;
+    if (!FUN_43c860(list, &g_486998))
+    {
+        Pool_Free(list);
+        object->child = NULL;
+    }
+    else
+    {
+        object->child = &list->base;
+    }
+    PoolObject *child = object->child;
+    child->message(child, 0x18, 0);
+    child->message(child, 0x16, 0);
+    child->message(child, 0x1c, group);
+    int money = 0;
+    if (g_menuState.unk4230 == 5)
+    {
+        money = g_menuState.unk19d7c.money;
+        for (i = 1; i < 21; i++)
+        {
+            object->unk134[i] = FUN_437de0(g_menuState.unk19d7c.sponsor, i, &g_menuState.cars[i]);
+        }
+        if (g_menuState.unk19d7c.car)
+        {
+            money += FUN_437de0(g_menuState.unk19d7c.sponsor, g_menuState.unk19d7c.car, &g_menuState.unk19d7c.carSetup);
+        }
+    }
+    strcpy(object->unk114, FUN_43d5f0(money, 0));
+    for (i = 1; i < 21; i++)
+    {
+        FUN_436d60(&g_menuState.cars[i], &stat0, &stat1, &stat2);
+        object->unk18c[i][0] = stat0;
+        object->unk18c[i][1] = stat1;
+        object->unk18c[i][2] = stat2;
+    }
+    return 1;
 }
 
 struct Unk451a50;
@@ -1685,15 +1944,212 @@ int FUN_453210(Unk4516c0 *object, int msg, int arg)
     return 0;
 }
 
-// STUB: STUNTGP_D3D 0x453480
-int FUN_453480(PoolObject *object, int arg)
+extern MenuItem g_487c38[12];
+extern MenuDef g_4880b8;
+void FUN_453680(Unk453710 *object);
+
+// Part shop init: lists the part groups the car can still upgrade, then their part ranges.
+// FUNCTION: STUNTGP_D3D 0x453480
+int FUN_453480(PoolObject *base, int arg)
 {
-    return 0;
+    Unk453710 *object = (Unk453710 *)base;
+    object->unk1c = 0;
+    object->unk20 = 0;
+    object->unk24 = 0;
+    object->unk28 = 0;
+    object->unk18 = 0;
+    object->unk50 = 0;
+    object->unk54 = 0xe0;
+    int i;
+    for (i = 0; i < 3; i++)
+    {
+        object->unk2c[i] = 0;
+        object->unk38[i] = 0;
+    }
+    for (i = 0; g_487db8[i].track; i++)
+    {
+        int track = g_487db8[i].track;
+        FUN_437a90(track);
+        g_487c38[i].id = -1;
+        if (g_menuState.unk19d7c.carSetup.parts[track][1] &&
+            g_menuState.unk19d7c.carSetup.parts[track][2] < g_menuState.unk19d7c.carSetup.parts[track][3])
+        {
+            g_487c38[i].id = object->unk18;
+            g_624db8[object->unk18] = g_487db8[i];
+            object->unk18++;
+        }
+    }
+    for (i = 0; i < object->unk18; i++)
+    {
+        int track = g_624db8[i].track;
+        g_624db8[i].unk34 = g_menuState.unk19d7c.carSetup.parts[track][1];
+        g_624db8[i].unk38 = g_menuState.unk19d7c.carSetup.parts[track][2];
+        g_624db8[i].unk3c = g_menuState.unk19d7c.carSetup.parts[track][3];
+        g_624db8[i].unk30 = g_624db8[i].unk34 - 1;
+        for (int j = 0; j < 5; j++)
+        {
+            g_624db8[i].unk08[j] = 0;
+            g_624db8[i].unk1c[j] = 0;
+        }
+    }
+    for (i = 0; i < object->unk18; i++)
+    {
+        int track = g_624db8[i].track;
+        int first = FUN_437af0(track);
+        int last = g_menuState.unk19d7c.carSetup.parts[track][3] - 1;
+        for (int k = g_menuState.unk19d7c.carSetup.parts[track][2] - 1; k <= last; k++)
+        {
+            g_624db8[i].unk08[k] = first + k;
+            g_624db8[i].unk1c[k] = g_624db8[i].unk00 + k;
+        }
+    }
+    MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
+    memset(list, 0, sizeof(MenuList));
+    *(PoolClass *)&list->base.destroy = g_menuListClass;
+    list->base.type = 0x29;
+    // STRING: STUNTGP_D3D 0x4880f8
+    list->base.name = "MenuText";
+    list->base.unk08 = 0;
+    if (!FUN_43c860(list, &g_4880b8))
+    {
+        Pool_Free(list);
+        object->child = NULL;
+    }
+    else
+    {
+        object->child = &list->base;
+    }
+    object->child->message(object->child, 0x18, 0);
+    FUN_453680(object);
+    return 1;
 }
 
-// STUB: STUNTGP_D3D 0x453710
-int FUN_453710(PoolObject *object, int msg, int arg)
+void FUN_453a90(Unk453710 *object);
+void FUN_453b50(Unk453710 *object, float x, float y);
+void FUN_453dd0(Unk453710 *object);
+int FUN_454150(Unk453710 *object);
+
+// Part shop: pick a part group, step through its parts and buy one.
+// FUNCTION: STUNTGP_D3D 0x453710
+int FUN_453710(PoolObject *base, int msg, int arg)
 {
+    Unk453710 *object = (Unk453710 *)base;
+    PoolObject *child;
+    int sel;
+    int pos;
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(2);
+        FUN_43dd10(0x534527);
+        FUN_43dd40(0x69, -0.3f, 0.5f);
+    case 0x14:
+        object->child->message(object->child, msg, 0);
+        return 0;
+    case 0xb:
+        child = object->child;
+        if (child->message(child, 0x1a, 0) <= 0)
+        {
+            break;
+        }
+        goto group;
+    case 0xc:
+        child = object->child;
+        if (child->message(child, 0x1a, 0) < object->unk18 - 1)
+        {
+        group:
+            FUN_440880(0x14);
+            child->message(child, msg, 0);
+            object->unk1c = 0;
+            FUN_453680(object);
+            object->unk50 = 0;
+            return 0;
+        }
+        break;
+    case 0xd:
+        sel = object->child->message(object->child, 0x1a, 0);
+        pos = object->unk1c;
+        if (g_624db8[sel].unk34 + pos - 1 >= g_624db8[sel].unk38)
+        {
+            FUN_440880(0x14);
+            FUN_440890(msg);
+            pos--;
+            goto part;
+        }
+        break;
+    case 0xe:
+        sel = object->child->message(object->child, 0x1a, 0);
+        pos = object->unk1c;
+        if (g_624db8[sel].unk34 + pos + 1 <= g_624db8[sel].unk3c)
+        {
+            FUN_440880(0x14);
+            FUN_440890(msg);
+            pos++;
+        part:
+            object->unk1c = pos;
+            FUN_453680(object);
+            object->unk50 = 0;
+            return 0;
+        }
+        break;
+    case 0x10:
+        if (object->unk1c == 0)
+        {
+            FUN_440880(9);
+            return 0;
+        }
+        if (FUN_454150(object))
+        {
+            object->unk1c = 0;
+            FUN_453680(object);
+            FUN_440890(msg);
+            object->unk50 = 0;
+            return 0;
+        }
+        FUN_440880(9);
+        return 0;
+    case 0x11:
+        if (FUN_43eef0())
+        {
+            FUN_440890(msg);
+            return 0;
+        }
+        break;
+    case 2:
+    {
+        object->unk50++;
+        child = object->child;
+        child->message(child, msg, 0);
+        sel = child->message(child, 0x1a, 0);
+        float shown = sel;
+        object->unk28 = shown;
+        object->unk24 = FUN_43d810(object->unk24, shown, 0.001f);
+        object->unk20 = FUN_43d810(object->unk20, object->unk1c, 0.001f);
+        FUN_43df60(g_624db8[sel].unk3c - g_624db8[sel].unk38 + 1, 1.0f,
+                   g_624db8[sel].unk34 - g_624db8[sel].unk38 + object->unk1c, object->unk18, 1.0f, shown);
+        object->unk38[0] = object->unk44[0] * 0.01f;
+        object->unk38[1] = object->unk44[1] * 0.01f;
+        object->unk38[2] = object->unk44[2] * 0.01f;
+        for (int i = 0; i < 3; i++)
+        {
+            object->unk2c[i] = FUN_43d810(object->unk2c[i], object->unk38[i], 0.001f);
+        }
+        for (int j = 0; j < object->unk18; j++)
+        {
+            float target = g_624db8[j].unk34 - 1;
+            g_624db8[j].unk30 = FUN_43d810(g_624db8[j].unk30, target, 0.001f);
+        }
+        return 0;
+    }
+    case 3:
+        FUN_453b50(object, object->unk20, object->unk24);
+        FUN_438190(0.0f, 0.0f, 640.0f, 480.0f);
+        FUN_4392b0(0xdf, 0);
+        FUN_439340(object->unk54);
+        FUN_453a90(object);
+        FUN_453dd0(object);
+        break;
+    }
     return 0;
 }
 
@@ -1756,12 +2212,6 @@ int FUN_4542c0(MenuHolder *object, int msg, int arg)
 // FUNCTION: STUNTGP_D3D 0x454450
 void FUN_454450(PoolObject *object)
 {
-}
-
-// STUB: STUNTGP_D3D 0x454460
-int FUN_454460(PoolObject *object, int msg, int arg)
-{
-    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x454ce0
@@ -2848,6 +3298,14 @@ int FUN_4577e0(Unk457770 *object, int msg, int arg)
     return 0;
 }
 
+int FUN_440170();
+
+// FUNCTION: STUNTGP_D3D 0x457910
+int FUN_457910()
+{
+    return FUN_440170();
+}
+
 // FUNCTION: STUNTGP_D3D 0x457920
 int FUN_457920(Unk457e70 *object, int arg)
 {
@@ -2896,9 +3354,116 @@ int FUN_457920(Unk457e70 *object, int arg)
     return 1;
 }
 
-// STUB: STUNTGP_D3D 0x457ec0
-int FUN_457ec0(PoolObject *object, int msg, int arg)
+// GLOBAL: STUNTGP_D3D 0x627bd4
+char g_627bd4[0x80];
+
+int FUN_457a20(int value);
+void FUN_4581b0(Unk457e70 *object);
+void FUN_458730(Unk457e70 *object);
+int FUN_458800(Unk457e70 *object);
+int FUN_458820(Unk457e70 *object);
+void FUN_458880(Unk457e70 *object, int msg);
+char *FUN_43d550(int frames);
+
+// PageSave: card checks, the card list and the prompt, with the page title for the action.
+// FUNCTION: STUNTGP_D3D 0x457ec0
+int FUN_457ec0(PoolObject *base, int msg, int arg)
 {
+    Unk457e70 *object = (Unk457e70 *)base;
+    switch (msg)
+    {
+    case 2:
+    {
+        object->unk40->message(object->unk40, msg, 0);
+        object->unk1c++;
+        float sel = object->unk20;
+        object->unk2c = sel;
+        object->unk28 = FUN_43d810(object->unk28, sel, 0.2f);
+        object->unk30 = FUN_43d810(object->unk30, object->unk34, 0.001f);
+        float fade = FUN_43d8f0(object->unk38, object->unk3c, 0.025f);
+        object->unk38 = fade;
+        if (FUN_457a20(g_menuState.unk46c8) && g_menuState.unk46bc)
+        {
+            FUN_43dd40(0, 0.0f, 0.0f);
+            return 0;
+        }
+        if (object->unk24)
+        {
+            FUN_43dd40(object->unk1ec ? 0x69 : 0x5c, fade * 0.75f, fade * 0.45f);
+            return 0;
+        }
+        break;
+    }
+    case 1:
+        if (FUN_458820(object))
+        {
+            break;
+        }
+        object->unk40->message(object->unk40, msg, 0);
+        FUN_458880(object, msg);
+        if (g_menuState.unk46c8 == 1 && g_menuState.unk46bc && object->unk1ec && (object->unk1f0 || object->unk1e8))
+        {
+            object->unk14 = 1;
+        }
+        if (object->unk14)
+        {
+            FUN_458800(object);
+            return 0;
+        }
+        break;
+    case 0xb:
+    case 0xc:
+    case 0x10:
+    case 0x11:
+        if (!FUN_458820(object))
+        {
+            FUN_458880(object, msg);
+            return 0;
+        }
+        break;
+    case 0x13:
+        FUN_4400a0(1);
+        FUN_43dd10(0x112a43);
+        object->unk24 = 1;
+        object->unk34 = 1.0f;
+        return 0;
+    case 0x14:
+        object->unk34 = 0.0f;
+        return 0;
+    case 3:
+        if (FUN_457a20(g_menuState.unk46c8) && g_menuState.unk46bc)
+        {
+            break;
+        }
+        if (object->unk1ec && !object->unk1e8 && !object->unk1f0)
+        {
+            FUN_458730(object);
+        }
+        FUN_4581b0(object);
+        switch (g_menuState.unk46c8)
+        {
+        case 1:
+            FUN_4392b0(0x20c, 0);
+            break;
+        case 2:
+            FUN_4392b0(0x213, 0);
+            break;
+        case 3:
+            FUN_4392b0(0x21a, 0);
+            break;
+        case 4:
+            FUN_4392b0(0x221, (int)FUN_441170(g_menuState.unk46cc + 0x1b7));
+            break;
+        case 5:
+            // STRING: STUNTGP_D3D 0x488cac
+            sprintf(g_627bd4, "%s - %s", FUN_441170(g_menuState.unk46cc + 0x1b7),
+                    FUN_43d550(((GhostHeader *)g_menuState.unk46d0)->frames));
+            FUN_4392b0(0x228, (int)g_627bd4);
+            break;
+        }
+        FUN_458880(object, msg);
+        break;
+    }
     return 0;
 }
 
@@ -3568,9 +4133,40 @@ int FUN_45a360(MenuHolder *object, int arg)
     return 1;
 }
 
-// STUB: STUNTGP_D3D 0x45a410
-int FUN_45a410(PoolObject *object, int msg, int arg)
+void FUN_450e50(int a, int b, float x, float y);
+void FUN_45a500(MenuLine *lines, int count);
+
+// Results page: its text lines over the results table; any key leaves.
+// FUNCTION: STUNTGP_D3D 0x45a410
+int FUN_45a410(PoolObject *base, int msg, int arg)
 {
+    MenuHolder *object = (MenuHolder *)base;
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(1);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(g_menuState.unk1d9ac, 0.3f, -0.5f);
+    case 2:
+    case 0xb:
+    case 0xc:
+    case 0x14:
+        object->child->message(object->child, msg, 0);
+        return 0;
+    case 0x11:
+        FUN_440890(msg);
+        g_menuState.unk1d9a8 = 1;
+        FUN_43eef0();
+        return 0;
+    case 0x10:
+        object->child->message(object->child, msg, 0);
+        FUN_43eef0();
+        return 0;
+    case 3:
+        FUN_45a500(g_menuState.unk1d9b0, g_menuState.unk1da50);
+        FUN_450e50(g_menuState.unk1da54, g_menuState.unk1da58, 320.0f, 180.0f);
+        break;
+    }
     return 0;
 }
 
@@ -3787,9 +4383,179 @@ int FUN_45a9c0(Unk45a9c0 *object, int arg)
     return 1;
 }
 
-// STUB: STUNTGP_D3D 0x45abb0
-int FUN_45abb0(PoolObject *object, int msg, int arg)
+void FUN_45af60(Unk45a9c0 *object);
+void FUN_45b2c0(Unk45a9c0 *object);
+void FUN_45b360(Unk45a9c0 *object);
+void FUN_45b440(Unk45a9c0 *object);
+
+// Championship slot select: picks a slot, then asks its two questions through unk34 and unk38.
+// FUNCTION: STUNTGP_D3D 0x45abb0
+int FUN_45abb0(PoolObject *base, int msg, int arg)
 {
+    Unk45a9c0 *object = (Unk45a9c0 *)base;
+    PoolObject *child;
+    int mode;
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(1);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(0x5f, 0.3f, -0.5f);
+        object->unk38->message(object->unk38, msg, 0);
+        object->unk34->message(object->unk34, msg, 0);
+        object->unk18 = 1;
+        return 0;
+    case 0xb:
+        switch (object->unk14)
+        {
+        case 1:
+            if (object->unk1c > 0)
+            {
+                object->unk20 = 0;
+                object->unk1c--;
+                FUN_440890(msg);
+                return 0;
+            }
+            break;
+        case 2:
+            object->unk34->message(object->unk34, msg, 0);
+            return 0;
+        case 3:
+            object->unk38->message(object->unk38, msg, 0);
+            return 0;
+        }
+        break;
+    case 0xc:
+        switch (object->unk14)
+        {
+        case 1:
+            if (object->unk1c < 7)
+            {
+                object->unk20 = 0;
+                object->unk1c++;
+                FUN_440890(msg);
+                return 0;
+            }
+            break;
+        case 2:
+            object->unk34->message(object->unk34, msg, 0);
+            return 0;
+        case 3:
+            object->unk38->message(object->unk38, msg, 0);
+            return 0;
+        }
+        break;
+    case 0x10:
+        switch (object->unk14)
+        {
+        case 1:
+            FUN_440890(msg);
+            if (!g_menuState.unk0f1c[object->unk1c].unk000)
+            {
+                g_menuState.unk4388 = 1;
+                g_menuState.unk4384 = object->unk1c;
+                object->unk14 = 4;
+                FUN_43eef0();
+                return 0;
+            }
+            object->unk34->message(object->unk34, 0x1c, 0);
+            object->unk14 = 2;
+            return 0;
+        case 2:
+            child = object->unk34;
+            child->message(child, msg, 0);
+            switch (child->message(child, 0x1a, 0))
+            {
+            case 0:
+                g_menuState.unk4384 = object->unk1c;
+                object->unk14 = 4;
+                FUN_43eef0();
+                return 0;
+            case 1:
+                object->unk14 = 3;
+                object->unk38->message(object->unk38, 0x1c, 0);
+                return 0;
+            }
+            break;
+        case 3:
+            child = object->unk38;
+            switch (child->message(child, 0x1a, 0))
+            {
+            case 0:
+                child->message(child, msg, 0);
+                g_menuState.unk4388 = 1;
+                g_menuState.unk4384 = object->unk1c;
+                object->unk14 = 4;
+                FUN_43eef0();
+                return 0;
+            case 1:
+                object->unk14 = 1;
+                FUN_440880(2);
+                return 0;
+            }
+            break;
+        }
+        break;
+    case 0x11:
+        switch (object->unk14)
+        {
+        case 1:
+            g_menuState.unk4380 = 1;
+            FUN_440890(msg);
+            FUN_43eef0();
+            return 0;
+        case 2:
+            object->unk34->message(object->unk34, msg, 0);
+            object->unk14 = 1;
+            FUN_440890(msg);
+            return 0;
+        case 3:
+            object->unk38->message(object->unk38, msg, 0);
+            object->unk14 = 1;
+            FUN_440890(msg);
+            return 0;
+        }
+        break;
+    case 2:
+    {
+        object->unk20++;
+        float slot = object->unk1c;
+        object->unk30 = slot;
+        object->unk2c = FUN_43d810(object->unk2c, slot, 0.2f);
+        object->unk24 = FUN_43d810(object->unk24, object->unk28, 0.001f);
+    }
+    case 1:
+    case 0x14:
+        object->unk38->message(object->unk38, msg, 0);
+        child = object->unk34;
+        child->message(child, msg, 0);
+        return 0;
+    case 3:
+        FUN_4392b0(0x2c, 0);
+        FUN_45af60(object);
+        mode = object->unk14;
+        if (mode == 3 && object->unk18)
+        {
+            FUN_43dd40(0x69, 0.3f, -0.5f);
+        }
+        else
+        {
+            FUN_43dd40(0x5f, 0.3f, -0.5f);
+        }
+        switch (mode)
+        {
+        case 1:
+            FUN_45b2c0(object);
+            break;
+        case 2:
+            FUN_45b360(object);
+            return 0;
+        case 3:
+            FUN_45b440(object);
+            return 0;
+        }
+        break;
+    }
     return 0;
 }
 
@@ -4205,9 +4971,103 @@ void FUN_45c070(PoolObject *object)
 {
 }
 
-// STUB: STUNTGP_D3D 0x45c080
-int FUN_45c080(PoolObject *object, int msg, int arg)
+// Attract screen; unk18 is the slide position, its fraction the slide in progress.
+struct Unk45c080
 {
+    DWORD unk00[5]; // 0x00
+    int unk14;      // 0x14, frames shown
+    float unk18;    // 0x18
+    float unk1c;    // 0x1c
+    float unk20;    // 0x20
+};
+
+// GLOBAL: STUNTGP_D3D 0x627fdc
+int g_627fdc;
+
+void FUN_43b0e0(MenuRace *race);
+void FUN_43dd90(int player);
+void FUN_45c050(MenuObject *object);
+void FUN_45c320(float x, float y);
+void FUN_45c3d0(float x, float y);
+void FUN_45c480();
+void FUN_438ff0(float x, float y, int layer, int font, int textId, float size, D3DCOLOR color, int style, int row,
+                float scale, DWORD flags, int width, float fade);
+
+// Attract screen: slides through the title pictures and starts a demo race after a while.
+// FUNCTION: STUNTGP_D3D 0x45c080
+int FUN_45c080(PoolObject *base, int msg, int arg)
+{
+    Unk45c080 *object = (Unk45c080 *)base;
+    D3DCOLOR color = 0xffffffff;
+    switch (msg)
+    {
+    case 0xf:
+    case 0x10:
+        FUN_43dfa0(2, 2);
+        FUN_440890(0x10);
+        g_menuState.unk4244 = arg;
+        FUN_43dd90(arg);
+        return 0;
+    case 0x13:
+        FUN_45c050((MenuObject *)object);
+        FUN_4400a0(1);
+        FUN_43dd10(0x112a43);
+        FUN_43dd40(0x60, 0.5f, 0.3f);
+        object->unk20 = 0.0f;
+        return 0;
+    case 0x14:
+        object->unk20 = 1.0f;
+        return 0;
+    case 2:
+        object->unk1c = FUN_43d810(object->unk1c, object->unk20, 0.001f);
+        if (object->unk14 >= 600)
+        {
+            object->unk18 += 0.03f;
+        }
+        object->unk14++;
+        return 0;
+    case 1:
+        if (object->unk14 >= 0xe10)
+        {
+            FUN_43b0e0(&g_menuState.races[g_627fdc]);
+            object->unk14 = 0;
+            g_627fdc = (g_627fdc + 1) % g_menuState.numberOfRaces;
+            FUN_43dfa0(0, 0x19);
+            return 0;
+        }
+        break;
+    case 3:
+    {
+        int frame = (int)object->unk18;
+        float x = 111.5f;
+        float t = object->unk18 - frame;
+        if ((frame & 7) == 7)
+        {
+            x = 111.5f - t * 640.0f;
+        }
+        float y = 84.0f - ((float)sin(t * 3.1415927f) * 30.0f + object->unk1c * 480.0f);
+        FUN_45c320(x, y);
+        float x2 = x + 640.0f;
+        FUN_45c320(x2, y);
+        FUN_45c3d0(x, y);
+        FUN_45c3d0(x2, y);
+        if ((frame & 7) == 6)
+        {
+            t *= 480.0f;
+            FUN_438190(0.0f, t, 640.0f, t + 16.0f);
+            FUN_45c3d0(x, y);
+            FUN_45c3d0(x2, y);
+            FUN_438190(0.0f, 0.0f, 640.0f, 480.0f);
+        }
+        if ((frame & 1) == 1)
+        {
+            color = 0xffff6060;
+        }
+        FUN_438ff0(320.0f, 440.0f, 2, 4, 0x28, 1.25f, color, 4, 0, 1.0f, 0x41, 400, 0.0f);
+        FUN_45c480();
+        break;
+    }
+    }
     return 0;
 }
 
@@ -4504,10 +5364,78 @@ int FUN_45c6a0(Unk45c6a0 *object, int msg, int arg)
     return 0;
 }
 
-// STUB: STUNTGP_D3D 0x45d1a0
-int FUN_45d1a0(PoolObject *object, int arg)
+// GLOBAL: STUNTGP_D3D 0x489530
+MenuItem g_489530[4] = {
+    {-1, 0xffffffff, 0xffffffff, 0x14, 0, 4, 0, 0},
+    {0, 0xffc8c8ff, 0xffffffff, 0x15, 0, 1, 0, 0},
+    {1, 0xffc8c8ff, 0xffffffff, 0x16, 0, 1, 0, 0},
+    {0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x4895b0
+MenuDef g_4895b0 = {0xb, 1.0f, 0, 507.0f, 405.0f, 1.0f, 2, 1.25f, 1, 0x78, g_489530, 0};
+
+// GLOBAL: STUNTGP_D3D 0x4895e0
+MenuItem g_4895e0[3] = {
+    {0, 0xffc8c8ff, 0xffffffff, 0x18, 0, 1, 0, 0},
+    {1, 0xffc8c8ff, 0xffffffff, 0x19, 0, 1, 0, 0},
+    {0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x489640
+MenuDef g_489640 = {0xb, 1.0f, 0, 507.0f, 405.0f, 1.0f, 2, 1.25f, 1, 0xa0, g_4895e0, 0};
+
+int FUN_437920(int index);
+int FUN_437930(int id, int *from, int *to);
+
+// PageSelectTree init: the branch menu, its confirm box and the two nodes reachable from here.
+// FUNCTION: STUNTGP_D3D 0x45d1a0
+int FUN_45d1a0(PoolObject *base, int arg)
 {
-    return 0;
+    Unk45d2e0 *object = (Unk45d2e0 *)base;
+    g_627ff4++;
+    object->unk28 = object->unk24 = g_menuState.unk4488;
+    object->unk20 = g_menuState.unk4488;
+    g_menuState.unk4484 = 0;
+    object->unk1c = 0;
+    MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
+    memset(list, 0, sizeof(MenuList));
+    *(PoolClass *)&list->base.destroy = g_menuListClass;
+    list->base.type = 0x29;
+    // STRING: STUNTGP_D3D 0x489678
+    list->base.name = "MenuText";
+    list->base.unk08 = 0;
+    if (!FUN_43c860(list, &g_489640))
+    {
+        Pool_Free(list);
+        object->unk14 = NULL;
+    }
+    else
+    {
+        object->unk14 = &list->base;
+    }
+    object->unk14->message(object->unk14, 0x18, 0);
+    list = (MenuList *)Pool_Alloc(sizeof(MenuList));
+    memset(list, 0, sizeof(MenuList));
+    *(PoolClass *)&list->base.destroy = g_menuListClass;
+    list->base.type = 0x29;
+    // STRING: STUNTGP_D3D 0x489684
+    list->base.name = "MenuText";
+    list->base.unk08 = 0;
+    if (!FUN_43c860(list, &g_4895b0))
+    {
+        Pool_Free(list);
+        object->unk18 = NULL;
+    }
+    else
+    {
+        object->unk18 = &list->base;
+    }
+    object->unk18->message(object->unk18, 0x18, 0);
+    FUN_437930(g_menuState.unk4490[g_menuState.unk448c - 1], &object->unk2c, &object->unk30);
+    object->unk34[0] = FUN_437920(object->unk2c);
+    object->unk34[1] = FUN_437920(object->unk30);
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x45d2e0
@@ -4524,10 +5452,232 @@ void FUN_45d2e0(Unk45d2e0 *object)
     object->unk18 = NULL;
 }
 
-// STUB: STUNTGP_D3D 0x45d320
-int FUN_45d320(PoolObject *object, int msg, int arg)
+void FUN_45d630(int sel, int dir);
+void FUN_45da40(int index);
+void FUN_45da70(Unk45d2e0 *object, int index, float pos);
+void FUN_45db10(Unk4516c0 *object);
+void FUN_45db50(Unk4516c0 *object);
+
+// Node choice: pick the left or right branch out of the current node, then confirm it.
+// FUNCTION: STUNTGP_D3D 0x45d320
+int FUN_45d320(PoolObject *base, int msg, int arg)
 {
+    Unk45d2e0 *object = (Unk45d2e0 *)base;
+    PoolObject *child;
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(5);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(0x60, -0.3f, -0.5f);
+        child = object->unk14;
+        child->message(child, msg, 0);
+        return 0;
+    case 0xd:
+        if (!object->unk1c)
+        {
+            if (object->unk20 >= 2)
+            {
+                object->unk20 = 1;
+            }
+            if (object->unk20 > 0)
+            {
+                object->unk20--;
+                FUN_440890(msg);
+                return 0;
+            }
+        }
+        break;
+    case 0xe:
+        if (!object->unk1c && object->unk20 < 1)
+        {
+            object->unk20++;
+            FUN_440890(msg);
+            return 0;
+        }
+        break;
+    case 0xb:
+    case 0xc:
+        if (object->unk1c)
+        {
+            object->unk18->message(object->unk18, msg, 0);
+            return 0;
+        }
+    case 0x14:
+        object->unk14->message(object->unk14, msg, 0);
+        return 0;
+    case 0x11:
+        if (!object->unk1c)
+        {
+            FUN_440890(msg);
+            FUN_45db10((Unk4516c0 *)object);
+            return 0;
+        }
+        FUN_45db50((Unk4516c0 *)object);
+        FUN_440890(msg);
+        return 0;
+    case 0x10:
+        if (object->unk1c)
+        {
+            FUN_440890(msg);
+            if (object->unk18->message(object->unk18, 0x1a, 0) == 1)
+            {
+                FUN_45db50((Unk4516c0 *)object);
+                return 0;
+            }
+            g_menuState.unk4484 = 1;
+            FUN_43eef0();
+            return 0;
+        }
+        if (object->unk14->message(object->unk14, 0x1a, 0))
+        {
+            FUN_440890(msg);
+            FUN_45db10((Unk4516c0 *)object);
+            return 0;
+        }
+    {
+        int side = object->unk20;
+        int node = (&object->unk2c)[side];
+        g_menuState.unk00ec[g_menuState.unk4490[g_menuState.unk448c - 1] * 2 + side] = 1;
+        g_menuState.unk4490[g_menuState.unk448c] = node;
+        g_menuState.unk448c++;
+        g_menuState.unk4488 = side;
+    }
+        FUN_440890(msg);
+        FUN_43eef0();
+        return 0;
+    case 2:
+    {
+        object->unk14->message(object->unk14, msg, 0);
+        object->unk18->message(object->unk18, msg, 0);
+        int side = object->unk20;
+        float shown = side >= 2 ? 1 : side;
+        object->unk28 = shown;
+        object->unk24 = FUN_43d810(object->unk24, shown, 0.001f);
+        FUN_43df60(2.0f, 1.0f, side >= 2 ? 1 : side, 0.0f, 0.0f, 0.0f);
+        return 0;
+    }
+    case 3:
+    {
+        FUN_45da70(object, object->unk20, object->unk24);
+        FUN_438190(0.0f, 0.0f, 640.0f, 480.0f);
+        FUN_4392b0(0x1f9, 0);
+        object->unk14->message(object->unk14, msg, 0);
+        object->unk18->message(object->unk18, msg, 0);
+        int side = object->unk20;
+        int node = (&object->unk2c)[side];
+        FUN_45da40(node);
+        FUN_45d630(node, side ? 1 : -1);
+        break;
+    }
+    }
     return 0;
+}
+
+// GLOBAL: STUNTGP_D3D 0x627fe0
+char g_627fe0[0x13];
+
+int FUN_43dd60();
+int FUN_4371c0(int track, int mode);
+
+// Node map: a pyramid of rows of 6 down to 3 nodes, with the links between visited nodes and the
+// cursor arrows on the current one.
+// FUNCTION: STUNTGP_D3D 0x45d630
+void FUN_45d630(int sel, int dir)
+{
+    int blink = FUN_43dd60() & 0x10;
+    memset(g_627fe0, 0, sizeof(g_627fe0));
+    for (int i = 0; i < g_menuState.unk448c; i++)
+    {
+        g_627fe0[g_menuState.unk4490[i]] = 1;
+    }
+    int current = g_menuState.unk4490[g_menuState.unk448c - 1];
+    FUN_439450(49.0f, 366.0f, 391.0f, 444.0f, 10, 0x6f, 0x40);
+    FUN_439380(49.0f, 366.0f, 391.0f, 444.0f, 13, 0, 0, 0.0f);
+    int index = 1;
+    float y = 382.0f;
+    int textId = 3;
+    for (int count = 6; count >= 3; count--)
+    {
+        for (int column = 0; column < count; column++)
+        {
+            float x = column - (count - 1) * 0.5f;
+            int sprite;
+            if (FUN_4371c0(FUN_437920(index), g_menuState.unk4230))
+            {
+                if (x <= -1.0f)
+                {
+                    sprite = 0x41;
+                }
+                else if (x >= 1.0f)
+                {
+                    sprite = 0x43;
+                }
+                else
+                {
+                    sprite = 0x42;
+                }
+            }
+            else
+            {
+                if (x <= -1.0f)
+                {
+                    sprite = 0x44;
+                }
+                else if (x >= 1.0f)
+                {
+                    sprite = 0x46;
+                }
+                else
+                {
+                    sprite = 0x45;
+                }
+            }
+            if (column == count - 1)
+            {
+                FUN_438be0(x * 56.0 + 232.0, y, 12, 2, textId, 0.8f, 0xffffffff, 2);
+            }
+            float px = x * 56.0f + 220.0f;
+            FUN_438710(px, y, 12, sprite, 1.0f, 0x103);
+            if (index == sel && blink)
+            {
+                FUN_438710(px, y, 12, 0x47, 1.0f, 0x103);
+                if (dir < 0)
+                {
+                    FUN_438710(x * 56.0 + 234.0, y + 8.0f, 12, 0x4a, 1.0f, 0x103);
+                }
+                if (dir > 0)
+                {
+                    FUN_438710(px - 14.0f, y + 8.0f, 12, 0x4a, 1.0f, 0x113);
+                }
+            }
+            if (g_627fe0[index] && index > 6)
+            {
+                int from;
+                int to;
+                FUN_437930(index, &from, &to);
+                if (g_627fe0[from])
+                {
+                    FUN_438710(px - 14.0f, y - 8.0f, 12, 0x4b, 1.0f, 0x103);
+                }
+                if (g_627fe0[to])
+                {
+                    FUN_438710(x * 56.0 + 234.0, y - 8.0f, 12, 0x4b, 1.0f, 0x113);
+                }
+            }
+            if (g_menuState.unk00ec[index * 2] && (index != current || !blink || dir >= 0))
+            {
+                FUN_438710(px - 14.0f, y - 8.0f, 12, 0x4c, 1.0f, 0x103);
+            }
+            if (g_menuState.unk00ec[index * 2 + 1] && (index != current || !blink || dir <= 0))
+            {
+                FUN_438710(x * 56.0 + 234.0, y - 8.0f, 12, 0x4c, 1.0f, 0x113);
+            }
+            index++;
+        }
+        y += 16.0f;
+        textId++;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x45db80

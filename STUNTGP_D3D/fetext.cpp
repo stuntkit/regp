@@ -1,5 +1,6 @@
 #include "fetext.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1696,10 +1697,191 @@ void FUN_43c970(PoolObject *object)
 {
 }
 
-// STUB: STUNTGP_D3D 0x43c980
-int FUN_43c980(PoolObject *object, int msg, int arg)
+float FUN_438950(float size);
+int FUN_43cef0(MenuDef *def, int index);
+int FUN_43cf20(MenuDef *def, int index);
+void FUN_438ff0(float x, float y, int layer, int font, int textId, float size, D3DCOLOR color, int style, int row,
+                float scale, DWORD flags, int width, float fade);
+void FUN_438710(float x, float y, int layer, int def, float scale, DWORD flags);
+void FUN_439340(int textId);
+void FUN_440880(int a);
+void FUN_440890(int id);
+float FUN_43d810(float current, float target, float rate);
+
+// Menu list: cursor moves, selection, the per-item slide-in and drawing with the pointer sprites.
+// FUNCTION: STUNTGP_D3D 0x43c980
+int FUN_43c980(PoolObject *base, int msg, int arg)
 {
-    return 0;
+    MenuList *list = (MenuList *)base;
+    int count = list->count;
+    MenuDef *def = list->def;
+    int result = 0;
+    int index;
+    switch (msg)
+    {
+    case 0x16:
+        list->unkb0 = 1;
+        break;
+    case 0x17:
+        list->unkb0 = 0;
+        break;
+    case 0x1a:
+        if (list->selected < 0)
+        {
+            return -1;
+        }
+        return def->items[list->selected].id;
+    case 0x1b:
+        return list->selected;
+    case 0x1c:
+        if (arg >= 0 && arg < count && def->items[arg].id >= 0)
+        {
+            FUN_43c930(list, arg);
+            result = 1;
+            break;
+        }
+        break;
+    case 0x10:
+        if (list->selected >= 0)
+        {
+            list->unka8 = list->selected;
+            list->unkac = 0;
+            FUN_440890(msg);
+            break;
+        }
+        break;
+    case 0xb:
+        if (list->selected > 0)
+        {
+            index = FUN_43cef0(def, list->selected);
+            if (index >= 0)
+            {
+                FUN_43c930(list, index);
+                FUN_440890(msg);
+                result = 1;
+                break;
+            }
+        }
+        break;
+    case 0xc:
+        if (list->selected >= 0 && list->selected != count - 1)
+        {
+            index = FUN_43cf20(def, list->selected);
+            if (index >= 0)
+            {
+                FUN_43c930(list, index);
+                FUN_440890(msg);
+                result = 1;
+                break;
+            }
+        }
+        break;
+    case 1:
+        if (list->selected < 0)
+        {
+            FUN_43c930(list, FUN_43c900(def));
+            break;
+        }
+        break;
+    case 2:
+    {
+        list->unk1c = FUN_43d810(list->unk1c, list->unk20, 0.001f);
+        count--;
+        int i;
+        for (i = 0; i < count; i++)
+        {
+            list->unk24[i] = list->unk24[i + 1];
+        }
+        list->unk24[i] = list->unk1c;
+        if (list->unka8 >= 0 && ++list->unkac > 6)
+        {
+            list->unka8 = -1;
+        }
+        list->unkc4 += 0.015f;
+        list->unkc0 = FUN_43d810(list->unkc0, 0.0f, 0.001f);
+        if (def->items[list->selected].id < 0)
+        {
+            FUN_43c930(list, FUN_43c900(list->def));
+            FUN_440880(9);
+            break;
+        }
+        break;
+    }
+    case 0x13:
+        list->unk20 = 0.0f;
+        FUN_440880(0x12);
+        break;
+    case 0x14:
+        list->unk20 = 1.0f;
+        FUN_440880(0x13);
+        break;
+    case 0x18:
+        list->unkb4 = 1;
+        break;
+    case 0x19:
+        list->unkb4 = 0;
+        break;
+    case 0x15:
+        list->unkb8 = ((MenuDef *)arg)->unk04;
+        list->unkbc = ((MenuDef *)arg)->unk08;
+        break;
+    case 3:
+    {
+        float left = list->unkb8;
+        float scale = def->scale;
+        float step = FUN_438950(1.0f) * scale * 2.0f;
+        float y = list->unkbc - (count - 1) * step * 0.5f;
+        MenuItem *item = def->items;
+        float *slide = list->unk24;
+        for (int i = 0; i < list->count; i++)
+        {
+            D3DCOLOR color = item->unk04;
+            int row = 0;
+            if (item->id < 0)
+            {
+                row = 6;
+            }
+            else if (list->unkb4)
+            {
+                if (i == list->unka8)
+                {
+                    row = 5;
+                    color = 0xffff0000;
+                }
+                else if (i == list->selected)
+                {
+                    color = item->unk08;
+                    row = 4;
+                }
+            }
+            FUN_438ff0(def->unk04 * *slide * 640.0f + left, def->unk08 * *slide * 480.0f + y, def->unk00, def->unk18,
+                       item->text, def->unk1c, color, item->unk14, row, scale, def->unk20 | 0x40, def->unk24,
+                       *slide * 4.0f);
+            y += step;
+            slide++;
+            item++;
+        }
+        int sel = list->selected;
+        if (sel >= 0 && list->unkb0 && list->unkb4 && def->items[sel].unk10)
+        {
+            FUN_439340(def->items[sel].unk10);
+        }
+        float x = 150.0f - list->unkc0 * 320.0f;
+        float phase = list->unkc4 - (int)list->unkc4;
+        MenuItem *cur = &def->items[sel];
+        y = 260.0f - (float)sin(phase * 3.1415927f) * 40.0f;
+        if (cur->unk1c)
+        {
+            FUN_438710(x, y, 12, cur->unk1c, 1.0f, 0x203);
+        }
+        if (cur->unk18)
+        {
+            FUN_438710(x, y, 11, cur->unk18, 1.0f, (cur->unk1c ? 0x100 : 0) | 3);
+        }
+        break;
+    }
+    }
+    return result;
 }
 
 // GLOBAL: STUNTGP_D3D 0x4794e8

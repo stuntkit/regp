@@ -482,6 +482,39 @@ void FUN_44fa00(float *m)
     Vec3_Normalize(m + 8);
 }
 
+// Inverse of the yaw/pitch/roll rotation: the angles negated, applied in reverse order.
+// FUNCTION: STUNTGP_D3D 0x44fa20
+void FUN_44fa20(float *m, int yaw, int pitch, int roll)
+{
+    yaw = -yaw & 0x1fff;
+    pitch = -pitch & 0x1fff;
+    roll = -roll & 0x1fff;
+    m[15] = 1.0f;
+    float cy = g_cosTable[yaw];
+    float cp = g_cosTable[pitch];
+    float cr = g_cosTable[roll];
+    float sy = g_sinTable[yaw];
+    float sp = g_sinTable[pitch];
+    float sr = g_sinTable[roll];
+    float spcr = sp * cr;
+    m[3] = 0.0f;
+    m[7] = 0.0f;
+    m[11] = 0.0f;
+    m[12] = 0.0f;
+    m[0] = cr * cp;
+    m[13] = 0.0f;
+    m[14] = 0.0f;
+    m[1] = spcr * sy + sr * cy;
+    m[2] = sr * sy - spcr * cy;
+    float srsp = sr * sp;
+    m[4] = -(sr * cp);
+    m[5] = cr * cy - srsp * sy;
+    m[6] = sy * cr + srsp * cy;
+    m[8] = sp;
+    m[9] = -(sy * cp);
+    m[10] = cp * cy;
+}
+
 // FUNCTION: STUNTGP_D3D 0x44fb00
 void FUN_44fb00(float *m, DWORD yaw, DWORD pitch, DWORD roll)
 {
@@ -548,6 +581,21 @@ void FUN_44fbd0(Scene *scene, ObjectDef *obj, float *m)
 void FUN_44eb70(DWORD yaw, DWORD pitch, DWORD roll, float *x, float *y, float *z)
 {
     FUN_44fb00(g_61c3a4, yaw, pitch, roll);
+    float vx = *x;
+    float vy = *y;
+    float vz = *z;
+    *x = g_61c3a4[0] * vx + g_61c3a4[4] * vy + g_61c3a4[8] * vz;
+    *y = g_61c3a4[1] * vx + g_61c3a4[5] * vy + g_61c3a4[9] * vz;
+    *z = g_61c3a4[2] * vx + g_61c3a4[6] * vy + g_61c3a4[10] * vz;
+}
+
+void FUN_44fa20(float *m, int yaw, int pitch, int roll);
+
+// As FUN_44eb70 with the inverse rotation.
+// FUNCTION: STUNTGP_D3D 0x44ecb0
+void FUN_44ecb0(int yaw, int pitch, int roll, float *x, float *y, float *z)
+{
+    FUN_44fa20(g_61c3a4, yaw, pitch, roll);
     float vx = *x;
     float vy = *y;
     float vz = *z;
@@ -733,7 +781,9 @@ void Matrix_FromRows(float *r0, float *r1, float *r2, float *m)
     m[11] = r2[3];
 }
 
+struct Unk4516c0;
+
 // FUNCTION: STUNTGP_D3D 0x4516f0
-void FUN_4516f0()
+void FUN_4516f0(Unk4516c0 *object)
 {
 }

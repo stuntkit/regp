@@ -47,10 +47,10 @@ struct Unk454b20
     int unk20;        // 0x20
     float unk24;      // 0x24, shown cursor column
     float unk28;      // 0x28, shown cursor row
-    int unk2c;        // 0x2c
-    int unk30;        // 0x30
-    int unk34;        // 0x34
-    int unk38;        // 0x38
+    float unk2c;      // 0x2c
+    float unk30;      // 0x30
+    float unk34;      // 0x34
+    float unk38;      // 0x38
     float unk3c;      // 0x3c, shown caret
     float unk40;      // 0x40
     float unk44;      // 0x44, phase
@@ -2168,6 +2168,98 @@ void FUN_43a4a0(DWORD *slot, DWORD *dst, DWORD *src, DWORD index, DWORD value)
 // GLOBAL: STUNTGP_D3D 0x60d730
 RaceState g_60d730;
 
+void FUN_43a4a0(RaceEntry *entry, int *out, ShopItem *item, int car, int team);
+
+// Race entry for a shop car: its stats as bought with its standard parts.
+// FUNCTION: STUNTGP_D3D 0x43a430
+void FUN_43a430(RaceEntry *entry, int *out, int car, int team)
+{
+    ShopEntry shop;
+    FUN_436490(0, &shop, &g_menuState.cars[car], &g_menuState.items[car], 1);
+    FUN_43a4a0(entry, out, &shop.item, car, team);
+}
+
+// The original copies field by field, reloading as if out and item could overlap.
+#pragma optimize("a", off)
+// Copies a shop item's stats into a race entry's car block, in the race's field order.
+// FUNCTION: STUNTGP_D3D 0x43a4a0
+void FUN_43a4a0(RaceEntry *entry, int *out, ShopItem *item, int car, int team)
+{
+    int *src = (int *)item;
+    memset(out, 0, 0x104);
+    out[0] = 1;
+    out[1] = src[1];
+    out[2] = src[2];
+    out[3] = src[3];
+    out[4] = src[4];
+    out[5] = src[5];
+    out[6] = src[6];
+    out[7] = src[7];
+    out[8] = src[8];
+    out[9] = src[9];
+    out[10] = src[10];
+    out[11] = src[11];
+    out[12] = src[45];
+    out[13] = src[12];
+    out[14] = src[13];
+    out[15] = src[14];
+    out[16] = src[15];
+    out[17] = src[17];
+    out[18] = src[16];
+    out[19] = src[18];
+    out[20] = src[19];
+    out[21] = src[20];
+    out[22] = src[21];
+    out[23] = src[22];
+    out[24] = src[23];
+    out[25] = src[24];
+    out[26] = src[25];
+    out[27] = src[26];
+    out[28] = src[27];
+    out[29] = src[28];
+    out[30] = src[29];
+    out[31] = src[30];
+    out[32] = src[31];
+    out[33] = src[32];
+    out[34] = src[33];
+    out[35] = src[34];
+    out[36] = src[36];
+    out[37] = src[37];
+    out[62] = 0;
+    out[38] = src[38];
+    out[39] = src[39];
+    out[40] = src[40];
+    out[42] = src[41];
+    out[43] = src[42];
+    out[41] = src[43];
+    out[44] = src[44];
+    out[45] = src[45];
+    out[46] = src[46];
+    out[47] = src[47];
+    out[48] = src[48];
+    out[49] = src[49];
+    out[50] = src[50];
+    out[51] = src[51];
+    out[52] = src[52];
+    out[53] = src[53];
+    out[54] = src[54];
+    out[55] = src[55];
+    out[56] = src[56];
+    out[57] = src[57];
+    out[58] = src[58];
+    out[59] = src[59];
+    out[60] = src[60];
+    out[61] = src[61];
+    out[63] = src[62];
+    out[64] = src[63];
+    entry->unk030 = src[35];
+    entry->unk024 = car;
+    entry->unk028 = car;
+    entry->unk02c = team;
+}
+#pragma optimize("", on)
+
+
 // FUNCTION: STUNTGP_D3D 0x43a720
 void FUN_43a720()
 {
@@ -2337,6 +2429,46 @@ void FUN_439e50()
     g_60d730.unk00c = g_menuState.unk0084;
     g_60d730.unk864 = g_menuState.unk0070;
     FUN_43dc40();
+}
+
+// GLOBAL: STUNTGP_D3D 0x4793f4
+int g_4793f4[] = {2, 7, 11, 12, 15, 16, 0};
+
+
+// Starts a mode 8 race (the attract demo) from a MenuRace row.
+// FUNCTION: STUNTGP_D3D 0x43b0e0
+void FUN_43b0e0(MenuRace *race)
+{
+    g_5df528.mode = 8;
+    int n = 0;
+    while (g_4793f4[n])
+    {
+        n++;
+    }
+    FUN_43d420();
+    FUN_43a720();
+    g_60d730.unk034 = 4;
+    g_60d730.unk054 = 4;
+    g_60d730.unk010 = 1;
+    g_60d730.unk000 = g_menuState.unk1d630[race->track - 1][0];
+    g_60d730.unk018 = race->track - 1;
+    g_60d730.unk01c = 8;
+    g_60d730.unk020 = 0;
+    g_60d730.unk04c = 0;
+    g_60d730.unk050 = 0;
+    g_60d730.unk840 = 0x1518;
+    g_60d730.unk83c = 1;
+    for (int i = 0; i < 6; i++)
+    {
+        RaceEntry *entry = &g_60d730.entries[i];
+        strcpy((char *)entry->unk010, race->cars[i].name);
+        entry->type = 2;
+        entry->unk004 = 1;
+        FUN_43a430(entry, (int *)entry->unk034, race->cars[i].unk08, race->cars[i].unk0c);
+        entry->unk008 = race->cars[i].unk14;
+        entry->unk00c = race->cars[i].unk10;
+    }
+    FUN_43d420();
 }
 
 // FUNCTION: STUNTGP_D3D 0x43b210
@@ -4057,6 +4189,70 @@ void FUN_450e10(Unk4516c0 *object)
     object->unk18 = NULL;
 }
 
+// GLOBAL: STUNTGP_D3D 0x624a14
+char g_624a14[0x100];
+
+char *FUN_441170(int id);
+void FUN_438960(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color,
+                DWORD flags);
+
+// Results table: a heading, then per slot its name, car, two scores and position, then the money lines.
+// FUNCTION: STUNTGP_D3D 0x450e50
+void FUN_450e50(int a, int b, float x, float y)
+{
+    float x0 = x - 160.0f;
+    float y0 = y - 123.0f;
+    x += 160.0f;
+    y += 123.0f;
+    FUN_439450(x0, y0, x, y, 10, 0x6e, 0x40);
+    FUN_439380(x0, y0, x, y, 13, 2, 0, 0.0f);
+    y = y0 + 24.0f;
+    sprintf(g_624a14, FUN_441170(0xa7), a, b >= a ? b : a);
+    float cx = (x0 + x) * 0.5f;
+    FUN_438960(cx, y, 12, 0, 4, g_624a14, 1.25f, 0xffffffff, 3);
+    y += 26.0f;
+    x = x0 + 18.0f;
+    FUN_438be0(x, y, 12, 4, 0xaa, 1.25f, 0xffff8080, 2);
+    float x2 = x0 + 80.0f;
+    FUN_438be0(x2, y, 12, 4, 0xab, 1.25f, 0xffff8080, 2);
+    float x3 = x0 + 244.0f;
+    FUN_438be0(x3, y, 12, 4, 0xac, 1.25f, 0xffff8080, 6);
+    float x4 = x0 + 190.0f;
+    FUN_438be0(x4, y, 12, 4, 0xad, 1.25f, 0xffff8080, 6);
+    float x5 = x0 + 290.0f;
+    FUN_438be0(x5, y, 12, 4, 0xae, 1.25f, 0xffff8080, 3);
+    y += 20.0f;
+    for (int i = 0; i < 6; i++)
+    {
+        MenuSlot20 *slot = &g_menuState.unk1a544[i];
+        D3DCOLOR color = slot->unk0c;
+        FUN_438960(x, y, 12, 0, 4, slot->name, 1.25f, color, 2);
+        FUN_438be0(x2, y, 12, 4, slot->unk1c + 0x1ea, 1.25f, color, 2);
+        // STRING: STUNTGP_D3D 0x4868f0
+        sprintf(g_624a14, "%d", slot->unk04);
+        FUN_438a20(x3, y, 12, 0, 4, g_624a14, 1.25f, color, 6, 14.0f);
+        // STRING: STUNTGP_D3D 0x4868f4
+        sprintf(g_624a14, "%d", slot->unk08);
+        FUN_438a20(x4, y, 12, 0, 4, g_624a14, 1.25f, color, 6, 14.0f);
+        FUN_438be0(x5, y, 12, 4, slot->unk10 + 2, 1.25f, color, 3);
+        y += 16.0f;
+    }
+    y += 10.0f;
+    x = x0 + 88.0f;
+    FUN_438be0(cx, y, 12, 4, 0xa8, 1.25f, 0xffffffff, 3);
+    y += 26.0f;
+    float label = x + 32.0f;
+    FUN_438be0(label, y, 12, 4, 0xaf, 1.25f, 0xffc8c8ff, 6);
+    float sign = x + 64.0f;
+    FUN_438be0(sign, y, 12, 4, 0x1b, 1.25f, 0xffc8c8ff, 3);
+    x += 160.0f;
+    FUN_438a20(x, y, 12, 0, 4, g_menuState.unk1a608, 1.25f, 0xffc8c8ff, 6, 14.0f);
+    y += 20.0f;
+    FUN_438be0(label, y, 12, 4, 0xb0, 1.25f, 0xffc8c8ff, 6);
+    FUN_438be0(sign, y, 12, 4, 0x1b, 1.25f, 0xffc8c8ff, 3);
+    FUN_438a20(x, y, 12, 0, 4, g_menuState.unk1a64c, 1.25f, 0xffc8c8ff, 6, 14.0f);
+}
+
 // FUNCTION: STUNTGP_D3D 0x451680
 void FUN_451680(Unk4516c0 *object)
 {
@@ -4176,9 +4372,38 @@ void FUN_453b20(int def, float x, float y, float length)
     FUN_438230(x, y, length * 8.0f, 12, def, 0x102);
 }
 
+void FUN_453d20(float x0, float y0, float x1, float y1, int def);
+
+// Part grid: a row of five per track, scrolled by x and y, with a frame on the highlighted part.
+// FUNCTION: STUNTGP_D3D 0x453b50
+void FUN_453b50(Unk453710 *object, float x, float y)
+{
+    int sel = object->child->message(object->child, 0x1a, 0);
+    float left = 320.0f - x * 126.72001f;
+    int pos = g_624db8[sel].unk34 + object->unk1c - 1;
+    int count = object->unk18;
+    FUN_439380(left - 61.600002f, -61.600002f, left + 61.600002f, 541.6f, 0x12, 5, 0x100, 0.0f);
+    FUN_439380(left - 1024.0f, -61.600002f, left, 541.6f, 0x12, 6, 0x100, 0.0f);
+    FUN_439380(left, -61.600002f, left + 1024.0f, 541.6f, 0x12, 7, 0x100, 0.0f);
+    for (int row = 0; row < count; row++)
+    {
+        float offset = g_624db8[row].unk30;
+        float py = 179.0f - (y - row) * 126.72001f;
+        for (int column = 0; column < 5; column++)
+        {
+            left = 320.0f - ((x - column) + offset) * 126.72001f;
+            if (row == sel && column == pos)
+            {
+                FUN_453d20(left - 61.600002f, py - 61.600002f, left + 61.600002f, py + 61.600002f, 0x40);
+            }
+            FUN_438710(left, py, 0x12, g_624db8[row].unk08[column], 0.6f, 3);
+        }
+    }
+}
+
 // Frame around a box.
 // FUNCTION: STUNTGP_D3D 0x453d20
-void FUN_453d20(int def, float x0, float y0, float x1, float y1)
+void FUN_453d20(float x0, float y0, float x1, float y1, int def)
 {
     float width = x1 - x0;
     float height = y1 - y0;
@@ -4450,6 +4675,16 @@ void FUN_453460(Unk453460 *object)
     object->unk1c = 0;
 }
 
+// Stats of the car with the highlighted part swapped in.
+// FUNCTION: STUNTGP_D3D 0x453680
+void FUN_453680(Unk453710 *object)
+{
+    ShopCar car = g_menuState.unk19d7c.carSetup;
+    int i = object->child->message(object->child, 0x1a, 0);
+    car.parts[g_624db8[i].track][1] = g_624db8[i].unk34 + object->unk1c;
+    FUN_436d60(&car, &object->unk44[0], &object->unk44[1], &object->unk44[2]);
+}
+
 // FUNCTION: STUNTGP_D3D 0x4536f0
 void FUN_4536f0(MenuHolder *object)
 {
@@ -4457,6 +4692,83 @@ void FUN_4536f0(MenuHolder *object)
     child->destroy(child);
     Pool_Free(child);
     object->child = NULL;
+}
+
+// Price panel for the highlighted part: its name, cost, the money left and the trade-in.
+// FUNCTION: STUNTGP_D3D 0x453dd0
+void FUN_453dd0(Unk453710 *object)
+{
+    char text[32];
+    int sel = object->child->message(object->child, 0x1a, 0);
+    int delta = object->unk1c;
+    object->unk54 = 0xe0;
+    if (delta > 0)
+    {
+        object->unk54 = 0xe1;
+    }
+    if (delta < 0)
+    {
+        object->unk54 = 0xe2;
+    }
+    int track = g_624db8[sel].track;
+    int pos = object->unk1c + g_624db8[sel].unk34 - 1;
+    FUN_439450(48.0f, 298.0f, 592.0f, 388.0f, 10, 0x6e, 0x40);
+    FUN_439380(48.0f, 298.0f, 592.0f, 388.0f, 13, 0, 0, 0.0f);
+    int cost = FUN_436420(g_menuState.unk19d7c.sponsor, FUN_43db20(track, object->unk1c + g_624db8[sel].unk34),
+                          g_menuState.cars[g_menuState.unk19d7c.car].parts[track], 0);
+    int refund = FUN_436420(g_menuState.unk19d7c.sponsor, FUN_43db20(track, g_624db8[sel].unk34),
+                            g_menuState.unk19d7c.carSetup.parts[track], 0);
+    int money = g_menuState.unk19d7c.money;
+    if (delta)
+    {
+        money = money - cost + refund;
+    }
+    FUN_438be0(164.0f, 314.0f, 12, 4, 0xe4, 1.25f, 0xffffffff, 6);
+    D3DCOLOR color = delta ? 0xffff8080 : 0xffc8c8ff;
+    FUN_438be0(172.0f, 314.0f, 12, 4, g_624db8[sel].unk1c[pos], 1.25f, color, 2);
+    FUN_438be0(164.0f, 334.0f, 12, 4, 0xe5, 1.25f, 0xffffffff, 6);
+    FUN_438be0(184.0f, 334.0f, 12, 4, 0x1b, 1.25f, color, 6);
+    FUN_438a20(272.0f, 334.0f, 12, 0, 4, FUN_43d5f0(cost, 0), 1.25f, color, 6, 14.0f);
+    FUN_438be0(164.0f, 354.0f, 12, 4, 0xe7, 1.25f, 0xffffffff, 6);
+    color = money < 0 ? 0xffff8080 : 0xffc8c8ff;
+    FUN_438be0(184.0f, 354.0f, 12, 4, 0x1b, 1.25f, color, 6);
+    if (money < 0)
+    {
+        object->unk54 = 0xe3;
+        // STRING: STUNTGP_D3D 0x488104
+        sprintf(text, "-%s", FUN_43d5f0(-money, 0));
+    }
+    else
+    {
+        strcpy(text, FUN_43d5f0(money, 0));
+    }
+    FUN_438a20(272.0f, 354.0f, 12, 0, 4, text, 1.25f, color, 6, 14.0f);
+    FUN_438be0(164.0f, 374.0f, 12, 4, 0xe6, 1.25f, 0xffffffff, 6);
+    FUN_438be0(184.0f, 374.0f, 12, 4, 0x1b, 1.25f, 0xffc8c8ff, 6);
+    FUN_438a20(272.0f, 374.0f, 12, 0, 4, FUN_43d5f0(refund, 0), 1.25f, 0xffc8c8ff, 6, 14.0f);
+}
+
+// Buys the highlighted part when the money covers the cost less the trade-in.
+// FUNCTION: STUNTGP_D3D 0x454150
+int FUN_454150(Unk453710 *object)
+{
+    int i = object->child->message(object->child, 0x1a, 0);
+    int track = g_624db8[i].track;
+    int index = object->unk1c + g_624db8[i].unk34;
+    int cost = FUN_436420(g_menuState.unk19d7c.sponsor, FUN_43db20(track, index),
+                          g_menuState.cars[g_menuState.unk19d7c.car].parts[track], 0);
+    int money = FUN_436420(g_menuState.unk19d7c.sponsor, FUN_43db20(track, g_624db8[i].unk34),
+                           g_menuState.unk19d7c.carSetup.parts[track], 0) +
+                (g_menuState.unk19d7c.money - cost);
+    if (money < 0)
+    {
+        return 0;
+    }
+    g_menuState.unk19d7c.money = money;
+    g_menuState.unk19d7c.carSetup.parts[track][0] = 0;
+    g_menuState.unk19d7c.carSetup.parts[track][1] = index;
+    g_624db8[i].unk34 = index;
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x454220
@@ -4513,6 +4825,135 @@ int FUN_454410(Unk454b20 *object, int arg)
     object->text[0] = g_menuState.unk44d0 = 0;
     object->unk18 = g_menuState.unk4238;
     return 1;
+}
+
+char FUN_43d940(char c);
+void FUN_4400a0(int value);
+void FUN_43dd40(int a, float b, float c);
+int FUN_4547e0(char c, int *column, int *row);
+void FUN_454830(Unk454b20 *object, float x, float y, float t);
+void FUN_454af0(Unk454b20 *object, char c);
+void FUN_454b20(Unk454b20 *object);
+void FUN_454b40(Unk454b40 *object, int x, int y);
+void FUN_454b70(Unk454b20 *object);
+int FUN_454c80(Unk454b20 *object, int column, int row);
+
+// Name entry panel: cursor moves, typed and picked characters, and the slide-in animation.
+// FUNCTION: STUNTGP_D3D 0x454460
+int FUN_454460(PoolObject *base, int msg, int arg)
+{
+    Unk454b20 *object = (Unk454b20 *)base;
+    int column;
+    char c;
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(1);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(0x60, -0.3f, -0.5f);
+        object->unk38 = 1.0f;
+        return 0;
+    case 0x14:
+        object->unk38 = 0.0f;
+        return 0;
+    case 0xd:
+        if (FUN_454c80(object, object->unk1c - 1, object->unk20))
+        {
+            object->unk1c--;
+            FUN_440890(msg);
+            return 0;
+        }
+        break;
+    case 0xe:
+        if (FUN_454c80(object, object->unk1c + 1, object->unk20))
+        {
+            object->unk1c++;
+            FUN_440890(msg);
+            return 0;
+        }
+        break;
+    case 0xb:
+        if (FUN_454c80(object, object->unk1c, object->unk20 - 1))
+        {
+            object->unk20--;
+            FUN_440890(msg);
+            return 0;
+        }
+        break;
+    case 0xc:
+        if (FUN_454c80(object, object->unk1c, object->unk20 + 1))
+        {
+            object->unk20++;
+            FUN_440890(msg);
+            return 0;
+        }
+        break;
+    case 0x11:
+        FUN_440890(msg);
+        g_menuState.unk44d0 = 1;
+        FUN_43eef0();
+        return 0;
+    case 0x12:
+        c = FUN_43d940((char)arg);
+        if (c == '\r')
+        {
+            FUN_454b70(object);
+            return 0;
+        }
+        if (c == '\b' && strlen(object->text) != 0)
+        {
+            FUN_454b20(object);
+            FUN_440880(5);
+            if (FUN_454c80(object, object->unk1c, object->unk20))
+            {
+                break;
+            }
+            FUN_454b40((Unk454b40 *)object, 6, 3);
+            return 0;
+        }
+        if (FUN_4547e0(c, &column, &arg) >= 0 && strlen(object->text) < 3)
+        {
+            FUN_454af0(object, g_4881b0[arg][column]);
+            FUN_440880(4);
+            if (strlen(object->text) >= 3)
+            {
+                FUN_454b40((Unk454b40 *)object, 7, 3);
+                return 0;
+            }
+            FUN_454b40((Unk454b40 *)object, 6, 3);
+            return 0;
+        }
+        break;
+    case 0x10:
+        FUN_454b70(object);
+        return 0;
+    case 1:
+        object->unk4c = 0;
+        return 0;
+    case 2:
+    {
+        float phase = object->unk44 + 0.03f;
+        arg = (int)phase;
+        object->unk44 = phase - arg;
+        object->unk34 = FUN_43d810(object->unk34, object->unk38, 0.001f);
+        float x = object->unk1c;
+        object->unk2c = x;
+        float y = object->unk20;
+        object->unk30 = y;
+        object->unk24 = FUN_43d8f0(object->unk24, x, 0.2f);
+        object->unk28 = FUN_43d8f0(object->unk28, y, 0.2f);
+        float len = (int)strlen(object->text);
+        object->unk40 = len;
+        object->unk3c = FUN_43d8f0(object->unk3c, len, 0.4f);
+        object->unk14++;
+        return 0;
+    }
+    case 3:
+        FUN_4392b0(0x183, 0);
+        FUN_454830(object, 320.0f, 216.0f, object->unk34);
+        break;
+    }
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4547e0
@@ -5348,6 +5789,184 @@ void FUN_457ea0(Unk457ea0 *object)
     object->child = NULL;
 }
 
+// GLOBAL: STUNTGP_D3D 0x627a54
+char g_627a54[0x100];
+
+int FUN_4586e0(int value, int divisor);
+int FUN_4586f0(Unk457e70 *object);
+float FUN_438ab0(float x, float y, int layer, int style, char *text, float size, D3DCOLOR color, DWORD flags);
+
+// The original reloads the entry fields after every call.
+#pragma optimize("a", off)
+// PageSave: the card list with its highlight bar, then the prompt for the chosen action.
+// FUNCTION: STUNTGP_D3D 0x4581b0
+void FUN_4581b0(Unk457e70 *object)
+{
+    int count = object->count;
+    int rows = count;
+    if (rows == 0)
+    {
+        rows = 1;
+    }
+    float half = rows * 12.0f + 8.0f;
+    float top = 195.0f - half;
+    float bottom = half + 195.0f;
+    FUN_439450(40.0f, top, 600.0f, bottom, 10, 0x6e, 0x40);
+    FUN_439380(40.0f, top, 600.0f, bottom, 13, 2, 0, 0.0f);
+    float center = (bottom + top) * 0.5f;
+    float y = center - (count - 1) * 12.0f;
+    int base;
+    switch (g_menuState.unk46c8)
+    {
+    case 1:
+    case 2:
+    case 3:
+        base = 0x247;
+        break;
+    case 4:
+    case 5:
+        base = 0x24d;
+        break;
+    default:
+        return;
+    }
+    for (int i = 0; i < count; i++)
+    {
+        Unk457e70Entry *entry = &object->entries[i];
+        D3DCOLOR color = i != object->unk20 ? 0xffffffff : 0xffff8080;
+        FUN_438960(120.0f, y, 12, 0, 4, entry->name, 1.5f, color, 6);
+        FUN_438be0(136.0f, y, 12, 4, entry->unk08 + base, 1.5f, color, 2);
+        if (entry->unk08 != 1 && entry->unk08 != 2)
+        {
+            int free;
+            int needed;
+            if (entry->unk08 == 3)
+            {
+                switch (g_menuState.unk46c8)
+                {
+                case 1:
+                case 3:
+                    free = entry->unk04 / object->unk18;
+                    needed = FUN_440310(0x211c);
+                    break;
+                case 2:
+                case 4:
+                    goto space;
+                case 5:
+                    free = entry->unk04 / object->unk18;
+                    needed = FUN_4405b0(g_menuState.unk46d4);
+                    break;
+                default:
+                    return;
+                }
+                sprintf(g_627a54, FUN_441170(0x254), FUN_4586e0(needed, object->unk18), free);
+            }
+            else
+            {
+            space:
+                sprintf(g_627a54, FUN_441170(0x253), entry->unk04 / object->unk18);
+            }
+            if (entry->unk08 == 5 && g_menuState.unk46c8 >= 4 && g_menuState.unk46c8 <= 5)
+            {
+                FUN_438960(408.0f, y, 12, 0, 4, entry->text, 1.5f, color, 6);
+            }
+        }
+        y += 24.0f;
+    }
+    y = center - (rows - 1) * 12.0f + object->unk28 * 24.0f;
+    int phase = (object->unk1c - 0x20) & 0x3f;
+    if (phase >= 0x20)
+    {
+        phase = 0x40 - phase;
+    }
+    FUN_439380(40.0f, y - 16.0f, 600.0f, y + 16.0f, 11, 4, 0x400, (phase + 0x20) * 0.015625f);
+    if (object->unk1f0 || object->unk1e8 || object->unk1ec)
+    {
+        return;
+    }
+    float slide = object->unk30;
+    if (slide > 1.0f)
+    {
+        slide = 2.0f - slide;
+    }
+    slide = (1.0f - slide) * 120.0f;
+    top = slide + 332.0f;
+    bottom = slide + 432.0f;
+    FUN_439450(40.0f, top, 600.0f, bottom, 10, 0x6f, 0x40);
+    FUN_439380(40.0f, top, 600.0f, bottom, 13, 2, 0x100, 0.0f);
+    bottom = (bottom + top) * 0.5f;
+    int textId;
+    int value;
+    switch (g_menuState.unk46c8)
+    {
+    case 1:
+        if (FUN_4586f0(object))
+        {
+            textId = object->entries[object->unk20].unk08 + 0x20d;
+            value = FUN_440310(0x211c);
+        }
+        else
+        {
+            textId = 0x20d;
+            value = FUN_440310(0x211c);
+        }
+        break;
+    case 2:
+        if (FUN_4586f0(object))
+        {
+            textId = object->entries[object->unk20].unk08 + 0x214;
+            value = FUN_440310(0x211c);
+        }
+        else
+        {
+            textId = 0x214;
+            value = FUN_440310(0x211c);
+        }
+        break;
+    case 3:
+        if (FUN_4586f0(object))
+        {
+            textId = object->entries[object->unk20].unk08 + 0x21b;
+            value = FUN_440310(0x211c);
+        }
+        else
+        {
+            textId = 0x21b;
+            value = FUN_440310(0x211c);
+        }
+        break;
+    case 4:
+        if (FUN_4586f0(object))
+        {
+            textId = object->entries[object->unk20].unk08 + 0x222;
+            value = FUN_4405b0(g_menuState.unk46d4);
+        }
+        else
+        {
+            textId = 0x222;
+            value = FUN_4405b0(g_menuState.unk46d4);
+        }
+        break;
+    case 5:
+        if (FUN_4586f0(object))
+        {
+            textId = object->entries[object->unk20].unk08 + 0x229;
+            value = FUN_4405b0(g_menuState.unk46d4);
+        }
+        else
+        {
+            textId = 0x229;
+            value = FUN_4405b0(g_menuState.unk46d4);
+        }
+        break;
+    default:
+        return;
+    }
+    sprintf(g_627a54, FUN_441170(textId), FUN_4586e0(value, object->unk18));
+    FUN_438ab0(320.0f, bottom, 12, 4, g_627a54, 1.5f, 0xffffffff, 0x803);
+}
+#pragma optimize("", on)
+
 // Integer division rounding up.
 // FUNCTION: STUNTGP_D3D 0x4586e0
 int FUN_4586e0(int value, int divisor)
@@ -5410,6 +6029,30 @@ int FUN_458800(Unk457e70 *object)
         return FUN_43ef10(0, screen);
     }
     return FUN_43eef0();
+}
+
+int FUN_457910();
+int FUN_457a40(Unk457e70 *object);
+void FUN_458860(Unk458860 *object);
+
+// Card check after a save action: on a change, rescans the cards and closes the prompt.
+// FUNCTION: STUNTGP_D3D 0x458820
+int FUN_458820(Unk457e70 *object)
+{
+    if (!FUN_457910())
+    {
+        return 0;
+    }
+    if (!FUN_457a40(object))
+    {
+        return 0;
+    }
+    if (object->unk1ec)
+    {
+        FUN_458860(object);
+    }
+    FUN_440880(6);
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x458860
