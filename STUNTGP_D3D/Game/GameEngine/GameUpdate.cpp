@@ -198,7 +198,7 @@ void FUN_4127e0(CameraPath *path, Car *car);
 void FUN_408640(Car *car, float *pos);
 GameSlot *FUN_402590(Car *car);
 extern int g_60df98;
-extern float g_482688;
+extern Vec4 g_482688;
 
 
 // Puts a car back on the track at its last checkpoint, upright and facing along the path.
@@ -222,7 +222,7 @@ void FUN_412940(Car *car)
     FUN_4127e0(g_624474, car);
     FUN_408640(car, &car->unk24b0.x);
     Vec4 fwd = car->unk24c0;
-    Vec4 down = *(Vec4 *)&g_482688;
+    Vec4 down = g_482688;
     down.x = -down.x;
     down.y = -down.y;
     down.z = -down.z;
@@ -3542,9 +3542,7 @@ void FUN_447d80()
     fx->faders[6].y = fx->faders[6].dy * v * 0.01f + fx->faders[6].unk0c;
 }
 
-extern float g_482678;
-extern float g_48267c;
-extern float g_482680;
+extern Vec4 g_482678;
 
 // FUNCTION: STUNTGP_D3D 0x401d70
 void FUN_401d70(float *v, float scale)
@@ -3552,9 +3550,9 @@ void FUN_401d70(float *v, float scale)
     if (v[0] * v[0] + v[1] * v[1] + v[2] * v[2] <= 27777.777f)
     {
         float g[4];
-        g[0] = g_482678 * scale;
-        g[1] = g_48267c * scale;
-        g[2] = g_482680 * scale;
+        g[0] = g_482678.x * scale;
+        g[1] = g_482678.y * scale;
+        g[2] = g_482678.z * scale;
         v[0] += g[0];
         v[1] += g[1];
         v[2] += g[2];

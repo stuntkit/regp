@@ -58,22 +58,10 @@ float g_482670 = 0.2725f;
 float g_482674 = 1.0f / 0.2725f;
 
 // GLOBAL: STUNTGP_D3D 0x482678
-float g_482678 = 0.0f;
-
-// GLOBAL: STUNTGP_D3D 0x48267c
-float g_48267c = -0.2725f;
-
-// GLOBAL: STUNTGP_D3D 0x482680
-float g_482680 = 0.0f;
+Vec4 g_482678 = {0.0f, -0.2725f, 0.0f, 0.0f};
 
 // GLOBAL: STUNTGP_D3D 0x482688
-float g_482688 = 0.0f;
-
-// GLOBAL: STUNTGP_D3D 0x48268c
-float g_48268c = -1.0f;
-
-// GLOBAL: STUNTGP_D3D 0x482690
-float g_482690 = 0.0f;
+Vec4 g_482688 = {0.0f, -1.0f, 0.0f, 0.0f};
 
 extern int g_60df9c;
 
@@ -84,14 +72,14 @@ int g_4d5b20;
 void FUN_441f90()
 {
     g_48266c = 1.0f / g_482668;
-    g_482688 = 0.0f;
-    g_48268c = -1.0f;
-    g_482690 = 0.0f;
+    g_482688.x = 0.0f;
+    g_482688.y = -1.0f;
+    g_482688.z = 0.0f;
     g_482670 = g_482668 * 0.2725f;
     g_482674 = 1.0f / g_482670;
-    g_482678 = 0.0f;
-    g_48267c = g_482670 * -1.0f;
-    g_482680 = 0.0f;
+    g_482678.x = 0.0f;
+    g_482678.y = g_482670 * -1.0f;
+    g_482678.z = 0.0f;
 }
 
 // FUNCTION: STUNTGP_D3D 0x442010
