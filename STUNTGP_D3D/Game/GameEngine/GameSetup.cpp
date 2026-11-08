@@ -1302,7 +1302,7 @@ void *g_61c600;
 void *g_61c518;
 
 // GLOBAL: STUNTGP_D3D 0x61c51c
-void *g_61c51c;
+VisIndexList *g_61c51c;
 
 // GLOBAL: STUNTGP_D3D 0x624530
 void *g_624530;
@@ -1322,13 +1322,128 @@ void FUN_42e430()
     g_61c600 = Mem_Alloc(0xf000, 0);
     g_61c5f0 = (OverlayPoly *)Mem_Alloc(0x11000, 0);
     g_61c518 = Mem_Alloc(0x1000, 0);
-    g_61c51c = Mem_Alloc(0x1000, 0);
+    g_61c51c = (VisIndexList *)Mem_Alloc(0x1000, 0);
     g_624530 = Mem_Alloc(0x4800, 0);
 }
 
-// STUB: STUNTGP_D3D 0x42e510
+void FUN_41c710();
+void FUN_42eb00();
+extern BYTE g_61c7cc[0x6000];
+extern BYTE *g_6227cc;
+extern int g_6227d0;
+extern BYTE g_61c608[0x1c0];
+extern BYTE *g_61c7c8;
+extern short g_6244a8[16];
+extern int g_6244d4;
+extern int g_6244d8;
+extern int g_6244dc;
+extern int g_6244e0;
+extern int g_6244e4;
+extern int g_61c510;
+extern int g_61c514;
+extern int g_61c520;
+extern int g_624460;
+extern BYTE *g_624464;
+extern BYTE *g_624468;
+extern BYTE *g_62446c;
+extern BYTE *g_624470;
+extern CameraPath *g_624474;
+extern BYTE *g_624478;
+extern Unk624488 *g_624488;
+extern SceneEntry *g_62448c;
+extern SceneEntry *g_624490;
+extern Ambience *g_624494;
+extern DWORD g_624498;
+extern DWORD g_62449c;
+extern int g_6244a0;
+extern int g_6244a4;
+
+// GLOBAL: STUNTGP_D3D 0x61c524
+void *g_61c524;
+
+// GLOBAL: STUNTGP_D3D 0x61c528
+VisIndexList *g_61c528;
+
+// GLOBAL: STUNTGP_D3D 0x61c52c
+Scene *g_61c52c;
+
+// GLOBAL: STUNTGP_D3D 0x61c530
+ObjectDef *g_61c530;
+
+// GLOBAL: STUNTGP_D3D 0x61c5e8
+int g_61c5e8;
+
+// Clears all scene, render-list and track pointers before a level loads.
+// FUNCTION: STUNTGP_D3D 0x42e510
 void FUN_42e510()
 {
+    for (int i = 0; i < 16; i++)
+    {
+        g_636418[i].scene = NULL;
+        g_636418[i].data = NULL;
+        g_636418[i].size = 0;
+    }
+    FUN_41c710();
+    g_61c5ec = 0;
+    memset(g_62dcf0, 0, sizeof(g_62dcf0));
+    memset(g_62d480, 0, sizeof(g_62d480));
+    g_61c5f4 = NULL;
+    g_61c5f8 = NULL;
+    g_61c5fc = NULL;
+    g_61c600 = NULL;
+    g_61c5f0 = NULL;
+    g_61c518 = NULL;
+    g_61c51c = NULL;
+    g_624530 = NULL;
+    memset(g_61c7cc, 0, sizeof(g_61c7cc));
+    g_6227cc = NULL;
+    g_6227d0 = 0;
+    g_61c52c = NULL;
+    g_61c530 = NULL;
+    g_61c5e4 = -1;
+    g_61c50c = 0;
+    g_61c510 = 0;
+    g_61c514 = 0;
+    g_61c5e8 = 0;
+    g_61c520 = 0;
+    g_61c604 = 0;
+    memset(g_61c608, 0, sizeof(g_61c608));
+    g_61c7c8 = NULL;
+    memset(g_6227d4, 0, 255 * sizeof(TextureSlot));
+    g_6243b8 = NULL;
+    // g_6243c0..g_6243dc are four contiguous {list, count} pairs.
+    memset(&g_6243c0, 0, 0x20);
+    memset(g_6243e0, 0, sizeof(g_6243e0));
+    g_61c524 = NULL;
+    g_61c528 = NULL;
+    memset(g_6244a8, 0, sizeof(g_6244a8));
+    g_6244c8 = 0;
+    g_6244cc = 0;
+    g_6244d0 = 0;
+    g_6244d4 = 0;
+    g_6244d8 = 0;
+    g_6244dc = 0;
+    g_6244e0 = 0;
+    g_6244e4 = 0;
+    g_624460 = 0;
+    g_624464 = NULL;
+    g_624468 = NULL;
+    g_62446c = NULL;
+    g_624470 = NULL;
+    g_624474 = NULL;
+    g_624478 = NULL;
+    g_62447c = NULL;
+    g_624480 = NULL;
+    g_624484 = NULL;
+    g_624488 = NULL;
+    g_62448c = NULL;
+    g_624490 = NULL;
+    g_624494 = NULL;
+    g_624498 = 0;
+    g_62449c = 0;
+    g_6244a0 = 0;
+    g_6244a4 = 0;
+    FUN_42eb00();
 }
 
 // GLOBAL: STUNTGP_D3D 0x624988
@@ -1619,6 +1734,144 @@ void FUN_429a40()
         v[7] = s * 32.0f;
         v += 8;
     }
+}
+
+// GLOBAL: STUNTGP_D3D 0x61c4e8
+Vec4 g_61c4e8;
+
+// GLOBAL: STUNTGP_D3D 0x61c4f8
+Vec4 g_61c4f8;
+
+// Queued polygon for the render lists, 20 bytes.
+struct PolyRef
+{
+    DWORD *poly;  // 0x00
+    WORD *ref;    // 0x04
+    BYTE *src;    // 0x08
+    int verts;    // 0x0c
+    int unk10;    // 0x10
+};
+
+// FUN_429d50 for partly clipped objects: also skips polygons with every vertex outside one frustum
+// side and stores the vertices' shared outcodes in unk10.
+// FUNCTION: STUNTGP_D3D 0x429b70
+void FUN_429b70(Scene *scene, ObjectDef *obj, PolyRef **lists)
+{
+    DWORD blend = 0;
+    if ((scene->flags & 8) && (obj->flags & 0x80))
+    {
+        blend = obj->flags >> 8;
+    }
+    Vec4 *normals = (Vec4 *)scene->unk28;
+    WORD *refs = (WORD *)scene->unk38;
+    Vec4 *points = obj->points;
+    BYTE *src = obj->unk2c;
+    DWORD count = obj->vertCount;
+    PolyRef *opaque = lists[0];
+    PolyRef *blended = lists[2];
+    DWORD *poly = (DWORD *)obj->verts;
+    for (DWORD i = 0; i < count; i++)
+    {
+        DWORD any = 0;
+        DWORD all = 0x3f;
+        WORD *ref = &refs[((WORD *)poly)[3]];
+        DWORD n = poly[0] & 0xff;
+        {
+            WORD *r = ref;
+            BYTE *e;
+            while (n-- > 0)
+            {
+                e = src + *r++ * 16;
+                DWORD code = *(WORD *)(g_61c510 + *(WORD *)(e + 8) * 32 + 16);
+                any |= code;
+                all &= code;
+            }
+            if (any == 0x3f)
+            {
+                Vec4 *p = &points[*(WORD *)(e + 8)];
+                Vec4 d;
+                d.x = p->x - g_61c4e8.x;
+                d.y = p->y - g_61c4e8.y;
+                d.z = p->z - g_61c4e8.z;
+                Vec4 *nrm = &normals[((WORD *)poly)[2]];
+                if ((int)poly[0] < 0 || d.x * nrm->x + d.y * nrm->y + d.z * nrm->z < 0.0f)
+                {
+                    if (!blend && !(poly[0] & 0x40000000))
+                    {
+                        opaque->poly = poly;
+                        opaque->ref = ref;
+                        opaque->verts = g_61c510;
+                        opaque->src = src;
+                        opaque->unk10 = all;
+                        opaque++;
+                    }
+                    else
+                    {
+                        blended->poly = poly;
+                        blended->ref = ref;
+                        blended->verts = g_61c510;
+                        blended->src = src;
+                        blended->unk10 = all;
+                        blended++;
+                    }
+                }
+            }
+        }
+        poly += 2;
+    }
+    lists[0] = opaque;
+    lists[2] = blended;
+}
+
+// Queues the object's camera-facing polygons into the opaque (lists[0]) or blended (lists[2]) list.
+// FUNCTION: STUNTGP_D3D 0x429d50
+void FUN_429d50(Scene *scene, ObjectDef *obj, PolyRef **lists)
+{
+    DWORD blend = 0;
+    if ((scene->flags & 8) && (obj->flags & 0x80))
+    {
+        blend = obj->flags >> 8;
+    }
+    Vec4 *normals = (Vec4 *)scene->unk28;
+    WORD *refs = (WORD *)scene->unk38;
+    Vec4 *points = obj->points;
+    BYTE *src = obj->unk2c;
+    DWORD count = obj->vertCount;
+    PolyRef *opaque = lists[0];
+    PolyRef *blended = lists[2];
+    DWORD *poly = (DWORD *)obj->verts;
+    for (DWORD i = 0; i < count; i++)
+    {
+        WORD *ref = &refs[((WORD *)poly)[3]];
+        Vec4 *p = &points[*(WORD *)(src + *ref * 16 + 8)];
+        Vec4 d;
+        d.x = p->x - g_61c4e8.x;
+        d.y = p->y - g_61c4e8.y;
+        d.z = p->z - g_61c4e8.z;
+        Vec4 *n = &normals[((WORD *)poly)[2]];
+        if ((int)poly[0] < 0 || d.x * n->x + d.y * n->y + d.z * n->z < 0.0f)
+        {
+            if (!blend && !(poly[0] & 0x40000000))
+            {
+                opaque->ref = ref;
+                opaque->poly = poly;
+                opaque->verts = g_61c510;
+                opaque->src = src;
+                opaque++;
+            }
+            else
+            {
+                blended->ref = ref;
+                blended->poly = poly;
+                blended->verts = g_61c510;
+                blended->src = src;
+                blended++;
+            }
+        }
+        poly += 2;
+    }
+    lists[0] = opaque;
+    lists[2] = blended;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42a840

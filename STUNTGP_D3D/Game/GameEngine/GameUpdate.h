@@ -926,6 +926,13 @@ struct Scene
     int unk64;           // 0x64
 };
 
+// Point indices of one visible polygon list, 0xffff-terminated.
+struct VisIndexList
+{
+    int unk00;     // 0x00
+    WORD *indices; // 0x04
+};
+
 // Scene render list entry; a list runs until a NULL scene.
 struct SceneSlot
 {

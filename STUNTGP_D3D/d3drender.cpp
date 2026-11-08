@@ -1255,6 +1255,12 @@ void FUN_42fa40()
 // GLOBAL: STUNTGP_D3D 0x5da1cc
 DWORD g_5da1cc;
 
+// GLOBAL: STUNTGP_D3D 0x5da1d0
+DWORD g_5da1d0;
+
+// GLOBAL: STUNTGP_D3D 0x5da1d4
+DWORD g_5da1d4;
+
 // Sets the display mode and creates the flipping primary surface and its back buffer;
 // cards with more than 8MB get triple buffering.
 // FUNCTION: STUNTGP_D3D 0x42fc90
@@ -1286,6 +1292,29 @@ int FUN_42fc90(LPDIRECTDRAW4 dd, LPDIRECTDRAWSURFACE4 *front, LPDIRECTDRAWSURFAC
     }
     g_61c358 = back;
     return res;
+}
+
+void FUN_424aa0();
+extern DWORD g_477c30;
+
+// Recreates DirectDraw on the chosen display device (0 = primary) and resets the display mode.
+// FUNCTION: STUNTGP_D3D 0x42fd80
+int FUN_42fd80(int device)
+{
+    FUN_422a20();
+    ddRelease();
+    DAT_CAPS = 0x2000;
+    // STRING: STUNTGP_D3D 0x478768
+    if (windowDDCreate(&g_dd, device ? (GUID *)&g_5ba788.devices[device][0x300] : NULL, g_Hwnd))
+    {
+        exitError("DirectDraw Init Failed!\n");
+    }
+    ddGetDD4(&g_dd, &g_dd4, g_Hwnd);
+    ddGetMemory(&g_dd4, &g_5da1cc, &g_5da1d0, &g_5da1d4);
+    g_477c30 = g_5da1d0;
+    FUN_42fc90(g_dd4, &g_surface, &g_surface2, g_DISPLAYRESWIDTH, g_DISPLAYRESHEIGHT, g_DISPLAYRESDEPTH);
+    FUN_424aa0();
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42fe40
