@@ -2696,45 +2696,37 @@ void FUN_425df0(Scene *scene, ObjectDef *def, int type)
     float step = 1.0f / half;
     if (count > 0)
     {
-        float dx0 = g_5775d0[1][0] - g_5775d0[0][0];
-        float dy0 = g_5775d0[1][1] - g_5775d0[0][1];
-        float dz0 = g_5775d0[1][2] - g_5775d0[0][2];
-        float du0 = g_5775d0[1][4] - g_5775d0[0][4];
-        float dv0 = g_5775d0[1][5] - g_5775d0[0][5];
-        float dx1 = g_5775d0[3][0] - g_5775d0[2][0];
         unsigned int wave = 0;
-        float dy1 = g_5775d0[3][1] - g_5775d0[2][1];
-        float dz1 = g_5775d0[3][2] - g_5775d0[2][2];
-        float du1 = g_5775d0[3][4] - g_5775d0[2][4];
-        float dv1 = g_5775d0[3][5] - g_5775d0[2][5];
-        float du2 = g_5775d0[1][6] - g_5775d0[0][6];
-        float dv2 = g_5775d0[1][7] - g_5775d0[0][7];
-        float du3 = g_5775d0[3][6] - g_5775d0[2][6];
-        float dv3 = g_5775d0[3][7] - g_5775d0[2][7];
         for (unsigned int j = 1; j - 1 < count; j += 2)
         {
             Vec4 *a = &pts[j - 1];
             MeshUv *ua = &uvs[j - 1];
             Vec4 o;
-            o.x = dx0 * t;
-            o.y = dy0 * t;
-            o.z = dz0 * t;
+            o.x = g_5775d0[1][0] - g_5775d0[0][0];
+            o.y = g_5775d0[1][1] - g_5775d0[0][1];
+            o.z = g_5775d0[1][2] - g_5775d0[0][2];
+            o.x *= t;
+            o.y *= t;
+            o.z *= t;
             ua->point = j - 1;
             a->x = g_5775d0[0][0] + o.x;
             a->y = g_5775d0[0][1] + o.y;
             a->z = g_5775d0[0][2] + o.z;
-            ua->u = du0 * t + g_5775d0[0][4];
-            ua->v = dv0 * t + g_5775d0[0][5];
-            o.x = dx1 * t;
-            o.y = dy1 * t;
-            o.z = dz1 * t;
+            ua->u = (g_5775d0[1][4] - g_5775d0[0][4]) * t + g_5775d0[0][4];
+            ua->v = (g_5775d0[1][5] - g_5775d0[0][5]) * t + g_5775d0[0][5];
+            o.x = g_5775d0[3][0] - g_5775d0[2][0];
+            o.y = g_5775d0[3][1] - g_5775d0[2][1];
+            o.z = g_5775d0[3][2] - g_5775d0[2][2];
+            o.x *= t;
+            o.y *= t;
+            o.z *= t;
             ua->color = 0xffffff;
             ua[1].point = j;
             a[1].x = g_5775d0[2][0] + o.x;
             a[1].y = g_5775d0[2][1] + o.y;
             a[1].z = g_5775d0[2][2] + o.z;
-            ua[1].u = du1 * t + g_5775d0[2][4];
-            ua[1].v = dv1 * t + g_5775d0[2][5];
+            ua[1].u = (g_5775d0[3][4] - g_5775d0[2][4]) * t + g_5775d0[2][4];
+            ua[1].v = (g_5775d0[3][5] - g_5775d0[2][5]) * t + g_5775d0[2][5];
             ua[1].color = 0xffffff;
             if (type == 1)
             {
@@ -2748,11 +2740,11 @@ void FUN_425df0(Scene *scene, ObjectDef *def, int type)
             uvs[count + j] = ua[1];
             uvs[count + j - 1].point = count + j - 1;
             uvs[count + j].point = count + j;
-            uvs[count + j - 1].u = du2 * t + g_5775d0[0][6];
+            uvs[count + j - 1].u = (g_5775d0[1][6] - g_5775d0[0][6]) * t + g_5775d0[0][6];
             wave += 0x2000;
-            uvs[count + j - 1].v = dv2 * t + g_5775d0[0][7];
-            uvs[count + j].u = du3 * t + g_5775d0[2][6];
-            uvs[count + j].v = dv3 * t + g_5775d0[2][7];
+            uvs[count + j - 1].v = (g_5775d0[1][7] - g_5775d0[0][7]) * t + g_5775d0[0][7];
+            uvs[count + j].u = (g_5775d0[3][6] - g_5775d0[2][6]) * t + g_5775d0[2][6];
+            uvs[count + j].v = (g_5775d0[3][7] - g_5775d0[2][7]) * t + g_5775d0[2][7];
             t += step;
         }
     }
