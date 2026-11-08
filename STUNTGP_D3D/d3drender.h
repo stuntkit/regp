@@ -104,6 +104,13 @@ extern int g_576b8c;
 extern int g_576b90;
 extern float g_576b9c;
 extern float g_576ba0;
+extern float g_576ba4;
+extern float g_576ba8;
+extern int g_576bac;
+extern int g_576bb0;
+extern int g_576bb4;
+extern int g_576bb8;
+extern int g_576bc0;
 extern float g_576be4;
 extern float g_576be8;
 

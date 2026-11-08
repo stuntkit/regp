@@ -32,6 +32,7 @@ void FUN_40e380(Car *sub);
 void FUN_442cf0(int a, char *text, Car *car, int b, int c);
 void FUN_401d70(float *v, float scale);
 void FUN_405c80();
+void FUN_40d090();
 void FUN_406190();
 void FUN_406270();
 void FUN_408000();
@@ -583,6 +584,87 @@ void FUN_406e80()
     g_4d5bb8->controls[1] = 0;
     g_4d5bb8->controls[2] = 0;
     g_4d5bb8->controls[3] = 0;
+}
+
+// Holds the scripted control for a while, cutting the throttle once the car is fast enough.
+// FUNCTION: STUNTGP_D3D 0x406ea0
+void FUN_406ea0()
+{
+    Car *car = g_4d5bb8;
+    if (car->unk2678 < 0)
+    {
+        car->unk2678 = 0;
+        return;
+    }
+    car->unk2678--;
+    switch (car->unk267c)
+    {
+    case 0:
+        car->controls[0] = 0xff;
+        break;
+    case 1:
+        car->controls[1] = 0xff;
+        break;
+    case 2:
+        car->controls[2] = 0xff;
+        break;
+    case 3:
+        car->controls[3] = 0xff;
+        break;
+    case 4:
+        break;
+    case 5:
+        return;
+    }
+    switch (car->unk2680)
+    {
+    case 0:
+        if (car->unk6da4 >= 8 || car->unk6da8 >= 8)
+        {
+            FUN_406e80();
+            if (g_4d5bb8->unk6da4 >= 10 || g_4d5bb8->unk6da8 >= 10)
+            {
+                g_4d5bb8->unk7224 = 0;
+                g_4d5bb8->unk7228 = 0;
+                g_4d5bb8->unk722c = 0;
+                g_4d5bb8->unk7214 = 0;
+                g_4d5bb8->unk7218 = 0;
+                g_4d5bb8->unk721c = 0;
+            }
+        }
+        break;
+    case 1:
+        if (car->unk6da4 >= 15 || car->unk6da8 >= 15)
+        {
+            FUN_406e80();
+            if (g_4d5bb8->unk6da4 >= 18 || g_4d5bb8->unk6da8 >= 18)
+            {
+                g_4d5bb8->unk7224 = 0;
+                g_4d5bb8->unk7228 = 0;
+                g_4d5bb8->unk722c = 0;
+                g_4d5bb8->unk7214 = 0;
+                g_4d5bb8->unk7218 = 0;
+                g_4d5bb8->unk721c = 0;
+            }
+        }
+        break;
+    case 2:
+        if (car->unk6da4 >= 20 || car->unk6da8 >= 20)
+        {
+            FUN_406e80();
+            if (g_4d5bb8->unk6da4 >= 26 || g_4d5bb8->unk6da8 >= 26)
+            {
+                g_4d5bb8->unk7224 = 0;
+                g_4d5bb8->unk7228 = 0;
+                g_4d5bb8->unk722c = 0;
+                g_4d5bb8->unk7214 = 0;
+                g_4d5bb8->unk7218 = 0;
+                g_4d5bb8->unk721c = 0;
+            }
+        }
+        break;
+    }
+    FUN_40d090();
 }
 
 // FUNCTION: STUNTGP_D3D 0x406ff0
@@ -4868,6 +4950,33 @@ void FUN_443700(Car *car)
     {
         car->unk2278 = 0;
         car->unk1cf8 = 0;
+    }
+}
+
+// Rebuilds an orthonormal rotation once all four points are grounded and the body is level.
+// FUNCTION: STUNTGP_D3D 0x421e70
+void FUN_421e70(Body *body)
+{
+    for (unsigned int i = 0; i < 4; i++)
+    {
+        if (body->points[i].unk40 < 4)
+        {
+            return;
+        }
+    }
+    Vec4 up = *(Vec4 *)&body->mat1[8];
+    if ((float)fabs(up.x + 0.0f) <= 0.05f && (float)fabs(up.y + 0.0f) <= 0.05f)
+    {
+        Vec4 r0 = *(Vec4 *)&body->mat1[0];
+        r0.x *= 1.5f;
+        Vec4 r1 = *(Vec4 *)&body->mat1[4];
+        r1.y *= 1.5f;
+        Vec4 r2 = *(Vec4 *)&body->mat1[8];
+        r2.z *= 1.5f;
+        Vec3_Normalize(&r0.x);
+        Vec3_Normalize(&r1.x);
+        Vec3_Normalize(&r2.x);
+        Matrix_FromRows(&r0.x, &r1.x, &r2.x, body->mat1);
     }
 }
 

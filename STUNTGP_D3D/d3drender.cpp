@@ -214,6 +214,27 @@ float g_576b9c = 0.0f;
 // GLOBAL: STUNTGP_D3D 0x576ba0
 float g_576ba0 = 0.0f;
 
+// GLOBAL: STUNTGP_D3D 0x576ba4
+float g_576ba4 = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x576ba8
+float g_576ba8 = 0.0f;
+
+// GLOBAL: STUNTGP_D3D 0x576bac
+int g_576bac = 0;
+
+// GLOBAL: STUNTGP_D3D 0x576bb0
+int g_576bb0 = 0;
+
+// GLOBAL: STUNTGP_D3D 0x576bb4
+int g_576bb4 = 0;
+
+// GLOBAL: STUNTGP_D3D 0x576bb8
+int g_576bb8 = 0;
+
+// GLOBAL: STUNTGP_D3D 0x576bc0
+int g_576bc0 = 0;
+
 // GLOBAL: STUNTGP_D3D 0x576be4
 float g_576be4 = 0.0f;
 
