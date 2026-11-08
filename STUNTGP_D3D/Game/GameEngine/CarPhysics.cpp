@@ -6304,6 +6304,51 @@ void FUN_421fa0(Body *body)
     }
 }
 
+extern Vec4 g_498198;
+void FUN_44f8e0(float *m);
+void FUN_44efd0(float *out, float *a, float *b);
+
+// Spins m about the axis from point i to the body centre, expressed in the body's unk108 frame.
+// FUNCTION: STUNTGP_D3D 0x422020
+void FUN_422020(Body *body, int i, float turns, float *m)
+{
+    float a[16];
+    float b[16];
+    float t[16];
+    Vec4 s;
+    Vec4 up;
+    Vec4 n;
+    Matrix_Transpose(t, body->mat0);
+    Matrix_Multiply3(t, body->unk108);
+    Matrix_Multiply3(t, body->mat0);
+    Vec4 d;
+    d.x = body->pos.x - body->points[i].world.x;
+    d.y = body->pos.y - body->points[i].world.y;
+    d.z = body->pos.z - body->points[i].world.z;
+    n.x = t[0] * d.x + t[4] * d.y + t[8] * d.z;
+    n.y = t[1] * d.x + t[5] * d.y + t[9] * d.z;
+    n.z = t[2] * d.x + t[6] * d.y + t[10] * d.z;
+    Vec3_Normalize(&n.x);
+    up = g_498198;
+    s.x = up.y * n.z - up.z * n.y;
+    s.y = up.z * n.x - up.x * n.z;
+    s.z = up.x * n.y - up.y * n.x;
+    Vec3_Normalize(&s.x);
+    up.x = s.y * n.z - s.z * n.y;
+    up.y = s.z * n.x - s.x * n.z;
+    up.z = s.x * n.y - s.y * n.x;
+    Vec3_Normalize(&up.x);
+    Matrix_FromRows(&s.x, &up.x, &n.x, a);
+    Matrix_Identity(b);
+    Matrix_RotateX(b, (turns * 360.0f) * 0.15915494f);
+    Matrix_Transpose(t, a);
+    Matrix_Multiply3(t, b);
+    FUN_44efd0(b, t, a);
+    FUN_44f8e0(b);
+    Matrix_Multiply3(m, b);
+    FUN_44f8e0(m);
+}
+
 // Moves the body's points so their centroid is at the origin.
 // FUNCTION: STUNTGP_D3D 0x422200
 void FUN_422200(Body *body)

@@ -241,8 +241,10 @@ struct Body
     float mat0[16];        // 0x048
     float mat1[16];        // 0x088
     float mat2[16];        // 0x0c8
-    BYTE unk108[0x34];     // 0x108
+    float *unk108;         // 0x108, 3x3 matrix
+    BYTE unk10c[0x30];     // 0x10c
     DWORD numPoints;       // 0x13c
+
     float unk140;          // 0x140
     BodyPoint points[8];   // 0x144
 };

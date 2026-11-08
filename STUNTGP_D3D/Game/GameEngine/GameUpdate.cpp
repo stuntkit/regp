@@ -187,6 +187,69 @@ void FUN_412910()
         car++;
     }
 }
+void FUN_418710(Car *car);
+void FUN_4187a0();
+void FUN_413490(Car *car);
+void FUN_418d20(Car *car);
+void FUN_418d90(Car *car);
+void FUN_411880(Car *car);
+void FUN_411490(Car *car);
+void FUN_4127e0(CameraPath *path, Car *car);
+void FUN_408640(Car *car, float *pos);
+GameSlot *FUN_402590(Car *car);
+extern int g_60df98;
+extern float g_482688;
+
+
+// Puts a car back on the track at its last checkpoint, upright and facing along the path.
+// FUNCTION: STUNTGP_D3D 0x412940
+void FUN_412940(Car *car)
+{
+    FUN_418710(car);
+    FUN_4187a0();
+    if (car->unk24e8 == 1)
+    {
+        return;
+    }
+    FUN_413490(car);
+    car->unk763c = 0;
+    FUN_4128f0(car);
+    FUN_418d20(car);
+    FUN_418d90(car);
+    FUN_411880(car);
+    FUN_411490(car);
+    car->unk1f10 = 1;
+    FUN_4127e0(g_624474, car);
+    FUN_408640(car, &car->unk24b0.x);
+    Vec4 fwd = car->unk24c0;
+    Vec4 down = *(Vec4 *)&g_482688;
+    down.x = -down.x;
+    down.y = -down.y;
+    down.z = -down.z;
+    Vec4 side;
+    side.x = fwd.y * down.z - fwd.z * down.y;
+    side.y = fwd.z * down.x - fwd.x * down.z;
+    side.z = fwd.x * down.y - fwd.y * down.x;
+    Vec3_Normalize(&side.x);
+    Matrix_Identity(car->matrix);
+    *(Vec4 *)&car->matrix[0] = side;
+    *(Vec4 *)&car->matrix[4] = down;
+    *(Vec4 *)&car->matrix[8] = fwd;
+    memcpy(car->body.mat0, car->matrix, sizeof(car->matrix));
+    if (g_60df98 == 2)
+    {
+        car->unk7640 = 300;
+    }
+    car->unk7680 = 0;
+    car->unk7644 = 30;
+    g_4722d0 = FUN_402590(car);
+    if (g_4722d0)
+    {
+        g_4722d0->unk1a4 = 300;
+    }
+    FUN_402580();
+}
+
 
 // FUNCTION: STUNTGP_D3D 0x4028d0
 void FUN_4028d0(int mode)
