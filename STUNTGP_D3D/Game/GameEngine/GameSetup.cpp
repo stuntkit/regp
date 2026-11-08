@@ -1240,6 +1240,9 @@ void FUN_42e3e0()
     }
 }
 
+// GLOBAL: STUNTGP_D3D 0x61c594
+float g_61c594[16];
+
 // GLOBAL: STUNTGP_D3D 0x61c5f4
 void *g_61c5f4;
 

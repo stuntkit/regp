@@ -89,6 +89,76 @@ int g_49823c;
 // GLOBAL: STUNTGP_D3D 0x498240
 int g_498240;
 
+// Same test as FUN_420690.
+// FUNCTION: STUNTGP_D3D 0x41f970
+int FUN_41f970(TrackPoly *poly, Vec4 *p)
+{
+    WORD *idx = g_624480->indices + poly->firstIndex;
+    Vec4 *b = g_624480->vertices + *idx;
+    unsigned int n = poly->vertexCount;
+    for (unsigned int i = 0; i < n;)
+    {
+        i++;
+        Vec4 *a = b;
+        b = &g_624480->vertices[idx[i % n]];
+        Vec4 e;
+        e.x = b->x - a->x;
+        e.y = b->y - a->y;
+        e.z = b->z - a->z;
+        Vec4 side;
+        side.x = e.y * g_498160->z - e.z * g_498160->y;
+        side.y = e.z * g_498160->x - e.x * g_498160->z;
+        side.z = e.x * g_498160->y - e.y * g_498160->x;
+        float d;
+        FUN_44eda0(&side.x, &d);
+        Vec4 q;
+        q.x = p->x - a->x;
+        q.y = p->y - a->y;
+        q.z = p->z - a->z;
+        d = q.x * side.x + q.y * side.y + q.z * side.z;
+        if (d > 0.0f)
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+// 1 when the point lies inside every edge of the polygon, seen along the g_498160 normal.
+// FUNCTION: STUNTGP_D3D 0x420690
+int FUN_420690(TrackPoly *poly, Vec4 *p)
+{
+    WORD *idx = g_624480->indices + poly->firstIndex;
+    Vec4 *b = g_624480->vertices + *idx;
+    unsigned int n = poly->vertexCount;
+    for (unsigned int i = 0; i < n;)
+    {
+        i++;
+        Vec4 *a = b;
+        b = &g_624480->vertices[idx[i % n]];
+        Vec4 e;
+        e.x = b->x - a->x;
+        e.y = b->y - a->y;
+        e.z = b->z - a->z;
+        Vec4 side;
+        side.x = e.y * g_498160->z - e.z * g_498160->y;
+        side.y = e.z * g_498160->x - e.x * g_498160->z;
+        side.z = e.x * g_498160->y - e.y * g_498160->x;
+        float d;
+        FUN_44eda0(&side.x, &d);
+        Vec4 q;
+        q.x = p->x - a->x;
+        q.y = p->y - a->y;
+        q.z = p->z - a->z;
+        d = q.x * side.x + q.y * side.y + q.z * side.z;
+        if (d > 0.0f)
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
 // 0 when both sweep points are further than the sphere radius from the plane.
 // FUNCTION: STUNTGP_D3D 0x420a70
 int FUN_420a70()
@@ -108,6 +178,37 @@ int FUN_420a70()
         return 0;
     }
     return 1;
+}
+
+// Unit normal of a track polygon; falls back to the next edge when the first two are parallel.
+// FUNCTION: STUNTGP_D3D 0x420b20
+Vec4 *FUN_420b20(Vec4 *out, WORD *idx)
+{
+    TrackOctree *tree = g_624480;
+    Vec4 a;
+    a.x = tree->vertices[idx[1]].x - tree->vertices[idx[0]].x;
+    a.y = tree->vertices[idx[1]].y - tree->vertices[idx[0]].y;
+    a.z = tree->vertices[idx[1]].z - tree->vertices[idx[0]].z;
+    Vec4 b;
+    b.x = tree->vertices[idx[2]].x - tree->vertices[idx[1]].x;
+    b.y = tree->vertices[idx[2]].y - tree->vertices[idx[1]].y;
+    b.z = tree->vertices[idx[2]].z - tree->vertices[idx[1]].z;
+    Vec4 n;
+    n.x = b.z * a.y - b.y * a.z;
+    n.y = b.x * a.z - b.z * a.x;
+    n.z = b.y * a.x - b.x * a.y;
+    if (n.x * n.x + n.y * n.y + n.z * n.z < 0.0001f)
+    {
+        b.x = tree->vertices[idx[3]].x - tree->vertices[idx[2]].x;
+        b.y = tree->vertices[idx[3]].y - tree->vertices[idx[2]].y;
+        b.z = tree->vertices[idx[3]].z - tree->vertices[idx[2]].z;
+        n.x = b.z * a.y - b.y * a.z;
+        n.y = b.x * a.z - b.z * a.x;
+        n.z = b.y * a.x - b.x * a.y;
+    }
+    Vec3_Normalize(&n.x);
+    *out = n;
+    return out;
 }
 
 // FUNCTION: STUNTGP_D3D 0x420f00
