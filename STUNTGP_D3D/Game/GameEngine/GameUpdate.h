@@ -407,7 +407,10 @@ struct CameraSweep
     float unk108; // 0x108
     // Body the camera sphere ignores.
     Body *unk10c; // 0x10c
-    BYTE unk110[0x60]; // 0x110
+    BYTE unk110[0x14]; // 0x110
+    // 1 once a sweep has found a contact.
+    int unk124;        // 0x124
+    BYTE unk128[0x48]; // 0x128
 };
 
 extern CameraSweep g_cameraSweep;

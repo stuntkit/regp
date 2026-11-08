@@ -11,6 +11,9 @@ void FUN_403310(float fov);
 void FUN_403770(Car *car);
 void FUN_428520(CameraPath *path, Vec4 *out, float t);
 void FUN_4028f0(CameraPreset *preset, int mode);
+int FUN_41ff30(Vec4 *p);
+void FUN_420190(TrackPoly *poly, int *hit);
+void FUN_4205f0(TrackPoly *poly, int *hit);
 
 extern CameraPreset g_4722d8[32];
 
@@ -403,6 +406,90 @@ int FUN_420690(TrackPoly *poly, Vec4 *p)
     return 1;
 }
 
+// 2 while FUN_4212a0/FUN_4215b0 resolve contacts against the polygon plane only.
+// GLOBAL: STUNTGP_D3D 0x4754a0
+int g_4754a0 = 1;
+
+// Sweeps the sphere against the polygon: its vertices and edges, then its plane.
+// FUNCTION: STUNTGP_D3D 0x4207a0
+int FUN_4207a0(TrackPoly *poly)
+{
+    float r = g_cameraSweep.unk94 * 4.0f;
+    int hit = 0;
+    g_cameraSweep.unke8.x = 0.0f;
+    g_cameraSweep.unke8.y = 0.0f;
+    g_cameraSweep.unke8.z = 0.0f;
+    g_cameraSweep.unk108 = r * r;
+    if (g_4754a0 != 2)
+    {
+        FUN_420190(poly, &hit);
+        FUN_4205f0(poly, &hit);
+    }
+    float c = g_cameraSweep.unk58.x * g_cameraSweep.unka0->x + g_cameraSweep.unk58.y * g_cameraSweep.unka0->y +
+              g_cameraSweep.unk58.z * g_cameraSweep.unka0->z;
+    if ((float)fabs(g_cameraSweep.unkac + c) < g_cameraSweep.unk94)
+    {
+        Vec4 q;
+        if ((float)fabs(c) < 0.001f)
+        {
+            q = g_cameraSweep.unk04;
+        }
+        else
+        {
+            Vec4 d;
+            d.x = g_cameraSweep.unk14.x - g_cameraSweep.unk9c->x;
+            d.y = g_cameraSweep.unk14.y - g_cameraSweep.unk9c->y;
+            d.z = g_cameraSweep.unk14.z - g_cameraSweep.unk9c->z;
+            float f = d.x * g_cameraSweep.unka0->x + d.y * g_cameraSweep.unka0->y + d.z * g_cameraSweep.unka0->z;
+            if (g_cameraSweep.unkac < 0.0f)
+            {
+                f = (-f - g_cameraSweep.unk94) / c;
+            }
+            else
+            {
+                f = -((f - g_cameraSweep.unk94) / c);
+            }
+            f = f - 0.0001f;
+            if (f < -1.0f)
+            {
+                f = -1.0f;
+            }
+            else if (f > 0.0f)
+            {
+                f = 0.0f;
+            }
+            Vec4 m;
+            m.x = g_cameraSweep.unk58.x * f;
+            m.y = g_cameraSweep.unk58.y * f;
+            m.z = f * g_cameraSweep.unk58.z;
+            q.x = g_cameraSweep.unk14.x + m.x;
+            q.y = g_cameraSweep.unk14.y + m.y;
+            q.z = g_cameraSweep.unk14.z + m.z;
+        }
+        if (FUN_420690(poly, &q) && FUN_41ff30(&q) == 1)
+        {
+            g_cameraSweep.unkd8 = *g_cameraSweep.unka0;
+            if (g_cameraSweep.unkac < 0.0f)
+            {
+                g_cameraSweep.unkd8.x = -g_cameraSweep.unkd8.x;
+                g_cameraSweep.unkd8.y = -g_cameraSweep.unkd8.y;
+                g_cameraSweep.unkd8.z = -g_cameraSweep.unkd8.z;
+            }
+            float nr = -g_cameraSweep.unk94;
+            g_cameraSweep.unkf8.x = nr * g_cameraSweep.unkd8.x;
+            g_cameraSweep.unke8 = q;
+            hit |= 1;
+            g_cameraSweep.unkf8.y = nr * g_cameraSweep.unkd8.y;
+            g_cameraSweep.unka4 = poly;
+            g_cameraSweep.unkf8.z = nr * g_cameraSweep.unkd8.z;
+            g_cameraSweep.unkf8.x = g_cameraSweep.unkf8.x + q.x;
+            g_cameraSweep.unkf8.y = g_cameraSweep.unkf8.y + q.y;
+            g_cameraSweep.unkf8.z = g_cameraSweep.unkf8.z + q.z;
+        }
+    }
+    return hit;
+}
+
 // 0 when both sweep points are further than the sphere radius from the plane.
 // FUNCTION: STUNTGP_D3D 0x420a70
 int FUN_420a70()
@@ -453,6 +540,69 @@ Vec4 *FUN_420b20(Vec4 *out, WORD *idx)
     Vec3_Normalize(&n.x);
     *out = n;
     return out;
+}
+
+// Sets up the polygon's plane and runs the full sphere sweep against it when the sphere can reach it.
+// FUNCTION: STUNTGP_D3D 0x420c40
+int FUN_420c40(TrackPoly *poly)
+{
+    int hit = 0;
+    g_cameraSweep.unka0 = g_renderState.unk7f98->planes + poly->plane;
+    g_cameraSweep.unk9c = g_renderState.unk7f98->vertices + g_renderState.unk7f98->indices[poly->firstIndex];
+    if (FUN_420a70())
+    {
+        return FUN_4207a0(poly);
+    }
+    return hit;
+}
+
+// Sweeps against every polygon in the -1 terminated list and keeps the nearest contact ahead of the sphere.
+// FUNCTION: STUNTGP_D3D 0x420ca0
+void FUN_420ca0(WORD *list, int *hit)
+{
+    Vec4 e8 = g_cameraSweep.unk04;
+    float best = g_cameraSweep.unk88;
+    g_cameraSweep.unka4 = 0;
+    TrackPoly *poly = 0;
+    Vec4 d8;
+    d8.x = 0.0f;
+    d8.y = 0.0f;
+    d8.z = 0.0f;
+    Vec4 c8;
+    Vec4 f8;
+    while (*list != 0xffff)
+    {
+        g_cameraSweep.unkd8.x = 0.0f;
+        g_cameraSweep.unkd8.y = 0.0f;
+        g_cameraSweep.unkd8.z = 0.0f;
+        if (FUN_420c40(&g_renderState.unk7f98->polys[*list++]) == 1)
+        {
+            Vec4 d;
+            d.x = g_cameraSweep.unke8.x - g_cameraSweep.unk04.x;
+            d.y = g_cameraSweep.unke8.y - g_cameraSweep.unk04.y;
+            d.z = g_cameraSweep.unke8.z - g_cameraSweep.unk04.z;
+            float t = g_cameraSweep.unk68.x * d.x + g_cameraSweep.unk68.y * d.y + g_cameraSweep.unk68.z * d.z;
+            if (t >= -0.01f && t < best)
+            {
+                e8 = g_cameraSweep.unke8;
+                d8 = g_cameraSweep.unkd8;
+                c8 = g_cameraSweep.unkc8;
+                f8 = g_cameraSweep.unkf8;
+                poly = g_cameraSweep.unka4;
+                best = t;
+                *hit |= 1;
+            }
+        }
+    }
+    if (*hit == 1)
+    {
+        g_cameraSweep.unke8 = e8;
+        g_cameraSweep.unkd8 = d8;
+        g_cameraSweep.unkc8 = c8;
+        g_cameraSweep.unka4 = poly;
+        g_cameraSweep.unkf8 = f8;
+        g_cameraSweep.unk124 = 1;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x420f00
@@ -1440,6 +1590,129 @@ void FUN_420190(TrackPoly *poly, int *hit)
             g_5715cc = 3;
         }
         idx++;
+    }
+}
+
+// Sweeps the sphere against the edge a-b; on a hit records the contact, its normal and the edge point.
+// FUNCTION: STUNTGP_D3D 0x420200
+int FUN_420200(Vec4 *a, Vec4 *b)
+{
+    Vec4 dir;
+    dir.x = b->x - a->x;
+    dir.y = b->y - a->y;
+    dir.z = b->z - a->z;
+    float len;
+    FUN_44eda0(&dir.x, &len);
+    float rx = g_cameraSweep.unk04.x - a->x;
+    float ry = g_cameraSweep.unk04.y - a->y;
+    float rz = g_cameraSweep.unk04.z - a->z;
+    Vec4 p;
+    p.x = rx;
+    p.y = ry;
+    p.z = rz;
+    float t = p.z * dir.z + p.y * dir.y + p.x * dir.x;
+    float f = g_cameraSweep.unk58.z * dir.z + g_cameraSweep.unk58.y * dir.y + g_cameraSweep.unk58.x * dir.x;
+    Vec4 proj;
+    if (t >= -f && t <= f + len)
+    {
+        proj.x = t * dir.x;
+        proj.y = t * dir.y;
+        proj.z = t * dir.z;
+        Vec4 e;
+        e.x = p.x - proj.x;
+        e.y = p.y - proj.y;
+        e.z = p.z - proj.z;
+        if ((float)sqrt(e.z * e.z + e.y * e.y + e.x * e.x) <= g_cameraSweep.unk94 + g_cameraSweep.unk88)
+        {
+            p.x = rx;
+            p.y = ry;
+            p.z = rz;
+            Vec4 axis;
+            if (g_cameraSweep.unk88 < 0.00001f)
+            {
+                axis = p;
+            }
+            else
+            {
+                axis = g_cameraSweep.unk58;
+            }
+            Vec4 n;
+            n.x = axis.y * dir.z - axis.z * dir.y;
+            n.y = axis.z * dir.x - axis.x * dir.z;
+            n.z = axis.x * dir.y - axis.y * dir.x;
+            FUN_44eda0(&n.x, &len);
+            rz = (float)fabs(n.z * p.z + n.y * p.y + n.x * p.x);
+            if (rz < g_cameraSweep.unk94)
+            {
+                t = -(((p.y * dir.z - p.z * dir.y) * n.x + (p.z * dir.x - p.x * dir.z) * n.y +
+                       (p.x * dir.y - p.y * dir.x) * n.z) /
+                      len);
+                Vec4 s;
+                s.x = n.y * dir.z - n.z * dir.y;
+                s.y = n.z * dir.x - n.x * dir.z;
+                s.z = n.x * dir.y - n.y * dir.x;
+                Vec3_Normalize(&s.x);
+                float h = (float)fabs((float)sqrt(g_cameraSweep.unk98 - rz * rz) /
+                                      (s.x * axis.x + s.z * axis.z + s.y * axis.y));
+                if (h < 0.0001f)
+                {
+                    h = 0.0f;
+                }
+                h = t - h;
+                Vec4 q;
+                q.x = h * axis.x;
+                q.y = h * axis.y;
+                q.z = h * axis.z;
+                q.x = g_cameraSweep.unk04.x + q.x;
+                q.y = g_cameraSweep.unk04.y + q.y;
+                q.z = g_cameraSweep.unk04.z + q.z;
+                if (FUN_41ff30(&q))
+                {
+                    proj.x = q.x - a->x;
+                    proj.y = q.y - a->y;
+                    proj.z = q.z - a->z;
+                    t = proj.z * dir.z + proj.y * dir.y + proj.x * dir.x;
+                    axis.x = t * dir.x;
+                    axis.y = t * dir.y;
+                    axis.z = t * dir.z;
+                    Vec4 m;
+                    m.x = proj.x - axis.x;
+                    m.y = proj.y - axis.y;
+                    m.z = proj.z - axis.z;
+                    Vec3_Normalize(&m.x);
+                    g_cameraSweep.unkd8 = m;
+                    g_cameraSweep.unkf8.x = axis.x + a->x;
+                    g_cameraSweep.unkf8.y = axis.y + a->y;
+                    g_cameraSweep.unkf8.z = axis.z + a->z;
+                    g_cameraSweep.unke8 = q;
+                    g_cameraSweep.unkc8 = q;
+                    return 1;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+// Tests every edge of the polygon with FUN_420200, remembering the polygon on a hit.
+// FUNCTION: STUNTGP_D3D 0x4205f0
+void FUN_4205f0(TrackPoly *poly, int *hit)
+{
+    WORD *idx = g_renderState.unk7f98->indices + poly->firstIndex;
+    Vec4 *b = g_renderState.unk7f98->vertices + *idx;
+    unsigned int n = poly->vertexCount;
+    for (unsigned int i = 0; i < n;)
+    {
+        i++;
+        Vec4 *a = b;
+        b = &g_renderState.unk7f98->vertices[idx[i % n]];
+        int r = FUN_420200(a, b);
+        *hit |= r;
+        if (r == 1)
+        {
+            g_5715cc = 2;
+            g_cameraSweep.unka4 = poly;
+        }
     }
 }
 
