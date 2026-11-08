@@ -765,7 +765,7 @@ void FUN_418f70()
     v.x += g_4d5bb8->unk1c8c.x;
     v.y += g_4d5bb8->unk1c8c.y;
     v.z += g_4d5bb8->unk1c8c.z;
-    FUN_415d20((Vec4 *)&g_4d5bb8->unk315c[0x120], &v, 8.0f);
+    FUN_415d20(&g_4d5bb8->unk327c, &v, 8.0f);
 }
 
 // FUNCTION: STUNTGP_D3D 0x4190b0

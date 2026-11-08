@@ -691,7 +691,7 @@ struct Car
     Vec4 unk3148;             // 0x3148
     float unk3158;            // 0x3158
     CarWobble unk315c[6];     // 0x315c
-    BYTE unk327c[0x10];       // 0x327c
+    Vec4 unk327c;             // 0x327c
     CarFx unk328c;            // 0x328c
     CarFx unk33cc;            // 0x33cc
     BYTE unk350c[0x10];       // 0x350c
