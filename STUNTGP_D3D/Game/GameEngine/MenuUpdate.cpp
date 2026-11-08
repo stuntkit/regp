@@ -3898,7 +3898,7 @@ void FUN_4529c0(MenuHolder *object)
 }
 
 // FUNCTION: STUNTGP_D3D 0x452ac0
-void FUN_452ac0()
+void FUN_452ac0(MenuHolder *object)
 {
     float height = FUN_438950(1.25f);
     float y = (480.0f - height * 16.0f) * 0.5f;

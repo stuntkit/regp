@@ -411,7 +411,7 @@ struct MenuState
     ScoreEntry unk1dfc[100];    // 0x1dfc
     BYTE saved[0x2114]; // 0x211c, copy of 0x0008..0x211c
     int unk4230; // 0x4230
-    BYTE unk4234[0x4];
+    int unk4234; // 0x4234, challenge state run by FUN_44b5e0
     int unk4238; // 0x4238
     int unk423c; // 0x423c, entries used in unk46ac
     int unk4240; // 0x4240
