@@ -1,6 +1,8 @@
 #include "GameUpdate.h"
+#include "GameSetup.h"
 
 #include <math.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -188,6 +190,39 @@ void FUN_4026e0(int slot, Car *car)
     g_498248[slot].active = 1;
     FUN_404310(car);
 }
+// Hands the race's player cars to the first g_576be0 player slots.
+// FUNCTION: STUNTGP_D3D 0x402710
+void FUN_402710()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        g_498248[i].active = 0;
+    }
+    switch (g_576be0)
+    {
+    case 0:
+        FUN_4026e0(0, &g_49a1f8[g_60d730.unk024[0]]);
+        break;
+    case 1:
+    case 2:
+        FUN_4026e0(0, &g_49a1f8[g_60d730.unk024[0]]);
+        FUN_4026e0(1, &g_49a1f8[g_60d730.unk024[1]]);
+        break;
+    case 3:
+        FUN_4026e0(0, &g_49a1f8[g_60d730.unk024[0]]);
+        FUN_4026e0(1, &g_49a1f8[g_60d730.unk024[1]]);
+        FUN_4026e0(2, &g_49a1f8[g_60d730.unk024[2]]);
+        break;
+    case 4:
+        FUN_4026e0(0, &g_49a1f8[g_60d730.unk024[0]]);
+        FUN_4026e0(1, &g_49a1f8[g_60d730.unk024[1]]);
+        FUN_4026e0(2, &g_49a1f8[g_60d730.unk024[2]]);
+        FUN_4026e0(3, &g_49a1f8[g_60d730.unk024[3]]);
+        break;
+    }
+    FUN_402580();
+}
+
 
 extern int g_49a164;
 extern CameraPath *g_49a158;
@@ -5672,10 +5707,69 @@ void FUN_41d8f0()
     }
 }
 
-// STUB: STUNTGP_D3D 0x41da70
+void FUN_41da50(int *count);
+void FUN_41d9f0(int *a, int *b);
+
+// The current car crossed the line: records its finish, and once the race is decided
+// finishes everyone still running with a time extrapolated from their remaining distance.
+// FUNCTION: STUNTGP_D3D 0x41da70
 void FUN_41da70()
 {
+    g_4d5bb8->unk24e0 = 1;
+    g_4d5bb8->unk24e4 = g_4d5bb8->unk24ac;
+    int t = g_4d5bb8->unk260c;
+    g_4d5bb8->unk23d0 = t;
+    g_612948.unk040c[g_612948.unk044c] = g_4d5bb8;
+    g_612948.unk044c++;
+    if (g_4d5bb8->unk23cc < g_60f000[1])
+    {
+        g_60f000[1] = g_4d5bb8->unk23cc;
+    }
+    if (t > g_60f000[3])
+    {
+        g_60f000[3] = t;
+    }
+    int count;
+    FUN_41da50(&count);
+    int a;
+    int b;
+    FUN_41d9f0(&a, &b);
+    if (b == 0 && a != 0 && g_612948.unk044c < count)
+    {
+        float lap = g_60f000[0] * 150 / 100;
+        do
+        {
+            Car *car = g_612948.unk03cc[g_612948.unk044c];
+            car->unk24e0 = 1;
+            car->unk24e4 = car->unk24ac;
+            t = car->unk260c;
+            car->unk23d0 = t;
+            float left = (100.0f - (float)fmod(car->unk23b0, 100.0)) * 0.01f;
+            int laps = g_60eff8 - car->unk23a4;
+            if (laps > 0)
+            {
+                left += laps;
+            }
+            car->unk23cc += (int)(lap * left);
+            if (car->unk23d4 == 216000)
+            {
+                car->unk23d4 = car->unk23cc;
+                car->unk23d8 = t;
+            }
+            if (car->unk23cc < g_60f000[1])
+            {
+                g_60f000[1] = car->unk23cc;
+            }
+            if (t > g_60f000[3])
+            {
+                g_60f000[3] = t;
+            }
+            g_612948.unk040c[g_612948.unk044c] = car;
+            g_612948.unk044c++;
+        } while (g_612948.unk044c < count);
+    }
 }
+
 
 // FUNCTION: STUNTGP_D3D 0x41dc30
 void FUN_41dc30()

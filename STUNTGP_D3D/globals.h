@@ -138,9 +138,10 @@ struct GameState
     unsigned int unk03c8;    // 0x03c8
     Car *unk03cc[6];         // 0x03cc
     BYTE unk03e4[0x28];      // 0x03e4
-    int unk040c[6];          // 0x040c
+    Car *unk040c[6];         // 0x040c, finishing order
     BYTE unk0424[0x28];      // 0x0424
-    int unk044c;             // 0x044c
+    DWORD unk044c;           // 0x044c, cars finished
+
     int unk0450;             // 0x0450
     int unk0454;             // 0x0454
     int unk0458;             // 0x0458
