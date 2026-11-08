@@ -408,6 +408,25 @@ void FUN_4481f0(DWORD frames, DWORD *digits)
     digits[2] = rest / 10;
 }
 
+// FUN_4481f0 with a hundredths digit in front.
+// FUNCTION: STUNTGP_D3D 0x4482a0
+void FUN_4482a0(DWORD frames, DWORD *digits)
+{
+    DWORD secs = frames / 60;
+    digits[0] = frames * 10 / 6 % 10;
+    digits[1] = frames / 6 % 10;
+    DWORD hours = secs / 3600;
+    digits[6] = hours % 10;
+    digits[7] = hours / 10;
+    DWORD rest = secs % 3600;
+    DWORD mins = rest / 60;
+    digits[4] = mins % 10;
+    digits[5] = mins / 10;
+    rest %= 60;
+    digits[2] = rest % 10;
+    digits[3] = rest / 10;
+}
+
 // FUNCTION: STUNTGP_D3D 0x4473f0
 void FUN_4473f0()
 {
@@ -1031,6 +1050,35 @@ void FUN_449ce0()
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x44a3d0
+void FUN_44a3d0()
+{
+    CarRace *race = &g_4722d0->data->race;
+    if (!race->unk04)
+    {
+        return;
+    }
+    DWORD alpha = race->unk08 * 240 / 60;
+    if (alpha > 240)
+    {
+        alpha = 240;
+    }
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.x = 166.4f;
+    g_spriteDesc.y = race->unk0c + 102.4f;
+    g_spriteDesc.z = 0.99f;
+    g_spriteDesc.u0 = 0.0f;
+    g_spriteDesc.v0 = 0.0f;
+    g_spriteDesc.u1 = 1024.0f;
+    g_spriteDesc.v1 = 1024.0f;
+    g_spriteDesc.width = 307.2f;
+    g_spriteDesc.height = 153.6f;
+    g_spriteDesc.texture = 15;
+    g_spriteDesc.blendMode = 0x48;
+    g_spriteDesc.alpha = alpha;
+    FUN_432e00(&g_spriteDesc);
+}
+
 // FUNCTION: STUNTGP_D3D 0x40e030
 void FUN_40e030()
 {
@@ -1365,6 +1413,29 @@ GhostRecord *FUN_443330()
         }
     }
     return best;
+}
+
+// Ghost race messages: overtaking the ghost, and closing to within 10% of its time.
+// FUNCTION: STUNTGP_D3D 0x443360
+void FUN_443360(Car *car)
+{
+    if (g_60d66c == 1 && g_60f284 != 1)
+    {
+        int diff = car->unk23c8 - g_60d628[0].ghost->unk1c;
+        if ((g_60d628[0].unk00 == 1 || diff < 0) && g_60f284 == 0 && car->unk23c0 == 1)
+        {
+            g_60d628[0].unk00 = 1;
+            g_60f284 = 1;
+            car->unk23c0 = 0;
+            FUN_442cf0(300, g_6127a0[20], car, 0, 100);
+        }
+        if (g_60d628[0].unk00 == 0 && diff < g_60d628[0].ghost->unk1c * 10 / 100)
+        {
+            g_60d628[0].unk00 = 1;
+            FUN_442cf0(300, g_6127a0[18], car, 0, 100);
+            g_60d668 = 0;
+        }
+    }
 }
 
 extern char g_LevelScript[32];

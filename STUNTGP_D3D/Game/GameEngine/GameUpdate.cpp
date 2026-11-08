@@ -2612,6 +2612,47 @@ void FUN_442de0()
     }
 }
 
+extern int g_624500;
+void FUN_4291f0(const char *text, int align, float x, float y, float z, D3DCOLOR color, float size, DWORD flags);
+
+// Draws the first live message of the current slot, sliding it in and out at the bottom of the screen.
+// FUNCTION: STUNTGP_D3D 0x442e30
+void FUN_442e30()
+{
+    if (g_612948.unk0004 == 1)
+    {
+        return;
+    }
+    DWORD limit = g_624500 + 40;
+    SlotEvent *event = g_4722d0->events;
+    for (DWORD i = 0; i < 8; event++, i++)
+    {
+        if (event->count != 0 && event->count != event->duration)
+        {
+            DWORD count = event->count;
+            DWORD offset;
+            if (count < limit)
+            {
+                offset = count;
+            }
+            else
+            {
+                offset = event->duration - count;
+                if (offset > limit)
+                {
+                    offset = limit;
+                }
+            }
+            if (g_576be0)
+            {
+                offset = limit;
+            }
+            FUN_4291f0(event->text, 1, 320.0f, 480.0f - offset, 0.94f, count % 60 > 30 ? 0xff4040 : 0xffff00, 1.75f, 6);
+            return;
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x446110
 void FUN_446110()
 {

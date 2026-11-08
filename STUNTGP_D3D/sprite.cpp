@@ -490,6 +490,43 @@ void FUN_438c20(float x, float y, int layer, int style, char c, float size, D3DC
     FUN_438990(x, y, layer, 1, style, g_4793f0, size, color, flags, 0.0f);
 }
 
+// Frame layout for an icon style; returns its sprite id, or 0 for an unknown style.
+// FUNCTION: STUNTGP_D3D 0x438dc0
+int FUN_438dc0(int style, int *a, int *b, int *c)
+{
+    switch (style)
+    {
+    case 1:
+        *a = 0x1a;
+        *b = 0x10;
+        *c = 0x20;
+        return 0x57;
+    case 2:
+        *a = 0x1a;
+        *b = 0x10;
+        *c = 0x20;
+        return 0x5a;
+    case 3:
+        *a = 0x20;
+        *b = 0x20;
+        *c = 0x20;
+        return 0x58;
+    case 4:
+        *a = 0x20;
+        *b = 0x20;
+        *c = 0x20;
+        return 0x59;
+    case 5:
+        *a = 0x50;
+        *b = 0x30;
+        *c = 0x40;
+        return 0x5b;
+    }
+    *a = 0;
+    *b = 0;
+    return 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x439380
 void FUN_439380(float x0, float y0, float x1, float y1, int layer, int scroll, int flags, float fade)
 {
@@ -1006,6 +1043,63 @@ BOOL FUN_440380(char *path)
         return TRUE;
     }
     return FALSE;
+}
+
+int FUN_440480(char *path);
+
+// Reads a save file from the current card; with checkSize, the file must be exactly size bytes.
+// FUNCTION: STUNTGP_D3D 0x4403b0
+int FUN_4403b0(void *buffer, int size, char *name, int checkSize)
+{
+    char path[0x400];
+    char *dir = FUN_4401e0(g_4798bc);
+    if (!FUN_4401c0(dir))
+    {
+        return 1;
+    }
+    // STRING: STUNTGP_D3D 0x479a50
+    sprintf(path, "%s\\%s", dir, name);
+    if (FUN_440480(path) != size && checkSize)
+    {
+        return 9;
+    }
+    // STRING: STUNTGP_D3D 0x479a58
+    FILE *file = fopen(path, "rb");
+    if (!file)
+    {
+        return 6;
+    }
+    int read = fread(buffer, 1, size, file);
+    fclose(file);
+    return read != size ? 9 : 0;
+}
+
+// Writes a save file to the current card; an existing file must already be size bytes.
+// FUNCTION: STUNTGP_D3D 0x4404e0
+int FUN_4404e0(void *buffer, int size, char *name)
+{
+    char path[0x400];
+    char *dir = FUN_4401e0(g_4798bc);
+    if (!FUN_4401c0(dir))
+    {
+        return 1;
+    }
+    // STRING: STUNTGP_D3D 0x479a68
+    sprintf(path, "%s\\%s", dir, name);
+    int existing = FUN_440480(path);
+    if (existing >= 0 && existing != size)
+    {
+        return 9;
+    }
+    // STRING: STUNTGP_D3D 0x479a70
+    FILE *file = fopen(path, "wb");
+    if (!file)
+    {
+        return 6;
+    }
+    int written = fwrite(buffer, 1, size, file);
+    fclose(file);
+    return written != size ? 9 : 0;
 }
 
 // Size of a file, or -1 if it is missing or a directory.

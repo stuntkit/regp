@@ -86,7 +86,9 @@ struct CarRace
 {
     DWORD unk00;      // 0x00
     int unk04;        // 0x04
-    BYTE unk08[0x10]; // 0x08
+    DWORD unk08;      // 0x08
+    float unk0c;      // 0x0c
+    BYTE unk10[0x8];  // 0x10
     int unk18;        // 0x18
     int unk1c;        // 0x1c
     int unk20;        // 0x20
