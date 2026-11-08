@@ -644,6 +644,77 @@ extern int g_582b24;
 extern int g_58271c;
 extern int g_582720;
 
+// Texture list entry: type 1 is an image (arg: compressed), 2 and 3 an empty texture (arg: size
+// code), anything else a texture file.
+struct TextureEntry
+{
+    char *name; // 0x00
+    int type;   // 0x04
+    int arg;    // 0x08
+};
+
+void FUN_42c0a0(int arg, int sizeCode);
+extern int g_587990;
+
+// Loads a NULL-terminated texture list, recording each image's table index in g_583594.
+// FUNCTION: STUNTGP_D3D 0x42c340
+void FUN_42c340(TextureEntry *list)
+{
+    int empty = 0;
+    for (TextureEntry *e = list; e->name; e++)
+    {
+        if (e->type == 2 || e->type == 0 || e->type == 3)
+        {
+            empty++;
+        }
+    }
+    g_583590 = empty;
+    g_582724 = g_582b24;
+    g_582718 = 0;
+    int *slot = g_583594;
+    for (; list->name; list++, slot++)
+    {
+        if (list->type == 1)
+        {
+            if (g_612948.unk02a0 == 2 && FUN_42c2e0(list->name) != 1)
+            {
+                FUN_42c220(list->name, list->arg);
+            }
+            else
+            {
+                FUN_430ca0(list->name, list->arg, 0);
+            }
+            *slot = ((int)g_5895b0.entryCursor - (int)&g_587990) / 0x18 - 1;
+        }
+        else if (list->type == 2 || list->type == 3)
+        {
+            FUN_42c0a0(list->type, list->arg);
+        }
+        else if (g_612948.unk02a0 == 2)
+        {
+            FUN_42bf60(list->name, 0);
+        }
+        else
+        {
+            FUN_42bf60(list->name, 1);
+        }
+    }
+}
+
+extern int g_6249a0;
+
+// Registers a NULL-terminated list of texture files.
+// FUNCTION: STUNTGP_D3D 0x42c440
+void FUN_42c440(char **names)
+{
+    g_582718 = 0;
+    g_582724 = g_582b24;
+    for (int i = 0; names[i]; i++)
+    {
+        FUN_42bf60(names[i], g_6249a0);
+    }
+}
+
 // Clears the texture, sprite and file registries.
 // FUNCTION: STUNTGP_D3D 0x42c480
 void FUN_42c480()
