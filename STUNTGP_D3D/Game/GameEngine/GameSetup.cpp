@@ -2169,6 +2169,141 @@ void FUN_42dcf0()
     }
 }
 
+// One element of the lens flare: its texture, position along the line from the view centre
+// through the light, size, spin speed and angle, and colour.
+struct FlareElement
+{
+    int texture; // 0x00
+    float t;     // 0x04
+    float size;  // 0x08
+    int speed;   // 0x0c
+    int angle;   // 0x10
+    DWORD color; // 0x14
+};
+
+// GLOBAL: STUNTGP_D3D 0x477b88
+FlareElement g_477b88[7] = {
+    {1, 1.0f, 0.5f, 0x20, 0, 0x804000},
+    {1, 1.0f, 0.5f, 0x15, 0x6000, 0x808000},
+    {3, 0.5f, 0.2f, 0x20, 0, 0xff},
+    {2, 0.0f, 0.05f, 0x20, 0, 0x4c0000},
+    {3, -0.5f, 0.35f, 0x20, 0, 0x800000},
+    {2, -1.0f, 0.05f, 0x20, 0, 0x4c0000},
+    {3, -1.75f, 0.5f, 0x20, 0, 0x8000},
+};
+
+extern float g_477b80;
+
+// Draws the lens flare of a light: two spinning glows on the light itself and five elements
+// along the line through the view centre, and brightens the screen (g_477b80) when looking at it.
+// FUNCTION: STUNTGP_D3D 0x42dd80
+void FUN_42dd80(RenderMaterial *light)
+{
+    float focus = g_4722d0->nearZ * 1.2f;
+    Vec4 c;
+    c.x = focus * g_4722d0->axisZ.x;
+    c.y = focus * g_4722d0->axisZ.y;
+    c.z = focus * g_4722d0->axisZ.z;
+    c.x += g_4722d0->cam.pos.x;
+    c.y += g_4722d0->cam.pos.y;
+    c.z += g_4722d0->cam.pos.z;
+    Vec4 d;
+    d.x = light->pos.x - g_4722d0->cam.pos.x;
+    d.y = light->pos.y - g_4722d0->cam.pos.y;
+    d.z = light->pos.z - g_4722d0->cam.pos.z;
+    Vec3_Normalize(&d.x);
+    float dz = d.z * g_4722d0->axisZ.z + d.y * g_4722d0->axisZ.y + d.x * g_4722d0->axisZ.x;
+    float k = focus / dz;
+    Vec4 p;
+    p.x = k * d.x;
+    p.y = k * d.y;
+    p.z = k * d.z;
+    Vec4 q;
+    q.x = p.x + g_4722d0->cam.pos.x;
+    q.y = p.y + g_4722d0->cam.pos.y;
+    q.z = p.z + g_4722d0->cam.pos.z;
+    Vec4 v;
+    v.x = q.x - c.x;
+    v.y = q.y - c.y;
+    v.z = q.z - c.z;
+    if (dz < 0.8660254f)
+    {
+        g_477b80 = 1.0f;
+    }
+    else
+    {
+        float t = (dz - 0.8660254f) * 7.464101f;
+        t = t * t;
+        g_477b80 = t * t * 5.0f + 1.0f;
+    }
+    Billboard b = g_486538;
+    b.unk00 = 0x58;
+    float s = light->alpha;
+    if (light->unk04 == 0)
+    {
+        s *= 0.25f;
+    }
+    else
+    {
+        s *= 0.025f;
+    }
+    if (s > 0.25f)
+    {
+        s = 0.25f;
+    }
+    float d2 = dz * dz;
+    dz = d2 * d2 * s * 2.5f;
+    FlareElement *e = g_477b88;
+    for (int i = 0; i < 7; i++, e++)
+    {
+        float size = dz * e->size;
+        p.x = v.x * e->t;
+        p.y = v.y * e->t;
+        p.z = v.z * e->t;
+        p.x += c.x;
+        p.y += c.y;
+        p.z += c.z;
+        if (i < 2)
+        {
+            float lx = light->pos.x - g_4722d0->cam.pos.x;
+            float ly = light->pos.y - g_4722d0->cam.pos.y;
+            float lz = light->pos.z - g_4722d0->cam.pos.z;
+            float dist = ((float)sqrt(lz * lz + ly * ly + lx * lx) * 1e-06f) * 2000.0f;
+            if (dist < 1.0f)
+            {
+                dist = 1.0f;
+            }
+            p = light->pos;
+            size = g_sinTable[e->angle] * 4.0f + dist;
+            e->angle = (e->speed + e->angle) & 0x1fff;
+            int a = g_589dfc;
+            if (i == 1)
+            {
+                a = -a & 0x1fff;
+            }
+            b.dir.x = g_cosTable[a];
+            b.dir.y = g_sinTable[a];
+            b.dir.z = 0.0f;
+        }
+        else if (i == 2)
+        {
+            b.dir.x = 0.0f;
+            b.dir.y = 1.0f;
+            b.dir.z = 0.0f;
+        }
+        b.pos = p;
+        b.texture = (short)e->texture;
+        b.size[0] = size;
+        b.size[1] = size;
+        b.size[2] = size;
+        b.colors[0] = e->color | 0xff000000;
+        b.colors[1] = b.colors[0];
+        b.colors[2] = b.colors[0];
+        b.colors[3] = b.colors[0];
+        FUN_434590(&b);
+    }
+}
+
 void FUN_42b100();
 void FUN_42b140(RenderList *out);
 void FUN_42b180(int *out);
