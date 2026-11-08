@@ -40,6 +40,10 @@ void FUN_440880(int a);
 
 int FUN_4527d0(int index);
 
+void FUN_438a20(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color,
+                DWORD flags, float unk18);
+Initials *FUN_43d690(Initials *name);
+
 struct Unk459790
 {
     DWORD unk00[5];    // 0x00
@@ -360,6 +364,7 @@ void FUN_45da70(Unk45d2e0 *object, int index, float pos);
 void FUN_45c320(float x, float y);
 void FUN_45c3d0(float x, float y);
 void FUN_452830(float x, float y);
+void FUN_45cf10(int row);
 // GLOBAL: STUNTGP_D3D 0x627b54
 GhostHeader g_627b54;
 
@@ -2660,6 +2665,29 @@ void FUN_452830(float x, float y)
             entry++;
         }
     }
+}
+
+// FUNCTION: STUNTGP_D3D 0x45cf10
+void FUN_45cf10(int row)
+{
+    char text[0x20];
+    FUN_439450(423.0f, 366.0f, 591.0f, 442.0f, 0xa, 0x6f, 0x40);
+    FUN_439380(423.0f, 366.0f, 591.0f, 442.0f, 0xd, 2, 0, 0.0f);
+    FUN_438be0(507.0f, 370.0f, 0xc, 4, 0x24, 1.25f, 0xffff8080, 1);
+    FUN_438be0(433.0f, 396.0f, 0xc, 4, 0x25, 1.25f, 0xffffffff, 2);
+    FUN_438960(497.0f, 396.0f, 0xc, 0, 4, (char *)FUN_43d690((Initials *)g_menuState.unk1a1c[row][0].name), 1.25f,
+               0xffffffff, 3);
+    FUN_438a20(581.0f, 396.0f, 0xc, 0, 4, FUN_43d550(g_menuState.unk1a1c[row][0].time), 1.25f, 0xffffffff, 6, 14.0f);
+    FUN_438be0(433.0f, 412.0f, 0xc, 4, 0x26, 1.25f, 0xffffffff, 2);
+    FUN_438960(497.0f, 412.0f, 0xc, 0, 4, (char *)FUN_43d690((Initials *)g_menuState.unk1a1c[row][1].name), 1.25f,
+               0xffffffff, 3);
+    FUN_438a20(581.0f, 412.0f, 0xc, 0, 4, FUN_43d550(g_menuState.unk1a1c[row][1].time), 1.25f, 0xffffffff, 6, 14.0f);
+    FUN_438be0(433.0f, 428.0f, 0xc, 4, 0x27, 1.25f, 0xffffffff, 2);
+    FUN_438960(497.0f, 428.0f, 0xc, 0, 4, (char *)FUN_43d690((Initials *)g_menuState.unk1a1c[row][3].name), 1.25f,
+               0xffffffff, 3);
+    // STRING: STUNTGP_D3D 0x489524
+    sprintf(text, "%06d", g_menuState.unk1a1c[row][3].time);
+    FUN_438a20(581.0f, 428.0f, 0xc, 0, 4, text, 1.25f, 0xffffffff, 6, 14.0f);
 }
 
 typedef int (*ScreenInit)(PoolObject *object, int arg);
