@@ -1074,9 +1074,49 @@ void FUN_42b7e0(WORD *flags)
     flags[1] &= 0xfff7;
 }
 
-// STUB: STUNTGP_D3D 0x42b7f0
+void FUN_44fdb0(Camera *cam);
+void FUN_450150(Scene *scene);
+
+// Appends the scene with a copy of its camera to the render list at g_4955e4.
+// FUNCTION: STUNTGP_D3D 0x42b7f0
 void FUN_42b7f0(Scene *scene, Camera *camera, int arg)
 {
+    FUN_44fdb0(camera);
+    FUN_450150(scene);
+    camera->unk40 = 0;
+    g_4955e4[0] = (DWORD)scene;
+    *(Camera *)(g_4955e4 + 1) = *camera;
+    if (arg)
+    {
+        FUN_42b7b0(scene, arg);
+    }
+    else
+    {
+        FUN_42b7e0((WORD *)scene);
+    }
+    g_4955e4 += 0x15;
+    *g_4955e4 = 0;
+}
+
+// Appends the scene with a copy of its camera to the render list at g_4955e0.
+// FUNCTION: STUNTGP_D3D 0x42b850
+void FUN_42b850(Scene *scene, Camera *camera, int arg)
+{
+    FUN_44fdb0(camera);
+    FUN_450150(scene);
+    camera->unk40 = 0;
+    g_4955e0[0] = (DWORD)scene;
+    *(Camera *)(g_4955e0 + 1) = *camera;
+    if (arg)
+    {
+        FUN_42b7b0(scene, arg);
+    }
+    else
+    {
+        FUN_42b7e0((WORD *)scene);
+    }
+    g_4955e0 += 0x15;
+    *g_4955e0 = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42b8b0
@@ -3372,6 +3412,25 @@ void FUN_4463b0()
     FUN_446290();
     // STRING: STUNTGP_D3D 0x484f14
     fprintf(g_5da2e4, "-END\n\n");
+}
+
+void FUN_446340();
+
+// Saves the level settings to Config\Levels\<level>.cfg.
+// FUNCTION: STUNTGP_D3D 0x4466a0
+void FUN_4466a0()
+{
+    char path[128];
+    // STRING: STUNTGP_D3D 0x484f1c
+    sprintf(path, "%s\\Config\\Levels\\%s.cfg", g_GameDirectory, g_LevelScript);
+    // STRING: STUNTGP_D3D 0x484f34
+    g_5da2e4 = fopen(path, "wt");
+    if (g_5da2e4)
+    {
+        FUN_446340();
+        FUN_4463b0();
+        fclose(g_5da2e4);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x4467b0
