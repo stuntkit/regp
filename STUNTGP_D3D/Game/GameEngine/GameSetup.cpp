@@ -110,7 +110,9 @@ struct RenderMaterial
 // Loaded track file; the offsets are relative to data.
 struct TrackHeader
 {
-    BYTE unk000[0x20];
+    char version[0x18];       // 0x000, "PMD V1.83"
+    int unk018;               // 0x018
+    BYTE unk01c[0x4];
     int unk020;               // 0x020
     int unk024;               // 0x024
     int unk028;               // 0x028
@@ -2265,6 +2267,12 @@ void FUN_42ee50()
     g_renderState.unk7fb0 = count;
 }
 
+// FUNCTION: STUNTGP_D3D 0x42eed0
+void FUN_42eed0()
+{
+    FUN_42ee50();
+}
+
 // FUNCTION: STUNTGP_D3D 0x42eee0
 void FUN_42eee0()
 {
@@ -3755,9 +3763,52 @@ int g_477c4c[6] = {4, 6, 8, 10, 12, 14};
 // GLOBAL: STUNTGP_D3D 0x477c64
 int g_477c64[6] = {5, 7, 9, 11, 13, 15};
 
-// STUB: STUNTGP_D3D 0x42efb0
+// PMD format version, 0x12 once the header matches g_477c48.
+// GLOBAL: STUNTGP_D3D 0x58c804
+int g_58c804;
+
+// STRING: STUNTGP_D3D 0x477c88
+// GLOBAL: STUNTGP_D3D 0x477c48
+char *g_477c48 = "PMD V1.83";
+
+void FUN_4234d0(char *msg);
+
+// FUNCTION: STUNTGP_D3D 0x42efb0
 void FUN_42efb0(int id)
 {
+    char path[128];
+
+    // STRING: STUNTGP_D3D 0x477c94
+    sprintf(path, "%s\\MeshData\\%s.PMD", g_GameDirectory, id);
+    int size = size_of_file(path);
+    TrackHeader *header = (TrackHeader *)Mem_Alloc(size, 0);
+    bload(path, (char *)header, size);
+    g_58d810 = header;
+    g_58c230 = size;
+    g_58c804 = 0;
+    if (!_strcmpi(header->version, g_477c48))
+    {
+        g_58c804 = 0x12;
+    }
+    else if (!g_58c804)
+    {
+        // STRING: STUNTGP_D3D 0x477ca8
+        FUN_4234d0("Old & Invalid .PMD fileformat...\n");
+    }
+    FUN_42ebf0();
+    FUN_42eca0();
+    FUN_42eb70();
+    FUN_42ebb0();
+    if (g_58d810->unk018 == 1)
+    {
+        FUN_42ed30();
+        FUN_42ed80();
+        FUN_42eed0();
+        FUN_42eee0();
+        FUN_42ef20();
+        FUN_42ef50();
+        FUN_42ef80();
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x42f090
