@@ -213,13 +213,13 @@ struct Unk496990
     int unk08;        // 0x08
     int unk0c;        // 0x0c
     int unk10;        // 0x10
-    float unk14;      // 0x14
+    float unk14;      // 0x14, velocity
     float unk18;      // 0x18
-    int unk1c;        // 0x1c
+    float unk1c;      // 0x1c
     BYTE unk20[0x4];  // 0x20
     float unk24;      // 0x24
     DWORD unk28;      // 0x28, frames alive
-    int unk2c;        // 0x2c
+    DWORD unk2c;      // 0x2c, lifetime in frames
     BYTE unk30[0x4];  // 0x30
     int unk34;        // 0x34
     char unk38[0x8];  // 0x38, score text
@@ -231,7 +231,7 @@ struct Unk496990
     float unk54;      // 0x54
     float unk58;      // 0x58
     float unk5c;      // 0x5c
-    BYTE unk60[0x4];  // 0x60
+    float unk60;      // 0x60
     float unk64;      // 0x64
     float unk68;      // 0x68
     float unk6c;      // 0x6c
@@ -246,7 +246,7 @@ struct Unk496990
     int unk90;        // 0x90
     int unk94;        // 0x94
     int unk98;        // 0x98
-    int unk9c;        // 0x9c
+    float unk9c;      // 0x9c
     float unka0;      // 0xa0
     float unka4;      // 0xa4
     float unka8;      // 0xa8

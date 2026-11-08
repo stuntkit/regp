@@ -138,9 +138,143 @@ void FUN_41e2d0();
 
 // --- per-tick game logic ---
 
-// STUB: STUNTGP_D3D 0x401770
+void FUN_4011f0();
+void FUN_401030(float x, float y);
+void FUN_401d70(float *v, float scale);
+DWORD Color_Lerp(DWORD from, DWORD to, int t);
+
+// Advances the effect slots: motion under gravity, fade in and out of alpha and scale, spin, colour ramp,
+// a one-shot sound and the trailing sparks.
+// FUNCTION: STUNTGP_D3D 0x401770
 void FUN_401770()
 {
+    FUN_4011f0();
+    Unk496990 *e = g_496990;
+    for (int n = 16; n != 0; n--, e++)
+    {
+        if (e->unk00 == 1)
+        {
+            e->sprite.x += e->unk14;
+            e->sprite.y += e->unk18;
+            if (e->unk18 < 10000.0f / 60.0f)
+            {
+                FUN_401d70(&e->unk14, e->unk24);
+            }
+            if (e->unk10 & 0x10)
+            {
+                float t = (float)e->unk28;
+                if (t < e->unk58)
+                {
+                    e->unk60 = t * e->unk54 / e->unk58;
+                }
+                else
+                {
+                    e->unk60 = t > e->unk2c - e->unk5c ? (float)(e->unk2c - e->unk28) * e->unk54 / e->unk5c : e->unk54;
+                }
+            }
+            else
+            {
+                e->unk60 = e->unk54;
+            }
+            if (e->unk10 & 8)
+            {
+                float t = (float)e->unk28;
+                if (t < e->unk48)
+                {
+                    e->unk50 = t * e->unk44 / e->unk48;
+                }
+                else
+                {
+                    e->unk50 = t > e->unk2c - e->unk4c ? (float)(e->unk2c - e->unk28) * e->unk44 / e->unk4c : e->unk44;
+                }
+            }
+            else
+            {
+                e->unk50 = e->unk44;
+            }
+            if (e->unk10 & 1)
+            {
+                float t = (float)e->unk28;
+                float d;
+                if (t < e->unk68)
+                {
+                    d = (e->unk68 - t) * e->unk64 / e->unk68;
+                }
+                else
+                {
+                    float end = e->unk2c - e->unk6c;
+                    if (t > end)
+                    {
+                        d = (t - end) * e->unk64 / e->unk6c;
+                    }
+                    else
+                    {
+                        d = 0.0f;
+                        e->unk70 = 0.0f;
+                    }
+                }
+                e->unk70 = d + e->unk70;
+                if (e->unk70 >= 360.0f)
+                {
+                    e->unk70 -= 360.0f;
+                }
+                else if (e->unk70 < 0.0f)
+                {
+                    e->unk70 += 360.0f;
+                }
+            }
+            if (e->unk10 & 0x20)
+            {
+                float t = (float)e->unk28;
+                if (t < e->unk74)
+                {
+                    e->sprite.color = Color_Lerp(e->unk7c, e->unk80, (int)(e->unk28 * 255 / e->unk74));
+                }
+                else if (t > e->unk2c - e->unk78)
+                {
+                    e->sprite.color = Color_Lerp(e->unk80, e->unk84,
+                                                 (int)(255.0f - (e->unk2c * 255 - e->unk28 * 255) / e->unk78));
+                }
+                else
+                {
+                    e->sprite.color = e->unk80;
+                }
+            }
+            else
+            {
+                e->sprite.color = e->unk7c;
+            }
+            if (e->unk28 == e->unk8c)
+            {
+                FUN_461150(e->unk88, 0, e->unk94, e->unk90, 0, 1, NULL);
+            }
+            if (e->unk98 == 1)
+            {
+                float t = (float)e->unk28;
+                if (t >= e->unka4 && t < e->unk2c - e->unka8)
+                {
+                    e->unk9c = e->unka0 + e->unk9c;
+                    if (e->unk9c > 60.0f)
+                    {
+                        e->unk9c = 0.0f;
+                        FUN_401030(e->sprite.originX + e->sprite.x, e->sprite.y);
+                    }
+                }
+            }
+            if (++e->unk28 >= e->unk2c)
+            {
+                e->unk00 = 0;
+            }
+            e->sprite.alpha = (int)e->unk60;
+            if (e->unk50 == 0.0f)
+            {
+                e->unk50 = 0.1f;
+            }
+            e->sprite.scaleX = e->unk50;
+            e->sprite.scaleY = e->unk50;
+            e->sprite.angle = e->unk70;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x4023f0
