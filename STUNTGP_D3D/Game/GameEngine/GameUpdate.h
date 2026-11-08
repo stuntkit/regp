@@ -309,8 +309,8 @@ struct Stat
 
 struct PosSample
 {
-    Vec4 pos;  // 0x00
-    int unk10; // 0x10
+    Vec4 pos;    // 0x00
+    float unk10; // 0x10
 };
 
 struct PosHistory

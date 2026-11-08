@@ -2689,6 +2689,74 @@ void FUN_40d790()
     }
 }
 
+// For every other car alongside this car's recent trail, sets its unk1fd0 from how deep it sits
+// inside the trail's width, squared, with a floor of 0.1.
+// FUNCTION: STUNTGP_D3D 0x40e080
+void FUN_40e080()
+{
+    Car *car = g_49a1f8;
+    for (int n = 6; n != 0; n--, car++)
+    {
+        if (car != g_4d5bb8 && car->active == 1 && car->unk1cf0 > 16.666666f)
+        {
+            PosSample *s = g_4d5bb8->unk1f2c.samples;
+            Vec4 dir;
+            float len;
+            dir.x = s[0].pos.x - s[7].pos.x;
+            dir.y = s[0].pos.y - s[7].pos.y;
+            dir.z = s[0].pos.z - s[7].pos.z;
+            FUN_44eda0(&dir.x, &len);
+            Vec4 e;
+            e.x = s->pos.x - car->posX;
+            e.y = s->pos.y - car->posY;
+            e.z = s->pos.z - car->posZ;
+            float t = e.z * dir.z + e.y * dir.y + e.x * dir.x;
+            if (t > 0.0f && t < len)
+            {
+                for (unsigned int j = 0; j < 7; s++, j++)
+                {
+                    dir.x = s[0].pos.x - s[1].pos.x;
+                    dir.y = s[0].pos.y - s[1].pos.y;
+                    dir.z = s[0].pos.z - s[1].pos.z;
+                    FUN_44eda0(&dir.x, &len);
+                    if (len > 1.0f)
+                    {
+                        Vec4 q;
+                        q.x = s->pos.x - car->posX;
+                        q.y = s->pos.y - car->posY;
+                        q.z = s->pos.z - car->posZ;
+                        float d = q.z * dir.z + q.y * dir.y + q.x * dir.x;
+                        if (d > 0.0f && d < len)
+                        {
+                            Vec4 w;
+                            w.x = d * dir.x;
+                            w.y = d * dir.y;
+                            w.z = d * dir.z;
+                            q.x = q.x - w.x;
+                            q.y = q.y - w.y;
+                            q.z = q.z - w.z;
+                            float r = s[0].unk10 - (s[0].unk10 - s[1].unk10) * (d / len);
+                            r = r * r;
+                            float d2 = q.x * q.x + q.y * q.y + q.z * q.z;
+                            if (d2 < r)
+                            {
+                                d2 = d2 / r;
+                                d2 = d2 * d2;
+                                if (d2 < 0.1f)
+                                {
+                                    d2 = 0.1f;
+                                }
+                                car->unk1fd0 = d2;
+                                j = 8;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 // Splits drive torque between the axles by drive mode (0 front, 1 rear, 2 4WD).
 // FUNCTION: STUNTGP_D3D 0x40e3a0
 void FUN_40e3a0(float torque)
