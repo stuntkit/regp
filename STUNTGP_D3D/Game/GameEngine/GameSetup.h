@@ -8,9 +8,44 @@ struct Unk4d5cc0
     short unk00;
     BYTE unk02[0x1a];
     DWORD unk1c;
-    BYTE unk20[0x1c];
+    WORD unk20;
+    WORD unk22;
+    WORD unk24;
+    WORD unk26;
+    BYTE unk28[0x14];
     int unk3c;
     BYTE unk40[0x19d00 - 0x40];
+};
+
+// 8-byte face record of the dynamic mesh built by FUN_4342e0.
+struct MeshFace
+{
+    BYTE count; // 0x00
+    BYTE unk01; // 0x01
+    BYTE unk02; // 0x02
+    BYTE flags; // 0x03
+    WORD unk04; // 0x04
+    WORD index; // 0x06, first entry in the index buffer
+};
+
+struct MeshUv
+{
+    float u;     // 0x00
+    float v;     // 0x04
+    WORD point;  // 0x08
+    WORD unk0a;  // 0x0a
+    DWORD color; // 0x0c
+};
+
+// Queued polygon for the render lists, 20 bytes. poly's first byte is its vertex count, the
+// second its texture slot.
+struct PolyRef
+{
+    DWORD *poly; // 0x00
+    WORD *ref;   // 0x04
+    BYTE *src;   // 0x08, 16-byte entries: u, v, vertex index, colour
+    int verts;   // 0x0c, 32-byte transformed vertices
+    int unk10;   // 0x10
 };
 
 // Scene to load into g_636418[slot]; the list ends at id 0.
@@ -71,7 +106,11 @@ struct RaceEntry
     int unk004;            // 0x004
     int unk008;            // 0x008
     int unk00c;            // 0x00c
-    char unk010[0x24];     // 0x010
+    BYTE unk010[0x14];     // 0x010
+    int unk024;            // 0x024
+    int unk028;            // 0x028
+    int unk02c;            // 0x02c
+    int unk030;            // 0x030
     BYTE unk034[0x104];    // 0x034
     RaceResult result;     // 0x138
 };

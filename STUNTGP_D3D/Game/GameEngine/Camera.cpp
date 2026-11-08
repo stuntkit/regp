@@ -991,6 +991,80 @@ int FUN_41ff30(Vec4 *p)
     return 0;
 }
 
+// Classifies a box (centre pos, half extents size / 75) against the view frustum: 1 outside,
+// 2 crossing a plane, 0 fully inside. Plane distances are sign-tested through their bits.
+// FUNCTION: STUNTGP_D3D 0x4280a0
+int FUN_4280a0(Vec4 *pos, Vec4 *size)
+{
+    float d[5];
+    Vec4 s;
+    Vec4 v;
+    float t;
+    v.x = pos->x - g_4722d0->cam.pos.x;
+    v.y = pos->y - g_4722d0->cam.pos.y;
+    v.z = pos->z - g_4722d0->cam.pos.z;
+    t = v.z * g_4722d0->axisZ.z + v.y * g_4722d0->axisZ.y + v.x * g_4722d0->axisZ.x;
+    if (*(int *)&t < 0)
+    {
+        return 1;
+    }
+    d[0] = t;
+    t = t - g_4722d0->unk19c;
+    if (*(int *)&t > 0)
+    {
+        return 1;
+    }
+    s.x = size->x * 75.0f;
+    d[1] = v.z * g_4722d0->planeLeft.z + v.y * g_4722d0->planeLeft.y + v.x * g_4722d0->planeLeft.x;
+    t = d[1] - s.x;
+    if (*(int *)&t > 0)
+    {
+        return 1;
+    }
+    d[2] = v.z * g_4722d0->planeRight.z + v.y * g_4722d0->planeRight.y + v.x * g_4722d0->planeRight.x;
+    t = d[2] - s.x;
+    if (*(int *)&t > 0)
+    {
+        return 1;
+    }
+    s.y = size->y * 75.0f;
+    d[3] = v.z * g_4722d0->planeTop.z + v.y * g_4722d0->planeTop.y + v.x * g_4722d0->planeTop.x;
+    t = d[3] - s.y;
+    if (*(int *)&t > 0)
+    {
+        return 1;
+    }
+    d[4] = v.z * g_4722d0->planeBottom.z + v.y * g_4722d0->planeBottom.y + v.x * g_4722d0->planeBottom.x;
+    t = d[4] - s.y;
+    if (*(int *)&t > 0)
+    {
+        return 1;
+    }
+    s.z = size->z * 75.0f;
+    d[0] += s.z;
+    if (*(int *)&d[0] > 0)
+    {
+        return 2;
+    }
+    d[1] += s.x;
+    if (*(int *)&d[1] > 0)
+    {
+        return 2;
+    }
+    d[2] += s.x;
+    if (*(int *)&d[2] > 0)
+    {
+        return 2;
+    }
+    d[3] += s.y;
+    if (*(int *)&d[3] > 0)
+    {
+        return 2;
+    }
+    d[4] += s.y;
+    return *(int *)&d[4] > 0 ? 2 : 0;
+}
+
 // Uniform cubic B-spline basis weights, written to m[0], m[4], m[8], m[12].
 // FUNCTION: STUNTGP_D3D 0x4282a0
 void FUN_4282a0(float *m, float t)

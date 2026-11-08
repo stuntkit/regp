@@ -254,6 +254,9 @@ ResourceFile *g_5895bc;
 // GLOBAL: STUNTGP_D3D 0x580aec
 char *g_580aec;
 
+// GLOBAL: STUNTGP_D3D 0x582718
+int g_582718;
+
 // GLOBAL: STUNTGP_D3D 0x58271c
 int g_58271c;
 
@@ -262,6 +265,9 @@ int g_582720;
 
 // GLOBAL: STUNTGP_D3D 0x582724
 int g_582724;
+
+// GLOBAL: STUNTGP_D3D 0x582728
+int g_582728[255];
 
 // GLOBAL: STUNTGP_D3D 0x582b24
 int g_582b24;
@@ -558,6 +564,95 @@ void FUN_430100(LPDIRECTDRAWSURFACE4 surface, BYTE *image, int width, int height
         }
         surface->Unlock(NULL);
     }
+}
+
+// Creates an empty size x size video-memory texture (and a second-stage copy when the device
+// supports it) in the next surface slot and texture slot.
+// FUNCTION: STUNTGP_D3D 0x430730
+int FUN_430730(int size, int unk)
+{
+    DDSURFACEDESC2 desc;
+    LPDIRECTDRAWSURFACE4 sysSurface = NULL;
+    LPDIRECTDRAWSURFACE4 surface = NULL;
+    LPDIRECT3DTEXTURE2 sysTexture = NULL;
+    LPDIRECT3DTEXTURE2 texture = NULL;
+    int res;
+    SurfaceSlot *slot = &g_5ba788.surfaceSlots[g_5ba788.surfaceSlotCount++];
+    memset(&desc, 0, sizeof(desc));
+    desc.dwWidth = size;
+    desc.dwHeight = size;
+    desc.dwSize = sizeof(desc);
+    desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
+    desc.ddpfPixelFormat = *g_5ba788.textureFormat;
+    desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
+    res = g_dd4->CreateSurface(&desc, &sysSurface, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = sysSurface->QueryInterface(IID_IDirect3DTexture2, (void **)&sysTexture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = sysSurface->GetSurfaceDesc(&desc);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    desc.dwFlags = (*g_592028 ? DDSD_CKSRCBLT : 0) + 0x101007;
+    desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_ALLOCONLOAD;
+    desc.ddsCaps.dwCaps2 = 0x80;
+    desc.dwTextureStage = 0;
+    res = g_dd4->CreateSurface(&desc, &surface, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = surface->QueryInterface(IID_IDirect3DTexture2, (void **)&texture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = texture->Load(sysTexture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    slot->unk04 = (DWORD)texture;
+    slot->surface = surface;
+    g_6243b8->texture = texture;
+    g_6243b8->unk04[0] = (DWORD)texture;
+    *(WORD *)&g_6243b8->unk04[1] = size;
+    if (g_5ba788.deviceDesc[29] & 0x4000)
+    {
+        LPDIRECTDRAWSURFACE4 surface2 = NULL;
+        LPDIRECT3DTEXTURE2 texture2 = NULL;
+        desc.dwTextureStage = 1;
+        res = g_dd4->CreateSurface(&desc, &surface2, NULL);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+        res = surface2->QueryInterface(IID_IDirect3DTexture2, (void **)&texture2);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+        res = texture2->Load(sysTexture);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+        slot->unk0c = (DWORD)texture2;
+        slot->surface2 = surface2;
+        g_6243b8->unk04[0] = (DWORD)texture2;
+    }
+    FUN_4300f0(sysTexture);
+    ddReleaseSurface(&sysSurface);
+    g_6243b8++;
+    g_592028++;
+    return 1;
 }
 
 // Uploads an image into texture slot through a system-memory staging surface.
@@ -1018,9 +1113,57 @@ HRESULT WINAPI FUN_42f3c0(LPDDSURFACEDESC2 desc, LPVOID context)
     return DDENUMRET_OK;
 }
 
-// STUB: STUNTGP_D3D 0x42f530
+HRESULT WINAPI FUN_42f420(GUID *guid, LPSTR description, LPSTR name, LPD3DDEVICEDESC hw, LPD3DDEVICEDESC hel, LPVOID context);
+
+// Records one DirectDraw device: its caps, display modes and, when it has Direct3D, its drivers.
+// FUNCTION: STUNTGP_D3D 0x42f530
 BOOL WINAPI FUN_42f530(GUID *guid, LPSTR description, LPSTR name, LPVOID context, HMONITOR monitor)
 {
+    DisplayDevices *devices = (DisplayDevices *)context;
+    LPDIRECTDRAW dd;
+    LPDIRECT3D3 d3d;
+    LPDIRECTDRAW4 dd4;
+    BYTE *dev = devices->devices[devices->count];
+    int res = DirectDrawCreate(guid, &dd, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = dd->QueryInterface(IID_IDirectDraw4, (LPVOID *)&dd4);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    if (guid)
+    {
+        *(GUID *)(dev + 0x300) = *guid;
+    }
+    strncpy((char *)dev + 0x310, description, 0x40);
+    strncpy((char *)dev + 0x350, name, 0x10);
+    DDCAPS *driverCaps = (DDCAPS *)(dev + 8);
+    memset(driverCaps, 0, sizeof(DDCAPS));
+    DDCAPS *helCaps = (DDCAPS *)(dev + 0x184);
+    memset(helCaps, 0, sizeof(DDCAPS));
+    driverCaps->dwSize = sizeof(DDCAPS);
+    helCaps->dwSize = sizeof(DDCAPS);
+    dd4->GetCaps(driverCaps, helCaps);
+    ((DisplayModeList *)dev)->count = 0;
+    dd4->EnumDisplayModes(DDEDM_REFRESHRATES, NULL, dev, FUN_42f3c0);
+    *(int *)dev = guid == NULL;
+    if (dd4->QueryInterface(IID_IDirect3D3, (LPVOID *)&d3d) == DD_OK)
+    {
+        *(int *)(dev + 4) = 1;
+        *(LPDIRECT3D3 *)(dev + 0x2264) = d3d;
+        *(DWORD *)(dev + 0x2270) = 0;
+        d3d->EnumDevices(FUN_42f420, dev);
+    }
+    else
+    {
+        *(int *)(dev + 4) = 0;
+    }
+    devices->count++;
+    dd4->Release();
+    dd->Release();
     return TRUE;
 }
 
@@ -1251,9 +1394,72 @@ void FUN_42fa40()
     }
 }
 
+// Sets the default light, render and texture-stage states inside a scene.
+// FUNCTION: STUNTGP_D3D 0x42fa80
+BOOL FUN_42fa80()
+{
+    LPDIRECT3DDEVICE3 device = ((D3DDriver *)g_5ba788.deviceDesc)->device;
+    if (device->BeginScene() != D3D_OK)
+    {
+        return FALSE;
+    }
+    device->SetLightState(D3DLIGHTSTATE_MATERIAL, 0);
+    device->SetLightState(D3DLIGHTSTATE_AMBIENT, 0);
+    device->SetLightState(D3DLIGHTSTATE_COLORMODEL, D3DCOLOR_RGB);
+    device->SetLightState(D3DLIGHTSTATE_FOGMODE, D3DFOG_NONE);
+    device->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
+    device->SetRenderState(D3DRENDERSTATE_ANTIALIAS, D3DANTIALIAS_NONE);
+    device->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, TRUE);
+    device->SetRenderState(D3DRENDERSTATE_ZENABLE, TRUE);
+    device->SetRenderState(D3DRENDERSTATE_ZFUNC, D3DCMP_LESSEQUAL);
+    device->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, TRUE);
+    device->SetRenderState(D3DRENDERSTATE_FILLMODE, D3DFILL_SOLID);
+    device->SetRenderState(D3DRENDERSTATE_SHADEMODE, D3DSHADE_GOURAUD);
+    device->SetRenderState(D3DRENDERSTATE_MONOENABLE, FALSE);
+    device->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, TRUE);
+    device->SetRenderState(D3DRENDERSTATE_LASTPIXEL, FALSE);
+    device->SetRenderState(D3DRENDERSTATE_TEXTUREMAG, D3DFILTER_LINEAR);
+    device->SetRenderState(D3DRENDERSTATE_TEXTUREMIN, D3DFILTER_LINEAR);
+    device->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_ONE);
+    device->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ZERO);
+    device->SetRenderState(D3DRENDERSTATE_CULLMODE, D3DCULL_NONE);
+    device->SetRenderState(D3DRENDERSTATE_ALPHAREF, 0xf0);
+    device->SetRenderState(D3DRENDERSTATE_ALPHAFUNC, D3DCMP_GREATEREQUAL);
+    device->SetRenderState(D3DRENDERSTATE_DITHERENABLE, TRUE);
+    device->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, FALSE);
+    device->SetRenderState(D3DRENDERSTATE_FOGENABLE, FALSE);
+    device->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, FALSE);
+    device->SetRenderState(D3DRENDERSTATE_SUBPIXEL, TRUE);
+    device->SetRenderState(D3DRENDERSTATE_SUBPIXELX, FALSE);
+    device->SetRenderState(D3DRENDERSTATE_STIPPLEDALPHA, FALSE);
+    device->SetRenderState(D3DRENDERSTATE_FOGCOLOR, 0);
+    device->SetRenderState(D3DRENDERSTATE_FOGTABLEMODE, D3DFOG_NONE);
+    device->SetRenderState(D3DRENDERSTATE_FOGTABLEDENSITY, 1);
+    device->SetRenderState(D3DRENDERSTATE_EDGEANTIALIAS, FALSE);
+    device->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, FALSE);
+    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+    g_d3dDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+    g_d3dDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+    g_d3dDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+    FUN_42f9c0();
+    FUN_42f930();
+    FUN_42fa10();
+    FUN_42fa00();
+    FUN_42fa40();
+    return device->EndScene() == D3D_OK;
+}
+
 // Total video memory reported by ddGetMemory.
 // GLOBAL: STUNTGP_D3D 0x5da1cc
 DWORD g_5da1cc;
+
+// GLOBAL: STUNTGP_D3D 0x5da1d0
+DWORD g_5da1d0;
+
+// GLOBAL: STUNTGP_D3D 0x5da1d4
+DWORD g_5da1d4;
 
 // Sets the display mode and creates the flipping primary surface and its back buffer;
 // cards with more than 8MB get triple buffering.
@@ -1286,6 +1492,29 @@ int FUN_42fc90(LPDIRECTDRAW4 dd, LPDIRECTDRAWSURFACE4 *front, LPDIRECTDRAWSURFAC
     }
     g_61c358 = back;
     return res;
+}
+
+void FUN_424aa0();
+extern DWORD g_477c30;
+
+// Recreates DirectDraw on the chosen display device (0 = primary) and resets the display mode.
+// FUNCTION: STUNTGP_D3D 0x42fd80
+int FUN_42fd80(int device)
+{
+    FUN_422a20();
+    ddRelease();
+    DAT_CAPS = 0x2000;
+    // STRING: STUNTGP_D3D 0x478768
+    if (windowDDCreate(&g_dd, device ? (GUID *)&g_5ba788.devices[device][0x300] : NULL, g_Hwnd))
+    {
+        exitError("DirectDraw Init Failed!\n");
+    }
+    ddGetDD4(&g_dd, &g_dd4, g_Hwnd);
+    ddGetMemory(&g_dd4, &g_5da1cc, &g_5da1d0, &g_5da1d4);
+    g_477c30 = g_5da1d0;
+    FUN_42fc90(g_dd4, &g_surface, &g_surface2, g_DISPLAYRESWIDTH, g_DISPLAYRESHEIGHT, g_DISPLAYRESDEPTH);
+    FUN_424aa0();
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42fe40
@@ -1782,24 +2011,386 @@ void FUN_42be20(char *path)
     g_580aec += strlen(path) + 1;
 }
 
-// STUB: STUNTGP_D3D 0x433290
+// Pre-lit transformed vertex for the polygon batches.
+struct BatchVertex
+{
+    float x;            // 0x00
+    float y;            // 0x04
+    float z;            // 0x08
+    float rhw;          // 0x0c
+    D3DCOLOR diffuse;   // 0x10
+    D3DCOLOR specular;  // 0x14
+    float u0;           // 0x18
+    float v0;           // 0x1c
+    float u1;           // 0x20
+    float v1;           // 0x24
+};
+
+// Triangle-fan indices into g_592780 for the current batch.
+// GLOBAL: STUNTGP_D3D 0x590018
+WORD g_590018[0x1000];
+
+// GLOBAL: STUNTGP_D3D 0x592780
+BatchVertex g_592780[0x1000];
+
+// First texture slot with a UV scroll record in g_577660.
+// GLOBAL: STUNTGP_D3D 0x583590
+int g_583590;
+
+// Draws queued polygons with their textures scrolled by g_577660, z-test off, one indexed
+// batch per texture run.
+// FUNCTION: STUNTGP_D3D 0x433290
 void FUN_433290(void *data, int count)
 {
+    if (!count)
+    {
+        return;
+    }
+    int res = g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZFUNC, D3DCMP_ALWAYS);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    int base = 0;
+    DWORD texture = 0xffffffff;
+    BatchVertex *v;
+    WORD *idx;
+    float *scroll;
+    PolyRef *ref = (PolyRef *)data;
+    for (DWORD i = 0; i < (DWORD)count; i++)
+    {
+        if (ref->poly)
+        {
+            BYTE *src = ref->src;
+            BYTE *verts = (BYTE *)ref->verts;
+            WORD *r = ref->ref;
+            DWORD slot = ((BYTE *)ref->poly)[1];
+            if (slot != texture)
+            {
+                if (base)
+                {
+                    g_d3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0x2c4, g_592780, v - g_592780, g_590018, idx - g_590018, 0x1c);
+                }
+                texture = slot;
+                base = 0;
+                v = g_592780;
+                idx = g_590018;
+                g_d3dDevice->SetTexture(0, g_6227d4[texture].texture);
+                scroll = (float *)g_577660 + (texture - g_583590) * 5;
+            }
+            DWORD n = *(BYTE *)ref->poly;
+            for (DWORD k = 0; k < n; k++)
+            {
+                BYTE *e = src + *r++ * 16;
+                float *p = (float *)(verts + *(WORD *)(e + 8) * 32);
+                v->x = p[0];
+                v->y = p[1];
+                v->rhw = v->z = p[7];
+                v->u0 = scroll[1] + ((float *)e)[0];
+                v->v0 = ((float *)e)[1] + scroll[2];
+                v->diffuse = 0xffffffff;
+                v->specular = 0;
+                v++;
+            }
+            int first = base;
+            base++;
+            for (DWORD j = 2; j < n; j++)
+            {
+                idx[0] = first;
+                idx[1] = base;
+                base++;
+                idx[2] = base;
+                idx += 3;
+            }
+            base++;
+        }
+        ref++;
+    }
+    if (base)
+    {
+        g_d3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0x2c4, g_592780, v - g_592780, g_590018, idx - g_590018, 0x1c);
+    }
+    FUN_432a90();
 }
 
-// STUB: STUNTGP_D3D 0x4334c0
+struct Unk624488;
+extern Unk624488 *g_624488;
+
+// FUN_433290 for opaque vertex-coloured polygons with UVs scrolled by the slot's g_624488 record.
+// FUNCTION: STUNTGP_D3D 0x4334c0
 void FUN_4334c0(void *data, int count)
 {
+    if (!count)
+    {
+        return;
+    }
+    int base = 0;
+    DWORD texture = 0xffffffff;
+    BatchVertex *v;
+    WORD *idx;
+    float *scroll;
+    PolyRef *ref = (PolyRef *)data;
+    for (DWORD i = 0; i < (DWORD)count; i++)
+    {
+        if (ref->poly)
+        {
+            BYTE *src = ref->src;
+            BYTE *verts = (BYTE *)ref->verts;
+            WORD *r = ref->ref;
+            DWORD slot = ((BYTE *)ref->poly)[1];
+            if (slot != texture)
+            {
+                if (base)
+                {
+                    g_d3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0x2c4, g_592780, v - g_592780, g_590018, idx - g_590018, 0x1c);
+                }
+                texture = slot;
+                base = 0;
+                v = g_592780;
+                idx = g_590018;
+                g_d3dDevice->SetTexture(0, g_6227d4[texture].texture);
+                scroll = (float *)g_624488 + g_6227d4[texture].unk04[4] * 5;
+            }
+            DWORD n = *(BYTE *)ref->poly;
+            for (DWORD k = 0; k < n; k++)
+            {
+                BYTE *e = src + *r++ * 16;
+                float *p = (float *)(verts + *(WORD *)(e + 8) * 32);
+                v->x = p[0];
+                v->y = p[1];
+                v->rhw = v->z = p[7];
+                v->u0 = ((float *)e)[0] + scroll[1];
+                v->v0 = ((float *)e)[1] + scroll[2];
+                v->diffuse = *(D3DCOLOR *)(e + 12) | 0xff000000;
+                v->specular = 0;
+                v++;
+            }
+            int first = base;
+            base++;
+            for (DWORD j = 2; j < n; j++)
+            {
+                idx[0] = first;
+                idx[1] = base;
+                base++;
+                idx[2] = base;
+                idx += 3;
+            }
+            base++;
+        }
+        ref++;
+    }
+    if (base)
+    {
+        g_d3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0x2c4, g_592780, v - g_592780, g_590018, idx - g_590018, 0x1c);
+    }
 }
 
-// STUB: STUNTGP_D3D 0x4336c0
+// FUN_433290 for vertex-coloured polygons: diffuse from the vertex colour, its alpha as a grey
+// specular term, UVs scrolled by the slot's g_624488 record.
+// FUNCTION: STUNTGP_D3D 0x4336c0
 void FUN_4336c0(void *data, int count)
 {
+    if (!count)
+    {
+        return;
+    }
+    if (g_624984 == 1)
+    {
+        FUN_42f340();
+    }
+    int base = 0;
+    DWORD texture = 0xffffffff;
+    BatchVertex *v;
+    WORD *idx;
+    float *scroll;
+    PolyRef *ref = (PolyRef *)data;
+    for (DWORD i = 0; i < (DWORD)count; i++)
+    {
+        if (ref->poly)
+        {
+            BYTE *src = ref->src;
+            BYTE *verts = (BYTE *)ref->verts;
+            WORD *r = ref->ref;
+            DWORD slot = ((BYTE *)ref->poly)[1];
+            if (slot != texture)
+            {
+                if (base)
+                {
+                    g_d3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0x2c4, g_592780, v - g_592780, g_590018, idx - g_590018, 0x1c);
+                }
+                texture = slot;
+                base = 0;
+                v = g_592780;
+                idx = g_590018;
+                g_d3dDevice->SetTexture(0, g_6227d4[texture].texture);
+                scroll = (float *)g_624488 + g_6227d4[texture].unk04[4] * 5;
+            }
+            DWORD n = *(BYTE *)ref->poly;
+            for (DWORD k = 0; k < n; k++)
+            {
+                BYTE *e = src + *r++ * 16;
+                float *p = (float *)(verts + *(WORD *)(e + 8) * 32);
+                v->x = p[0];
+                v->y = p[1];
+                v->rhw = v->z = p[7];
+                v->u0 = ((float *)e)[0] + scroll[1];
+                v->v0 = ((float *)e)[1] + scroll[2];
+                D3DCOLOR color = *(D3DCOLOR *)(e + 12);
+                v->diffuse = color;
+                DWORD a = color >> 24;
+                v->specular = ((a << 8 | a) << 8) | a;
+                v++;
+            }
+            int first = base;
+            base++;
+            for (DWORD j = 2; j < n; j++)
+            {
+                idx[0] = first;
+                idx[1] = base;
+                base++;
+                idx[2] = base;
+                idx += 3;
+            }
+            base++;
+        }
+        ref++;
+    }
+    if (base)
+    {
+        g_d3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0x2c4, g_592780, v - g_592780, g_590018, idx - g_590018, 0x1c);
+    }
+    if (g_624984 == 1)
+    {
+        FUN_42f380();
+    }
 }
 
-// STUB: STUNTGP_D3D 0x4338e0
+// Fan-to-strip vertex order for an n-gon, indexed by n.
+// GLOBAL: STUNTGP_D3D 0x477cd0
+int g_477cd0[17][16] = {
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 0, 2, 4, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 0, 2, 5, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 0, 2, 6, 3, 5, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 0, 2, 7, 3, 6, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 0, 2, 8, 3, 7, 4, 6, 5, 0, 0, 0, 0, 0, 0, 0},
+    {1, 0, 2, 9, 3, 8, 4, 7, 5, 6, 0, 0, 0, 0, 0, 0},
+    {1, 0, 2, 10, 3, 9, 4, 8, 5, 7, 6, 0, 0, 0, 0, 0},
+    {1, 0, 2, 11, 3, 10, 4, 9, 5, 8, 6, 7, 0, 0, 0, 0},
+    {1, 0, 2, 12, 3, 11, 4, 10, 5, 9, 6, 8, 7, 0, 0, 0},
+    {1, 0, 2, 13, 3, 12, 4, 11, 5, 10, 6, 9, 7, 8, 0, 0},
+    {1, 0, 2, 14, 3, 13, 4, 12, 5, 11, 6, 10, 7, 9, 8, 0},
+    {1, 0, 2, 15, 3, 14, 4, 13, 5, 12, 6, 11, 7, 10, 8, 9},
+};
+
+// Draws the blended polygons one triangle strip at a time, switching the blend mode on
+// poly[3] & 0x78; mode 0x50 keeps the vertex alpha, the others take poly[2].
+// FUNCTION: STUNTGP_D3D 0x4338e0
 void FUN_4338e0(void *data, int count)
 {
+    PolyRef *ref = (PolyRef *)data;
+    if (!count)
+    {
+        return;
+    }
+    DWORD blend = 0xffffffff;
+    DWORD texture = 0xffffffff;
+    float *scroll;
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, FALSE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, TRUE);
+    for (DWORD i = 0; i < (DWORD)count; i++)
+    {
+        BYTE *poly = (BYTE *)ref->poly;
+        if (poly)
+        {
+            BYTE *src = ref->src;
+            BYTE *verts = (BYTE *)ref->verts;
+            WORD *r = ref->ref;
+            DWORD mode = poly[3] & 0x78;
+            if (mode != blend)
+            {
+                blend = mode;
+                switch (mode)
+                {
+                case 0x48:
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
+                    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+                    break;
+                case 0x50:
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
+                    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+                    break;
+                case 0x58:
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_ONE);
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ONE);
+                    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+                    break;
+                case 0x60:
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ONE);
+                    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+                    break;
+                case 0x70:
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_DESTCOLOR);
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ZERO);
+                    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+                    break;
+                default:
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ONE);
+                    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+                    break;
+                }
+            }
+            DWORD slot = poly[1];
+            if (slot != texture)
+            {
+                g_d3dDevice->SetTexture(0, g_6227d4[slot].texture);
+                scroll = (float *)g_624488 + g_6227d4[slot].unk04[4] * 5;
+                texture = slot;
+            }
+            DWORD n = poly[0];
+            BYTE alpha = poly[2];
+            int *order = g_477cd0[n];
+            D3DTLVERTEX2 *v = g_58d818;
+            for (DWORD k = 0; k < n; k++)
+            {
+                float *e = (float *)(src + r[*order] * 16);
+                float *p = (float *)(verts + *(WORD *)(e + 2) * 32);
+                v->sx = p[0];
+                v->sy = p[1];
+                v->rhw = v->sz = p[7];
+                v->tu1 = e[0] + scroll[1];
+                v->tv1 = e[1] + scroll[2];
+                v->specular = 0;
+                if (mode == 0x50)
+                {
+                    v->color = ((DWORD *)e)[3];
+                }
+                else
+                {
+                    v->color = ((DWORD *)e)[3] & 0xffffff | alpha << 24;
+                }
+                order++;
+                v++;
+            }
+            g_d3dDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0x2c4, g_58d818, n, 0x1c);
+        }
+        ref++;
+    }
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_ONE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ZERO);
+    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, FALSE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, TRUE);
+    FUN_432a90();
 }
 
 // STUB: STUNTGP_D3D 0x433c50

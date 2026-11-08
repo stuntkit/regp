@@ -1956,6 +1956,96 @@ void FUN_429660(Vec4 *in, DWORD count)
     }
 }
 
+extern VisIndexList *g_61c51c;
+extern VisIndexList *g_61c528;
+extern ObjectDef *g_61c530;
+extern DWORD g_61c508;
+extern int g_61c520;
+
+// Transforms the points referenced by the visible lists, once per frame each, and queues their
+// vertex-buffer slots.
+// FUNCTION: STUNTGP_D3D 0x429730
+void FUN_429730()
+{
+    VisIndexList *list = g_61c51c;
+    if (list < g_61c528)
+    {
+        ObjectDef *obj = g_61c530;
+        DWORD frame = g_61c508;
+        float **dst = (float **)g_61c520;
+        do
+        {
+            WORD *idx = list->indices;
+            WORD v;
+            while ((v = *idx) != 0xffff)
+            {
+                float *out = (float *)(g_61c510 + v * 32);
+                if (((WORD *)out)[9] != frame)
+                {
+                    *dst++ = out;
+                    Vec4 *in = &obj->points[*idx];
+                    ((WORD *)out)[9] = frame;
+                    Vec4 t;
+                    t.x = g_61c428[8] * in->z + g_61c428[4] * in->y + g_61c428[0] * in->x + g_61c428[12];
+                    t.y = g_61c428[9] * in->z + g_61c428[5] * in->y + g_61c428[1] * in->x + g_61c428[13];
+                    t.z = g_61c428[2] * in->x + g_61c428[10] * in->z + g_61c428[6] * in->y + g_61c428[14];
+                    out[0] = g_61c3e8[0] * t.x;
+                    out[1] = g_61c3e8[5] * t.y;
+                    out[2] = g_61c3e8[10] * t.z + g_61c3e8[14];
+                    out[7] = t.z;
+                }
+                idx++;
+            }
+        } while (++list < g_61c528);
+        g_61c520 = (int)dst;
+    }
+}
+
+extern VisIndexList *g_61c518;
+extern VisIndexList *g_61c524;
+
+// FUN_429730 for the partly visible lists, also storing each vertex's frustum outcodes.
+// FUNCTION: STUNTGP_D3D 0x429880
+void FUN_429880()
+{
+    float d[5];
+    Vec4 t;
+    float nearZ = g_4722d0->nearZ;
+    for (VisIndexList *list = g_61c518; list < g_61c524; list++)
+    {
+        WORD *idx = list->indices;
+        while (*idx != 0xffff)
+        {
+            float *out = (float *)(g_61c510 + *idx * 32);
+            if (((WORD *)out)[9] != g_61c508)
+            {
+                *(float **)g_61c520 = out;
+                g_61c520 += 4;
+                Vec4 *in = &g_61c530->points[*idx];
+                t.x = g_61c428[8] * in->z + g_61c428[4] * in->y + g_61c428[0] * in->x + g_61c428[12];
+                t.y = g_61c428[9] * in->z + g_61c428[5] * in->y + g_61c428[1] * in->x + g_61c428[13];
+                t.z = g_61c428[2] * in->x + g_61c428[10] * in->z + g_61c428[6] * in->y + g_61c428[14];
+                float sx = g_61c3e8[0] * t.x;
+                out[0] = sx;
+                float sy = g_61c3e8[5] * t.y;
+                out[1] = sy;
+                float sz = g_61c3e8[10] * t.z + g_61c3e8[14];
+                out[2] = sz;
+                d[0] = nearZ - sz;
+                d[1] = -t.z - sx;
+                d[2] = sx - t.z;
+                d[3] = -t.z - sy;
+                d[4] = sy - t.z;
+                ((WORD *)out)[9] = g_61c508;
+                out[7] = t.z;
+                *(WORD *)(out + 4) = ((*(DWORD *)&d[4] >> 26) & 0x20) | ((*(DWORD *)&d[3] >> 27) & 0x10) |
+                                     ((*(DWORD *)&d[2] >> 28) & 8) | ((*(DWORD *)&d[1] >> 29) & 4) | (*(DWORD *)&d[0] >> 31) | 2;
+            }
+            idx++;
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x431810
 void FUN_431810()
 {
@@ -2180,6 +2270,53 @@ void FUN_41da50(int *count)
         }
     }
     *count = n;
+}
+
+void FUN_4482a0(DWORD frames, DWORD *digits);
+extern char *g_4856c0[6];
+extern char *g_4856d8[6];
+extern char *g_4856f0[6];
+extern char *g_485708[6];
+
+// Formats a car's two times and score into its results text and points results row `row` at it.
+// FUNCTION: STUNTGP_D3D 0x443f10
+void FUN_443f10(Car *car, int row)
+{
+    DWORD d[16];
+    char *time2;
+    char *time1;
+    int index = car - g_49a1f8;
+    FUN_4482a0(car->unk23cc, d);
+    if (car->unk23cc >= 36000)
+    {
+        time1 = g_60f02c[index].time1;
+        // STRING: STUNTGP_D3D 0x482b44
+        sprintf(time1, "%d%d:%d%d:%d%d", d[5], d[4], d[3], d[2], d[1], d[0]);
+    }
+    else
+    {
+        time1 = g_60f02c[index].time1;
+        // STRING: STUNTGP_D3D 0x482b54
+        sprintf(time1, "%d:%d%d:%d%d", d[4], d[3], d[2], d[1], d[0]);
+    }
+    FUN_4482a0(car->unk23d4, d);
+    time2 = g_60f02c[index].time2;
+    if (car->unk23d4 >= 36000)
+    {
+        // STRING: STUNTGP_D3D 0x482b64
+        sprintf(time2, "%d%d:%d%d:%d%d", d[5], d[4], d[3], d[2], d[1], d[0]);
+    }
+    else
+    {
+        // STRING: STUNTGP_D3D 0x482b74
+        sprintf(time2, "%d:%d%d:%d%d", d[4], d[3], d[2], d[1], d[0]);
+    }
+    // STRING: STUNTGP_D3D 0x482b84
+    sprintf(g_60f02c[index].score, "%d", (int)car->unk260c);
+    g_485708[row] = g_60f02c[index].score;
+    g_4856c0[row] = g_60f02c[index].name;
+    g_4856d8[row] = time1;
+    g_4856f0[row] = time2;
 }
 
 // STUB: STUNTGP_D3D 0x444070
@@ -3179,6 +3316,64 @@ void FUN_447c90()
     FUN_442de0();
 }
 
+// Moves HUD faders 1-7 out by their offsets, scaled by their own value plus the master fader's,
+// capped at 100.
+// FUNCTION: STUNTGP_D3D 0x447d80
+void FUN_447d80()
+{
+    SlotFx *fx = g_61b740;
+    float v;
+    v = fx->faders[1].value + fx->faders[0].value;
+    if (v > 100.0f)
+    {
+        v = 100.0f;
+    }
+    fx->faders[1].x = fx->faders[1].dx * v * 0.01f + fx->faders[1].unk08;
+    fx->faders[1].y = fx->faders[1].dy * v * 0.01f + fx->faders[1].unk0c;
+    v = fx->faders[2].value + fx->faders[0].value;
+    if (v > 100.0f)
+    {
+        v = 100.0f;
+    }
+    fx->faders[2].x = fx->faders[2].dx * v * 0.01f + fx->faders[2].unk08;
+    fx->faders[2].y = fx->faders[2].dy * v * 0.01f + fx->faders[2].unk0c;
+    v = fx->faders[7].value + fx->faders[0].value;
+    if (v > 100.0f)
+    {
+        v = 100.0f;
+    }
+    fx->faders[7].x = fx->faders[7].dx * v * 0.01f + fx->faders[7].unk08;
+    fx->faders[7].y = fx->faders[7].dy * v * 0.01f + fx->faders[7].unk0c;
+    v = fx->faders[3].value + fx->faders[0].value;
+    if (v > 100.0f)
+    {
+        v = 100.0f;
+    }
+    fx->faders[3].x = fx->faders[3].dx * v * 0.01f + fx->faders[3].unk08;
+    fx->faders[3].y = fx->faders[3].dy * v * 0.01f + fx->faders[3].unk0c;
+    v = fx->faders[4].value + fx->faders[0].value;
+    if (v > 100.0f)
+    {
+        v = 100.0f;
+    }
+    fx->faders[4].x = fx->faders[4].dx * v * 0.01f + fx->faders[4].unk08;
+    fx->faders[4].y = fx->faders[4].dy * v * 0.01f + fx->faders[4].unk0c;
+    v = fx->faders[5].value + fx->faders[0].value;
+    if (v > 100.0f)
+    {
+        v = 100.0f;
+    }
+    fx->faders[5].x = fx->faders[5].dx * v * 0.01f + fx->faders[5].unk08;
+    fx->faders[5].y = fx->faders[5].dy * v * 0.01f + fx->faders[5].unk0c;
+    v = fx->faders[6].value + fx->faders[0].value;
+    if (v > 100.0f)
+    {
+        v = 100.0f;
+    }
+    fx->faders[6].x = fx->faders[6].dx * v * 0.01f + fx->faders[6].unk08;
+    fx->faders[6].y = fx->faders[6].dy * v * 0.01f + fx->faders[6].unk0c;
+}
+
 extern float g_482678;
 extern float g_48267c;
 extern float g_482680;
@@ -3265,9 +3460,71 @@ void FUN_45e4b0(Billboard *billboard, float angle)
     billboard->dir.y = g_sinTable[i];
 }
 
-// STUB: STUNTGP_D3D 0x434590
+int FUN_4280a0(Vec4 *pos, Vec4 *size);
+extern MeshFace *g_5da234;
+extern WORD *g_5da238;
+extern Vec4 *g_5da23c;
+extern MeshUv *g_5da240;
+extern MeshFace *g_5da24c;
+extern WORD *g_5da250;
+extern Vec4 *g_5da254;
+extern MeshUv *g_5da258;
+extern ObjectDef *g_5da25c;
+extern float g_5da1e0[16];
+extern MeshPolyVertex g_478910[4];
+
+// Appends the billboard as a quad facing along dir to the dynamic mesh unless it is outside the
+// view; g_5da1e0 rows 0-2 become the billboard's basis.
+// FUNCTION: STUNTGP_D3D 0x434590
 void FUN_434590(Billboard *billboard)
 {
+    if (g_5da24c < g_5da234 + 0x200)
+    {
+        if (FUN_4280a0(&billboard->pos, (Vec4 *)billboard->size) != 1)
+        {
+            ObjectDef *object = g_5da25c;
+            object->vertCount++;
+            object->unk26 += 4;
+            object->pointCount += 4;
+            g_5da24c->count = 4;
+            g_5da24c->flags = (BYTE)billboard->unk00 | 0x80;
+            g_5da24c->unk01 = (BYTE)billboard->texture;
+            g_5da24c->unk02 = (BYTE)billboard->alpha;
+            g_5da24c->index = g_5da250 - g_5da238;
+            g_5da24c++;
+            *(Vec4 *)&g_5da1e0[4] = billboard->dir;
+            g_5da1e0[0] = g_5da1e0[10] * g_5da1e0[5] - g_5da1e0[9] * g_5da1e0[6];
+            g_5da1e0[1] = g_5da1e0[8] * g_5da1e0[6] - g_5da1e0[4] * g_5da1e0[10];
+            g_5da1e0[2] = g_5da1e0[4] * g_5da1e0[9] - g_5da1e0[8] * g_5da1e0[5];
+            Vec4 *m = g_4722d0->cam.matrix;
+            int point = g_5da254 - g_5da23c;
+            for (int i = 0; i < 4; i++)
+            {
+                Vec4 r;
+                Vec4 t;
+                float x = g_478910[i].pos.x * billboard->size[0];
+                float y = billboard->size[1] * g_478910[i].pos.y;
+                float z = g_478910[i].pos.z * billboard->size[2];
+                g_5da258->point = point;
+                g_5da258->color = billboard->colors[0];
+                g_5da258->u = g_478910[i].u;
+                g_5da258->v = g_478910[i].v;
+                r.x = g_5da1e0[0] * x + g_5da1e0[4] * y + g_5da1e0[8] * z;
+                r.y = g_5da1e0[5] * y + g_5da1e0[1] * x + g_5da1e0[9] * z;
+                r.z = g_5da1e0[6] * y + g_5da1e0[10] * z + g_5da1e0[2] * x;
+                t.x = r.x * m[0].x + r.y * m[1].x + r.z * m[2].x;
+                t.y = r.y * m[1].y + r.z * m[2].y + r.x * m[0].y;
+                t.z = r.y * m[1].z + r.z * m[2].z + r.x * m[0].z;
+                g_5da254->x = t.x + billboard->pos.x;
+                g_5da254->y = t.y + billboard->pos.y;
+                g_5da254->z = t.z + billboard->pos.z;
+                *g_5da250++ = g_5da258 - g_5da240;
+                g_5da258++;
+                point++;
+                g_5da254++;
+            }
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x45e4f0

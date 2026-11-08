@@ -663,6 +663,104 @@ void FUN_438c20(float x, float y, int layer, int style, char c, float size, D3DC
     FUN_438990(x, y, layer, 1, style, g_4793f0, size, color, flags, 0.0f);
 }
 
+int FUN_438dc0(int style, int *a, int *b, int *c);
+void FUN_438eb0(float x, float y, int layer, int sub, int def, int leftWidth, int rightWidth, int rowHeight, int row, float scale, float midWidth, DWORD flags, float fade);
+
+// Draws a three-slice button of style `style` centred on (x, y): optional drop shadow, frame,
+// face and a fading highlight.
+// FUNCTION: STUNTGP_D3D 0x438c60
+void FUN_438c60(float x, float y, int layer, int style, float scale, DWORD flags, int width, float fade)
+{
+    int rowHeight;
+    int leftWidth;
+    float midWidth = (float)width;
+    int def = FUN_438dc0(style, &leftWidth, &width, &rowHeight);
+    x -= ((leftWidth + width) * scale + midWidth) * 0.5f;
+    y -= rowHeight * 28 / 32 * scale * 0.5f;
+    if (flags & 0x40)
+    {
+        FUN_438eb0(x + 8.0f, y + 8.0f, 15, 0, def, leftWidth, width, rowHeight, 2, scale, midWidth, 0x200, 0.0f);
+    }
+    FUN_438eb0(x, y, layer, 3, def, leftWidth, width, rowHeight, 1, scale, midWidth, 0x200, 0.0f);
+    FUN_438eb0(x, y, layer, 2, def, leftWidth, width, rowHeight, 0, scale, midWidth, 0x100, 0.0f);
+    if (fade > 0.0f)
+    {
+        FUN_438eb0(x, y, layer, 0, def, leftWidth, width, rowHeight, 3, scale, midWidth, 0x400, fade);
+    }
+}
+
+float FUN_438910(const char *text, float size);
+float FUN_438950(float size);
+void FUN_438960(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color, DWORD flags);
+
+// FUN_438c60 with a text label: width 0 sizes the button to the text, a negative width is a
+// minimum. Flags 1 and 4 centre or right-align the label.
+// FUNCTION: STUNTGP_D3D 0x439040
+void FUN_439040(float x, float y, int layer, int textStyle, const char *text, float size, D3DCOLOR color, int style, int row, float scale, DWORD flags, int width, float fade)
+{
+    int leftWidth;
+    int rowHeight;
+    int rightWidth;
+    float midWidth;
+    float h = FUN_438950(size);
+    float textW = -1.0f;
+    int def = FUN_438dc0(style, &leftWidth, &rightWidth, &rowHeight);
+    float bh = rowHeight * 28 / 32 * scale;
+    if (width == 0)
+    {
+        textW = FUN_438910(text, size);
+        midWidth = textW;
+    }
+    else if (width < 0)
+    {
+        width = -width;
+        textW = FUN_438910(text, size);
+        if (textW > (float)width)
+        {
+            midWidth = textW;
+        }
+        else
+        {
+            midWidth = (float)width;
+        }
+    }
+    else
+    {
+        midWidth = (float)width;
+    }
+    x -= ((leftWidth + rightWidth) * scale + midWidth) * 0.5f;
+    y -= bh * 0.5f;
+    float tx = leftWidth * scale + x;
+    float ty = (bh - h) * 0.5f + y + scale;
+    if (flags & 1)
+    {
+        if (textW < 0.0f)
+        {
+            textW = FUN_438910(text, size);
+        }
+        tx += (midWidth - textW) * 0.5f;
+    }
+    else if (flags & 4)
+    {
+        if (textW < 0.0f)
+        {
+            textW = FUN_438910(text, size);
+        }
+        tx += midWidth - textW;
+    }
+    if (flags & 0x40)
+    {
+        FUN_438eb0(x + 8.0f, y + 8.0f, 15, 0, def, leftWidth, rightWidth, rowHeight, 2, scale, midWidth, 0x200, 0.0f);
+    }
+    FUN_438eb0(x, y, layer, 3, def, leftWidth, rightWidth, rowHeight, 1, scale, midWidth, 0x200, 0.0f);
+    FUN_438eb0(x, y, layer, 2, def, leftWidth, rightWidth, rowHeight, row, scale, midWidth, 0x100, 0.0f);
+    FUN_438960(tx, ty, layer, 1, textStyle, text, size, color, 0);
+    if (fade > 0.0f)
+    {
+        FUN_438eb0(x, y, layer, 0, def, leftWidth, rightWidth, rowHeight, 3, scale, midWidth, 0x400, fade);
+    }
+}
+
 // Frame layout for an icon style; returns its sprite id, or 0 for an unknown style.
 // FUNCTION: STUNTGP_D3D 0x438dc0
 int FUN_438dc0(int style, int *a, int *b, int *c)
@@ -1669,6 +1767,63 @@ int size_of_file(char *path);
 int bload(char *path, char *buffer, int maxSize);
 void FUN_4623c0(char *path, void *buffer, void *arg);
 extern char g_GraphicsDirectory[128];
+
+// Loads a width x height TGA from the graphics directory into surface slot `slot`'s texture.
+// FUNCTION: STUNTGP_D3D 0x4309b0
+int FUN_4309b0(int slot, int width, int height, char *name)
+{
+    char path[128];
+    DDSURFACEDESC2 desc;
+    LPDIRECTDRAWSURFACE4 surface = NULL;
+    LPDIRECT3DTEXTURE2 texture = NULL;
+    int res;
+    BYTE *image = (BYTE *)Mem_Alloc(width * height * 3 + 0x100, 0);
+    // STRING: STUNTGP_D3D 0x478850
+    sprintf(path, "%s\\%s.TGA", g_GraphicsDirectory, name);
+    FUN_4623c0(path, image, &g_571fd4);
+    FUN_430280(image, (WORD *)image, width, height);
+    SurfaceSlot *surfaceSlot = &g_5ba788.surfaceSlots[slot];
+    memset(&desc, 0, sizeof(desc));
+    desc.dwWidth = width;
+    desc.dwHeight = height;
+    desc.dwSize = sizeof(desc);
+    desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
+    desc.ddpfPixelFormat = *g_5ba788.textureFormat;
+    desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
+    res = g_dd4->CreateSurface(&desc, &surface, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    FUN_430100(surface, image, width, height, 16);
+    Mem_Free(image);
+    res = surface->QueryInterface(IID_IDirect3DTexture2, (void **)&texture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = surface->GetSurfaceDesc(&desc);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    desc.dwFlags = (*g_592028 ? DDSD_CKSRCBLT : 0) + 0x101007;
+    LPDIRECT3DTEXTURE2 target = (LPDIRECT3DTEXTURE2)surfaceSlot->unk04;
+    desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_ALLOCONLOAD;
+    desc.ddsCaps.dwCaps2 = 0x80;
+    desc.dwTextureStage = 0;
+    res = target->Load(texture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    g_6243b8->texture = target;
+    g_6243b8->unk04[0] = (DWORD)target;
+    *(WORD *)&g_6243b8->unk04[1] = width;
+    FUN_4300f0(texture);
+    ddReleaseSurface(&surface);
+    return 1;
+}
 
 // Loads a TGA image from the graphics directory and converts it to 16-bit.
 // FUNCTION: STUNTGP_D3D 0x430b80

@@ -202,7 +202,10 @@ struct Driver
     int unk18;        // 0x18
     int unk1c;        // 0x1c
     int unk20;        // 0x20
-    char name[0x40];  // 0x24
+    char name[0x10];  // 0x24
+    char time1[0x10]; // 0x34, results-table texts written by FUN_443f10
+    char time2[0x10]; // 0x44
+    char score[0x10]; // 0x54
 };
 
 // Collision point of a car body, offsets relative to the body position.
@@ -924,6 +927,21 @@ struct Scene
     DWORD lod;           // 0x5c, current level of detail
     char **textures;     // 0x60, NULL-terminated
     int unk64;           // 0x64
+};
+
+struct MeshPolyVertex
+{
+    Vec4 pos;    // 0x00
+    float u;     // 0x10
+    float v;     // 0x14
+    DWORD color; // 0x18
+};
+
+// One visible mesh: its polygon and point indices, each list 0xffff-terminated.
+struct VisIndexList
+{
+    WORD *polys;   // 0x00, into ObjectDef::verts
+    WORD *indices; // 0x04, into ObjectDef::points
 };
 
 // Scene render list entry; a list runs until a NULL scene.

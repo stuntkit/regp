@@ -316,6 +316,186 @@ void FUN_42e870()
 }
 
 extern SlotFx *g_61b740;
+extern DWORD g_60eff4;
+extern int g_6244fc;
+extern int g_624500;
+
+// Driver icon cell in texture 14, indexed by Driver::unk14.
+struct CarIcon
+{
+    float u0; // 0x00
+    float v0; // 0x04
+    float u1; // 0x08
+    float v1; // 0x0c
+};
+
+// GLOBAL: STUNTGP_D3D 0x485720
+CarIcon g_485720[8] = {
+    {0.0f, 640.0f, 64.0f, 700.0f},
+    {0.0f, 640.0f, 64.0f, 700.0f},
+    {64.0f, 640.0f, 128.0f, 700.0f},
+    {128.0f, 640.0f, 192.0f, 700.0f},
+    {192.0f, 640.0f, 256.0f, 700.0f},
+    {256.0f, 640.0f, 320.0f, 700.0f},
+    {320.0f, 640.0f, 384.0f, 700.0f},
+    {384.0f, 640.0f, 448.0f, 700.0f},
+};
+
+// Draws the gap bar on fader 2 with an icon per car placed by its distance from the viewing car,
+// clamped to +-100; cars that are out or flashing are skipped.
+// FUNCTION: STUNTGP_D3D 0x44a800
+void FUN_44a800()
+{
+    float y;
+    float pos;
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.x = 16.0f;
+    g_spriteDesc.z = 0.93f;
+    g_spriteDesc.u0 = 64.0f;
+    g_spriteDesc.v0 = 680.0f;
+    pos = g_4722d0->data->unk23b0;
+    y = g_61b740->faders[2].y + 8.0f;
+    g_spriteDesc.u1 = 464.0f;
+    g_spriteDesc.v1 = 720.0f;
+    g_spriteDesc.width = 224.0f;
+    g_spriteDesc.height = 4.0f;
+    g_spriteDesc.texture = 11;
+    g_spriteDesc.blendMode = 0x20;
+    g_spriteDesc.y = y;
+    FUN_432e00(&g_spriteDesc);
+    g_spriteDesc.x += 3.0f;
+    g_spriteDesc.z = 0.92f;
+    g_spriteDesc.u0 = 784.0f;
+    g_spriteDesc.v0 = 716.0f;
+    g_spriteDesc.u1 = 800.0f;
+    g_spriteDesc.v1 = 732.0f;
+    g_spriteDesc.y += 3.0f;
+    FUN_432e00(&g_spriteDesc);
+    y -= 3.0f;
+    g_spriteDesc.width = 12.0f;
+    g_spriteDesc.height = 11.0f;
+    g_spriteDesc.texture = 14;
+    g_spriteDesc.alpha = 0xc0;
+    g_spriteDesc.blendMode = 0x48;
+    g_spriteDesc.y = y;
+    for (int i = g_612948.unk03c8 - 1; i >= 0; i--)
+    {
+        Car *car = g_612948.unk03cc[i];
+        if (car == g_4722d0->data)
+        {
+            g_spriteDesc.width = 16.0f;
+            g_spriteDesc.height = 15.0f;
+            g_spriteDesc.z = 0.95f;
+            g_spriteDesc.y = y - 2.0f;
+        }
+        else
+        {
+            g_spriteDesc.y = y;
+            g_spriteDesc.width = 12.0f;
+            g_spriteDesc.height = 11.0f;
+            g_spriteDesc.z = 0.94f;
+        }
+        float d = car->unk23b0 - pos;
+        if (d < -100.0f)
+        {
+            d = -100.0f;
+        }
+        else if (d > 100.0f)
+        {
+            d = 100.0f;
+        }
+        g_spriteDesc.x = d * 1.12f + 122.0f;
+        CarIcon *icon = &g_485720[g_60f02c[car - g_49a1f8].unk14];
+        g_spriteDesc.u0 = icon->u0;
+        g_spriteDesc.v0 = icon->v0;
+        g_spriteDesc.u1 = icon->u1;
+        g_spriteDesc.v1 = icon->v1;
+        if ((!car->unk24e0 || car == g_4722d0->data) &&
+            (car->unk2574 * car->unkf74 <= car->unk2570 || car->unk2578 % 15 < 7))
+        {
+            FUN_432e00(&g_spriteDesc);
+        }
+    }
+}
+
+// Cell of the large HUD digit texture.
+struct HudDigit
+{
+    int texture;  // 0x00
+    float u0;     // 0x04
+    float v0;     // 0x08
+    float u1;     // 0x0c
+    float v1;     // 0x10
+    float width;  // 0x14
+    float height; // 0x18
+};
+
+// GLOBAL: STUNTGP_D3D 0x4720d8
+HudDigit g_4720d8[11] = {
+    {12, 4.0f, 4.0f, 192.0f, 256.0f, 47.0f, 63.0f},
+    {12, 4.0f, 260.0f, 192.0f, 512.0f, 47.0f, 63.0f},
+    {12, 4.0f, 516.0f, 192.0f, 768.0f, 47.0f, 63.0f},
+    {12, 4.0f, 772.0f, 192.0f, 1024.0f, 47.0f, 63.0f},
+    {12, 196.0f, 4.0f, 384.0f, 256.0f, 47.0f, 63.0f},
+    {12, 196.0f, 260.0f, 384.0f, 512.0f, 47.0f, 63.0f},
+    {12, 196.0f, 516.0f, 384.0f, 768.0f, 47.0f, 63.0f},
+    {12, 196.0f, 772.0f, 384.0f, 1024.0f, 47.0f, 63.0f},
+    {12, 388.0f, 4.0f, 576.0f, 256.0f, 47.0f, 63.0f},
+    {12, 388.0f, 260.0f, 576.0f, 512.0f, 47.0f, 63.0f},
+    {12, 388.0f, 516.0f, 576.0f, 768.0f, 47.0f, 63.0f},
+};
+
+// Draws the remaining race time (frames in g_60eff4) as three large digits, flashing red in the
+// last ten seconds.
+// FUNCTION: STUNTGP_D3D 0x44aad0
+void FUN_44aad0()
+{
+    float x;
+    int shown;
+    float y;
+    int i;
+    if (g_60eff4 && g_60eff4 <= 5400)
+    {
+        g_spriteDesc.flags = 0x22;
+        g_spriteDesc.z = 0.98f;
+        g_spriteDesc.blendMode = 0x48;
+        g_spriteDesc.alpha = 0xc0;
+        g_spriteDesc.color = 0xffff64;
+        if (g_60eff4 < 600 && (g_60eff4 / 30 & 1))
+        {
+            g_spriteDesc.color = 0xff0000;
+        }
+        float left = (float)(5400 - g_60eff4);
+        if (left > 128.0f)
+        {
+            left = 128.0f;
+        }
+        int div = 100;
+        x = left - 160.0f + g_61b740->faders[6].x + g_6244fc;
+        shown = 0;
+        y = g_624500 + (g_61b740->faders[6].y + 4.0f);
+        for (i = 0; i < 3; i++)
+        {
+            DWORD digit = g_60eff4 / (div * 60) % 10;
+            if (digit || shown || i >= 2)
+            {
+                g_spriteDesc.y = y;
+                g_spriteDesc.x = x;
+                shown = 1;
+                g_spriteDesc.u0 = g_4720d8[digit].u0;
+                g_spriteDesc.v0 = g_4720d8[digit].v0;
+                g_spriteDesc.u1 = g_4720d8[digit].u1;
+                g_spriteDesc.v1 = g_4720d8[digit].v1;
+                g_spriteDesc.texture = g_4720d8[digit].texture;
+                g_spriteDesc.width = g_4720d8[digit].width;
+                g_spriteDesc.height = g_4720d8[digit].height;
+                FUN_432e00(&g_spriteDesc);
+            }
+            x += 40.0f;
+            div /= 10;
+        }
+    }
+}
 
 // Shakes the HUD faders by the car's clamped jolt.
 // FUNCTION: STUNTGP_D3D 0x44ac90
@@ -704,6 +884,56 @@ void FUN_44a4a0(DWORD value, int alt, float x, float y)
         g_spriteDesc.v1 = g_spriteDesc.v0 + 72.0f;
         FUN_432e00(&g_spriteDesc);
     }
+}
+
+extern DWORD g_60eff8;
+
+// Draws the position panel on fader 5: frame, label, current and total counts, and its shadow.
+// FUNCTION: STUNTGP_D3D 0x44a5c0
+void FUN_44a5c0()
+{
+    if (g_4722d0->data->unk23c4 == -1)
+    {
+        return;
+    }
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.z = 0.94f;
+    g_spriteDesc.u0 = 684.0f;
+    g_spriteDesc.v0 = 120.0f;
+    g_spriteDesc.u1 = 916.0f;
+    g_spriteDesc.v1 = 260.0f;
+    g_spriteDesc.x = g_61b740->faders[5].x - 46.4f + 0.8f;
+    g_spriteDesc.width = 46.4f;
+    g_spriteDesc.height = 28.0f;
+    g_spriteDesc.texture = 12;
+    g_spriteDesc.blendMode = 0x20;
+    g_spriteDesc.y = g_61b740->faders[5].y + 65.0f - 0.5f;
+    FUN_432e00(&g_spriteDesc);
+    g_spriteDesc.z = 0.94f;
+    g_spriteDesc.u0 = 684.0f;
+    g_spriteDesc.y = g_61b740->faders[5].y + 65.0f;
+    g_spriteDesc.x = g_61b740->faders[5].x;
+    g_spriteDesc.v0 = 0.0f;
+    g_spriteDesc.u1 = 1016.0f;
+    g_spriteDesc.v1 = 108.0f;
+    g_spriteDesc.width = 66.4f;
+    g_spriteDesc.height = 21.6f;
+    FUN_432e00(&g_spriteDesc);
+    FUN_44a4a0(g_60eff8, 0, g_61b740->faders[5].x + 50.4f, g_61b740->faders[5].y + 65.0f);
+    FUN_44a4a0(g_4722d0->data->unk23a4, 1, g_61b740->faders[5].x + 50.4f - 38.0f, g_61b740->faders[5].y + 65.0f);
+    g_spriteDesc.z = 0.96f;
+    g_spriteDesc.u0 = 524.0f;
+    g_spriteDesc.v0 = 672.0f;
+    g_spriteDesc.x = g_61b740->faders[5].x + 2.4f;
+    g_spriteDesc.u1 = 816.0f;
+    g_spriteDesc.v1 = 744.0f;
+    g_spriteDesc.width = 58.4f;
+    g_spriteDesc.height = 14.400001f;
+    g_spriteDesc.y = g_61b740->faders[5].y + 67.4f;
+    g_spriteDesc.texture = 11;
+    g_spriteDesc.blendMode = 0x48;
+    g_spriteDesc.alpha = 0x80;
+    FUN_432e00(&g_spriteDesc);
 }
 
 struct QuadVertex

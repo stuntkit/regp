@@ -1063,26 +1063,6 @@ void FUN_42b6e0()
     }
 }
 
-// 8-byte face record of the dynamic mesh built by FUN_4342e0.
-struct MeshFace
-{
-    BYTE count; // 0x00
-    BYTE unk01; // 0x01
-    BYTE unk02; // 0x02
-    BYTE flags; // 0x03
-    WORD unk04; // 0x04
-    WORD index; // 0x06, first entry in the index buffer
-};
-
-struct MeshUv
-{
-    float u;     // 0x00
-    float v;     // 0x04
-    WORD point;  // 0x08
-    WORD unk0a;  // 0x0a
-    DWORD color; // 0x0c
-};
-
 // Buffer starts of the dynamic mesh, allocated by FUN_434090.
 // GLOBAL: STUNTGP_D3D 0x5da234
 MeshFace *g_5da234;
@@ -1299,10 +1279,10 @@ void *g_61c5fc;
 void *g_61c600;
 
 // GLOBAL: STUNTGP_D3D 0x61c518
-void *g_61c518;
+VisIndexList *g_61c518;
 
 // GLOBAL: STUNTGP_D3D 0x61c51c
-void *g_61c51c;
+VisIndexList *g_61c51c;
 
 // GLOBAL: STUNTGP_D3D 0x624530
 void *g_624530;
@@ -1321,14 +1301,129 @@ void FUN_42e430()
     g_61c5fc = Mem_Alloc(0xf000, 0);
     g_61c600 = Mem_Alloc(0xf000, 0);
     g_61c5f0 = (OverlayPoly *)Mem_Alloc(0x11000, 0);
-    g_61c518 = Mem_Alloc(0x1000, 0);
-    g_61c51c = Mem_Alloc(0x1000, 0);
+    g_61c518 = (VisIndexList *)Mem_Alloc(0x1000, 0);
+    g_61c51c = (VisIndexList *)Mem_Alloc(0x1000, 0);
     g_624530 = Mem_Alloc(0x4800, 0);
 }
 
-// STUB: STUNTGP_D3D 0x42e510
+void FUN_41c710();
+void FUN_42eb00();
+extern BYTE g_61c7cc[0x6000];
+extern BYTE *g_6227cc;
+extern int g_6227d0;
+extern BYTE g_61c608[0x1c0];
+extern BYTE *g_61c7c8;
+extern short g_6244a8[16];
+extern int g_6244d4;
+extern int g_6244d8;
+extern int g_6244dc;
+extern int g_6244e0;
+extern int g_6244e4;
+extern int g_61c510;
+extern int g_61c514;
+extern int g_61c520;
+extern int g_624460;
+extern BYTE *g_624464;
+extern BYTE *g_624468;
+extern BYTE *g_62446c;
+extern BYTE *g_624470;
+extern CameraPath *g_624474;
+extern BYTE *g_624478;
+extern Unk624488 *g_624488;
+extern SceneEntry *g_62448c;
+extern SceneEntry *g_624490;
+extern Ambience *g_624494;
+extern DWORD g_624498;
+extern DWORD g_62449c;
+extern int g_6244a0;
+extern int g_6244a4;
+
+// GLOBAL: STUNTGP_D3D 0x61c524
+VisIndexList *g_61c524;
+
+// GLOBAL: STUNTGP_D3D 0x61c528
+VisIndexList *g_61c528;
+
+// GLOBAL: STUNTGP_D3D 0x61c52c
+Scene *g_61c52c;
+
+// GLOBAL: STUNTGP_D3D 0x61c530
+ObjectDef *g_61c530;
+
+// GLOBAL: STUNTGP_D3D 0x61c5e8
+int g_61c5e8;
+
+// Clears all scene, render-list and track pointers before a level loads.
+// FUNCTION: STUNTGP_D3D 0x42e510
 void FUN_42e510()
 {
+    for (int i = 0; i < 16; i++)
+    {
+        g_636418[i].scene = NULL;
+        g_636418[i].data = NULL;
+        g_636418[i].size = 0;
+    }
+    FUN_41c710();
+    g_61c5ec = 0;
+    memset(g_62dcf0, 0, sizeof(g_62dcf0));
+    memset(g_62d480, 0, sizeof(g_62d480));
+    g_61c5f4 = NULL;
+    g_61c5f8 = NULL;
+    g_61c5fc = NULL;
+    g_61c600 = NULL;
+    g_61c5f0 = NULL;
+    g_61c518 = NULL;
+    g_61c51c = NULL;
+    g_624530 = NULL;
+    memset(g_61c7cc, 0, sizeof(g_61c7cc));
+    g_6227cc = NULL;
+    g_6227d0 = 0;
+    g_61c52c = NULL;
+    g_61c530 = NULL;
+    g_61c5e4 = -1;
+    g_61c50c = 0;
+    g_61c510 = 0;
+    g_61c514 = 0;
+    g_61c5e8 = 0;
+    g_61c520 = 0;
+    g_61c604 = 0;
+    memset(g_61c608, 0, sizeof(g_61c608));
+    g_61c7c8 = NULL;
+    memset(g_6227d4, 0, 255 * sizeof(TextureSlot));
+    g_6243b8 = NULL;
+    // g_6243c0..g_6243dc are four contiguous {list, count} pairs.
+    memset(&g_6243c0, 0, 0x20);
+    memset(g_6243e0, 0, sizeof(g_6243e0));
+    g_61c524 = NULL;
+    g_61c528 = NULL;
+    memset(g_6244a8, 0, sizeof(g_6244a8));
+    g_6244c8 = 0;
+    g_6244cc = 0;
+    g_6244d0 = 0;
+    g_6244d4 = 0;
+    g_6244d8 = 0;
+    g_6244dc = 0;
+    g_6244e0 = 0;
+    g_6244e4 = 0;
+    g_624460 = 0;
+    g_624464 = NULL;
+    g_624468 = NULL;
+    g_62446c = NULL;
+    g_624470 = NULL;
+    g_624474 = NULL;
+    g_624478 = NULL;
+    g_62447c = NULL;
+    g_624480 = NULL;
+    g_624484 = NULL;
+    g_624488 = NULL;
+    g_62448c = NULL;
+    g_624490 = NULL;
+    g_624494 = NULL;
+    g_624498 = 0;
+    g_62449c = 0;
+    g_6244a0 = 0;
+    g_6244a4 = 0;
+    FUN_42eb00();
 }
 
 // GLOBAL: STUNTGP_D3D 0x624988
@@ -1621,6 +1716,261 @@ void FUN_429a40()
     }
 }
 
+// GLOBAL: STUNTGP_D3D 0x61c4e8
+Vec4 g_61c4e8;
+
+// GLOBAL: STUNTGP_D3D 0x61c4f8
+Vec4 g_61c4f8;
+
+// FUN_429d50 for partly clipped objects: also skips polygons with every vertex outside one frustum
+// side and stores the vertices' shared outcodes in unk10.
+// FUNCTION: STUNTGP_D3D 0x429b70
+void FUN_429b70(Scene *scene, ObjectDef *obj, PolyRef **lists)
+{
+    DWORD blend = 0;
+    if ((scene->flags & 8) && (obj->flags & 0x80))
+    {
+        blend = obj->flags >> 8;
+    }
+    Vec4 *normals = (Vec4 *)scene->unk28;
+    WORD *refs = (WORD *)scene->unk38;
+    Vec4 *points = obj->points;
+    BYTE *src = obj->unk2c;
+    DWORD count = obj->vertCount;
+    PolyRef *opaque = lists[0];
+    PolyRef *blended = lists[2];
+    DWORD *poly = (DWORD *)obj->verts;
+    for (DWORD i = 0; i < count; i++)
+    {
+        DWORD any = 0;
+        DWORD all = 0x3f;
+        WORD *ref = &refs[((WORD *)poly)[3]];
+        DWORD n = poly[0] & 0xff;
+        {
+            WORD *r = ref;
+            BYTE *e;
+            while (n-- > 0)
+            {
+                e = src + *r++ * 16;
+                DWORD code = *(WORD *)(g_61c510 + *(WORD *)(e + 8) * 32 + 16);
+                any |= code;
+                all &= code;
+            }
+            if (any == 0x3f)
+            {
+                Vec4 *p = &points[*(WORD *)(e + 8)];
+                Vec4 d;
+                d.x = p->x - g_61c4e8.x;
+                d.y = p->y - g_61c4e8.y;
+                d.z = p->z - g_61c4e8.z;
+                Vec4 *nrm = &normals[((WORD *)poly)[2]];
+                if ((int)poly[0] < 0 || d.x * nrm->x + d.y * nrm->y + d.z * nrm->z < 0.0f)
+                {
+                    if (!blend && !(poly[0] & 0x40000000))
+                    {
+                        opaque->poly = poly;
+                        opaque->ref = ref;
+                        opaque->verts = g_61c510;
+                        opaque->src = src;
+                        opaque->unk10 = all;
+                        opaque++;
+                    }
+                    else
+                    {
+                        blended->poly = poly;
+                        blended->ref = ref;
+                        blended->verts = g_61c510;
+                        blended->src = src;
+                        blended->unk10 = all;
+                        blended++;
+                    }
+                }
+            }
+        }
+        poly += 2;
+    }
+    lists[0] = opaque;
+    lists[2] = blended;
+}
+
+// Queues the object's camera-facing polygons into the opaque (lists[0]) or blended (lists[2]) list.
+// FUNCTION: STUNTGP_D3D 0x429d50
+void FUN_429d50(Scene *scene, ObjectDef *obj, PolyRef **lists)
+{
+    DWORD blend = 0;
+    if ((scene->flags & 8) && (obj->flags & 0x80))
+    {
+        blend = obj->flags >> 8;
+    }
+    Vec4 *normals = (Vec4 *)scene->unk28;
+    WORD *refs = (WORD *)scene->unk38;
+    Vec4 *points = obj->points;
+    BYTE *src = obj->unk2c;
+    DWORD count = obj->vertCount;
+    PolyRef *opaque = lists[0];
+    PolyRef *blended = lists[2];
+    DWORD *poly = (DWORD *)obj->verts;
+    for (DWORD i = 0; i < count; i++)
+    {
+        WORD *ref = &refs[((WORD *)poly)[3]];
+        Vec4 *p = &points[*(WORD *)(src + *ref * 16 + 8)];
+        Vec4 d;
+        d.x = p->x - g_61c4e8.x;
+        d.y = p->y - g_61c4e8.y;
+        d.z = p->z - g_61c4e8.z;
+        Vec4 *n = &normals[((WORD *)poly)[2]];
+        if ((int)poly[0] < 0 || d.x * n->x + d.y * n->y + d.z * n->z < 0.0f)
+        {
+            if (!blend && !(poly[0] & 0x40000000))
+            {
+                opaque->ref = ref;
+                opaque->poly = poly;
+                opaque->verts = g_61c510;
+                opaque->src = src;
+                opaque++;
+            }
+            else
+            {
+                blended->ref = ref;
+                blended->poly = poly;
+                blended->verts = g_61c510;
+                blended->src = src;
+                blended++;
+            }
+        }
+        poly += 2;
+    }
+    lists[0] = opaque;
+    lists[2] = blended;
+}
+
+// Polygons queued for the track so far.
+// GLOBAL: STUNTGP_D3D 0x61c550
+DWORD g_61c550;
+
+// FUN_42a090 for partly clipped meshes: skips polygons with every vertex outside one frustum side
+// and stores the vertices' shared outcodes in unk10.
+// FUNCTION: STUNTGP_D3D 0x429ea0
+void FUN_429ea0(PolyRef **lists, VisIndexList *vis, DWORD count)
+{
+    Vec4 *normals = (Vec4 *)g_61c52c->unk28;
+    WORD *refs = (WORD *)g_61c52c->unk38;
+    PolyRef *opaque = lists[0];
+    Vec4 *points = g_61c530->points;
+    BYTE *src = g_61c530->unk2c;
+    PolyRef *blended = lists[2];
+    g_61c550 += count;
+    for (DWORD i = 0; i < count; i++)
+    {
+        WORD *idx = vis->polys;
+        while (*idx != 0xffff)
+        {
+            DWORD any = 0;
+            DWORD *poly = (DWORD *)(g_61c530->verts + *idx * 8);
+            WORD *ref = &refs[((WORD *)poly)[3]];
+            DWORD n = poly[0] & 0xff;
+            DWORD all = 0x3f;
+            if (n)
+            {
+                WORD *r = ref;
+                BYTE *e;
+                while (n-- > 0)
+                {
+                    e = src + *r++ * 16;
+                    DWORD code = *(WORD *)(g_61c510 + *(WORD *)(e + 8) * 32 + 16);
+                    any |= code;
+                    all &= code;
+                }
+                if (any == 0x3f)
+                {
+                    Vec4 *p = &points[*(WORD *)(e + 8)];
+                    Vec4 d;
+                    d.x = p->x - g_61c4e8.x;
+                    d.y = p->y - g_61c4e8.y;
+                    d.z = p->z - g_61c4e8.z;
+                    Vec4 *nrm = &normals[((WORD *)poly)[2]];
+                    if ((int)poly[0] < 0 || d.x * nrm->x + d.y * nrm->y + d.z * nrm->z < 0.0f)
+                    {
+                        if (poly[0] & 0x40000000)
+                        {
+                            blended->poly = poly;
+                            blended->ref = ref;
+                            blended->verts = g_61c510;
+                            blended->src = src;
+                            blended->unk10 = all;
+                            blended++;
+                        }
+                        else
+                        {
+                            opaque->poly = poly;
+                            opaque->ref = ref;
+                            opaque->verts = g_61c510;
+                            opaque->src = src;
+                            opaque->unk10 = all;
+                            opaque++;
+                        }
+                    }
+                }
+            }
+            idx++;
+        }
+        vis++;
+    }
+    lists[2] = blended;
+    lists[0] = opaque;
+}
+
+// FUN_429d50 for the track: queues the camera-facing polygons of the visible meshes of g_61c530.
+// FUNCTION: STUNTGP_D3D 0x42a090
+void FUN_42a090(PolyRef **lists, VisIndexList *vis, DWORD count)
+{
+    PolyRef *blended = lists[2];
+    PolyRef *opaque = lists[0];
+    Vec4 *normals = (Vec4 *)g_61c52c->unk28;
+    WORD *refs = (WORD *)g_61c52c->unk38;
+    Vec4 *points = g_61c530->points;
+    g_61c550 += count;
+    BYTE *src = g_61c530->unk2c;
+    for (DWORD i = 0; i < count; i++)
+    {
+        WORD *idx = vis->polys;
+        while (*idx != 0xffff)
+        {
+            DWORD *poly = (DWORD *)(g_61c530->verts + *idx * 8);
+            WORD *ref = &refs[((WORD *)poly)[3]];
+            Vec4 *p = &points[*(WORD *)(src + *ref * 16 + 8)];
+            Vec4 d;
+            d.x = p->x - g_61c4e8.x;
+            d.y = p->y - g_61c4e8.y;
+            d.z = p->z - g_61c4e8.z;
+            Vec4 *n = &normals[((WORD *)poly)[2]];
+            if ((int)poly[0] < 0 || d.x * n->x + d.y * n->y + d.z * n->z < 0.0f)
+            {
+                if (poly[0] & 0x40000000)
+                {
+                    blended->poly = poly;
+                    blended->ref = ref;
+                    blended->verts = g_61c510;
+                    blended->src = src;
+                    blended++;
+                }
+                else
+                {
+                    opaque->poly = poly;
+                    opaque->ref = ref;
+                    opaque->verts = g_61c510;
+                    opaque->src = src;
+                    opaque++;
+                }
+            }
+            idx++;
+        }
+        vis++;
+    }
+    lists[0] = opaque;
+    lists[2] = blended;
+}
+
 // FUNCTION: STUNTGP_D3D 0x42a840
 void FUN_42a840(Scene *scene)
 {
@@ -1692,6 +2042,238 @@ void FUN_42a870(Scene *scene, ObjectDef *object)
     else
     {
         g_62497c = 4;
+    }
+}
+
+// Brings the view position into the object's local space (out) and gives its direction (dir).
+// FUNCTION: STUNTGP_D3D 0x42b2a0
+void FUN_42b2a0(Vec4 *out, Vec4 *dir, Scene *scene, ObjectDef *obj)
+{
+    Vec4 t;
+    Camera *cam = scene->camera;
+    float dx = g_4722d0->cam.pos.x - cam->pos.x;
+    float dy = g_4722d0->cam.pos.y - cam->pos.y;
+    float dz = g_4722d0->cam.pos.z - cam->pos.z;
+    float *m = (float *)cam->matrix;
+    t.x = dz * m[8] + dy * m[4] + dx * m[0];
+    t.y = dz * m[9] + dy * m[5] + dx * m[1];
+    t.z = dz * m[10] + dy * m[6] + dx * m[2];
+    Camera *xf = (Camera *)obj->matrix;
+    t.x -= xf->pos.x;
+    t.y -= xf->pos.y;
+    t.z -= xf->pos.z;
+    if (scene->objectCount > 1)
+    {
+        Vec4 *pivot = (Vec4 *)((BYTE *)obj + 0x10);
+        float *r = (float *)xf->unk44;
+        t.x -= pivot->x;
+        t.y -= pivot->y;
+        t.z -= pivot->z;
+        out->x = t.z * r[8] + t.y * r[4] + t.x * r[0] + pivot->x;
+        out->y = t.z * r[9] + t.y * r[5] + t.x * r[1] + pivot->y;
+        out->z = t.z * r[10] + t.y * r[6] + t.x * r[2] + pivot->z;
+    }
+    else
+    {
+        *out = t;
+    }
+    t = *out;
+    Vec3_Normalize(&t.x);
+    *dir = t;
+}
+
+void FUN_44efd0(float *out, float *a, float *b);
+
+struct Light
+{
+    int unk00;        // 0x00
+    int type;         // 0x04, 0 directional, 1 point
+    float range;      // 0x08
+    int unk0c;        // 0x0c
+    Vec4 pos;         // 0x10
+    Vec4 local;       // 0x20, pos relative to the current object
+    Vec4 colour;      // 0x30
+    BYTE unk40[0x38]; // 0x40
+    int r;            // 0x78
+    int g;            // 0x7c
+    int b;            // 0x80
+};
+
+// Per-object light record in g_624530, 36 bytes.
+struct LightRec
+{
+    Vec4 colour; // 0x00, rotated into object space
+    Vec4 half;   // 0x10
+    Light *light; // 0x20
+};
+
+// Lights active for the current object (g_62452c of them) and the next free record in g_624530.
+struct LightList
+{
+    Light *lights[16]; // 0x00
+    LightRec *next;    // 0x40
+};
+
+// GLOBAL: STUNTGP_D3D 0x624534
+LightList g_624534;
+
+// Brings the active lights into the object's space: per light its rotated colour, its offset
+// from the object and the half vector towards the view.
+// FUNCTION: STUNTGP_D3D 0x42b400
+void FUN_42b400(Scene *scene, ObjectDef *obj)
+{
+    float m[16];
+    Vec4 view;
+    Vec4 origin;
+    Vec4 h;
+    Camera *cam = scene->camera;
+    view.x = g_61c4f8.x * 255.0f;
+    view.y = g_61c4f8.y * 255.0f;
+    view.z = g_61c4f8.z * 255.0f;
+    float *rot = (float *)cam->matrix;
+    if (scene->objectCount > 1)
+    {
+        FUN_44efd0(m, rot, (float *)((Camera *)obj->matrix)->unk44);
+        rot = m;
+    }
+    Camera *xf = (Camera *)obj->matrix;
+    origin.x = xf->pos.x + cam->pos.x;
+    origin.y = xf->pos.y + cam->pos.y;
+    origin.z = xf->pos.z + cam->pos.z;
+    g_624534.next = (LightRec *)g_624530;
+    Light **lights = g_624534.lights;
+    for (DWORD i = 0; i < g_62452c; i++)
+    {
+        Light *light = *lights++;
+        float r = light->colour.x * 255.0f;
+        float g = light->colour.y * 255.0f;
+        float b = light->colour.z * 255.0f;
+        g_624534.next->colour.x = g * rot[4] + b * rot[8] + r * rot[0];
+        g_624534.next->colour.y = g * rot[5] + b * rot[9] + r * rot[1];
+        g_624534.next->colour.z = g * rot[6] + b * rot[10] + r * rot[2];
+        light->local.x = light->pos.x - origin.x;
+        light->local.y = light->pos.y - origin.y;
+        light->local.z = light->pos.z - origin.z;
+        h.x = view.x + g_624534.next->colour.x;
+        h.y = view.y + g_624534.next->colour.y;
+        h.z = view.z + g_624534.next->colour.z;
+        h.x *= 765.0f;
+        h.y *= 765.0f;
+        h.z *= 765.0f;
+        g_624534.next->half.x = h.x * 0.5f;
+        g_624534.next->half.y = h.y * 0.5f;
+        g_624534.next->half.z = h.z * 0.5f;
+        g_624534.next->light = light;
+        g_624534.next++;
+    }
+}
+
+extern int g_62497c;
+
+// Lights every g_62497c-th vertex of the object (starting from the frame number, so the work is
+// spread over frames) from the ambient level and the active lights, packing the colour into
+// MeshUv::color.
+// FUNCTION: STUNTGP_D3D 0x42a320
+void FUN_42a320(Scene *scene, ObjectDef *obj)
+{
+    DWORD b = g_624504.ib;
+    DWORD r = g_624504.ir;
+    DWORD g = g_624504.ig;
+    if ((WORD)scene->unk04 > 1)
+    {
+        DWORD scale = (WORD)scene->unk04;
+        r = scale * r >> 8;
+        g = scale * g >> 8;
+        b = scale * b >> 8;
+    }
+    FUN_42b400(scene, obj);
+    Vec4 *points = obj->points;
+    Vec4 *normals = (Vec4 *)scene->unk28;
+    MeshUv *uv = (MeshUv *)obj->unk2c;
+    DWORD n = obj->unk26;
+    for (DWORD i = (g_62497c - 1) & g_61c508; i < n; i += g_62497c)
+    {
+        MeshUv *e = &uv[i];
+        Vec4 *p = &points[e->point];
+        DWORD cr = r;
+        Vec4 *nrm = &normals[e->unk0a];
+        DWORD cg = g;
+        DWORD cb = b;
+        LightRec *rec = (LightRec *)g_624530;
+        for (DWORD j = 0; j < (DWORD)g_62452c; j++)
+        {
+            Light *light = rec->light;
+            if (light->type == 0)
+            {
+                float dot = rec->colour.x * nrm->x + rec->colour.y * nrm->y + rec->colour.z * nrm->z;
+                if (*(int *)&dot < 0)
+                {
+                    int k = (int)dot;
+                    cr -= light->r * k;
+                    cg -= light->g * k;
+                    cb -= light->b * k;
+                }
+            }
+            else if (light->type == 1)
+            {
+                float dot = rec->colour.x * nrm->x + rec->colour.y * nrm->y + rec->colour.z * nrm->z;
+                if (*(int *)&dot < 0)
+                {
+                    float dx = light->local.x - p->x;
+                    float dy = light->local.y - p->y;
+                    float dz = light->local.z - p->z;
+                    int k = (int)(light->range * 4177920.0f / (dx * dx + dy * dy + dz * dz));
+                    cr += light->r * k;
+                    cg += light->g * k;
+                    cb += light->b * k;
+                }
+            }
+            rec++;
+        }
+        if (cr > 0xff00)
+        {
+            cr = 0xff00;
+        }
+        if (cg > 0xff00)
+        {
+            cg = 0xff00;
+        }
+        if (cb > 0xff00)
+        {
+            cb = 0xff00;
+        }
+        e->color = ((cb & 0xff00 | 0x10000) << 8) | (cg & 0xff00) | (cr >> 8);
+    }
+}
+
+// Queues the polygons of both visible-mesh lists of the track.
+// FUNCTION: STUNTGP_D3D 0x42a220
+void FUN_42a220()
+{
+    FUN_429ea0((PolyRef **)&g_6243c0, g_61c518, g_61c524 - g_61c518);
+    FUN_42a090((PolyRef **)&g_6243d0, g_61c51c, g_61c528 - g_61c51c);
+}
+
+extern int g_624980;
+extern int g_57b41c;
+
+// Relights the track's lit sub-objects once, with every vertex at once.
+// FUNCTION: STUNTGP_D3D 0x42ad70
+void FUN_42ad70()
+{
+    if (g_624980 != 1 && g_57b41c != 1)
+    {
+        g_57b41c = 1;
+        g_62497c = 1;
+        Scene *scene = g_61c52c;
+        ObjectDef *obj = scene->lods[0] + 1;
+        for (DWORD i = 1; i < scene->objectCount; i++, obj++)
+        {
+            if (obj->flags & 4)
+            {
+                FUN_42a320(scene, obj);
+            }
+        }
     }
 }
 
@@ -1871,9 +2453,57 @@ void FUN_431350()
 {
 }
 
-// STUB: STUNTGP_D3D 0x431360
+extern int g_D3DDeviceIndex;
+extern int g_D3DDriverIndex;
+extern int g_6244f0;
+extern int g_DD_DISPLAYRESHEIGHT;
+void FUN_42f300();
+void FUN_42f6a0();
+int FUN_42fd80(int device);
+void FUN_42ff20(int device, int driver);
+void FUN_42fff0();
+int FUN_430020(int device, int driver);
+int FUN_42f840();
+int FUN_430ff0();
+BOOL FUN_42fa80();
+void FUN_432070();
+void FUN_42f220();
+
+// Brings up DirectDraw and Direct3D on the configured device and driver; any failure ends in
+// FUN_431330.
+// FUNCTION: STUNTGP_D3D 0x431360
 void FUN_431360()
 {
+    int device = g_D3DDeviceIndex;
+    int driver = g_D3DDriverIndex;
+    g_6244f0 = 1;
+    g_58332c = 1;
+    g_477c30 = 0x3ffff8;
+    g_DD_DISPLAYRESWIDTH = g_DISPLAYRESWIDTH;
+    g_DD_DISPLAYRESHEIGHT = g_DISPLAYRESHEIGHT;
+    FUN_42f300();
+    FUN_42f6a0();
+    FUN_42fd80(device);
+    FUN_42ff20(device, driver);
+    FUN_42fff0();
+    if (!FUN_430020(device, driver))
+    {
+        FUN_431330();
+    }
+    g_d3dDevice = ((D3DDriver *)g_5ba788.deviceDesc)->device;
+    if (!FUN_42f840())
+    {
+        FUN_431330();
+    }
+    FUN_430ff0();
+    if (FUN_42fa80() != 1)
+    {
+        FUN_431330();
+    }
+    FUN_432070();
+    FUN_431350();
+    FUN_42f220();
+    FUN_431300();
 }
 
 // FUNCTION: STUNTGP_D3D 0x431420
@@ -1943,18 +2573,20 @@ void FUN_4311c0(Scene *scene)
     }
 }
 
-// STUB: STUNTGP_D3D 0x4342c0
+void FUN_434090();
+void FUN_434030();
+
+// Dynamic mesh object matrix.
+// GLOBAL: STUNTGP_D3D 0x5da1e0
+float g_5da1e0[16];
+
+// FUNCTION: STUNTGP_D3D 0x4342c0
 void FUN_4342c0()
 {
+    FUN_434090();
+    FUN_434030();
+    Matrix_Identity(g_5da1e0);
 }
-
-struct MeshPolyVertex
-{
-    Vec4 pos;    // 0x00
-    float u;     // 0x10
-    float v;     // 0x14
-    DWORD color; // 0x18
-};
 
 struct MeshPoly
 {
@@ -1965,6 +2597,115 @@ struct MeshPoly
     DWORD count;           // 0x2c
     MeshPolyVertex v[4];   // 0x30
 };
+
+// GLOBAL: STUNTGP_D3D 0x5da220
+DWORD g_5da220[4];
+
+// Empty texture list of the dynamic mesh scene.
+// GLOBAL: STUNTGP_D3D 0x5da230
+char *g_5da230;
+
+// GLOBAL: STUNTGP_D3D 0x4788a8
+DWORD *g_4788a8[2] = {g_5da220, NULL};
+
+// GLOBAL: STUNTGP_D3D 0x4788b0
+Vec4 g_4788b0 = {0.0f, 1.0f, 0.0f, 0.0f};
+
+// Identity transform of the dynamic mesh.
+// GLOBAL: STUNTGP_D3D 0x4788c0
+Camera g_4788c0 = {{0.0f, 0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.0f}, 0, NULL, NULL, 0};
+
+// Unit billboard corners, scaled by MeshPoly's size.
+// GLOBAL: STUNTGP_D3D 0x478910
+MeshPolyVertex g_478910[4] = {
+    {{-50.0f, 50.0f, 0.0f, 0.0f}, 0.0f, 0.0f, 0x1ffffff},
+    {{50.0f, 50.0f, 0.0f, 0.0f}, 0.998f, 0.0f, 0x1ffffff},
+    {{50.0f, -50.0f, 0.0f, 0.0f}, 0.998f, 0.998f, 0x1ffffff},
+    {{-50.0f, -50.0f, 0.0f, 0.0f}, 0.0f, 0.998f, 0x1ffffff},
+};
+
+void FUN_434030();
+
+// Allocates the dynamic mesh buffers and builds its one-object scene in g_636418[0].
+// FUNCTION: STUNTGP_D3D 0x434090
+void FUN_434090()
+{
+    DWORD i;
+    g_5da234 = (MeshFace *)Mem_Alloc(0x1000, 0);
+    g_5da238 = (WORD *)Mem_Alloc(0x1000, 0);
+    g_5da23c = (Vec4 *)Mem_Alloc(0x8000, 0);
+    g_5da240 = (MeshUv *)Mem_Alloc(0x8000, 0);
+    g_5da244 = (ObjectDef *)Mem_Alloc(0x40, 0);
+    g_5da248 = (Scene *)Mem_Alloc(0x68, 0);
+    g_636418[0].scene = g_5da248;
+    FUN_434030();
+    g_478910[0].pos.x = -50.0f;
+    g_478910[0].pos.y = 50.0f;
+    g_478910[0].pos.z = 0.0f;
+    g_478910[1].pos.x = 50.0f;
+    g_478910[1].pos.y = 50.0f;
+    g_478910[1].pos.z = 0.0f;
+    g_478910[2].pos.x = 50.0f;
+    g_478910[2].pos.y = -50.0f;
+    g_478910[2].pos.z = 0.0f;
+    g_478910[3].pos.x = -50.0f;
+    g_478910[3].pos.y = -50.0f;
+    g_478910[3].pos.z = 0.0f;
+    for (i = 0; i < 0x800; i++)
+    {
+        g_5da250[i] = i;
+    }
+    for (i = 0; i < 0x800; i++)
+    {
+        g_5da23c[i].x = 0;
+        g_5da23c[i].y = 0;
+        g_5da258[i].unk0a = 0;
+        g_5da23c[i].z = 0;
+    }
+    for (i = 0; i < 0x200; i++)
+    {
+        g_5da24c[i].unk04 = 0;
+    }
+    memset(g_5da25c, 0, sizeof(ObjectDef));
+    g_5da25c->visible = 1;
+    g_5da25c->flags = 0;
+    g_5da25c->matrix = (Vec4 *)&g_4788c0;
+    *(WORD *)(g_5da25c->unk0c + 0x14) = 0;
+    *(WORD *)(g_5da25c->unk0c + 0x16) = 0;
+    g_5da25c->vertCount = 0;
+    g_5da25c->unk26 = 0;
+    g_5da25c->pointCount = 0;
+    g_5da25c->unk2c = (BYTE *)g_5da240;
+    g_5da25c->points = g_5da23c;
+    g_5da25c->verts = (BYTE *)g_5da234;
+    *(DWORD *)(g_5da25c->unk0c + 4) = 0;
+    *(DWORD *)(g_5da25c->unk0c + 8) = 0;
+    *(DWORD *)(g_5da25c->unk0c + 0xc) = 0;
+    memset(g_5da260, 0, sizeof(Scene));
+    g_5da260->flags = 1;
+    g_5da260->camera = NULL;
+    *(DWORD *)(g_5da260->unk10 + 0) = 0;
+    *(DWORD *)(g_5da260->unk10 + 4) = 0;
+    *(DWORD *)(g_5da260->unk10 + 8) = 0;
+    *(WORD *)(g_5da260->unk10 + 0x10) = 0;
+    *(WORD *)(g_5da260->unk10 + 0x12) = 0;
+    g_5da260->objectCount = 1;
+    g_5da260->unk28 = (SceneEntry *)&g_4788b0;
+    g_5da260->verts = (BYTE *)g_5da234;
+    g_5da260->unk30 = (BYTE *)g_5da240;
+    g_5da260->points = g_5da23c;
+    g_5da260->unk38 = (BYTE *)g_5da238;
+    g_5da260->matrices = (BYTE *)&g_4788c0;
+    g_5da260->unk40 = (DWORD *)g_4788a8;
+    g_5da260->view = (SceneView *)g_5da244;
+    g_5da260->lods[0] = g_5da244;
+    g_5da260->lods[1] = g_5da244;
+    g_5da260->lods[2] = g_5da244;
+    g_5da260->lods[3] = g_5da244;
+    g_5da260->maxLod = 0;
+    g_5da260->lod = 0;
+    g_5da260->textures = &g_5da230;
+}
 
 // Appends a polygon to the dynamic mesh.
 // FUNCTION: STUNTGP_D3D 0x4342e0
@@ -1993,6 +2734,56 @@ void FUN_4342e0(MeshPoly *poly)
             *g_5da254++ = poly->v[i].pos;
             *g_5da250++ = g_5da258 - g_5da240;
             g_5da258++;
+        }
+    }
+}
+
+int FUN_4280a0(Vec4 *pos, Vec4 *size);
+
+// Appends a camera-facing quad (centre unk00, half size unk00 + 0x10) to the dynamic mesh unless
+// it is outside the view.
+// FUNCTION: STUNTGP_D3D 0x4343f0
+void FUN_4343f0(MeshPoly *poly)
+{
+    if (g_5da24c < g_5da234 + 0x200)
+    {
+        Vec4 *pos = (Vec4 *)poly->unk00;
+        Vec4 *size = (Vec4 *)(poly->unk00 + 0x10);
+        if (FUN_4280a0(pos, size) != 1)
+        {
+            ObjectDef *object = g_5da25c;
+            object->vertCount++;
+            object->unk26 += 4;
+            object->pointCount += 4;
+            g_5da24c->count = 4;
+            g_5da24c->flags = poly->unk24 | 0x80;
+            g_5da24c->unk01 = poly->unk20;
+            g_5da24c->unk02 = poly->unk28;
+            g_5da24c->index = g_5da250 - g_5da238;
+            g_5da24c++;
+            Vec4 *m = g_4722d0->cam.matrix;
+            int point = g_5da254 - g_5da23c;
+            for (int i = 0; i < 4; i++)
+            {
+                Vec4 t;
+                float x = g_478910[i].pos.x * size->x;
+                float y = size->y * g_478910[i].pos.y;
+                float z = g_478910[i].pos.z * size->z;
+                g_5da258->point = point;
+                g_5da258->color = poly->v[i].color;
+                g_5da258->u = g_478910[i].u;
+                g_5da258->v = g_478910[i].v;
+                t.x = y * m[1].x + z * m[2].x + x * m[0].x;
+                t.y = y * m[1].y + z * m[2].y + x * m[0].y;
+                t.z = x * m[0].z + y * m[1].z + z * m[2].z;
+                g_5da254->x = t.x + pos->x;
+                g_5da254->y = t.y + pos->y;
+                g_5da254->z = t.z + pos->z;
+                *g_5da250++ = g_5da258 - g_5da240;
+                g_5da258++;
+                point++;
+                g_5da254++;
+            }
         }
     }
 }
