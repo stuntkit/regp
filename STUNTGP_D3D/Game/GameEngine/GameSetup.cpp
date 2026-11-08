@@ -2379,6 +2379,32 @@ void FUN_42a320(Scene *scene, ObjectDef *obj);
 void FUN_42b2a0(Vec4 *out, Vec4 *dir, Scene *scene, ObjectDef *obj);
 extern float g_61c428[16];
 
+// FUN_42a8c0 without the lighting pass.
+// FUNCTION: STUNTGP_D3D 0x42a260
+void FUN_42a260(PolyRef **lists, Scene *scene, int mode)
+{
+    ObjectDef *obj = scene->lods[scene->lod];
+    for (DWORD i = 0; i < scene->objectCount; obj++, i++)
+    {
+        if (obj->visible == 1)
+        {
+            FUN_42b2a0(&g_renderState.unk00, &g_renderState.unk10, scene, obj);
+            FUN_44fbd0(scene, obj, g_61c428);
+            if (!mode)
+            {
+                FUN_429660(obj->points, obj->pointCount);
+                FUN_429d50(scene, obj, lists);
+            }
+            else
+            {
+                FUN_429520(obj->points, obj->pointCount);
+                FUN_429b70(scene, obj, lists);
+            }
+            g_renderState.unk28 += obj->pointCount * 0x20;
+        }
+    }
+}
+
 // Transforms and queues the visible objects of the current level of detail, lighting those with
 // flag 4.
 // FUNCTION: STUNTGP_D3D 0x42a8c0

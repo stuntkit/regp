@@ -1718,17 +1718,201 @@ void FUN_432a60()
     }
 }
 
-// Queued primitive; type 0x3f marks one that needs no depth key.
-struct RenderItem
+// MeshUv with its colour as bytes.
+struct ClipUv
 {
-    DWORD unk00[4];
-    int type; // 0x10
+    float u;       // 0x00
+    float v;       // 0x04
+    WORD point;    // 0x08
+    WORD unk0a;    // 0x0a
+    BYTE color[4]; // 0x0c
 };
 
+// Transformed vertex as written by FUN_429520.
+struct XformVertex
+{
+    float x;     // 0x00
+    float y;     // 0x04
+    float z;     // 0x08
+    DWORD unk0c; // 0x0c
+    WORD code;   // 0x10, outcode bits
+    WORD unk12;  // 0x12
+    DWORD unk14; // 0x14
+    DWORD unk18; // 0x18
+    float w;     // 0x1c, view-space depth
+};
 
-// STUB: STUNTGP_D3D 0x427530
+// Polygon vertex for the 3D clipper.
+struct ClipVertex3
+{
+    ClipUv uv;      // 0x00
+    XformVertex xv; // 0x10
+};
+
+// Point where the edge a-b crosses clip plane 1 (near), 4, 8, 16 or 32.
+// FUNCTION: STUNTGP_D3D 0x4272a0
+void FUN_4272a0(ClipVertex3 *a, ClipVertex3 *b, ClipVertex3 *out, int plane)
+{
+    float da;
+    float db;
+    switch (plane)
+    {
+    case 1:
+        da = a->xv.z - g_4722d0->nearZ;
+        db = b->xv.z - g_4722d0->nearZ;
+        break;
+    case 4:
+        da = a->xv.z + a->xv.x + 1.0f;
+        db = b->xv.z + b->xv.x + 1.0f;
+        break;
+    case 8:
+        da = a->xv.x - a->xv.z - 1.0f;
+        db = b->xv.x - b->xv.z - 1.0f;
+        break;
+    case 16:
+        da = a->xv.z + a->xv.y + 1.0f;
+        db = b->xv.z + b->xv.y + 1.0f;
+        break;
+    case 32:
+        da = a->xv.y - a->xv.z - 1.0f;
+        db = b->xv.y - b->xv.z - 1.0f;
+        break;
+    }
+    float d = db - da;
+    float t;
+    if ((float)fabs(d) <= 1.0f)
+    {
+        t = 1.0f;
+    }
+    else
+    {
+        t = -(da / d);
+    }
+    float x = (b->xv.x - a->xv.x) * t + a->xv.x;
+    out->xv.x = x;
+    float y = (b->xv.y - a->xv.y) * t + a->xv.y;
+    out->xv.y = y;
+    float z = (b->xv.z - a->xv.z) * t + a->xv.z;
+    out->xv.z = z;
+    float w = (b->xv.w - a->xv.w) * t + a->xv.w;
+    out->xv.w = w;
+    out->uv.u = (b->uv.u - a->uv.u) * t + a->uv.u;
+    out->uv.v = (b->uv.v - a->uv.v) * t + a->uv.v;
+    int f = (int)(t * 256.0f);
+    out->uv.color[3] = (BYTE)(((b->uv.color[3] - a->uv.color[3]) * f >> 8) + a->uv.color[3]);
+    out->uv.color[2] = (BYTE)(((b->uv.color[2] - a->uv.color[2]) * f >> 8) + a->uv.color[2]);
+    out->uv.color[1] = (BYTE)(((b->uv.color[1] - a->uv.color[1]) * f >> 8) + a->uv.color[1]);
+    out->uv.color[0] = (BYTE)(((b->uv.color[0] - a->uv.color[0]) * f >> 8) + a->uv.color[0]);
+    float c[5];
+    c[0] = g_4722d0->nearZ - z;
+    c[1] = -x - w;
+    c[2] = x - w;
+    c[3] = -y - w;
+    c[4] = y - w;
+    out->xv.code = 2 | (*(DWORD *)&c[0] >> 31) | ((*(DWORD *)&c[1] >> 29) & 4) | ((*(DWORD *)&c[2] >> 28) & 8) |
+                ((*(DWORD *)&c[3] >> 27) & 0x10) | ((*(DWORD *)&c[4] >> 26) & 0x20);
+}
+
+// Queued polygon (PolyRef layout); type holds the clip planes it is already inside, 0x3f for all.
+struct RenderItem
+{
+    DWORD *poly;        // 0x00, first byte is the vertex count
+    WORD *ref;          // 0x04
+    ClipUv *src;        // 0x08
+    XformVertex *verts; // 0x0c
+    int type;           // 0x10
+};
+
+// Clips the polygon against each plane it is not yet inside, appending the result to the
+// clipped-polygon buffers; drops it when fewer than three vertices remain.
+// FUNCTION: STUNTGP_D3D 0x427530
 void FUN_427530(RenderItem *item)
 {
+    ClipVertex3 bufA[16];
+    ClipVertex3 bufB[16];
+    ClipVertex3 *dst = bufA;
+    WORD *ref = item->ref;
+    DWORD *poly = item->poly;
+    DWORD n = *poly & 0xff;
+    ClipVertex3 *src = bufB;
+    DWORD i;
+    for (i = 0; i < n; i++)
+    {
+        src[i].uv = item->src[*ref];
+        src[i].xv = item->verts[src[i].uv.point];
+        ref++;
+    }
+    DWORD flags = item->type;
+    DWORD bit = 1;
+    DWORD pass = 0;
+    do
+    {
+        if (!(flags & bit))
+        {
+            ClipVertex3 *out = dst;
+            ClipVertex3 *prev = &src[n - 1];
+            ClipVertex3 *cur = src;
+            for (i = 0; i < n; i++)
+            {
+                int prevIn = prev->xv.code & bit;
+                int curIn = cur->xv.code & bit;
+                if (prevIn && curIn)
+                {
+                    *out++ = *prev;
+                }
+                else if (prevIn)
+                {
+                    *out++ = *prev;
+                    FUN_4272a0(prev, cur, out++, bit);
+                }
+                else if (curIn)
+                {
+                    FUN_4272a0(prev, cur, out++, bit);
+                }
+                prev = cur;
+                cur++;
+            }
+            n = out - dst;
+            if (n < 3)
+            {
+                FUN_427520((int *)item);
+                return;
+            }
+            ClipVertex3 *t = src;
+            src = dst;
+            dst = t;
+        }
+        flags |= bit;
+        bit <<= 1;
+        if (flags == 0x3f)
+        {
+            break;
+        }
+    } while (++pass < 6);
+    DWORD *np = (DWORD *)g_renderState.unk7ff4;
+    item->src = (ClipUv *)g_renderState.unk7ff0;
+    item->poly = np;
+    item->ref = (WORD *)g_renderState.unk7fc0;
+    item->verts = (XformVertex *)g_renderState.unk7ffc;
+    g_renderState.unk7ff4 = (int)(np + 2);
+    np[0] = poly[0];
+    np[1] = poly[1];
+    *(BYTE *)np = (BYTE)n;
+    ((WORD *)np)[3] = 0;
+    DWORD k = 0;
+    for (i = 0; i < n; i++)
+    {
+        src[k].uv.point = (WORD)i;
+        *(ClipUv *)g_renderState.unk7ff0 = src[k].uv;
+        *(XformVertex *)g_renderState.unk7ffc = src[k].xv;
+        g_renderState.unk7ffc += 0x20;
+        g_renderState.unk7ff0 += 0x10;
+        k++;
+        if (k >= n)
+        {
+            k -= n;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x4277b0
