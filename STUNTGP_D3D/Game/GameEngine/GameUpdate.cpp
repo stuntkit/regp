@@ -1132,6 +1132,63 @@ ReplayFrame *g_570ac4;
 // GLOBAL: STUNTGP_D3D 0x4d5cb8
 ReplayFrame *g_4d5cb8;
 
+// Car basis from the replay, interpolated between the previous and current frame.
+// FUNCTION: STUNTGP_D3D 0x41a000
+void FUN_41a000()
+{
+    Vec4 py;
+    py.x = g_4d5cb8->axisY[0] * (1.0f / 127.0f);
+    py.y = g_4d5cb8->axisY[1] * (1.0f / 127.0f);
+    py.z = g_4d5cb8->axisY[2] * (1.0f / 127.0f);
+    Vec4 pz;
+    pz.x = g_4d5cb8->axisZ[0] * (1.0f / 127.0f);
+    pz.y = g_4d5cb8->axisZ[1] * (1.0f / 127.0f);
+    pz.z = g_4d5cb8->axisZ[2] * (1.0f / 127.0f);
+    Vec4 cy;
+    cy.x = g_570ac4->axisY[0] * (1.0f / 127.0f);
+    cy.y = g_570ac4->axisY[1] * (1.0f / 127.0f);
+    cy.z = g_570ac4->axisY[2] * (1.0f / 127.0f);
+    Vec4 cz;
+    cz.x = g_570ac4->axisZ[0] * (1.0f / 127.0f);
+    cz.y = g_570ac4->axisZ[1] * (1.0f / 127.0f);
+    cz.z = g_570ac4->axisZ[2] * (1.0f / 127.0f);
+    Vec4 d;
+    d.x = cy.x - py.x;
+    d.y = cy.y - py.y;
+    d.z = cy.z - py.z;
+    d.x *= g_570ac0->unk08;
+    float ty = g_570ac0->unk08;
+    d.y = ty * d.y;
+    float tz = g_570ac0->unk08;
+    d.z = tz * d.z;
+    Vec4 y;
+    y.x = d.x + py.x;
+    y.y = d.y + py.y;
+    y.z = d.z + py.z;
+    d.x = cz.x - pz.x;
+    d.y = cz.y - pz.y;
+    d.z = cz.z - pz.z;
+    d.x *= g_570ac0->unk08;
+    ty = g_570ac0->unk08;
+    d.y = ty * d.y;
+    tz = g_570ac0->unk08;
+    d.z = tz * d.z;
+    Vec4 z;
+    z.x = d.x + pz.x;
+    z.y = d.y + pz.y;
+    z.z = d.z + pz.z;
+    Vec3_Normalize(&y.x);
+    Vec3_Normalize(&z.x);
+    Vec4 x;
+    x.x = z.y * y.z - z.z * y.y;
+    x.y = z.z * y.x - z.x * y.z;
+    x.z = z.x * y.y - z.y * y.x;
+    Vec3_Normalize(&x.x);
+    g_4d5bb8->axisX = x;
+    g_4d5bb8->axisY = y;
+    g_4d5bb8->axisZ = z;
+}
+
 // FUNCTION: STUNTGP_D3D 0x41a230
 void FUN_41a230()
 {

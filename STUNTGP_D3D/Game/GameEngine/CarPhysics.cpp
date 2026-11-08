@@ -4661,9 +4661,49 @@ void FUN_414460()
     g_4d5bb8->wheels[3].pos = p;
 }
 
-// STUB: STUNTGP_D3D 0x414710
+// Rebuilds the car basis from the four corner points of the body.
+// FUNCTION: STUNTGP_D3D 0x414710
 void FUN_414710()
 {
+    BodyPoint *pts = g_4d5bb8->body.points;
+    Vec4 a;
+    Vec4 b;
+    a.x = pts[0].world.x + pts[2].world.x;
+    a.y = pts[0].world.y + pts[2].world.y;
+    a.z = pts[0].world.z + pts[2].world.z;
+    a.x *= 0.5f;
+    a.y *= 0.5f;
+    a.z *= 0.5f;
+    b.x = pts[1].world.x + pts[3].world.x;
+    b.y = pts[1].world.y + pts[3].world.y;
+    b.z = pts[1].world.z + pts[3].world.z;
+    b.x *= 0.5f;
+    b.y *= 0.5f;
+    b.z *= 0.5f;
+    g_4d5bb8->axisX.x = a.x - b.x;
+    g_4d5bb8->axisX.y = a.y - b.y;
+    g_4d5bb8->axisX.z = a.z - b.z;
+    Vec3_Normalize(&g_4d5bb8->axisX.x);
+    a.x = pts[1].world.x + pts[0].world.x;
+    a.y = pts[1].world.y + pts[0].world.y;
+    a.z = pts[1].world.z + pts[0].world.z;
+    a.x *= 0.5f;
+    a.y *= 0.5f;
+    a.z *= 0.5f;
+    b.x = pts[3].world.x + pts[2].world.x;
+    b.y = pts[3].world.y + pts[2].world.y;
+    b.z = pts[3].world.z + pts[2].world.z;
+    b.x *= 0.5f;
+    b.y *= 0.5f;
+    b.z *= 0.5f;
+    g_4d5bb8->axisZ.x = b.x - a.x;
+    g_4d5bb8->axisZ.y = b.y - a.y;
+    g_4d5bb8->axisZ.z = b.z - a.z;
+    Vec3_Normalize(&g_4d5bb8->axisZ.x);
+    g_4d5bb8->axisY.x = g_4d5bb8->axisZ.z * g_4d5bb8->axisX.y - g_4d5bb8->axisZ.y * g_4d5bb8->axisX.z;
+    g_4d5bb8->axisY.y = g_4d5bb8->axisZ.x * g_4d5bb8->axisX.z - g_4d5bb8->axisZ.z * g_4d5bb8->axisX.x;
+    g_4d5bb8->axisY.z = g_4d5bb8->axisX.x * g_4d5bb8->axisZ.y - g_4d5bb8->axisZ.x * g_4d5bb8->axisX.y;
+    Vec3_Normalize(&g_4d5bb8->axisY.x);
 }
 
 // Fades the four tyre smoke meshes, which follow the wheel meshes.
@@ -5205,9 +5245,64 @@ void FUN_416ea0(Unk62a078 *p)
     p->colors[0] = 0x182010;
 }
 
-// STUB: STUNTGP_D3D 0x416f30
+extern float g_482670;
+void FUN_45e110(Unk62a078 *particle);
+
+// Smoke from every wheel that is slipping harder than the car's weight allows.
+// FUNCTION: STUNTGP_D3D 0x416f30
 void FUN_416f30()
 {
+    if (g_4d5bb8->unk7250 >= 30.0)
+    {
+        float limit = g_482670 * g_4d5bb8->unk2618 * 0.5f;
+        int first = 1;
+        Unk62a078 p;
+        Vec4 *pos;
+        Vec4 v;
+        Vec4 t;
+        Vec4 off;
+        for (int i = 0; i < 4; i++)
+        {
+            if (g_4d5bb8->wheels[i].unk0c > limit)
+            {
+                if (first == 1)
+                {
+                    pos = &p.pos;
+                    *(Camera *)pos = g_4864e8;
+                    FUN_416ea0(&p);
+                    first = 0;
+                    v.x = g_4d5bb8->unk1c8c.x * 0.5f;
+                    v.y = g_4d5bb8->unk1c8c.y * 0.5f;
+                    v.z = g_4d5bb8->unk1c8c.z * 0.5f;
+                    t.x = g_4d5bb8->axisY.x * 1.5f;
+                    t.y = g_4d5bb8->axisY.y * 1.5f;
+                    t.z = g_4d5bb8->axisY.z * 1.5f;
+                    v.x = t.x + v.x;
+                    v.y = t.y + v.y;
+                    v.z = t.z + v.z;
+                    off.x = g_4d5bb8->axisY.x * 60.000004f;
+                    off.y = g_4d5bb8->axisY.y * 60.000004f;
+                    off.z = g_4d5bb8->axisY.z * 60.000004f;
+                }
+                pos->x = g_4d5bb8->wheels[i].pos.x - off.x;
+                pos->y = g_4d5bb8->wheels[i].pos.y - off.y;
+                pos->z = g_4d5bb8->wheels[i].pos.z - off.z;
+                float r = g_4d5bb8->wheels[i].unk0c / limit;
+                float s = r * 2.0f + (float)fabs(FUN_42f1c0(2.0f));
+                if (i & 1)
+                {
+                    s = -s;
+                }
+                t.x = s * g_4d5bb8->axisX.x;
+                t.y = s * g_4d5bb8->axisX.y;
+                t.z = s * g_4d5bb8->axisX.z;
+                p.vel[0] = t.x + v.x;
+                p.vel[1] = t.y + v.y;
+                p.vel[2] = t.z + v.z;
+                FUN_45e110(&p);
+            }
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x417130
