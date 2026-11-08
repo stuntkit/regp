@@ -1859,9 +1859,106 @@ void FUN_42be20(char *path)
     g_580aec += strlen(path) + 1;
 }
 
-// STUB: STUNTGP_D3D 0x433290
+// Pre-lit transformed vertex for the polygon batches.
+struct BatchVertex
+{
+    float x;            // 0x00
+    float y;            // 0x04
+    float z;            // 0x08
+    float rhw;          // 0x0c
+    D3DCOLOR diffuse;   // 0x10
+    D3DCOLOR specular;  // 0x14
+    float u0;           // 0x18
+    float v0;           // 0x1c
+    float u1;           // 0x20
+    float v1;           // 0x24
+};
+
+// Triangle-fan indices into g_592780 for the current batch.
+// GLOBAL: STUNTGP_D3D 0x590018
+WORD g_590018[0x1000];
+
+// GLOBAL: STUNTGP_D3D 0x592780
+BatchVertex g_592780[0x1000];
+
+// First texture slot with a UV scroll record in g_577660.
+// GLOBAL: STUNTGP_D3D 0x583590
+int g_583590;
+
+// Draws queued polygons with their textures scrolled by g_577660, z-test off, one indexed
+// batch per texture run.
+// FUNCTION: STUNTGP_D3D 0x433290
 void FUN_433290(void *data, int count)
 {
+    if (!count)
+    {
+        return;
+    }
+    int res = g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZFUNC, D3DCMP_ALWAYS);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    int base = 0;
+    DWORD texture = 0xffffffff;
+    BatchVertex *v;
+    WORD *idx;
+    float *scroll;
+    PolyRef *ref = (PolyRef *)data;
+    for (DWORD i = 0; i < (DWORD)count; i++)
+    {
+        if (ref->poly)
+        {
+            BYTE *src = ref->src;
+            BYTE *verts = (BYTE *)ref->verts;
+            WORD *r = ref->ref;
+            DWORD slot = ((BYTE *)ref->poly)[1];
+            if (slot != texture)
+            {
+                if (base)
+                {
+                    g_d3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0x2c4, g_592780, v - g_592780, g_590018, idx - g_590018, 0x1c);
+                }
+                texture = slot;
+                base = 0;
+                v = g_592780;
+                idx = g_590018;
+                g_d3dDevice->SetTexture(0, g_6227d4[texture].texture);
+                scroll = (float *)g_577660 + (texture - g_583590) * 5;
+            }
+            DWORD n = *(BYTE *)ref->poly;
+            for (DWORD k = 0; k < n; k++)
+            {
+                BYTE *e = src + *r++ * 16;
+                float *p = (float *)(verts + *(WORD *)(e + 8) * 32);
+                v->x = p[0];
+                v->y = p[1];
+                v->rhw = v->z = p[7];
+                v->u0 = scroll[1] + ((float *)e)[0];
+                v->v0 = ((float *)e)[1] + scroll[2];
+                v->diffuse = 0xffffffff;
+                v->specular = 0;
+                v++;
+            }
+            int first = base;
+            base++;
+            for (DWORD j = 2; j < n; j++)
+            {
+                idx[0] = first;
+                idx[1] = base;
+                base++;
+                idx[2] = base;
+                idx += 3;
+            }
+            base++;
+        }
+        ref++;
+    }
+    if (base)
+    {
+        g_d3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0x2c4, g_592780, v - g_592780, g_590018, idx - g_590018, 0x1c);
+    }
+    FUN_432a90();
 }
 
 // STUB: STUNTGP_D3D 0x4334c0

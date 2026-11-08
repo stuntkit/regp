@@ -17,6 +17,17 @@ struct Unk4d5cc0
     BYTE unk40[0x19d00 - 0x40];
 };
 
+// Queued polygon for the render lists, 20 bytes. poly's first byte is its vertex count, the
+// second its texture slot.
+struct PolyRef
+{
+    DWORD *poly; // 0x00
+    WORD *ref;   // 0x04
+    BYTE *src;   // 0x08, 16-byte entries: u, v, vertex index, colour
+    int verts;   // 0x0c, 32-byte transformed vertices
+    int unk10;   // 0x10
+};
+
 // Scene to load into g_636418[slot]; the list ends at id 0.
 struct SceneLoad
 {

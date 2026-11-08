@@ -1742,16 +1742,6 @@ Vec4 g_61c4e8;
 // GLOBAL: STUNTGP_D3D 0x61c4f8
 Vec4 g_61c4f8;
 
-// Queued polygon for the render lists, 20 bytes.
-struct PolyRef
-{
-    DWORD *poly;  // 0x00
-    WORD *ref;    // 0x04
-    BYTE *src;    // 0x08
-    int verts;    // 0x0c
-    int unk10;    // 0x10
-};
-
 // FUN_429d50 for partly clipped objects: also skips polygons with every vertex outside one frustum
 // side and stores the vertices' shared outcodes in unk10.
 // FUNCTION: STUNTGP_D3D 0x429b70
