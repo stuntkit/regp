@@ -6240,10 +6240,76 @@ void FUN_41de70()
     }
 }
 
-// STUB: STUNTGP_D3D 0x41ded0
+void FUN_41d9c0(int value);
+
+// Tracks the car along the race path: lap fraction, path direction and the nearest point on it.
+// FUNCTION: STUNTGP_D3D 0x41ded0
 void FUN_41ded0(float *pos, CameraPath *path, int *index)
 {
+    Vec4 *pts = path->points;
+    int i = *index;
+    int step = 0;
+    unsigned int a;
+    Vec4 d;
+    float len;
+    float t;
+    for (;;)
+    {
+        if (i < 0)
+        {
+            a = path->count - (unsigned int)-i % path->count;
+        }
+        else
+        {
+            a = (unsigned int)i % path->count;
+        }
+        unsigned int b = (a + 1) % path->count;
+        d.x = pts[b].x - pts[a].x;
+        d.y = pts[b].y - pts[a].y;
+        d.z = pts[b].z - pts[a].z;
+        FUN_44eda0(&d.x, &len);
+        Vec4 q;
+        q.x = pos[0] - pts[a].x;
+        q.y = pos[1] - pts[a].y;
+        q.z = pos[2] - pts[a].z;
+        t = q.x * d.x + q.y * d.y + q.z * d.z;
+        if (t < 0.0f)
+        {
+            if (step > 0)
+            {
+                break;
+            }
+            i--;
+            step = -1;
+        }
+        else
+        {
+            if (t < len || step < 0)
+            {
+                break;
+            }
+            i++;
+            step = 1;
+        }
+    }
+    *index = i;
+    FUN_41d9c0(g_4d5bb8->unk24a4 * 100 / g_571328->count);
+    g_4d5bb8->unk23b4 = g_4d5bb8->unk23b0;
+    float f = t / len;
+    g_4d5bb8->unk23b0 = (f + g_4d5bb8->unk24a4) * 100.0f / g_571328->count;
+    g_4d5bb8->unk24c0 = d;
+    g_4d5bb8->unk24d0.x = g_482690 * d.y - g_48268c * d.z;
+    g_4d5bb8->unk24d0.y = g_482688 * d.z - g_482690 * d.x;
+    g_4d5bb8->unk24d0.z = g_48268c * d.x - g_482688 * d.y;
+    Vec3_Normalize(&g_4d5bb8->unk24d0.x);
+    d.x = t * d.x;
+    d.y = t * d.y;
+    d.z = t * d.z;
+    g_4d5bb8->unk24b0.x = d.x + pts[a].x;
+    g_4d5bb8->unk24b0.y = d.y + pts[a].y;
+    g_4d5bb8->unk24b0.z = d.z + pts[a].z;
 }
+
 
 // STUB: STUNTGP_D3D 0x41e0f0
 void FUN_41e0f0()
