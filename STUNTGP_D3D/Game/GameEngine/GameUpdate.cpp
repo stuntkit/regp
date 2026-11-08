@@ -1748,6 +1748,68 @@ int FUN_4278a0(float *bounds, float *point)
     return *(int *)&d < 0;
 }
 
+// GLOBAL: STUNTGP_D3D 0x577a90
+float g_577a90[16];
+
+void FUN_44fbd0(Scene *scene, ObjectDef *obj, float *m);
+
+// Clips the eight corners of an object's bounding box (point indices from box[1]) against the
+// view volume: 0 outside, 1 partly visible, 2 inside.
+// FUNCTION: STUNTGP_D3D 0x427b40
+int FUN_427b40(Scene *scene, ObjectDef *obj, WORD *box)
+{
+    float *m = g_577a90;
+    FUN_44fbd0(scene, obj, m);
+    Vec4 **corner = (Vec4 **)&scene->unk40[box[1]];
+    DWORD any = 0;
+    DWORD all = 0x3f;
+    for (DWORD i = 0; i < 8; corner++, i++)
+    {
+        Vec4 *p = *corner;
+        DWORD code = 0x3f;
+        float w = m[2] * p->x + (p->y * m[6] + p->z * m[10]) + m[14];
+        float x = (m[0] * p->x + (p->y * m[4] + p->z * m[8]) + m[12]) * g_61c3e8[0];
+        float y = (m[1] * p->x + (p->y * m[5] + p->z * m[9]) + m[13]) * g_61c3e8[5];
+        float z = g_61c3e8[10] * w + g_61c3e8[14];
+        if (z <= g_4722d0->nearZ)
+        {
+            code = 0x3e;
+        }
+        if (z >= g_4722d0->unk19c)
+        {
+            code &= ~2;
+        }
+        float nw = -w;
+        if (x <= nw)
+        {
+            code &= ~4;
+        }
+        if (x >= w)
+        {
+            code &= ~8;
+        }
+        if (y <= nw)
+        {
+            code &= ~0x10;
+        }
+        if (y >= w)
+        {
+            code &= ~0x20;
+        }
+        if (code == 0x3f && all != 0x3f)
+        {
+            return 2;
+        }
+        any |= code;
+        all &= code;
+    }
+    if (all == 0x3f)
+    {
+        return 0;
+    }
+    return (any == 0x3f) + 1;
+}
+
 // STUB: STUNTGP_D3D 0x425df0
 void FUN_425df0(Scene *scene, ObjectDef *def, int type)
 {

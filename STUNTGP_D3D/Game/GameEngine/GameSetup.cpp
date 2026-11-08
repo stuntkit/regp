@@ -2360,6 +2360,45 @@ void FUN_42a870(Scene *scene, ObjectDef *object)
     }
 }
 
+void FUN_429520(Vec4 *in, DWORD count);
+void FUN_429660(Vec4 *in, DWORD count);
+void FUN_44fbd0(Scene *scene, ObjectDef *obj, float *m);
+void FUN_42a320(Scene *scene, ObjectDef *obj);
+void FUN_42b2a0(Vec4 *out, Vec4 *dir, Scene *scene, ObjectDef *obj);
+extern float g_61c428[16];
+
+// Transforms and queues the visible objects of the current level of detail, lighting those with
+// flag 4.
+// FUNCTION: STUNTGP_D3D 0x42a8c0
+void FUN_42a8c0(PolyRef **lists, Scene *scene, int mode)
+{
+    ObjectDef *obj = scene->lods[scene->lod];
+    for (DWORD i = 0; i < scene->objectCount; obj++, i++)
+    {
+        if (obj->visible == 1)
+        {
+            FUN_42b2a0(&g_61c4e8, &g_61c4f8, scene, obj);
+            FUN_44fbd0(scene, obj, g_61c428);
+            if (!mode)
+            {
+                FUN_429660(obj->points, obj->pointCount);
+                FUN_429d50(scene, obj, lists);
+            }
+            else
+            {
+                FUN_429520(obj->points, obj->pointCount);
+                FUN_429b70(scene, obj, lists);
+            }
+            if (obj->flags & 4)
+            {
+                FUN_42a870(scene, obj);
+                FUN_42a320(scene, obj);
+            }
+            g_61c510 += obj->pointCount * 0x20;
+        }
+    }
+}
+
 // Brings the view position into the object's local space (out) and gives its direction (dir).
 // FUNCTION: STUNTGP_D3D 0x42b2a0
 void FUN_42b2a0(Vec4 *out, Vec4 *dir, Scene *scene, ObjectDef *obj)
