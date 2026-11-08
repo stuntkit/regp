@@ -8644,8 +8644,8 @@ void FUN_41c9b0()
     WORD *idx = (WORD *)scene->unk38;
     MeshFace *faces = (MeshFace *)obj->verts;
     MeshUv *uvs = (MeshUv *)obj->unk2c;
-    *(WORD *)(obj->unk0c + 0x14) = 0;
-    *(WORD *)(obj->unk0c + 0x16) = 0;
+    obj->unk20 = 0;
+    obj->unk22 = 0;
     Vec4 *pts = obj->points;
     faces[0].unk01 = 5;
     uvs[0].color = 0xffffff;

@@ -2074,6 +2074,97 @@ void FUN_439e90()
     g_5df528.mode = 0;
 }
 
+void FUN_43a4a0(DWORD *slot, DWORD *dst, DWORD *src, DWORD index, DWORD value);
+
+// Prices car (with no sponsor) and fills dst from the resulting item record.
+// FUNCTION: STUNTGP_D3D 0x43a430
+void FUN_43a430(DWORD *slot, DWORD *dst, int car, DWORD value)
+{
+    ShopEntry entry;
+    FUN_436490(0, &entry, &g_menuState.cars[car], &g_menuState.items[car], 1);
+    FUN_43a4a0(slot, dst, (DWORD *)&entry.item, car, value);
+}
+
+// The original copies field by field in source order, as if dst and src could alias.
+#pragma optimize("a", off)
+// Fills a 65-dword record from src (a differently laid out item record), then stores src[35],
+// index and value into slot.
+// FUNCTION: STUNTGP_D3D 0x43a4a0
+void FUN_43a4a0(DWORD *slot, DWORD *dst, DWORD *src, DWORD index, DWORD value)
+{
+    memset(dst, 0, 0x41 * sizeof(DWORD));
+    dst[0] = 1;
+    dst[1] = src[1];
+    dst[2] = src[2];
+    dst[3] = src[3];
+    dst[4] = src[4];
+    dst[5] = src[5];
+    dst[6] = src[6];
+    dst[7] = src[7];
+    dst[8] = src[8];
+    dst[9] = src[9];
+    dst[10] = src[10];
+    dst[11] = src[11];
+    dst[12] = src[45];
+    dst[13] = src[12];
+    dst[14] = src[13];
+    dst[15] = src[14];
+    dst[16] = src[15];
+    dst[17] = src[17];
+    dst[18] = src[16];
+    dst[19] = src[18];
+    dst[20] = src[19];
+    dst[21] = src[20];
+    dst[22] = src[21];
+    dst[23] = src[22];
+    dst[24] = src[23];
+    dst[25] = src[24];
+    dst[26] = src[25];
+    dst[27] = src[26];
+    dst[28] = src[27];
+    dst[29] = src[28];
+    dst[30] = src[29];
+    dst[31] = src[30];
+    dst[32] = src[31];
+    dst[33] = src[32];
+    dst[34] = src[33];
+    dst[35] = src[34];
+    dst[36] = src[36];
+    dst[37] = src[37];
+    dst[62] = 0;
+    dst[38] = src[38];
+    dst[39] = src[39];
+    dst[40] = src[40];
+    dst[42] = src[41];
+    dst[43] = src[42];
+    dst[41] = src[43];
+    dst[44] = src[44];
+    dst[45] = src[45];
+    dst[46] = src[46];
+    dst[47] = src[47];
+    dst[48] = src[48];
+    dst[49] = src[49];
+    dst[50] = src[50];
+    dst[51] = src[51];
+    dst[52] = src[52];
+    dst[53] = src[53];
+    dst[54] = src[54];
+    dst[55] = src[55];
+    dst[56] = src[56];
+    dst[57] = src[57];
+    dst[58] = src[58];
+    dst[59] = src[59];
+    dst[60] = src[60];
+    dst[61] = src[61];
+    dst[63] = src[62];
+    dst[64] = src[63];
+    slot[12] = src[35];
+    slot[9] = index;
+    slot[10] = index;
+    slot[11] = value;
+}
+#pragma optimize("", on)
+
 // GLOBAL: STUNTGP_D3D 0x60d730
 RaceState g_60d730;
 
@@ -2093,6 +2184,147 @@ void FUN_43a720()
 void FUN_43a760(int player, int a, int b)
 {
     FUN_45ecc0(player - 1, a, b);
+}
+
+void FUN_43a430(DWORD *slot, DWORD *dst, int car, DWORD value);
+Initials *FUN_43d690(Initials *name);
+
+// Starts a mode-3 race from src.
+// FUNCTION: STUNTGP_D3D 0x43a910
+void FUN_43a910(RaceSetup3 *src, RaceResults3 *dst)
+{
+    g_5df528.mode = 3;
+    g_5df528.src3 = src;
+    g_5df528.dst3 = dst;
+    FUN_43d420();
+    FUN_43a720();
+    g_60d730.unk844 = src->unk14;
+    if (src->unk18)
+    {
+        g_60d730.unk85c = (int)src->unk18;
+        g_60d730.unk854 = *(int *)(src->unk18 + 0x3c);
+    }
+    else
+    {
+        g_60d730.unk85c = 0;
+        g_60d730.unk854 = 0;
+    }
+    g_60d730.unk858 = 0;
+    g_60d730.unk010 = 0;
+    g_60d730.unk020 = 0;
+    g_60d730.unk840 = 0;
+    g_60d730.unk03c[2] = 0;
+    g_60d730.unk01c = ((int(*)[6])g_menuState.unk1d618)[src->track][4];
+    g_60d730.unk018 = src->track - 1;
+    g_60d730.unk04c = 4;
+    g_60d730.unk054 = 4;
+    g_60d730.unk034 = src->unk0c;
+    g_60d730.unk03c[3] = 0;
+    g_60d730.unk000 = ((int(*)[6])g_menuState.unk1d618)[src->track][0];
+    g_60d730.unk050 = 3;
+    g_60d730.unk83c = 1;
+    g_60d730.unk03c[0] = src->unk10;
+    g_60d730.unk03c[1] = 36000;
+    FUN_43a760(g_menuState.unk4244, 0, 1);
+    strcpy((char *)g_60d730.entries[0].unk010, (char *)FUN_43d690(&src->name));
+    g_60d730.entries[0].unk004 = 0;
+    g_60d730.unk024[0] = 0;
+    g_60d730.entries[0].type = 2;
+    FUN_43a430((DWORD *)&g_60d730.entries[0], (DWORD *)g_60d730.entries[0].unk034, src->car, 0);
+    FUN_43d420();
+}
+
+// Starts a mode-6 race for the one to four players of src, naming them by player number.
+// FUNCTION: STUNTGP_D3D 0x43aa50
+void FUN_43aa50(RaceSetup6 *src, RaceResults6 *dst)
+{
+    g_5df528.mode = 6;
+    g_5df528.src6 = src;
+    int count = src->count;
+    g_5df528.dst6 = dst;
+    FUN_43d420();
+    FUN_43a720();
+    g_60d730.unk010 = 0;
+    g_60d730.unk020 = 0;
+    g_60d730.unk054 = 4;
+    g_60d730.unk018 = src->track - 1;
+    g_60d730.unk840 = 0;
+    g_60d730.unk000 = ((int(*)[6])g_menuState.unk1d618)[src->track][0];
+    g_60d730.unk01c = ((int(*)[6])g_menuState.unk1d618)[src->track][3];
+    g_60d730.unk034 = src->unk38;
+    g_60d730.unk04c = 2;
+    g_60d730.unk050 = 1;
+    g_60d730.unk83c = 1;
+    g_60d730.unk03c[0] = 7200;
+    g_60d730.unk03c[1] = 36000;
+    g_60d730.unk03c[2] = 0;
+    g_60d730.unk03c[3] = 0;
+    switch (count)
+    {
+    case 1:
+        g_60d730.unk020 = 0;
+        break;
+    case 2:
+        g_60d730.unk020 = 2;
+        break;
+    case 3:
+        g_60d730.unk020 = 3;
+        break;
+    case 4:
+        g_60d730.unk020 = 4;
+        break;
+    default:
+        return;
+    }
+    int *slot = g_60d730.unk024;
+    MenuRoundCar *car = src->cars;
+    for (int player = 1; player - 1 < count; player++)
+    {
+        int e = car->unk08 - 1;
+        RaceEntry *entry = &g_60d730.entries[e];
+        FUN_43a760(car->unk00, e, player);
+        sprintf((char *)entry->unk010, FUN_441170(0x1f), player);
+        entry->type = 2;
+        entry->unk004 = 0;
+        *slot++ = e;
+        FUN_43a430((DWORD *)entry, (DWORD *)entry->unk034, car->unk04, 8);
+        car++;
+    }
+    FUN_43d420();
+}
+
+// Starts a mode-4 race from src: the player's car alone on the track against the clock.
+// FUNCTION: STUNTGP_D3D 0x43ae00
+void FUN_43ae00(RaceSetup4 *src, RaceResults4 *dst)
+{
+    g_5df528.mode = 4;
+    g_5df528.src4 = src;
+    g_5df528.dst4 = dst;
+    FUN_43d420();
+    FUN_43a720();
+    g_60d730.unk010 = 1;
+    g_60d730.unk034 = 1;
+    g_60d730.unk050 = 1;
+    g_60d730.unk83c = 1;
+    g_60d730.unk038 = src->minutes * 60;
+    g_60d730.unk01c = 8;
+    g_60d730.unk04c = 3;
+    g_60d730.unk000 = ((int(*)[6])g_menuState.unk1d618)[src->track][0];
+    g_60d730.unk018 = src->track - 1;
+    g_60d730.unk020 = 0;
+    g_60d730.unk840 = 0;
+    g_60d730.unk03c[2] = 0;
+    g_60d730.unk054 = 4;
+    g_60d730.unk03c[0] = 7200;
+    g_60d730.unk03c[1] = 36000;
+    g_60d730.unk03c[3] = src->unk0c;
+    FUN_43a760(g_menuState.unk4244, 0, 1);
+    strcpy((char *)g_60d730.entries[0].unk010, (char *)FUN_43d690(&src->name));
+    g_60d730.entries[0].type = 2;
+    g_60d730.entries[0].unk004 = 0;
+    FUN_43a430((DWORD *)&g_60d730.entries[0], (DWORD *)g_60d730.entries[0].unk034, src->car, 8);
+    g_60d730.unk024[0] = 0;
+    FUN_43d420();
 }
 
 void FUN_43dc40();

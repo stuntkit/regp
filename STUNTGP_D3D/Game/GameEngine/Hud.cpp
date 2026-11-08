@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "../../d3drender.h"
 #include "../../font.h"
@@ -12,9 +13,29 @@
 #include "GameSetup.h"
 #include "RenderState.h"
 
-// STUB: STUNTGP_D3D 0x431f10
+int FUN_431be0(float *x0, float *y0, float *z0, float *x1, float *y1, float *z1);
+
+// Draws a screen-space line, clipped to the display.
+// FUNCTION: STUNTGP_D3D 0x431f10
 void FUN_431f10(DWORD color, float x0, float y0, float z0, float x1, float y1, float z1)
 {
+    if (FUN_431be0(&x0, &y0, &z0, &x1, &y1, &z1))
+    {
+        g_58d818[0].sx = x0;
+        g_58d818[0].sy = y0;
+        g_58d818[0].rhw = g_58d818[0].sz = z0;
+        g_58d818[0].color = color;
+        g_58d818[0].specular = 0xff000000;
+        g_58d818[1].sx = x1;
+        g_58d818[1].sy = y1;
+        g_58d818[1].rhw = g_58d818[1].sz = z1;
+        g_58d818[1].color = color;
+        g_58d818[1].specular = 0xff000000;
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 1);
+        g_d3dDevice->SetTexture(0, NULL);
+        g_d3dDevice->DrawPrimitive(D3DPT_LINELIST, FVF_TLVERTEX2, g_58d818, 2, D3DDP_DONOTCLIP | D3DDP_DONOTLIGHT);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 0xa0);
+    }
 }
 
 // Draws a line given in 640x480 screen units.
@@ -815,6 +836,223 @@ void FUN_448a70()
 }
 
 int FUN_448150(DWORD value, int *digits, DWORD count, int leadingZeros);
+
+int FUN_448150(DWORD value, int *digits, DWORD count, int leadingZeros);
+
+// Draws the odometer panel on fader 2: seven rolling digits of the distance driven.
+// FUNCTION: STUNTGP_D3D 0x448ab0
+void FUN_448ab0()
+{
+    int digits[7];
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.texture = 11;
+    g_spriteDesc.x = g_61b740->faders[2].x - 3.6000001f;
+    g_spriteDesc.blendMode = 0x20;
+    g_spriteDesc.z = 0.94f;
+    g_spriteDesc.u0 = 8.0f;
+    g_spriteDesc.v0 = 512.0f;
+    g_spriteDesc.u1 = 480.0f;
+    g_spriteDesc.v1 = 664.0f;
+    g_spriteDesc.y = g_61b740->faders[2].y - 2.4f;
+    g_spriteDesc.width = 141.6f;
+    g_spriteDesc.height = 45.600002f;
+    FUN_432e00(&g_spriteDesc);
+    float dist = g_4722d0->data->unk260c;
+    if (dist >= 9999999.0f)
+    {
+        dist = 9999999.0f;
+    }
+    FUN_448150((DWORD)dist, digits, 7, 1);
+    float scale = 1.0f;
+    float spread = 1.0f;
+    float dx = g_61b740->faders[2].x + 93.6f;
+    for (int i = 6; i >= 0; i--)
+    {
+        g_spriteDesc.x = dx;
+        g_spriteDesc.z = 0.95f;
+        g_spriteDesc.y = g_61b740->faders[2].y;
+        g_spriteDesc.width = 15.6f;
+        g_spriteDesc.height = 21.6f;
+        g_spriteDesc.u0 = 968.0f;
+        if (i == 6)
+        {
+            g_spriteDesc.u0 = 916.0f;
+        }
+        g_spriteDesc.v0 = ((digits[i] * 18) * 1024.0f) * 0.00390625f;
+        float f = (float)fmod(scale * dist, 1.0);
+        float r;
+        if (f <= scale)
+        {
+            r = f * spread - 1.0f;
+        }
+        else
+        {
+            r = 0.0f;
+        }
+        int k = (int)(r * 18.0f);
+        g_spriteDesc.v0 = (k * 1024.0f) * 0.00390625f + g_spriteDesc.v0;
+        if (g_spriteDesc.v0 < 0.0f)
+        {
+            g_spriteDesc.v0 = g_spriteDesc.v0 + 720.0f;
+        }
+        g_spriteDesc.u1 = g_spriteDesc.u0 + 52.0f;
+        g_spriteDesc.v1 = g_spriteDesc.v0 + 72.0f;
+        FUN_432e00(&g_spriteDesc);
+        dx -= 15.6f;
+        spread *= 10.0f;
+        scale *= 0.1f;
+    }
+    g_spriteDesc.z = 0.96f;
+    g_spriteDesc.x = g_61b740->faders[2].x;
+    g_spriteDesc.y = g_61b740->faders[2].y;
+    g_spriteDesc.u0 = 20.0f;
+    g_spriteDesc.v0 = 524.0f;
+    g_spriteDesc.u1 = 384.0f;
+    g_spriteDesc.v1 = 596.0f;
+    g_spriteDesc.width = 109.200005f;
+    g_spriteDesc.height = 21.6f;
+    g_spriteDesc.blendMode = 0x48;
+    g_spriteDesc.alpha = 0x80;
+    FUN_432e00(&g_spriteDesc);
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.z = 0.94f;
+    g_spriteDesc.x = g_61b740->faders[2].x + 129.6f;
+    g_spriteDesc.u0 = 384.0f;
+    g_spriteDesc.v0 = 876.0f;
+    g_spriteDesc.u1 = 624.0f;
+    g_spriteDesc.v1 = 1008.0f;
+    g_spriteDesc.width = 48.0f;
+    g_spriteDesc.height = 26.4f;
+    g_spriteDesc.y = g_61b740->faders[2].y - 1.6f;
+    g_spriteDesc.texture = 12;
+    g_spriteDesc.blendMode = 0x20;
+    FUN_432e00(&g_spriteDesc);
+}
+
+// Draws a five-digit clock panel at x, y from digits; with roll set the digits roll over with
+// frames like an odometer, and hide leaves out the digits.
+// FUNCTION: STUNTGP_D3D 0x448e00
+void FUN_448e00(int *digits, int frames, float x, float y, int roll, int hide)
+{
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.x = x;
+    g_spriteDesc.y = y;
+    g_spriteDesc.z = 0.94f;
+    g_spriteDesc.u0 = 0.0f;
+    g_spriteDesc.v0 = 744.0f;
+    g_spriteDesc.u1 = 328.0f;
+    g_spriteDesc.v1 = 852.0f;
+    g_spriteDesc.width = 65.6f;
+    g_spriteDesc.height = 21.6f;
+    g_spriteDesc.texture = 11;
+    g_spriteDesc.blendMode = 0x20;
+    FUN_432e00(&g_spriteDesc);
+    if (!hide)
+    {
+        float dx = x + 50.4f;
+        g_spriteDesc.texture = 11;
+        g_spriteDesc.flags = 2;
+        g_spriteDesc.blendMode = 0x20;
+        g_spriteDesc.z = 0.95f;
+        float dy = y + 2.4f;
+        for (int i = 0; i < 5; i++)
+        {
+            g_spriteDesc.x = g_4855f0[i] * 0.8f + dx;
+            g_spriteDesc.y = dy;
+            g_spriteDesc.width = 10.400001f;
+            g_spriteDesc.height = 14.400001f;
+            g_spriteDesc.u0 = (g_485550[i].u * 1024.0f) * 0.00390625f;
+            g_spriteDesc.v0 = ((digits[i] * 18) * 1024.0f) * 0.00390625f;
+            g_spriteDesc.u1 = g_spriteDesc.u0 + 52.0f;
+            g_spriteDesc.v1 = g_spriteDesc.v0 + 72.0f;
+            if (roll == 1)
+            {
+                float f = (float)fmod(frames * g_485550[i].rate, 1.0);
+                float r;
+                if (f <= g_485550[i].unk08)
+                {
+                    r = f * g_485550[i].unk04 - 1.0f;
+                }
+                else
+                {
+                    r = 0.0f;
+                }
+                int k = (int)((r * 18432.0f) * 0.00390625f);
+                g_spriteDesc.v0 = k + g_spriteDesc.v0;
+                g_spriteDesc.v1 = k + g_spriteDesc.v1;
+                if (g_spriteDesc.v0 < 0.0f)
+                {
+                    k = (int)((g_485550[i].range * 1024.0f) * 0.00390625f);
+                    g_spriteDesc.v0 = k + g_spriteDesc.v0;
+                    g_spriteDesc.v1 = k + g_spriteDesc.v1;
+                }
+            }
+            FUN_432e00(&g_spriteDesc);
+        }
+    }
+    g_spriteDesc.x = x + 2.4f;
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.z = 0.96f;
+    g_spriteDesc.u0 = 524.0f;
+    g_spriteDesc.v0 = 672.0f;
+    g_spriteDesc.u1 = 816.0f;
+    g_spriteDesc.y = y + 2.4f;
+    g_spriteDesc.v1 = 744.0f;
+    g_spriteDesc.width = 58.4f;
+    g_spriteDesc.height = 14.400001f;
+    g_spriteDesc.texture = 11;
+    g_spriteDesc.blendMode = 0x48;
+    g_spriteDesc.alpha = 0x80;
+    FUN_432e00(&g_spriteDesc);
+}
+
+void FUN_4482a0(DWORD frames, DWORD *digits);
+extern DWORD g_60f000[4];
+
+// Draws the race clock on fader 3 and, once one is set, the best-lap clock on fader 4.
+// FUNCTION: STUNTGP_D3D 0x4490e0
+void FUN_4490e0()
+{
+    DWORD digits[8];
+    if (g_4722d0->data->unk23c4 != -1)
+    {
+        int hide = g_4722d0->data->unk24e0;
+        FUN_4482a0(g_4722d0->data->unk23c4, digits);
+        FUN_448e00((int *)digits, g_4722d0->data->unk23c4, g_61b740->faders[3].x, g_61b740->faders[3].y, 1, hide);
+        g_spriteDesc.flags = 2;
+        g_spriteDesc.z = 0.96f;
+        g_spriteDesc.y = g_61b740->faders[3].y;
+        g_spriteDesc.u0 = 584.0f;
+        g_spriteDesc.v0 = 752.0f;
+        g_spriteDesc.x = g_61b740->faders[3].x - 46.4f + 0.8f;
+        g_spriteDesc.u1 = 816.0f;
+        g_spriteDesc.v1 = 884.0f;
+        g_spriteDesc.width = 46.4f;
+        g_spriteDesc.height = 26.4f;
+        g_spriteDesc.texture = 11;
+        g_spriteDesc.blendMode = 0x20;
+        FUN_432e00(&g_spriteDesc);
+    }
+    DWORD best = g_60f000[0];
+    if (best != -1 && g_4722d0->data->unk23c4 != -1)
+    {
+        FUN_4482a0(best, digits);
+        FUN_448e00((int *)digits, best, g_61b740->faders[4].x, g_61b740->faders[4].y + 32.0f, 0, 0);
+        g_spriteDesc.flags = 2;
+        g_spriteDesc.z = 0.96f;
+        g_spriteDesc.u0 = 332.0f;
+        g_spriteDesc.v0 = 748.0f;
+        g_spriteDesc.u1 = 580.0f;
+        g_spriteDesc.v1 = 888.0f;
+        g_spriteDesc.x = g_61b740->faders[4].x - 49.600002f + 0.8f;
+        g_spriteDesc.width = 49.600002f;
+        g_spriteDesc.height = 28.0f;
+        g_spriteDesc.texture = 11;
+        g_spriteDesc.blendMode = 0x20;
+        g_spriteDesc.y = g_61b740->faders[4].y + 32.0f;
+        FUN_432e00(&g_spriteDesc);
+    }
+}
 
 // Three-digit readout at fader 1, right-aligned by skipping the blank leading digits.
 // FUNCTION: STUNTGP_D3D 0x4492d0

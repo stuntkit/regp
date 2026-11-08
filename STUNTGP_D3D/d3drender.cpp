@@ -6,6 +6,7 @@
 #include "windowInit.h"
 #include "vecmath.h"
 #include "surface.h"
+#include "mem.h"
 #include "Game/GameEngine/io_wad.h"
 #include "Game/GameEngine/GameSetup.h"
 #include "Game/GameEngine/GameUpdate.h"
@@ -570,6 +571,135 @@ void FUN_430100(LPDIRECTDRAWSURFACE4 surface, BYTE *image, int width, int height
     }
 }
 
+// Loads a width x height image (RLE packed when g_583330 is set, else a TGA) into a new
+// video-memory texture (and a second-stage copy when the device supports it) in the next
+// surface slot and texture slot.
+// FUNCTION: STUNTGP_D3D 0x4303a0
+int FUN_4303a0(int width, int height, int index, int unk, char *path)
+{
+    DDSURFACEDESC2 desc;
+    LPDIRECTDRAWSURFACE4 sysSurface = NULL;
+    LPDIRECTDRAWSURFACE4 surface = NULL;
+    LPDIRECT3DTEXTURE2 sysTexture = NULL;
+    LPDIRECT3DTEXTURE2 texture = NULL;
+    int res;
+    BYTE *image = (BYTE *)Mem_Alloc(width * height * 3 + 0x100, 0);
+    if (g_583330 == 1)
+    {
+        FUN_430330(path, image);
+    }
+    else
+    {
+        FUN_4623c0(path, image, &g_571fd4);
+        FUN_430280(image, (WORD *)image, width, height);
+    }
+    SurfaceSlot *slot = &g_5ba788.surfaceSlots[g_5ba788.surfaceSlotCount++];
+    memset(&desc, 0, sizeof(desc));
+    desc.dwWidth = width;
+    desc.dwSize = sizeof(desc);
+    desc.dwHeight = height;
+    desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
+    desc.ddpfPixelFormat = *g_5ba788.textureFormat;
+    desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
+    res = g_dd4->CreateSurface(&desc, &sysSurface, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    FUN_430100(sysSurface, image, width, height, 16);
+    Mem_Free(image);
+    res = sysSurface->QueryInterface(IID_IDirect3DTexture2, (void **)&sysTexture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = sysSurface->GetSurfaceDesc(&desc);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    desc.dwFlags = (*g_592028 ? DDSD_CKSRCBLT : 0) + 0x101007;
+    desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_ALLOCONLOAD;
+    desc.ddsCaps.dwCaps2 = 0x80;
+    desc.dwTextureStage = 0;
+    res = g_dd4->CreateSurface(&desc, &surface, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = surface->QueryInterface(IID_IDirect3DTexture2, (void **)&texture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = texture->Load(sysTexture);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    slot->unk04 = (DWORD)texture;
+    slot->surface = surface;
+    g_renderState.unk7ed0->texture = texture;
+    g_renderState.unk7ed0->unk04[0] = (DWORD)texture;
+    *(WORD *)&g_renderState.unk7ed0->unk04[1] = width;
+    if (g_5ba788.deviceDesc[29] & 0x4000)
+    {
+        LPDIRECTDRAWSURFACE4 surface2 = NULL;
+        LPDIRECT3DTEXTURE2 texture2 = NULL;
+        desc.dwTextureStage = 1;
+        res = g_dd4->CreateSurface(&desc, &surface2, NULL);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+        res = surface2->QueryInterface(IID_IDirect3DTexture2, (void **)&texture2);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+        res = texture2->Load(sysTexture);
+        if (res != DD_OK)
+        {
+            exitError(ddGetErrMessage(res));
+        }
+        slot->unk0c = (DWORD)texture2;
+        slot->surface2 = surface2;
+        g_renderState.unk7ed0->unk04[0] = (DWORD)texture2;
+    }
+    FUN_4300f0(sysTexture);
+    ddReleaseSurface(&sysSurface);
+    g_renderState.unk7ed0++;
+    g_592028++;
+    return 1;
+}
+
+void FUN_42be20(char *path);
+
+// Loads count textures from path (at least one), through FUN_4303a0 when g_58332c is set;
+// returns the number loaded.
+// FUNCTION: STUNTGP_D3D 0x4306c0
+DWORD FUN_4306c0(int width, int height, DWORD count, int unk, char *path)
+{
+    FUN_42be20(path);
+    DWORD i = 0;
+    if (count)
+    {
+        count--;
+    }
+    do
+    {
+        if (g_58332c == 1)
+        {
+            FUN_4303a0(width, height, i, unk, path);
+        }
+        else
+        {
+            FUN_4306b0(width, height, i, unk, (int)path);
+        }
+    } while (i++ < count);
+    return i;
+}
+
 // Creates an empty size x size video-memory texture (and a second-stage copy when the device
 // supports it) in the next surface slot and texture slot.
 // FUNCTION: STUNTGP_D3D 0x430730
@@ -1007,6 +1137,76 @@ void FUN_431b40(float t)
     g_592030.x -= step.x;
     g_592030.y -= step.y;
     g_592030.z -= step.z;
+}
+
+// Clips the screen-space segment (x0, y0, z0)-(x1, y1, z1) to the display inset by a pixel,
+// in place; returns 0 when it lies wholly outside.
+// FUNCTION: STUNTGP_D3D 0x431be0
+int FUN_431be0(float *x0, float *y0, float *z0, float *x1, float *y1, float *z1)
+{
+    float right = g_576ba4 - 1.0f;
+    float bottom = g_576ba8 - 1.0f;
+    g_592040.x = *x0;
+    g_592040.y = *y0;
+    g_592040.z = *z0;
+    g_592030.x = *x1;
+    g_592030.y = *y1;
+    g_592030.z = *z1;
+    if (g_592040.x < 1.0f && g_592030.x < 1.0f)
+    {
+        return 0;
+    }
+    if (g_592040.x > right && g_592030.x > right)
+    {
+        return 0;
+    }
+    if (g_592040.y < 1.0f && g_592030.y < 1.0f)
+    {
+        return 0;
+    }
+    if (g_592040.y > bottom && g_592030.y > bottom)
+    {
+        return 0;
+    }
+    if (g_592040.x < 1.0f)
+    {
+        FUN_431aa0((1.0f - g_592040.x) / (float)fabs(g_592030.x - g_592040.x));
+    }
+    if (g_592030.x < 1.0f)
+    {
+        FUN_431b40((1.0f - g_592030.x) / (float)fabs(g_592030.x - g_592040.x));
+    }
+    if (g_592040.x > right)
+    {
+        FUN_431aa0((g_592040.x - right) / (float)fabs(g_592030.x - g_592040.x));
+    }
+    if (g_592030.x > right)
+    {
+        FUN_431b40((g_592030.x - right) / (float)fabs(g_592030.x - g_592040.x));
+    }
+    if (g_592040.y < 1.0f)
+    {
+        FUN_431aa0((1.0f - g_592040.y) / (float)fabs(g_592030.y - g_592040.y));
+    }
+    if (g_592030.y < 1.0f)
+    {
+        FUN_431b40((1.0f - g_592030.y) / (float)fabs(g_592030.y - g_592040.y));
+    }
+    if (g_592040.y > bottom)
+    {
+        FUN_431aa0((g_592040.y - bottom) / (float)fabs(g_592030.y - g_592040.y));
+    }
+    if (g_592030.y > bottom)
+    {
+        FUN_431b40((g_592030.y - bottom) / (float)fabs(g_592030.y - g_592040.y));
+    }
+    *x0 = g_592040.x;
+    *y0 = g_592040.y;
+    *z0 = g_592040.z;
+    *x1 = g_592030.x;
+    *y1 = g_592030.y;
+    *z1 = g_592030.z;
+    return 1;
 }
 
 // Outlines the display area with four lines; ends are nudged half a pixel so the corners close.
@@ -1778,17 +1978,201 @@ void FUN_432a60()
     }
 }
 
-// Queued primitive; type 0x3f marks one that needs no depth key.
-struct RenderItem
+// MeshUv with its colour as bytes.
+struct ClipUv
 {
-    DWORD unk00[4];
-    int type; // 0x10
+    float u;       // 0x00
+    float v;       // 0x04
+    WORD point;    // 0x08
+    WORD unk0a;    // 0x0a
+    BYTE color[4]; // 0x0c
 };
 
+// Transformed vertex as written by FUN_429520.
+struct XformVertex
+{
+    float x;     // 0x00
+    float y;     // 0x04
+    float z;     // 0x08
+    DWORD unk0c; // 0x0c
+    WORD code;   // 0x10, outcode bits
+    WORD unk12;  // 0x12
+    DWORD unk14; // 0x14
+    DWORD unk18; // 0x18
+    float w;     // 0x1c, view-space depth
+};
 
-// STUB: STUNTGP_D3D 0x427530
+// Polygon vertex for the 3D clipper.
+struct ClipVertex3
+{
+    ClipUv uv;      // 0x00
+    XformVertex xv; // 0x10
+};
+
+// Point where the edge a-b crosses clip plane 1 (near), 4, 8, 16 or 32.
+// FUNCTION: STUNTGP_D3D 0x4272a0
+void FUN_4272a0(ClipVertex3 *a, ClipVertex3 *b, ClipVertex3 *out, int plane)
+{
+    float da;
+    float db;
+    switch (plane)
+    {
+    case 1:
+        da = a->xv.z - g_4722d0->nearZ;
+        db = b->xv.z - g_4722d0->nearZ;
+        break;
+    case 4:
+        da = a->xv.z + a->xv.x + 1.0f;
+        db = b->xv.z + b->xv.x + 1.0f;
+        break;
+    case 8:
+        da = a->xv.x - a->xv.z - 1.0f;
+        db = b->xv.x - b->xv.z - 1.0f;
+        break;
+    case 16:
+        da = a->xv.z + a->xv.y + 1.0f;
+        db = b->xv.z + b->xv.y + 1.0f;
+        break;
+    case 32:
+        da = a->xv.y - a->xv.z - 1.0f;
+        db = b->xv.y - b->xv.z - 1.0f;
+        break;
+    }
+    float d = db - da;
+    float t;
+    if ((float)fabs(d) <= 1.0f)
+    {
+        t = 1.0f;
+    }
+    else
+    {
+        t = -(da / d);
+    }
+    float x = (b->xv.x - a->xv.x) * t + a->xv.x;
+    out->xv.x = x;
+    float y = (b->xv.y - a->xv.y) * t + a->xv.y;
+    out->xv.y = y;
+    float z = (b->xv.z - a->xv.z) * t + a->xv.z;
+    out->xv.z = z;
+    float w = (b->xv.w - a->xv.w) * t + a->xv.w;
+    out->xv.w = w;
+    out->uv.u = (b->uv.u - a->uv.u) * t + a->uv.u;
+    out->uv.v = (b->uv.v - a->uv.v) * t + a->uv.v;
+    int f = (int)(t * 256.0f);
+    out->uv.color[3] = (BYTE)(((b->uv.color[3] - a->uv.color[3]) * f >> 8) + a->uv.color[3]);
+    out->uv.color[2] = (BYTE)(((b->uv.color[2] - a->uv.color[2]) * f >> 8) + a->uv.color[2]);
+    out->uv.color[1] = (BYTE)(((b->uv.color[1] - a->uv.color[1]) * f >> 8) + a->uv.color[1]);
+    out->uv.color[0] = (BYTE)(((b->uv.color[0] - a->uv.color[0]) * f >> 8) + a->uv.color[0]);
+    float c[5];
+    c[0] = g_4722d0->nearZ - z;
+    c[1] = -x - w;
+    c[2] = x - w;
+    c[3] = -y - w;
+    c[4] = y - w;
+    out->xv.code = 2 | (*(DWORD *)&c[0] >> 31) | ((*(DWORD *)&c[1] >> 29) & 4) | ((*(DWORD *)&c[2] >> 28) & 8) |
+                ((*(DWORD *)&c[3] >> 27) & 0x10) | ((*(DWORD *)&c[4] >> 26) & 0x20);
+}
+
+// Queued polygon (PolyRef layout); type holds the clip planes it is already inside, 0x3f for all.
+struct RenderItem
+{
+    DWORD *poly;        // 0x00, first byte is the vertex count
+    WORD *ref;          // 0x04
+    ClipUv *src;        // 0x08
+    XformVertex *verts; // 0x0c
+    int type;           // 0x10
+};
+
+// Clips the polygon against each plane it is not yet inside, appending the result to the
+// clipped-polygon buffers; drops it when fewer than three vertices remain.
+// FUNCTION: STUNTGP_D3D 0x427530
 void FUN_427530(RenderItem *item)
 {
+    ClipVertex3 bufA[16];
+    ClipVertex3 bufB[16];
+    ClipVertex3 *dst = bufA;
+    WORD *ref = item->ref;
+    DWORD *poly = item->poly;
+    DWORD n = *poly & 0xff;
+    ClipVertex3 *src = bufB;
+    DWORD i;
+    for (i = 0; i < n; i++)
+    {
+        src[i].uv = item->src[*ref];
+        src[i].xv = item->verts[src[i].uv.point];
+        ref++;
+    }
+    DWORD flags = item->type;
+    DWORD bit = 1;
+    DWORD pass = 0;
+    do
+    {
+        if (!(flags & bit))
+        {
+            ClipVertex3 *out = dst;
+            ClipVertex3 *prev = &src[n - 1];
+            ClipVertex3 *cur = src;
+            for (i = 0; i < n; i++)
+            {
+                int prevIn = prev->xv.code & bit;
+                int curIn = cur->xv.code & bit;
+                if (prevIn && curIn)
+                {
+                    *out++ = *prev;
+                }
+                else if (prevIn)
+                {
+                    *out++ = *prev;
+                    FUN_4272a0(prev, cur, out++, bit);
+                }
+                else if (curIn)
+                {
+                    FUN_4272a0(prev, cur, out++, bit);
+                }
+                prev = cur;
+                cur++;
+            }
+            n = out - dst;
+            if (n < 3)
+            {
+                FUN_427520((int *)item);
+                return;
+            }
+            ClipVertex3 *t = src;
+            src = dst;
+            dst = t;
+        }
+        flags |= bit;
+        bit <<= 1;
+        if (flags == 0x3f)
+        {
+            break;
+        }
+    } while (++pass < 6);
+    DWORD *np = (DWORD *)g_renderState.unk7ff4;
+    item->src = (ClipUv *)g_renderState.unk7ff0;
+    item->poly = np;
+    item->ref = (WORD *)g_renderState.unk7fc0;
+    item->verts = (XformVertex *)g_renderState.unk7ffc;
+    g_renderState.unk7ff4 = (int)(np + 2);
+    np[0] = poly[0];
+    np[1] = poly[1];
+    *(BYTE *)np = (BYTE)n;
+    ((WORD *)np)[3] = 0;
+    DWORD k = 0;
+    for (i = 0; i < n; i++)
+    {
+        src[k].uv.point = (WORD)i;
+        *(ClipUv *)g_renderState.unk7ff0 = src[k].uv;
+        *(XformVertex *)g_renderState.unk7ffc = src[k].xv;
+        g_renderState.unk7ffc += 0x20;
+        g_renderState.unk7ff0 += 0x10;
+        k++;
+        if (k >= n)
+        {
+            k -= n;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x4277b0

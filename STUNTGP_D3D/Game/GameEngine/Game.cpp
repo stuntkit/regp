@@ -528,6 +528,18 @@ void FUN_4497b0();
 void FUN_4492d0(float value);
 void FUN_4493e0();
 void FUN_4495e0(float unused);
+void FUN_448ab0();
+void FUN_448360();
+void FUN_448480();
+
+// Odometer panel with its pips.
+// FUNCTION: STUNTGP_D3D 0x44adc0
+void FUN_44adc0()
+{
+    FUN_448ab0();
+    FUN_448360();
+    FUN_448480();
+}
 
 // Speedometer panel: dial, speed readout, gauge and needle.
 // FUNCTION: STUNTGP_D3D 0x44add0
@@ -549,9 +561,86 @@ void FUN_44ae10()
     FUN_4493e0();
 }
 
-// STUB: STUNTGP_D3D 0x44ae40
+void FUN_447d80();
+void FUN_449b50();
+void FUN_448a70();
+void FUN_4490e0();
+void FUN_44a5c0();
+void FUN_44a800();
+void FUN_4485e0();
+void FUN_449850();
+void FUN_44aad0();
+void FUN_449ce0();
+void FUN_4499a0();
+void FUN_449d70();
+void FUN_44a3d0();
+void FUN_442e30();
+
+// Draws the player's HUD panels for the current layout (g_60f2b0).
+// FUNCTION: STUNTGP_D3D 0x44ae40
 void FUN_44ae40()
 {
+    g_61b740 = &g_4722d0->fx;
+    memset(&g_spriteDesc, 0, sizeof(g_spriteDesc));
+    FUN_447d80();
+    if (g_61b740->unk000 == 0)
+    {
+        FUN_449b50();
+        return;
+    }
+    FUN_44ac90();
+    switch (g_60f2b0)
+    {
+    case 1:
+        FUN_448a70();
+        FUN_4490e0();
+        FUN_44a5c0();
+        FUN_44add0();
+        FUN_44adc0();
+        FUN_44a800();
+        FUN_4485e0();
+        break;
+    case 2:
+        FUN_448a70();
+        if (!g_576be0)
+        {
+            FUN_4490e0();
+            FUN_44a5c0();
+            FUN_44add0();
+            FUN_44adc0();
+            FUN_44a800();
+            FUN_4485e0();
+            FUN_449850();
+        }
+        else
+        {
+            FUN_44ae10();
+            FUN_4485e0();
+            FUN_449850();
+        }
+        FUN_449ce0();
+        break;
+    case 4:
+        FUN_4490e0();
+        FUN_44add0();
+        FUN_4485e0();
+        FUN_449850();
+        break;
+    case 3:
+        FUN_44aad0();
+        FUN_44add0();
+        FUN_44adc0();
+        FUN_4485e0();
+        FUN_449ce0();
+        break;
+    }
+    FUN_4499a0();
+    if (!g_576be0)
+    {
+        FUN_449d70();
+    }
+    FUN_44a3d0();
+    FUN_442e30();
 }
 
 // Draws the current player's score popups: the sprite (mirrored for the first three types) and, for
@@ -905,29 +994,17 @@ int FUN_443770()
     return g_60f2b4;
 }
 
-// Digit columns of the race clock; u is the texture column of the digit strip.
-struct ClockColumn
-{
-    float u;      // 0x00
-    float unk04;  // 0x04
-    float unk08;  // 0x08
-    float unk0c;  // 0x0c
-    float unk10;  // 0x10
+// GLOBAL: STUNTGP_D3D 0x485550
+ClockColumn g_485550[8] = {
+    {1.6666666f, 0.1f, 10.0f, 180.0f, 229.0f},
+    {0.16666667f, 1.0f, 1.0f, 180.0f, 229.0f},
+    {0.016666668f, 10.0f, 0.1f, 180.0f, 242.0f},
+    {0.0016666667f, 100.0f, 0.01f, 108.0f, 216.0f},
+    {0.00027777778f, 600.0f, 0.0016666666f, 180.0f, 242.0f},
+    {2.7777778e-05f, 6000.0f, 0.00016666666f, 108.0f, 216.0f},
+    {4.6296295e-06f, 36000.0f, 2.7777776e-05f, 180.0f, 242.0f},
+    {4.6296296e-07f, 360000.0f, 2.7777778e-06f, 180.0f, 242.0f},
 };
-
-// GLOBAL: STUNTGP_D3D 0x485560
-ClockColumn g_485560[7] = {
-    {229.0f, 0.16666667f, 1.0f, 1.0f, 180.0f},
-    {229.0f, 0.016666668f, 10.0f, 0.1f, 180.0f},
-    {242.0f, 0.0016666667f, 100.0f, 0.01f, 108.0f},
-    {216.0f, 0.00027777778f, 600.0f, 0.0016666666f, 180.0f},
-    {242.0f, 2.7777778e-05f, 6000.0f, 0.00016666666f, 108.0f},
-    {216.0f, 4.6296295e-06f, 36000.0f, 2.7777776e-05f, 180.0f},
-    {242.0f, 4.6296296e-07f, 360000.0f, 2.7777778e-06f, 180.0f},
-};
-
-// GLOBAL: STUNTGP_D3D 0x4855ec
-float g_4855ec = 242.0f;
 
 // GLOBAL: STUNTGP_D3D 0x4855f0
 int g_4855f0[7] = {0, -13, -30, -43, -60, -73, -86};
@@ -953,7 +1030,7 @@ void FUN_44a4a0(DWORD value, int alt, float x, float y)
         {
             column += 2;
         }
-        g_spriteDesc.u0 = (g_485560[column].u * 1024.0f) * 0.00390625f;
+        g_spriteDesc.u0 = (g_485550[column].u * 1024.0f) * 0.00390625f;
         g_spriteDesc.v0 = ((digits[i] * 18) * 1024.0f) * 0.00390625f;
         g_spriteDesc.u1 = g_spriteDesc.u0 + 52.0f;
         g_spriteDesc.v1 = g_spriteDesc.v0 + 72.0f;

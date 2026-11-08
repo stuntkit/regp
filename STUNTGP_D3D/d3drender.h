@@ -79,6 +79,17 @@ struct ImageLoader
 
 extern ImageLoader g_5895b0;
 
+// Texture list entry: type 1 is an image (arg: compressed), 2 and 3 an empty texture (arg: size
+// code), anything else a texture file.
+struct TextureEntry
+{
+    char *name; // 0x00
+    int type;   // 0x04
+    int arg;    // 0x08
+};
+
+void FUN_42c340(TextureEntry *list);
+
 extern LPDIRECT3DDEVICE3 g_d3dDevice;
 extern BOOL g_d3dInScene;
 

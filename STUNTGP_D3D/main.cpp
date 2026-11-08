@@ -467,6 +467,53 @@ extern char **g_582f24;
 extern char **g_583324;
 extern SpriteFile *g_58358c;
 
+int FUN_42b9a0(const char *name);
+int FUN_42bb70(char *path, char *out);
+void FUN_42bcf0(char *suffix, char *path, int highDetail);
+DWORD FUN_4306c0(int width, int height, DWORD count, int unk, char *path);
+extern int g_583590;
+
+// Registers the texture file path: loads it into the next texture slot when FUN_42b9a0 accepts
+// it, and records the name in the lists at g_583324 and g_582f24.
+// FUNCTION: STUNTGP_D3D 0x42bf60
+void FUN_42bf60(char *path, int highDetail)
+{
+    char file[128];
+    char name[128];
+    sprintf(name, path);
+    if (FUN_42b9a0(name))
+    {
+        FUN_42bb70(path, name);
+        FUN_42bcf0(name, file, highDetail);
+        g_renderState.unk7ed0->unk04[2] = 0;
+        if ((DWORD)g_58271c < (DWORD)g_583590)
+        {
+            g_renderState.unk7ed0->unk04[4] = 0;
+        }
+        else
+        {
+            g_renderState.unk7ed0->unk04[4] = g_582718;
+        }
+        int n = FUN_4306c0(g_489714, g_489714, 0, 0, file);
+        if (g_58332c == 1)
+        {
+            g_583328 += g_489718 * g_489714 * 2;
+        }
+        else
+        {
+            g_583328 += g_489718 * g_489714;
+        }
+        g_582728[g_582718] = g_582724 + g_582718;
+        g_582718 += n;
+        g_58271c += n;
+        *g_583324++ = path;
+        *g_583324 = NULL;
+    }
+    *g_582f24++ = path;
+    *g_582f24 = NULL;
+    g_582b24++;
+}
+
 // Registers a new empty texture of size code sizeCode (4..8 for 16..256 texels) and names it by
 // its slot number.
 // FUNCTION: STUNTGP_D3D 0x42c0a0
@@ -596,6 +643,68 @@ extern int g_583328;
 extern int g_582b24;
 extern int g_58271c;
 extern int g_582720;
+
+void FUN_42c0a0(int arg, int sizeCode);
+extern int g_587990;
+
+// Loads a NULL-terminated texture list, recording each image's table index in g_583594.
+// FUNCTION: STUNTGP_D3D 0x42c340
+void FUN_42c340(TextureEntry *list)
+{
+    int empty = 0;
+    for (TextureEntry *e = list; e->name; e++)
+    {
+        if (e->type == 2 || e->type == 0 || e->type == 3)
+        {
+            empty++;
+        }
+    }
+    g_583590 = empty;
+    g_582724 = g_582b24;
+    g_582718 = 0;
+    int *slot = g_583594;
+    for (; list->name; list++, slot++)
+    {
+        if (list->type == 1)
+        {
+            if (g_612948.unk02a0 == 2 && FUN_42c2e0(list->name) != 1)
+            {
+                FUN_42c220(list->name, list->arg);
+            }
+            else
+            {
+                FUN_430ca0(list->name, list->arg, 0);
+            }
+            *slot = ((int)g_5895b0.entryCursor - (int)&g_587990) / 0x18 - 1;
+        }
+        else if (list->type == 2 || list->type == 3)
+        {
+            FUN_42c0a0(list->type, list->arg);
+        }
+        else if (g_612948.unk02a0 == 2)
+        {
+            FUN_42bf60(list->name, 0);
+        }
+        else
+        {
+            FUN_42bf60(list->name, 1);
+        }
+    }
+}
+
+extern int g_6249a0;
+
+// Registers a NULL-terminated list of texture files.
+// FUNCTION: STUNTGP_D3D 0x42c440
+void FUN_42c440(char **names)
+{
+    g_582718 = 0;
+    g_582724 = g_582b24;
+    for (int i = 0; names[i]; i++)
+    {
+        FUN_42bf60(names[i], g_6249a0);
+    }
+}
 
 // Clears the texture, sprite and file registries.
 // FUNCTION: STUNTGP_D3D 0x42c480

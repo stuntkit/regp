@@ -1529,6 +1529,30 @@ void FUN_4282a0(float *m, float t)
     m[0] = (t2 * 3.0f - t3 - t * 3.0f + 1.0f) * 0.16666667f;
 }
 
+// Cubic beta-spline basis weights for bias b1 and tension b2, written to m[0], m[4], m[8], m[12].
+// FUNCTION: STUNTGP_D3D 0x428330
+void FUN_428330(float *m, float t, float b1, float b2)
+{
+    float b1s = b1 * b1;
+    float b1c = b1s * b1;
+    float t2 = t * t;
+    float t3 = t2 * t;
+    float k = (b1s + b1) * 4.0f;
+    float d = (b1c + 1.0f) * 2.0f + k + b2;
+    if (d != 0.0f)
+    {
+        d = 1.0f / d;
+    }
+    float e = t3 * 2.0f;
+    m[12] = e * d;
+    float f = t * b1 * 6.0f;
+    m[8] = ((b2 * 3.0f + b1s * 6.0f) * t2 - ((b1s + (b1 + b2)) * t3 * 2.0f + e) + f + 2.0f) * d;
+    float h = b1c * t * 6.0f;
+    m[4] = ((b1s + b1c + b1 + b2) * t3 * 2.0f - t2 * b2 * 3.0f - t2 * b1c * 6.0f - t2 * b1s * 6.0f + h - f + k + b2) *
+           d;
+    m[0] = (b1c * 2.0f + ((t2 * 6.0f - e) * b1c - h)) * d;
+}
+
 // FUNCTION: STUNTGP_D3D 0x428460
 void FUN_428460(CameraPath *path, Vec4 *out, float t)
 {

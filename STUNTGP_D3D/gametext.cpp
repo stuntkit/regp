@@ -8,6 +8,7 @@
 #include "Game/GameEngine/io_wad.h"
 #include "Game/GameEngine/GameUpdate.h"
 #include "sprite.h"
+#include "Game/GameEngine/RenderState.h"
 
 extern BYTE g_62dcf0[256];
 void FUN_441ec0();
@@ -592,6 +593,46 @@ void Gameplay_LoadIfNeeded()
     }
 }
 
+// Textures of the boot screens.
+// GLOBAL: STUNTGP_D3D 0x483420
+TextureEntry g_483420[10] = {
+    // STRING: STUNTGP_D3D 0x483520
+    {"Boot\\Fade", 0, 0},
+    // STRING: STUNTGP_D3D 0x48352c
+    {"Boot\\Boot1a", 0, 0},
+    // STRING: STUNTGP_D3D 0x483538
+    {"Boot\\Boot1b", 0, 0},
+    // STRING: STUNTGP_D3D 0x483544
+    {"Boot\\Boot1c", 0, 0},
+    // STRING: STUNTGP_D3D 0x483550
+    {"Boot\\Boot1d", 0, 0},
+    // STRING: STUNTGP_D3D 0x48355c
+    {"Boot\\Boot2a", 0, 0},
+    // STRING: STUNTGP_D3D 0x483568
+    {"Boot\\Boot2b", 0, 0},
+    // STRING: STUNTGP_D3D 0x483574
+    {"Boot\\Boot2c", 0, 0},
+    // STRING: STUNTGP_D3D 0x483580
+    {"Boot\\Boot2d", 0, 0},
+    {NULL, 0, 0},
+};
+
+// Textures of the loading screen.
+// GLOBAL: STUNTGP_D3D 0x483498
+TextureEntry g_483498[6] = {
+    // STRING: STUNTGP_D3D 0x48358c
+    {"Loading\\Fade", 0, 0},
+    // STRING: STUNTGP_D3D 0x48359c
+    {"Loading\\Load1a", 0, 0},
+    // STRING: STUNTGP_D3D 0x4835ac
+    {"Loading\\Load1b", 0, 0},
+    // STRING: STUNTGP_D3D 0x4835bc
+    {"Loading\\Load1c", 0, 0},
+    // STRING: STUNTGP_D3D 0x4835cc
+    {"Loading\\Load1d", 0, 0},
+    {NULL, 0, 0},
+};
+
 struct ScreenTile
 {
     float x;
@@ -695,6 +736,44 @@ void FUN_445940(int frames, int fadeIn, int fadeOut)
         }
     }
     g_612948.unk8ce8 = 0;
+}
+
+void FUN_42c480();
+void FUN_431810();
+
+// Loads the loading-screen textures and shows the first picture for 30 frames.
+// FUNCTION: STUNTGP_D3D 0x4459e0
+void FUN_4459e0()
+{
+    FUN_42c480();
+    FUN_42c340(g_483498);
+    g_renderState.unk7ed4 = g_renderState.unk7ed0 - g_renderState.unk62ec;
+    g_612948.unk8ce0 = 1;
+    FUN_445940(30, 15, 0);
+    FUN_431810();
+}
+
+// Set once the boot screens have been shown.
+// GLOBAL: STUNTGP_D3D 0x60f34c
+int g_60f34c;
+
+// Shows the two boot screens (first time only), then the loading screen.
+// FUNCTION: STUNTGP_D3D 0x445a40
+void FUN_445a40()
+{
+    if (g_60f34c == 1)
+    {
+        return;
+    }
+    g_60f34c = 1;
+    FUN_42c480();
+    FUN_42c340(g_483420);
+    g_renderState.unk7ed4 = g_renderState.unk7ed0 - g_renderState.unk62ec;
+    g_612948.unk8ce0 = 1;
+    FUN_445940(300, 60, 120);
+    g_612948.unk8ce0 = 5;
+    FUN_445940(300, 60, 120);
+    FUN_4459e0();
 }
 
 // FUNCTION: STUNTGP_D3D 0x445ae0

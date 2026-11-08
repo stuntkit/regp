@@ -307,6 +307,26 @@ struct RaceSetup1
     RaceSetupCar cars[6]; // 0x00
 };
 
+struct RaceSetup3
+{
+    Initials name;   // 0x00
+    int car;         // 0x04
+    int track;       // 0x08, 1-based
+    int unk0c;       // 0x0c
+    int unk10;       // 0x10
+    int unk14;       // 0x14
+    BYTE *unk18;     // 0x18, int at 0x3c
+};
+
+struct RaceSetup4
+{
+    Initials name; // 0x00
+    int car;       // 0x04
+    int track;     // 0x08, 1-based
+    int unk0c;     // 0x0c
+    int minutes;   // 0x10
+};
+
 struct RaceSetup5
 {
     BYTE unk000[0x12c];   // 0x000
@@ -317,6 +337,8 @@ struct RaceSetup6
 {
     MenuRoundCar cars[4]; // 0x00, unk08 is the RaceState entry
     int count;            // 0x30
+    int track;            // 0x34, 1-based
+    int unk38;            // 0x38
 };
 
 struct RaceSetup7Car

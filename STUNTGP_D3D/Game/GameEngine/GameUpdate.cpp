@@ -2085,6 +2085,154 @@ int FUN_427b40(Scene *scene, ObjectDef *obj, WORD *box)
     return (any == 0x3f) + 1;
 }
 
+// Tests an object's bounding sphere (radius box[0], centre point index box[1]) against the
+// view frustum: 1 outside, 2 partly visible, 0 inside. index -1 tests the whole scene.
+// FUNCTION: STUNTGP_D3D 0x427cc0
+int FUN_427cc0(Scene *scene, ObjectDef *obj, int index, WORD *box)
+{
+    Vec4 *c = (Vec4 *)scene->unk40[box[1]];
+    Camera *cam = scene->camera;
+    Vec4 d;
+    if (index != -1)
+    {
+        float nx = -obj->unk10.x;
+        float ny = -obj->unk10.y;
+        float nz = -obj->unk10.z;
+        Camera *oc = (Camera *)obj->matrix;
+        float *r = (float *)oc->unk40;
+        Vec4 t;
+        t.x = nz * r[8] + nx * r[0] + ny * r[4];
+        t.y = nx * r[1] + nz * r[9] + ny * r[5];
+        t.z = nx * r[2] + nz * r[10] + ny * r[6];
+        t.x += obj->unk10.x;
+        t.y += obj->unk10.y;
+        t.z += obj->unk10.z;
+        t.x += oc->pos.x;
+        t.y += oc->pos.y;
+        t.z += oc->pos.z;
+        Vec4 u;
+        u.x = c->y * r[4] + c->z * r[8] + c->x * r[0];
+        u.y = c->y * r[5] + c->z * r[9] + r[1] * c->x;
+        u.z = c->y * r[6] + c->z * r[10] + c->x * r[2];
+        d.x = t.x + u.x;
+        d.y = t.y + u.y;
+        d.z = t.z + u.z;
+        d.x += cam->pos.x;
+        d.y += cam->pos.y;
+        d.z += cam->pos.z;
+        d.x -= g_4722d0->cam.pos.x;
+        d.y -= g_4722d0->cam.pos.y;
+        d.z -= g_4722d0->cam.pos.z;
+    }
+    else
+    {
+        d.x = cam->pos.x - g_4722d0->cam.pos.x;
+        d.y = cam->pos.y - g_4722d0->cam.pos.y;
+        d.z = cam->pos.z - g_4722d0->cam.pos.z;
+    }
+    Camera *oc = (Camera *)obj->matrix;
+    float rad = (float)box[0];
+    float f;
+    float rz = oc->scale.z * cam->scale.z * rad;
+    float dz = d.z * g_4722d0->axisZ.z + d.y * g_4722d0->axisZ.y + d.x * g_4722d0->axisZ.x;
+    f = dz + rz;
+    if (*(int *)&f < 0)
+    {
+        return 1;
+    }
+    float dfar = dz - g_4722d0->unk19c;
+    f = dfar;
+    if (*(int *)&f >= 0)
+    {
+        return 1;
+    }
+    float rx = oc->scale.x * cam->scale.x * rad;
+    float dl = d.z * g_4722d0->planeLeft.z + d.y * g_4722d0->planeLeft.y + d.x * g_4722d0->planeLeft.x;
+    f = dl - rx;
+    if (*(int *)&f >= 0)
+    {
+        return 1;
+    }
+    float dr = d.z * g_4722d0->planeRight.z + d.y * g_4722d0->planeRight.y + d.x * g_4722d0->planeRight.x;
+    f = dr - rx;
+    if (*(int *)&f >= 0)
+    {
+        return 1;
+    }
+    float ry = oc->scale.y * cam->scale.y * rad;
+    float dt = d.z * g_4722d0->planeTop.z + d.y * g_4722d0->planeTop.y + d.x * g_4722d0->planeTop.x;
+    f = dt - rx;
+    if (*(int *)&f >= 0)
+    {
+        return 1;
+    }
+    float db = d.z * g_4722d0->planeBottom.z + d.y * g_4722d0->planeBottom.y + d.x * g_4722d0->planeBottom.x;
+    f = db - rx;
+    if (*(int *)&f >= 0)
+    {
+        return 1;
+    }
+    f = dz - rz;
+    if (*(int *)&f < 0)
+    {
+        return 2;
+    }
+    f = dl + rx;
+    if (*(int *)&f >= 0)
+    {
+        return 2;
+    }
+    f = dr + rx;
+    if (*(int *)&f >= 0)
+    {
+        return 2;
+    }
+    f = dt + ry;
+    if (*(int *)&f >= 0)
+    {
+        return 2;
+    }
+    f = db + ry;
+    if (*(int *)&f >= 0)
+    {
+        return 2;
+    }
+    f = dfar;
+    return *(int *)&f < 0 ? 0 : 2;
+}
+
+// Visibility of object index of the scene (-1 for the whole scene) from its bounding data: a
+// sphere when box[0] is set, else a box when box[1] is set, else always partly visible.
+// FUNCTION: STUNTGP_D3D 0x428040
+int FUN_428040(Scene *scene, int index)
+{
+    ObjectDef *obj;
+    WORD *box;
+    if (index == -1)
+    {
+        box = (WORD *)(scene->unk10 + 0x10);
+        obj = scene->lods[scene->lod];
+    }
+    else
+    {
+        obj = scene->lods[scene->lod] + index;
+        box = &obj->unk20;
+    }
+    if (box[0] == 0 && box[1] == 0)
+    {
+        return 2;
+    }
+    if (box[0] == 0)
+    {
+        if (index == -1)
+        {
+            obj = NULL;
+        }
+        return FUN_427b40(scene, obj, box);
+    }
+    return FUN_427cc0(scene, obj, index, box);
+}
+
 // STUB: STUNTGP_D3D 0x425df0
 void FUN_425df0(Scene *scene, ObjectDef *def, int type)
 {
@@ -2120,6 +2268,150 @@ void FUN_426260()
             def++;
         }
     }
+}
+
+// Next free entry in the normal pool at g_renderState.unk7fa4.
+// GLOBAL: STUNTGP_D3D 0x576cc8
+Vec4 *g_576cc8;
+
+// Builds face normals for a two-sided strip (both faces of each quad) and smoothed normals
+// for its edge vertices, taking them from the normal pool.
+// FUNCTION: STUNTGP_D3D 0x426370
+void FUN_426370(Scene *scene, ObjectDef *def)
+{
+    Vec4 *normals = g_576cc8;
+    DWORD n = def->vertCount;
+    DWORD half = n >> 1;
+    Vec4 *edge = normals + n;
+    Vec4 a;
+    Vec4 nrm;
+    DWORD i;
+    Vec4 *p = def->points;
+    for (i = 0; i < half; i++)
+    {
+        a.x = p[i * 2 + 1].x - p[i * 2].x;
+        *(WORD *)(def->verts + i * 8 + 4) = ((int)&normals[i] - (int)g_renderState.unk7fa4) >> 4;
+        a.y = p[i * 2 + 1].y - p[i * 2].y;
+        a.z = p[i * 2 + 1].z - p[i * 2].z;
+        Vec4 b;
+        b.x = p[i * 2].x - p[i * 2 + 2].x;
+        b.y = p[i * 2].y - p[i * 2 + 2].y;
+        b.z = p[i * 2].z - p[i * 2 + 2].z;
+        nrm.x = b.y * a.z - b.z * a.y;
+        nrm.y = b.z * a.x - b.x * a.z;
+        nrm.z = b.x * a.y - b.y * a.x;
+        Vec3_Normalize(&nrm.x);
+        normals[i] = nrm;
+        *(WORD *)(def->verts + (half + i) * 8 + 4) = ((int)&normals[half + i] - (int)g_renderState.unk7fa4) >> 4;
+        nrm.x = -nrm.x;
+        nrm.y = -nrm.y;
+        nrm.z = -nrm.z;
+        normals[half + i] = nrm;
+    }
+    MeshUv *uv = (MeshUv *)def->unk2c;
+    int idx0 = ((int)edge - (int)g_renderState.unk7fa4) >> 4;
+    int idx1 = idx0 + half;
+    DWORD k = (def->pointCount >> 1) + 2;
+    for (i = 0; i < half - 1; i++)
+    {
+        a.x = normals[i].x + normals[i + 1].x;
+        a.y = normals[i].y + normals[i + 1].y;
+        a.z = normals[i].z + normals[i + 1].z;
+        Vec3_Normalize(&a.x);
+        edge[i] = a;
+        a.x = -a.x;
+        a.y = -a.y;
+        a.z = -a.z;
+        edge[half + i] = a;
+        uv[i * 2 + 2].unk0a = idx0;
+        uv[k + i * 2].unk0a = idx1;
+        uv[i * 2 + 3].unk0a = idx0;
+        uv[k + i * 2 + 1].unk0a = idx1;
+        idx0++;
+        idx1++;
+    }
+    g_576cc8 += n * 3 - 2;
+}
+
+// Ripples a strip along its length with a sine wave tapered at both ends, then rebuilds its normals.
+// FUNCTION: STUNTGP_D3D 0x426610
+void FUN_426610(AnimObject *obj, Scene *scene, ObjectDef *def)
+{
+    DWORD angle = obj->angleA;
+    DWORD half = def->vertCount >> 1;
+    Vec4 *p = def->points;
+    DWORD mid = def->pointCount >> 1;
+    for (DWORD i = 0; i < half; i++)
+    {
+        float amp;
+        if (i * 64 < 256)
+        {
+            amp = (float)(i * 64);
+        }
+        else if (i >= half - 4)
+        {
+            amp = (float)((half - i) * 64);
+        }
+        else
+        {
+            amp = 256.0f;
+        }
+        float y = amp * g_sinTable[angle];
+        p->z = y;
+        p[mid].z = y;
+        p++;
+        p->z = y;
+        p[mid].z = y;
+        p++;
+        angle = (angle + 0x200) & 0x1fff;
+    }
+    FUN_426370(scene, def);
+}
+
+// FUN_426610 with a faster wave; type 2 tapers only the start and covers one more segment.
+// FUNCTION: STUNTGP_D3D 0x4266e0
+void FUN_4266e0(AnimObject *obj, Scene *scene, ObjectDef *def, int type)
+{
+    DWORD angle = obj->angleA;
+    DWORD half = def->vertCount >> 1;
+    Vec4 *p = def->points;
+    DWORD mid = def->pointCount >> 1;
+    if (type == 2)
+    {
+        half++;
+    }
+    for (DWORD i = 0; i < half; i++)
+    {
+        float amp;
+        if (type == 2)
+        {
+            if (i * 32 < 256)
+            {
+                amp = (float)(i * 32);
+            }
+            else
+            {
+                amp = 256.0f;
+            }
+        }
+        else if (i >= half - 8)
+        {
+            amp = (float)((half - i) * 32);
+        }
+        else
+        {
+            amp = 256.0f;
+        }
+        float y = amp * g_sinTable[angle];
+        p->z = y;
+        p[mid].z = y;
+        p++;
+        p->z = y;
+        p[mid].z = y;
+        p++;
+        angle = (angle + 0x400) & 0x1fff;
+    }
+    FUN_426370(scene, def);
 }
 
 // FUNCTION: STUNTGP_D3D 0x4267d0
@@ -2187,6 +2479,70 @@ void FUN_426970(Unk62a078 *p)
     p->colors[0] = 0x406090;
     p->texture = 7;
     p->unk98 = 0x60;
+}
+
+void FUN_45e110(Unk62a078 *particle);
+
+// Every other frame (every frame above 80 fps), puffs a FUN_426970 particle out of the
+// object, 2000 units behind its offset point.
+// FUNCTION: STUNTGP_D3D 0x426a00
+void FUN_426a00(AnimObject *obj, ObjectDef *def)
+{
+    if (!(def->flags & 0x10))
+    {
+        obj->unk40++;
+        if (g_612948.unk0034 > 80 || (DWORD)obj->unk40 >= 2)
+        {
+            obj->unk40 = 0;
+            Unk62a078 p;
+            *(Camera *)&p.pos = g_4864e8;
+            float m[16];
+            FUN_44fb00(m, (DWORD)(obj->rot.x * (8192.0f / 360.0f)), (DWORD)(obj->rot.y * (8192.0f / 360.0f)),
+                       (DWORD)(obj->rot.z * (8192.0f / 360.0f)));
+            Vec4 off = def->unk10;
+            off.z += 2000.0f;
+            off.x = -off.x;
+            off.y = -off.y;
+            off.z = -off.z;
+            p.pos.x = m[4] * off.y + m[0] * off.x + m[8] * off.z;
+            p.pos.y = m[5] * off.y + m[1] * off.x + m[9] * off.z;
+            p.pos.z = m[6] * off.y + m[2] * off.x + m[10] * off.z;
+            p.pos.x += def->matrix->x;
+            p.pos.y += def->matrix->y;
+            p.pos.z += def->matrix->z;
+            p.pos.x += def->unk10.x;
+            p.pos.y += def->unk10.y;
+            p.pos.z += def->unk10.z;
+            p.pos.y -= 400.0f;
+            FUN_426970(&p);
+            p.lifetime = (DWORD)((float)fabs(FUN_42f1c0(18.0f)) + 45.0f);
+            float speed = FUN_42f1c0(100.0f);
+            float s = speed * 8.0f;
+            if ((float)fabs(s) < 800.0f)
+            {
+                if (s < 0.0f)
+                {
+                    s = -800.0f;
+                }
+                else
+                {
+                    s = 800.0f;
+                }
+            }
+            off.x = s * m[0];
+            off.y = s * m[1];
+            off.z = s * m[2];
+            p.pos.x += off.x;
+            p.pos.y += off.y;
+            p.pos.z += off.z;
+            p.vel[0] = speed * m[0];
+            p.vel[1] = speed * m[1];
+            p.vel[2] = speed * m[2];
+            p.vel[1] = (float)fabs(FUN_42f1c0(50.0f));
+            p.spin = FUN_42f1c0(22.5f);
+            FUN_45e110(&p);
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x426c70
@@ -2276,6 +2632,64 @@ void FUN_426e30(AnimObject *obj, ObjectDef *def)
     m[1].x = g_sinTable[angle] * 0.01f + 1.0f;
     m[1].y = g_sinTable[angle2] * 0.02f + 1.0f;
     m[1].z = g_sinTable[angle2] * 0.01f + 1.0f;
+}
+
+// Runs each animated object's animation (object 0 is the track itself).
+// FUNCTION: STUNTGP_D3D 0x426ed0
+void FUN_426ed0(Scene *scene)
+{
+    g_576cc8 = (Vec4 *)g_renderState.unk7fa8;
+    ObjectDef *def = scene->lods[0];
+    AnimObject *obj = g_576cd0;
+    for (DWORD i = 1; i < scene->objectCount; i++)
+    {
+        obj++;
+        def++;
+        switch (obj->type)
+        {
+        case 1:
+            FUN_426610(obj, scene, def);
+            break;
+        case 2:
+        case 3:
+            FUN_4266e0(obj, scene, def, obj->type);
+            break;
+        case 4:
+            FUN_4267d0(obj, def);
+            break;
+        case 5:
+            FUN_426880(obj, def);
+            break;
+        case 16:
+            FUN_4268f0(obj, def);
+            FUN_4267d0(obj, def);
+            FUN_426a00(obj, def);
+            break;
+        case 6:
+        case 7:
+            FUN_426c70(obj, def);
+            break;
+        case 8:
+            FUN_426d50(obj, def);
+            break;
+        case 9:
+            FUN_426d80(obj, def);
+            break;
+        case 10:
+            FUN_426db0(obj, def);
+            break;
+        case 11:
+            FUN_426df0(obj, def);
+            break;
+        case 12:
+        case 13:
+            FUN_426e30(obj, def);
+            break;
+        case 14:
+            FUN_426ca0(obj, def);
+            break;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x427010

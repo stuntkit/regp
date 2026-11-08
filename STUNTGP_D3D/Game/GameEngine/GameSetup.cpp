@@ -86,7 +86,11 @@ struct RenderMaterial
     DWORD unk00;      // 0x00
     DWORD unk04;      // 0x04
     float alpha;      // 0x08
-    BYTE unk0c[0x44]; // 0x0c
+    DWORD unk0c;      // 0x0c
+    Vec4 pos;         // 0x10
+    Vec4 local;       // 0x20, pos relative to the camera
+    Vec4 colour;      // 0x30, direction for directional lights
+    BYTE unk40[0x10]; // 0x40
     int unk50;        // 0x50
     DWORD unk54;      // 0x54
     DWORD unk58;      // 0x58
@@ -99,7 +103,8 @@ struct RenderMaterial
     int unk78;        // 0x78
     int unk7c;        // 0x7c
     int unk80;        // 0x80
-    BYTE unk84[0xc];  // 0x84
+    int visible;      // 0x84
+    BYTE unk88[0x8];  // 0x88
 };
 
 // Loaded track file; the offsets are relative to data.
@@ -174,6 +179,10 @@ int g_6249a0;
 // GLOBAL: STUNTGP_D3D 0x6249a4
 int g_6249a4;
 
+// Scenes queued this frame.
+// GLOBAL: STUNTGP_D3D 0x6249ac
+int g_6249ac;
+
 // GLOBAL: STUNTGP_D3D 0x477c30
 DWORD g_477c30 = 0x200000;
 
@@ -183,11 +192,84 @@ DWORD *g_4955e0;
 // GLOBAL: STUNTGP_D3D 0x4955e4
 DWORD *g_4955e4;
 
+// Textures of a race.
+// GLOBAL: STUNTGP_D3D 0x4955e8
+TextureEntry g_4955e8[31] = {
+    // STRING: STUNTGP_D3D 0x49575c
+    {"Misc\\LIGHT1", 0, 0},
+    // STRING: STUNTGP_D3D 0x495768
+    {"Misc\\Light2", 0, 0},
+    // STRING: STUNTGP_D3D 0x495774
+    {"Misc\\Flare2", 0, 0},
+    // STRING: STUNTGP_D3D 0x495780
+    {"Misc\\Hexflare3", 0, 0},
+    // STRING: STUNTGP_D3D 0x495790
+    {"Misc\\Spark", 0, 0},
+    // STRING: STUNTGP_D3D 0x49579c
+    {"Misc\\Skidmark2", 0, 0},
+    // STRING: STUNTGP_D3D 0x4957ac
+    {"Misc\\Corona5", 0, 0},
+    // STRING: STUNTGP_D3D 0x4957bc
+    {"Misc\\Smoke1", 0, 0},
+    // STRING: STUNTGP_D3D 0x4957c8
+    {"Misc\\Trail1", 0, 0},
+    // STRING: STUNTGP_D3D 0x4957d4
+    {"Misc\\Dust1", 0, 0},
+    // STRING: STUNTGP_D3D 0x4957e0
+    {"Overlays\\Fade", 0, 0},
+    // STRING: STUNTGP_D3D 0x4957f0
+    {"Overlays\\Dial", 0, 0},
+    // STRING: STUNTGP_D3D 0x495800
+    {"Overlays\\Bonus1", 0, 0},
+    // STRING: STUNTGP_D3D 0x495810
+    {"Overlays\\Bonus2", 0, 0},
+    // STRING: STUNTGP_D3D 0x495820
+    {"Overlays\\Gear", 0, 0},
+    // STRING: STUNTGP_D3D 0x495830
+    {"empty", 2, 8},
+    // STRING: STUNTGP_D3D 0x495838
+    {"Overlays\\Start0", 1, 1},
+    // STRING: STUNTGP_D3D 0x495848
+    {"Overlays\\Start1", 1, 1},
+    // STRING: STUNTGP_D3D 0x495858
+    {"Overlays\\Start2", 1, 1},
+    // STRING: STUNTGP_D3D 0x495868
+    {"Overlays\\Start3", 1, 1},
+    // STRING: STUNTGP_D3D 0x495878
+    {"Overlays\\LapRecord", 1, 1},
+    // STRING: STUNTGP_D3D 0x49588c
+    {"Overlays\\Result1", 1, 1},
+    // STRING: STUNTGP_D3D 0x4958a0
+    {"Overlays\\Result2", 1, 1},
+    // STRING: STUNTGP_D3D 0x4958b4
+    {"Overlays\\Result3", 1, 1},
+    // STRING: STUNTGP_D3D 0x4958c8
+    {"Overlays\\Finish", 1, 1},
+    // STRING: STUNTGP_D3D 0x4958d8
+    {"Overlays\\GameOver", 1, 1},
+    // STRING: STUNTGP_D3D 0x4958ec
+    {"Overlays\\BoxBack", 1, 1},
+    // STRING: STUNTGP_D3D 0x495900
+    {"Overlays\\BoxBack2", 1, 1},
+    // STRING: STUNTGP_D3D 0x495914
+    {"Overlays\\logo-add", 1, 1},
+    // STRING: STUNTGP_D3D 0x495928
+    {"Overlays\\logo-sub", 1, 1},
+    {NULL, 0, 0},
+};
+
+// Scene queued with its own camera; g_632cf8 and g_62f5d8 hold lists of these.
+struct SceneCamera
+{
+    Scene *scene; // 0x00
+    Camera cam;   // 0x04
+};
+
 // GLOBAL: STUNTGP_D3D 0x62f5d8
-DWORD g_62f5d8;
+SceneCamera g_62f5d8[168];
 
 // GLOBAL: STUNTGP_D3D 0x632cf8
-DWORD g_632cf8;
+SceneCamera g_632cf8[168];
 
 void FUN_42e240(Scene *scene);
 void FUN_4311c0(Scene *scene);
@@ -1255,10 +1337,10 @@ void FUN_413220()
 // FUNCTION: STUNTGP_D3D 0x42b740
 void FUN_42b740()
 {
-    g_4955e4 = &g_632cf8;
-    g_4955e0 = &g_62f5d8;
-    g_632cf8 = 0;
-    g_62f5d8 = 0;
+    g_4955e4 = (DWORD *)g_632cf8;
+    g_4955e0 = (DWORD *)g_62f5d8;
+    g_632cf8[0].scene = NULL;
+    g_62f5d8[0].scene = NULL;
     if (g_612948.unk02a0 != 2)
     {
         if (g_636418[3].scene)
@@ -1600,9 +1682,33 @@ void FUN_434030()
     g_5da25c->pointCount = 0;
 }
 
-// STUB: STUNTGP_D3D 0x42c510
+void FUN_42bdd0();
+void FUN_445a40();
+void FUN_42c480();
+void FUN_42c440(char **names);
+extern int g_DisplayBootGfx;
+
+// Loads the textures: the boot screens when enabled, the front-end or race texture list, then
+// the textures of each scene not yet loaded.
+// FUNCTION: STUNTGP_D3D 0x42c510
 void FUN_42c510()
 {
+    FUN_42bdd0();
+    if (g_DisplayBootGfx == 1)
+    {
+        FUN_445a40();
+    }
+    FUN_42c480();
+    FUN_42c340(g_612948.unk02a0 == 2 ? (TextureEntry *)g_47f318 : g_4955e8);
+    for (SceneSlot *slot = &g_636418[2]; slot->scene; slot++)
+    {
+        if (slot->unk04 == 0)
+        {
+            FUN_42c440(slot->scene->textures);
+            FUN_42b900(slot->scene);
+        }
+    }
+    FUN_42ba90();
 }
 
 // STUB: STUNTGP_D3D 0x42d070
@@ -1701,6 +1807,96 @@ struct Light
     int g;            // 0x7c
     int b;            // 0x80
 };
+
+void FUN_42d870();
+
+// Collects the enabled lights for the frame into g_renderState.unk804c: their positions relative
+// to the camera and, for lights with flare type 3, whether the flare is in view. Point lights
+// out of view are left out.
+// FUNCTION: STUNTGP_D3D 0x42d9b0
+void FUN_42d9b0()
+{
+    FUN_42d870();
+    Light **active = g_renderState.unk804c.lights;
+    g_renderState.unk8044 = 0;
+    for (DWORD i = 0; i < (DWORD)g_renderState.unk7fb8; i++)
+    {
+        RenderMaterial *light = &g_renderState.unk7f94[i];
+        GameSlot *gs = g_4722d0;
+        if (!light->unk00)
+        {
+            continue;
+        }
+        Vec4 d;
+        int visible;
+        float r;
+        switch (light->unk04)
+        {
+        case 0:
+            d.x = light->pos.x - gs->cam.pos.x;
+            d.y = light->pos.y - gs->cam.pos.y;
+            d.z = light->pos.z - gs->cam.pos.z;
+            light->local = d;
+            if (light->unk50 == 3)
+            {
+                visible = 1;
+                float z = d.z * gs->axisZ.z + d.y * gs->axisZ.y + d.x * gs->axisZ.x;
+                if (z > gs->unk19c)
+                {
+                    visible = 0;
+                    light->visible = visible;
+                    break;
+                }
+                if (z < gs->nearZ ||
+                    d.z * gs->planeLeft.z + d.y * gs->planeLeft.y + d.x * gs->planeLeft.x > 5000.0f ||
+                    d.z * gs->planeRight.z + d.y * gs->planeRight.y + d.x * gs->planeRight.x > 5000.0f ||
+                    d.z * gs->planeTop.z + d.y * gs->planeTop.y + d.x * gs->planeTop.x > 5000.0f ||
+                    d.z * gs->planeBottom.z + d.y * gs->planeBottom.y + d.x * gs->planeBottom.x > 5000.0f)
+                {
+                    visible = 0;
+                }
+                light->visible = visible;
+            }
+            else
+            {
+                light->visible = 0;
+            }
+            break;
+        case 1:
+            d.x = light->pos.x - gs->cam.pos.x;
+            d.y = light->pos.y - gs->cam.pos.y;
+            d.z = light->pos.z - gs->cam.pos.z;
+            light->local = d;
+            r = (light->alpha < 1.0f ? 1.0f : light->alpha) * 500.0f;
+            visible = 1;
+            if (d.z * gs->axisZ.z + d.y * gs->axisZ.y + d.x * gs->axisZ.x > gs->unk19c ||
+                d.z * gs->planeLeft.z + d.y * gs->planeLeft.y + d.x * gs->planeLeft.x > r ||
+                d.z * gs->planeRight.z + d.y * gs->planeRight.y + d.x * gs->planeRight.x > r ||
+                d.z * gs->planeTop.z + d.y * gs->planeTop.y + d.x * gs->planeTop.x > r ||
+                d.z * gs->planeBottom.z + d.y * gs->planeBottom.y + d.x * gs->planeBottom.x > r)
+            {
+                visible = 0;
+            }
+            if (light->unk50 == 3)
+            {
+                light->visible = visible;
+            }
+            else
+            {
+                light->visible = 0;
+            }
+            if (visible != 1)
+            {
+                continue;
+            }
+            break;
+        default:
+            continue;
+        }
+        *active++ = (Light *)light;
+        g_renderState.unk8044++;
+    }
+}
 
 // GLOBAL: STUNTGP_D3D 0x589df8
 DWORD g_589df8;
@@ -2154,14 +2350,199 @@ void FUN_425ad0()
 {
 }
 
-// STUB: STUNTGP_D3D 0x42dcf0
+// Collects the frame's lights and turns each one's angles (unk54..unk5c) into its direction.
+// FUNCTION: STUNTGP_D3D 0x42dcf0
 void FUN_42dcf0()
 {
+    FUN_42d9b0();
+    g_589df8 = (g_589df8 + 0x20) & 0x1fff;
+    g_589dfc = (g_589dfc + 2) & 0x1fff;
+    g_renderState.unk804c.next = (LightRec *)g_renderState.unk8048;
+    Light **lights = g_renderState.unk804c.lights;
+    for (DWORD i = 0; i < (DWORD)g_renderState.unk8044; i++)
+    {
+        RenderMaterial *light = (RenderMaterial *)*lights++;
+        light->colour.x = 0.0f;
+        light->colour.y = 0.0f;
+        light->colour.z = 1.0f;
+        FUN_44eb70(light->unk54, light->unk58, light->unk5c, &light->colour.x, &light->colour.y, &light->colour.z);
+    }
 }
 
-// STUB: STUNTGP_D3D 0x42b040
+// One element of the lens flare: its texture, position along the line from the view centre
+// through the light, size, spin speed and angle, and colour.
+struct FlareElement
+{
+    int texture; // 0x00
+    float t;     // 0x04
+    float size;  // 0x08
+    int speed;   // 0x0c
+    int angle;   // 0x10
+    DWORD color; // 0x14
+};
+
+// GLOBAL: STUNTGP_D3D 0x477b88
+FlareElement g_477b88[7] = {
+    {1, 1.0f, 0.5f, 0x20, 0, 0x804000},
+    {1, 1.0f, 0.5f, 0x15, 0x6000, 0x808000},
+    {3, 0.5f, 0.2f, 0x20, 0, 0xff},
+    {2, 0.0f, 0.05f, 0x20, 0, 0x4c0000},
+    {3, -0.5f, 0.35f, 0x20, 0, 0x800000},
+    {2, -1.0f, 0.05f, 0x20, 0, 0x4c0000},
+    {3, -1.75f, 0.5f, 0x20, 0, 0x8000},
+};
+
+extern float g_477b80;
+
+// Draws the lens flare of a light: two spinning glows on the light itself and five elements
+// along the line through the view centre, and brightens the screen (g_477b80) when looking at it.
+// FUNCTION: STUNTGP_D3D 0x42dd80
+void FUN_42dd80(RenderMaterial *light)
+{
+    float focus = g_4722d0->nearZ * 1.2f;
+    Vec4 c;
+    c.x = focus * g_4722d0->axisZ.x;
+    c.y = focus * g_4722d0->axisZ.y;
+    c.z = focus * g_4722d0->axisZ.z;
+    c.x += g_4722d0->cam.pos.x;
+    c.y += g_4722d0->cam.pos.y;
+    c.z += g_4722d0->cam.pos.z;
+    Vec4 d;
+    d.x = light->pos.x - g_4722d0->cam.pos.x;
+    d.y = light->pos.y - g_4722d0->cam.pos.y;
+    d.z = light->pos.z - g_4722d0->cam.pos.z;
+    Vec3_Normalize(&d.x);
+    float dz = d.z * g_4722d0->axisZ.z + d.y * g_4722d0->axisZ.y + d.x * g_4722d0->axisZ.x;
+    float k = focus / dz;
+    Vec4 p;
+    p.x = k * d.x;
+    p.y = k * d.y;
+    p.z = k * d.z;
+    Vec4 q;
+    q.x = p.x + g_4722d0->cam.pos.x;
+    q.y = p.y + g_4722d0->cam.pos.y;
+    q.z = p.z + g_4722d0->cam.pos.z;
+    Vec4 v;
+    v.x = q.x - c.x;
+    v.y = q.y - c.y;
+    v.z = q.z - c.z;
+    if (dz < 0.8660254f)
+    {
+        g_477b80 = 1.0f;
+    }
+    else
+    {
+        float t = (dz - 0.8660254f) * 7.464101f;
+        t = t * t;
+        g_477b80 = t * t * 5.0f + 1.0f;
+    }
+    Billboard b = g_486538;
+    b.unk00 = 0x58;
+    float s = light->alpha;
+    if (light->unk04 == 0)
+    {
+        s *= 0.25f;
+    }
+    else
+    {
+        s *= 0.025f;
+    }
+    if (s > 0.25f)
+    {
+        s = 0.25f;
+    }
+    float d2 = dz * dz;
+    dz = d2 * d2 * s * 2.5f;
+    FlareElement *e = g_477b88;
+    for (int i = 0; i < 7; i++, e++)
+    {
+        float size = dz * e->size;
+        p.x = v.x * e->t;
+        p.y = v.y * e->t;
+        p.z = v.z * e->t;
+        p.x += c.x;
+        p.y += c.y;
+        p.z += c.z;
+        if (i < 2)
+        {
+            float lx = light->pos.x - g_4722d0->cam.pos.x;
+            float ly = light->pos.y - g_4722d0->cam.pos.y;
+            float lz = light->pos.z - g_4722d0->cam.pos.z;
+            float dist = ((float)sqrt(lz * lz + ly * ly + lx * lx) * 1e-06f) * 2000.0f;
+            if (dist < 1.0f)
+            {
+                dist = 1.0f;
+            }
+            p = light->pos;
+            size = g_sinTable[e->angle] * 4.0f + dist;
+            e->angle = (e->speed + e->angle) & 0x1fff;
+            int a = g_589dfc;
+            if (i == 1)
+            {
+                a = -a & 0x1fff;
+            }
+            b.dir.x = g_cosTable[a];
+            b.dir.y = g_sinTable[a];
+            b.dir.z = 0.0f;
+        }
+        else if (i == 2)
+        {
+            b.dir.x = 0.0f;
+            b.dir.y = 1.0f;
+            b.dir.z = 0.0f;
+        }
+        b.pos = p;
+        b.texture = (short)e->texture;
+        b.size[0] = size;
+        b.size[1] = size;
+        b.size[2] = size;
+        b.colors[0] = e->color | 0xff000000;
+        b.colors[1] = b.colors[0];
+        b.colors[2] = b.colors[0];
+        b.colors[3] = b.colors[0];
+        FUN_434590(&b);
+    }
+}
+
+void FUN_42b100();
+void FUN_42b140(RenderList *out);
+void FUN_42b180(int *out);
+void FUN_42b200();
+void FUN_42ac70(Scene *scene);
+void FUN_42ad30(SceneCamera *e);
+void FUN_42af30(SceneCamera *e);
+void FUN_42af90(SceneCamera *e);
+void FUN_42add0();
+void FUN_44fbd0(Scene *scene, ObjectDef *obj, float *m);
+
+// Builds the frame's render buckets: the track (entry 0 of g_632cf8), entry 1 on its own, the
+// rest of g_632cf8 with the track's animated objects, then the g_62f5d8 list.
+// FUNCTION: STUNTGP_D3D 0x42b040
 void FUN_42b040()
 {
+    SceneCamera *list = g_632cf8;
+    g_6249ac = 0;
+    FUN_44fbd0(g_636418[3].scene, (ObjectDef *)g_636418[3].scene->view, g_renderState.unkac);
+    FUN_42b100();
+    FUN_42b140((RenderList *)&g_renderState.unk7ef8[2]);
+    list[0].scene->camera = &list[0].cam;
+    FUN_42ac70(list[0].scene);
+    FUN_42b180((int *)&g_renderState.unk7ef8[2]);
+    g_renderState.unk2c = g_renderState.unk28;
+    FUN_42ad30(&list[1]);
+    g_4722d0->unk19c = 500000.0f;
+    FUN_42b140((RenderList *)&g_renderState.unk7ef8[4]);
+    FUN_42af30(&list[2]);
+    if (g_612948.unk0034 >= 25)
+    {
+        FUN_42add0();
+    }
+    FUN_42b180((int *)&g_renderState.unk7ef8[4]);
+    FUN_42b140((RenderList *)&g_renderState.unk7ef8[6]);
+    FUN_42af90(g_62f5d8);
+    FUN_42b180((int *)&g_renderState.unk7ef8[6]);
+    FUN_42b740();
+    FUN_42b200();
 }
 
 // FUNCTION: STUNTGP_D3D 0x42b100
@@ -2549,6 +2930,79 @@ int FUN_42aa70(int box)
     return (any == 0x3f) + 1;
 }
 
+// One octant of a visibility-octree node (eight per node, 64 bytes): child is 0xffff when
+// empty and 0 for a leaf.
+struct VisOctant
+{
+    WORD child;   // 0x0, node index into g_renderState.unk7f88
+    WORD polys;   // 0x2, into g_renderState.unk7f80
+    WORD indices; // 0x4, into g_renderState.unk7f7c
+    WORD box;     // 0x6, for FUN_42aa70
+};
+
+// Walks the visibility octree, queueing the mesh lists of the octants FUN_42aa70 accepts:
+// whole ones to g_renderState.unk40 and leaves needing clipping to g_renderState.unk3c.
+// FUNCTION: STUNTGP_D3D 0x42abb0
+void FUN_42abb0(VisOctant *node)
+{
+    for (int i = 0; i < 8; i++)
+    {
+        WORD child = node[i].child;
+        if (child != 0xffff)
+        {
+            int vis = FUN_42aa70(node[i].box);
+            if (vis != 1)
+            {
+                if (vis == 0)
+                {
+                    g_renderState.unk40->polys = (WORD *)(g_renderState.unk7f80 + node[i].polys * 2);
+                    (g_renderState.unk40++)->indices = (WORD *)(g_renderState.unk7f7c + node[i].indices * 2);
+                }
+                else if (child == 0)
+                {
+                    g_renderState.unk3c->polys = (WORD *)(g_renderState.unk7f80 + node[i].polys * 2);
+                    (g_renderState.unk3c++)->indices = (WORD *)(g_renderState.unk7f7c + node[i].indices * 2);
+                }
+                else
+                {
+                    FUN_42abb0((VisOctant *)(g_renderState.unk7f88 + child * 64));
+                }
+            }
+        }
+    }
+}
+
+void FUN_429880();
+void FUN_429730();
+void FUN_42a220();
+void FUN_426ed0(Scene *scene);
+void FUN_42b2a0(Vec4 *out, Vec4 *dir, Scene *scene, ObjectDef *obj);
+void FUN_44fbd0(Scene *scene, ObjectDef *obj, float *m);
+
+// Queues the visible parts of the track scene and runs its animated objects.
+// FUNCTION: STUNTGP_D3D 0x42ac70
+void FUN_42ac70(Scene *scene)
+{
+    g_4722d0->unk19c = 500000.0f;
+    g_renderState.unk3c = g_renderState.unk30;
+    g_renderState.unk40 = g_renderState.unk34;
+    g_renderState.unk68 = 0;
+    g_renderState.unk44 = scene;
+    g_renderState.unk48 = (ObjectDef *)g_636418[3].scene->view;
+    FUN_42b2a0(&g_renderState.unk00, &g_renderState.unk10, scene, g_renderState.unk48);
+    FUN_44fbd0(scene, NULL, g_61c428);
+    FUN_42abb0((VisOctant *)g_renderState.unk7f88);
+    g_renderState.unk38 = g_renderState.unk104;
+    FUN_429880();
+    FUN_429730();
+    FUN_42a220();
+    g_renderState.unk28 += g_renderState.unk48->pointCount * 0x20;
+    if (g_renderState.unk44->objectCount > 1)
+    {
+        FUN_426ed0(scene);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x42a870
 void FUN_42a870(Scene *scene, ObjectDef *object)
 {
@@ -2579,6 +3033,32 @@ void FUN_42a320(Scene *scene, ObjectDef *obj);
 void FUN_42b2a0(Vec4 *out, Vec4 *dir, Scene *scene, ObjectDef *obj);
 extern float g_61c428[16];
 
+// FUN_42a8c0 without the lighting pass.
+// FUNCTION: STUNTGP_D3D 0x42a260
+void FUN_42a260(PolyRef **lists, Scene *scene, int mode)
+{
+    ObjectDef *obj = scene->lods[scene->lod];
+    for (DWORD i = 0; i < scene->objectCount; obj++, i++)
+    {
+        if (obj->visible == 1)
+        {
+            FUN_42b2a0(&g_renderState.unk00, &g_renderState.unk10, scene, obj);
+            FUN_44fbd0(scene, obj, g_61c428);
+            if (!mode)
+            {
+                FUN_429660(obj->points, obj->pointCount);
+                FUN_429d50(scene, obj, lists);
+            }
+            else
+            {
+                FUN_429520(obj->points, obj->pointCount);
+                FUN_429b70(scene, obj, lists);
+            }
+            g_renderState.unk28 += obj->pointCount * 0x20;
+        }
+    }
+}
+
 // Transforms and queues the visible objects of the current level of detail, lighting those with
 // flag 4.
 // FUNCTION: STUNTGP_D3D 0x42a8c0
@@ -2605,6 +3085,46 @@ void FUN_42a8c0(PolyRef **lists, Scene *scene, int mode)
             {
                 FUN_42a870(scene, obj);
                 FUN_42a320(scene, obj);
+            }
+            g_renderState.unk28 += obj->pointCount * 0x20;
+        }
+    }
+}
+
+void FUN_42a570(Scene *scene, ObjectDef *obj);
+
+// FUN_42a8c0 that lights objects with specular bits (flags & 3) through FUN_42a570.
+// FUNCTION: STUNTGP_D3D 0x42a990
+void FUN_42a990(PolyRef **lists, Scene *scene, int mode)
+{
+    ObjectDef *obj = scene->lods[scene->lod];
+    for (DWORD i = 0; i < scene->objectCount; obj++, i++)
+    {
+        if (obj->visible == 1)
+        {
+            FUN_42b2a0(&g_renderState.unk00, &g_renderState.unk10, scene, obj);
+            FUN_44fbd0(scene, obj, g_61c428);
+            if (!mode)
+            {
+                FUN_429660(obj->points, obj->pointCount);
+                FUN_429d50(scene, obj, lists);
+            }
+            else
+            {
+                FUN_429520(obj->points, obj->pointCount);
+                FUN_429b70(scene, obj, lists);
+            }
+            if (obj->flags & 4)
+            {
+                FUN_42a870(scene, obj);
+                if (obj->flags & 3)
+                {
+                    FUN_42a570(scene, obj);
+                }
+                else
+                {
+                    FUN_42a320(scene, obj);
+                }
             }
             g_renderState.unk28 += obj->pointCount * 0x20;
         }
@@ -2787,12 +3307,201 @@ void FUN_42a320(Scene *scene, ObjectDef *obj)
     }
 }
 
+extern int g_62457c[256];
+
+// FUN_42a320 with a specular highlight from each directional light, looked up through
+// g_62457c into the colour's alpha.
+// FUNCTION: STUNTGP_D3D 0x42a570
+void FUN_42a570(Scene *scene, ObjectDef *obj)
+{
+    FUN_42b400(scene, obj);
+    DWORD b = g_renderState.unk801c.ib;
+    DWORD r = g_renderState.unk801c.ir;
+    DWORD g = g_renderState.unk801c.ig;
+    if ((WORD)scene->unk04 > 1)
+    {
+        DWORD scale = (WORD)scene->unk04;
+        r = scale * r >> 8;
+        g = scale * g >> 8;
+        b = scale * b >> 8;
+    }
+    int shift = (obj->flags & 3) + 8;
+    Vec4 *normals = (Vec4 *)scene->unk28;
+    Vec4 *points = obj->points;
+    DWORD n = obj->unk26;
+    DWORD i = (g_62497c - 1) & g_renderState.unk20;
+    MeshUv *e = (MeshUv *)obj->unk2c + i;
+    for (; i < n; i += g_62497c, e += g_62497c)
+    {
+        Vec4 *p = &points[e->point];
+        Vec4 *nrm = &normals[e->unk0a];
+        LightRec *rec = (LightRec *)g_renderState.unk8048;
+        DWORD cr = r;
+        DWORD cg = g;
+        DWORD cb = b;
+        int spec = 0;
+        for (DWORD j = 0; j < (DWORD)g_renderState.unk8044; j++)
+        {
+            Light *light = rec->light;
+            if (light->type == 0)
+            {
+                float dot = rec->colour.z * nrm->z + rec->colour.y * nrm->y + nrm->x * rec->colour.x;
+                if (*(int *)&dot < 0)
+                {
+                    int k = (int)dot;
+                    cr -= light->r * k;
+                    cg -= light->g * k;
+                    cb -= light->b * k;
+                    dot = rec->half.z * nrm->z + rec->half.y * nrm->y + rec->half.x * nrm->x;
+                    if (*(int *)&dot < 0)
+                    {
+                        spec -= (int)dot;
+                    }
+                }
+            }
+            else if (light->type == 1)
+            {
+                float dot = rec->colour.z * nrm->z + rec->colour.y * nrm->y + nrm->x * rec->colour.x;
+                if (*(int *)&dot < 0)
+                {
+                    float dx = light->local.x - p->x;
+                    float dy = light->local.y - p->y;
+                    float dz = light->local.z - p->z;
+                    int k = (int)(light->range * 4177920.0f / (dx * dx + dy * dy + dz * dz));
+                    cr += light->r * k;
+                    cg += light->g * k;
+                    cb += light->b * k;
+                }
+            }
+            rec++;
+        }
+        spec >>= shift;
+        if (spec < 0)
+        {
+            spec = 0;
+        }
+        else if (spec > 0xff)
+        {
+            spec = 0xff;
+        }
+        DWORD a = g_62457c[spec];
+        if (cr > 0xff00)
+        {
+            cr = 0xff00;
+        }
+        if (cg > 0xff00)
+        {
+            cg = 0xff00;
+        }
+        if (cb > 0xff00)
+        {
+            cb = 0xff00;
+        }
+        e->color = (((a & 0xffffff00) << 8 | cb & 0xff00) << 8) | (cr >> 8) | (cg & 0xff00);
+    }
+}
+
 // Queues the polygons of both visible-mesh lists of the track.
 // FUNCTION: STUNTGP_D3D 0x42a220
 void FUN_42a220()
 {
     FUN_429ea0((PolyRef **)&g_renderState.unk7ed8[0], g_renderState.unk30, g_renderState.unk3c - g_renderState.unk30);
     FUN_42a090((PolyRef **)&g_renderState.unk7ed8[2], g_renderState.unk34, g_renderState.unk40 - g_renderState.unk34);
+}
+
+// Queues the scene into the first render bucket, viewed through its own camera.
+// FUNCTION: STUNTGP_D3D 0x42ad30
+void FUN_42ad30(SceneCamera *e)
+{
+    Scene *scene = e->scene;
+    g_4722d0->unk19c = 5000000.0f;
+    scene->camera = &e->cam;
+    FUN_42b140((RenderList *)&g_renderState.unk7ef8[0]);
+    FUN_42a260((PolyRef **)g_renderState.unk7ed8, scene, 2);
+    FUN_42b180((int *)&g_renderState.unk7ef8[0]);
+}
+
+int FUN_428040(Scene *scene, int index);
+
+// Queues each visible scene of the list (up to a NULL scene) with its own camera, into the
+// clipped lists when only partly visible.
+// FUNCTION: STUNTGP_D3D 0x42af30
+void FUN_42af30(SceneCamera *e)
+{
+    Scene *scene;
+    while ((scene = e->scene) != NULL)
+    {
+        scene->camera = &e->cam;
+        int vis = FUN_428040(scene, -1);
+        if (vis != 1)
+        {
+            if (scene->maxLod)
+            {
+                FUN_42b620(scene);
+            }
+            if (vis == 0)
+            {
+                FUN_42a260((PolyRef **)&g_renderState.unk7ed8[2], scene, vis);
+            }
+            else
+            {
+                FUN_42a260((PolyRef **)g_renderState.unk7ed8, scene, vis);
+            }
+            g_6249ac++;
+        }
+        e++;
+    }
+}
+
+
+// FUN_42af30 for scenes that may be lit: with lighting on (g_624980), LOD 0 gets the specular
+// path and LOD 1 the plain one; coarser LODs are never lit.
+// FUNCTION: STUNTGP_D3D 0x42af90
+void FUN_42af90(SceneCamera *e)
+{
+    void (*lod1)(PolyRef **, Scene *, int) = FUN_42a8c0;
+    void (*lod0)(PolyRef **, Scene *, int) = FUN_42a990;
+    if (!g_624980)
+    {
+        lod1 = FUN_42a260;
+        lod0 = FUN_42a260;
+    }
+    Scene *scene;
+    while ((scene = e->scene) != NULL)
+    {
+        scene->camera = &e->cam;
+        int vis = FUN_428040(scene, -1);
+        if (vis != 1)
+        {
+            if (scene->maxLod)
+            {
+                FUN_42b620(scene);
+            }
+            void (*queue)(PolyRef **, Scene *, int);
+            if (scene->lod >= 2)
+            {
+                queue = FUN_42a260;
+            }
+            else if (scene->lod >= 1)
+            {
+                queue = lod1;
+            }
+            else
+            {
+                queue = lod0;
+            }
+            if (vis == 0)
+            {
+                queue((PolyRef **)&g_renderState.unk7ed8[2], scene, vis);
+            }
+            else
+            {
+                queue((PolyRef **)g_renderState.unk7ed8, scene, vis);
+            }
+            g_6249ac++;
+        }
+        e++;
+    }
 }
 
 extern int g_624980;
@@ -2813,6 +3522,77 @@ void FUN_42ad70()
             if (obj->flags & 4)
             {
                 FUN_42a320(scene, obj);
+            }
+        }
+    }
+}
+
+// Queues the track's animated objects one by one, culling each with FUN_428040 (culled ones are
+// flagged 0x10) and relighting them when full-rate lighting is on.
+// FUNCTION: STUNTGP_D3D 0x42add0
+void FUN_42add0()
+{
+    FUN_42ad70();
+    Scene *scene = g_renderState.unk44;
+    ObjectDef *obj = scene->lods[0] + 1;
+    void (*plain)(Scene *, ObjectDef *);
+    void (*spec)(Scene *, ObjectDef *);
+    if (g_624980 == 1 && g_612948.unk0034 == 100)
+    {
+        FUN_42a840(scene);
+        plain = FUN_42a320;
+        if (g_624984 == 1)
+        {
+            spec = FUN_42a570;
+        }
+        else
+        {
+            spec = FUN_42a320;
+        }
+    }
+    else
+    {
+        g_624984 = 0;
+        plain = NULL;
+    }
+    scene->camera = &g_4864e8;
+    for (DWORD i = 1; i < scene->objectCount; obj++, i++)
+    {
+        if (obj->visible == 1)
+        {
+            int vis = FUN_428040(scene, i);
+            if (vis != 1)
+            {
+                obj->flags &= ~0x10;
+                FUN_42b2a0(&g_renderState.unk00, &g_renderState.unk10, scene, obj);
+                FUN_44fbd0(scene, obj, g_61c428);
+                if (vis == 0)
+                {
+                    FUN_429660(obj->points, obj->pointCount);
+                    FUN_429d50(scene, obj, (PolyRef **)&g_renderState.unk7ed8[2]);
+                }
+                else
+                {
+                    FUN_429520(obj->points, obj->pointCount);
+                    FUN_429b70(scene, obj, (PolyRef **)g_renderState.unk7ed8);
+                }
+                if (plain && (obj->flags & 4))
+                {
+                    if (obj->flags & 3)
+                    {
+                        spec(scene, obj);
+                    }
+                    else
+                    {
+                        plain(scene, obj);
+                    }
+                }
+                g_renderState.unk28 += obj->pointCount * 0x20;
+                g_6249ac++;
+            }
+            else
+            {
+                obj->flags |= 0x10;
             }
         }
     }
