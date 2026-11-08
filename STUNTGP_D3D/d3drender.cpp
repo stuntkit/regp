@@ -9,6 +9,7 @@
 #include "Game/GameEngine/io_wad.h"
 #include "Game/GameEngine/GameSetup.h"
 #include "Game/GameEngine/GameUpdate.h"
+#include "Game/GameEngine/RenderState.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -49,12 +50,6 @@ int g_592064 = 0;
 // GLOBAL: STUNTGP_D3D 0x477ccc
 float g_477ccc = 128.0f;
 
-// GLOBAL: STUNTGP_D3D 0x61c5f0
-OverlayPoly *g_61c5f0 = NULL;
-
-// GLOBAL: STUNTGP_D3D 0x61c604
-DWORD g_61c604 = 0;
-
 // GLOBAL: STUNTGP_D3D 0x592068
 int g_592068;
 
@@ -69,9 +64,6 @@ int g_592074;
 
 // GLOBAL: STUNTGP_D3D 0x592078
 int g_592078;
-
-// GLOBAL: STUNTGP_D3D 0x6244f0
-int g_6244f0;
 
 // Four corner records reset by FUN_425ae0.
 extern int g_6249a4;
@@ -144,12 +136,6 @@ BYTE *g_592028;
 // GLOBAL: STUNTGP_D3D 0x592050
 int g_592050 = 0;
 
-// GLOBAL: STUNTGP_D3D 0x61c5e4
-int g_61c5e4 = 0;
-
-// GLOBAL: STUNTGP_D3D 0x6227d4
-TextureSlot g_6227d4[255];
-
 // GLOBAL: STUNTGP_D3D 0x58d818
 D3DTLVERTEX2 g_58d818[8];
 
@@ -165,42 +151,6 @@ float g_576b94 = 0.0f;
 
 // GLOBAL: STUNTGP_D3D 0x576b98
 float g_576b98 = 0.0f;
-
-// GLOBAL: STUNTGP_D3D 0x6243b8
-TextureSlot *g_6243b8 = NULL;
-
-// GLOBAL: STUNTGP_D3D 0x6243bc
-int g_6243bc = 0;
-
-// GLOBAL: STUNTGP_D3D 0x6244a8
-short g_6244a8[16];
-
-// GLOBAL: STUNTGP_D3D 0x6244c8
-int g_6244c8;
-
-// GLOBAL: STUNTGP_D3D 0x6244cc
-int g_6244cc;
-
-// GLOBAL: STUNTGP_D3D 0x6244d0
-int g_6244d0;
-
-// GLOBAL: STUNTGP_D3D 0x6244d4
-int g_6244d4;
-
-// GLOBAL: STUNTGP_D3D 0x6244d8
-int g_6244d8;
-
-// GLOBAL: STUNTGP_D3D 0x6244dc
-int g_6244dc;
-
-// GLOBAL: STUNTGP_D3D 0x6244e0
-int g_6244e0;
-
-// GLOBAL: STUNTGP_D3D 0x6244e4
-int g_6244e4;
-
-// GLOBAL: STUNTGP_D3D 0x61c50c
-int g_61c50c = 0;
 
 // GLOBAL: STUNTGP_D3D 0x576b8c
 int g_576b8c = 0;
@@ -292,13 +242,6 @@ SpriteFile g_583334[50];
 // Write position in g_583334.
 // GLOBAL: STUNTGP_D3D 0x58358c
 SpriteFile *g_58358c;
-
-// GLOBAL: STUNTGP_D3D 0x61c608
-BYTE g_61c608[0x1c0];
-
-// Write position in g_61c608.
-// GLOBAL: STUNTGP_D3D 0x61c7c8
-BYTE *g_61c7c8;
 
 // Records a font file so it can be reloaded when surfaces are lost.
 // FUNCTION: STUNTGP_D3D 0x42be90
@@ -621,9 +564,9 @@ int FUN_430730(int size, int unk)
     }
     slot->unk04 = (DWORD)texture;
     slot->surface = surface;
-    g_6243b8->texture = texture;
-    g_6243b8->unk04[0] = (DWORD)texture;
-    *(WORD *)&g_6243b8->unk04[1] = size;
+    g_renderState.unk7ed0->texture = texture;
+    g_renderState.unk7ed0->unk04[0] = (DWORD)texture;
+    *(WORD *)&g_renderState.unk7ed0->unk04[1] = size;
     if (g_5ba788.deviceDesc[29] & 0x4000)
     {
         LPDIRECTDRAWSURFACE4 surface2 = NULL;
@@ -646,11 +589,11 @@ int FUN_430730(int size, int unk)
         }
         slot->unk0c = (DWORD)texture2;
         slot->surface2 = surface2;
-        g_6243b8->unk04[0] = (DWORD)texture2;
+        g_renderState.unk7ed0->unk04[0] = (DWORD)texture2;
     }
     FUN_4300f0(sysTexture);
     ddReleaseSurface(&sysSurface);
-    g_6243b8++;
+    g_renderState.unk7ed0++;
     g_592028++;
     return 1;
 }
@@ -692,17 +635,17 @@ void FUN_431560(int slot, BYTE *image)
     desc.dwFlags = (g_59207c[slot] ? 0x10000 : 0) + 0x101007;
     desc.ddsCaps.dwCaps2 = 0x80;
     desc.dwTextureStage = 0;
-    if (g_6227d4[slot].texture)
+    if (g_renderState.unk62ec[slot].texture)
     {
-        res = g_6227d4[slot].texture->Load(texture);
+        res = g_renderState.unk62ec[slot].texture->Load(texture);
         if (res != DD_OK)
         {
             exitError(ddGetErrMessage(res));
         }
     }
-    if (g_6227d4[slot].unk04[0])
+    if (g_renderState.unk62ec[slot].unk04[0])
     {
-        res = ((LPDIRECT3DTEXTURE2)g_6227d4[slot].unk04[0])->Load(texture);
+        res = ((LPDIRECT3DTEXTURE2)g_renderState.unk62ec[slot].unk04[0])->Load(texture);
         if (res != DD_OK)
         {
             exitError(ddGetErrMessage(res));
@@ -935,20 +878,20 @@ void FUN_425070()
 // FUNCTION: STUNTGP_D3D 0x427240
 void FUN_427240()
 {
-    g_6244dc = g_6244cc;
-    g_6244d8 = g_6244c8;
-    g_6244e4 = g_6244d4;
-    g_6244e0 = g_6244d0;
+    g_renderState.unk7ff4 = g_renderState.unk7fe4;
+    g_renderState.unk7ff0 = g_renderState.unk7fe0;
+    g_renderState.unk7ffc = g_renderState.unk7fec;
+    g_renderState.unk7ff8 = g_renderState.unk7fe8;
 }
 
 // FUNCTION: STUNTGP_D3D 0x427270
 void FUN_427270()
 {
-    g_6244d4 = g_61c50c + 0x60000;
+    g_renderState.unk7fec = g_renderState.unk24 + 0x60000;
     FUN_427240();
     for (int i = 0; i < 16; i++)
     {
-        g_6244a8[i] = i;
+        g_renderState.unk7fc0[i] = i;
     }
 }
 
@@ -1071,7 +1014,7 @@ void FUN_431830(D3DCOLOR color)
     FUN_432190(0x28);
     g_d3dDevice->SetTexture(0, NULL);
     g_d3dDevice->DrawPrimitive(D3DPT_LINELIST, FVF_TLVERTEX2, g_58d818, 8, D3DDP_DONOTCLIP | D3DDP_DONOTLIGHT);
-    g_61c5e4 = -1;
+    g_renderState.unkfc = -1;
     if (g_624984 == 1)
     {
         FUN_42f340();
@@ -1387,10 +1330,10 @@ void FUN_42fa10()
 // FUNCTION: STUNTGP_D3D 0x42fa40
 void FUN_42fa40()
 {
-    g_6244f0 = 0;
+    g_renderState.unk8008 = 0;
     if (((WORD *)g_5ba788.deviceDesc)[0xb0] >= 2 && ((WORD *)g_5ba788.deviceDesc)[0xb1] >= 2)
     {
-        g_592074 = g_6244f0 = 1;
+        g_592074 = g_renderState.unk8008 = 1;
     }
 }
 
@@ -1621,10 +1564,10 @@ void FUN_432300(Font *font, D3DCOLOR color, DWORD flags)
         FUN_432190(0x70);
         texture = font->glyphs[0].textureAlt;
     }
-    if (g_61c5e4 != texture)
+    if (g_renderState.unkfc != texture)
     {
-        g_d3dDevice->SetTexture(0, g_6227d4[texture].texture);
-        g_61c5e4 = texture;
+        g_d3dDevice->SetTexture(0, g_renderState.unk62ec[texture].texture);
+        g_renderState.unkfc = texture;
     }
     FUN_42f380();
 }
@@ -1781,35 +1724,6 @@ struct RenderItem
     int type; // 0x10
 };
 
-// GLOBAL: STUNTGP_D3D 0x6243c0
-void *g_6243c0;
-
-// GLOBAL: STUNTGP_D3D 0x6243c4
-int g_6243c4;
-
-// GLOBAL: STUNTGP_D3D 0x6243c8
-void *g_6243c8;
-
-// GLOBAL: STUNTGP_D3D 0x6243cc
-int g_6243cc;
-
-// GLOBAL: STUNTGP_D3D 0x6243d0
-void *g_6243d0;
-
-// GLOBAL: STUNTGP_D3D 0x6243d4
-int g_6243d4;
-
-// GLOBAL: STUNTGP_D3D 0x6243d8
-void *g_6243d8;
-
-// GLOBAL: STUNTGP_D3D 0x6243dc
-int g_6243dc;
-
-// GLOBAL: STUNTGP_D3D 0x6243e0
-RenderBucket g_6243e0[8];
-
-extern void *g_61c5f8;
-extern void *g_61c600;
 
 // STUB: STUNTGP_D3D 0x427530
 void FUN_427530(RenderItem *item)
@@ -1833,36 +1747,36 @@ void FUN_4277b0(RenderItem *item, DWORD count)
 void FUN_4277d0()
 {
     FUN_427240();
-    if (g_6243e0[0].count)
+    if (g_renderState.unk7ef8[0].count)
     {
         g_4722d0->unk19c = 5000000.0f;
-        FUN_4277b0((RenderItem *)g_6243e0[0].data, g_6243e0[0].count);
+        FUN_4277b0((RenderItem *)g_renderState.unk7ef8[0].data, g_renderState.unk7ef8[0].count);
     }
     g_4722d0->unk19c = 500000.0f;
-    if (g_6243e0[2].count)
+    if (g_renderState.unk7ef8[2].count)
     {
-        FUN_4277b0((RenderItem *)g_6243e0[2].data, g_6243e0[2].count);
+        FUN_4277b0((RenderItem *)g_renderState.unk7ef8[2].data, g_renderState.unk7ef8[2].count);
     }
-    if (g_6243e0[2].unk0c)
+    if (g_renderState.unk7ef8[2].unk0c)
     {
-        FUN_4277b0((RenderItem *)g_6243e0[2].unk08, g_6243e0[2].unk0c);
+        FUN_4277b0((RenderItem *)g_renderState.unk7ef8[2].unk08, g_renderState.unk7ef8[2].unk0c);
     }
     g_4722d0->unk19c = 500000.0f;
-    if (g_6243e0[4].count)
+    if (g_renderState.unk7ef8[4].count)
     {
-        FUN_4277b0((RenderItem *)g_6243e0[4].data, g_6243e0[4].count);
+        FUN_4277b0((RenderItem *)g_renderState.unk7ef8[4].data, g_renderState.unk7ef8[4].count);
     }
-    if (g_6243e0[4].unk0c)
+    if (g_renderState.unk7ef8[4].unk0c)
     {
-        FUN_4277b0((RenderItem *)g_6243e0[4].unk08, g_6243e0[4].unk0c);
+        FUN_4277b0((RenderItem *)g_renderState.unk7ef8[4].unk08, g_renderState.unk7ef8[4].unk0c);
     }
-    if (g_6243e0[6].count)
+    if (g_renderState.unk7ef8[6].count)
     {
-        FUN_4277b0((RenderItem *)g_6243e0[6].data, g_6243e0[6].count);
+        FUN_4277b0((RenderItem *)g_renderState.unk7ef8[6].data, g_renderState.unk7ef8[6].count);
     }
-    if (g_6243e0[6].unk0c)
+    if (g_renderState.unk7ef8[6].unk0c)
     {
-        FUN_4277b0((RenderItem *)g_6243e0[6].unk08, g_6243e0[6].unk0c);
+        FUN_4277b0((RenderItem *)g_renderState.unk7ef8[6].unk08, g_renderState.unk7ef8[6].unk0c);
     }
 }
 
@@ -2075,7 +1989,7 @@ void FUN_433290(void *data, int count)
                 base = 0;
                 v = g_592780;
                 idx = g_590018;
-                g_d3dDevice->SetTexture(0, g_6227d4[texture].texture);
+                g_d3dDevice->SetTexture(0, g_renderState.unk62ec[texture].texture);
                 scroll = (float *)g_577660 + (texture - g_583590) * 5;
             }
             DWORD n = *(BYTE *)ref->poly;
@@ -2114,9 +2028,8 @@ void FUN_433290(void *data, int count)
 }
 
 struct Unk624488;
-extern Unk624488 *g_624488;
 
-// FUN_433290 for opaque vertex-coloured polygons with UVs scrolled by the slot's g_624488 record.
+// FUN_433290 for opaque vertex-coloured polygons with UVs scrolled by the slot's g_renderState.unk7fa0 record.
 // FUNCTION: STUNTGP_D3D 0x4334c0
 void FUN_4334c0(void *data, int count)
 {
@@ -2148,8 +2061,8 @@ void FUN_4334c0(void *data, int count)
                 base = 0;
                 v = g_592780;
                 idx = g_590018;
-                g_d3dDevice->SetTexture(0, g_6227d4[texture].texture);
-                scroll = (float *)g_624488 + g_6227d4[texture].unk04[4] * 5;
+                g_d3dDevice->SetTexture(0, g_renderState.unk62ec[texture].texture);
+                scroll = (float *)g_renderState.unk7fa0 + g_renderState.unk62ec[texture].unk04[4] * 5;
             }
             DWORD n = *(BYTE *)ref->poly;
             for (DWORD k = 0; k < n; k++)
@@ -2186,7 +2099,7 @@ void FUN_4334c0(void *data, int count)
 }
 
 // FUN_433290 for vertex-coloured polygons: diffuse from the vertex colour, its alpha as a grey
-// specular term, UVs scrolled by the slot's g_624488 record.
+// specular term, UVs scrolled by the slot's g_renderState.unk7fa0 record.
 // FUNCTION: STUNTGP_D3D 0x4336c0
 void FUN_4336c0(void *data, int count)
 {
@@ -2222,8 +2135,8 @@ void FUN_4336c0(void *data, int count)
                 base = 0;
                 v = g_592780;
                 idx = g_590018;
-                g_d3dDevice->SetTexture(0, g_6227d4[texture].texture);
-                scroll = (float *)g_624488 + g_6227d4[texture].unk04[4] * 5;
+                g_d3dDevice->SetTexture(0, g_renderState.unk62ec[texture].texture);
+                scroll = (float *)g_renderState.unk7fa0 + g_renderState.unk62ec[texture].unk04[4] * 5;
             }
             DWORD n = *(BYTE *)ref->poly;
             for (DWORD k = 0; k < n; k++)
@@ -2351,8 +2264,8 @@ void FUN_4338e0(void *data, int count)
             DWORD slot = poly[1];
             if (slot != texture)
             {
-                g_d3dDevice->SetTexture(0, g_6227d4[slot].texture);
-                scroll = (float *)g_624488 + g_6227d4[slot].unk04[4] * 5;
+                g_d3dDevice->SetTexture(0, g_renderState.unk62ec[slot].texture);
+                scroll = (float *)g_renderState.unk7fa0 + g_renderState.unk62ec[slot].unk04[4] * 5;
                 texture = slot;
             }
             DWORD n = poly[0];
@@ -2404,24 +2317,24 @@ void FUN_433f40()
 {
     FUN_432a90();
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 0xa0);
-    FUN_433290(g_6243e0[0].data, g_6243e0[0].count);
-    FUN_4334c0(g_6243e0[2].data, g_6243e0[2].count);
-    FUN_4334c0(g_6243e0[3].data, g_6243e0[3].count);
+    FUN_433290(g_renderState.unk7ef8[0].data, g_renderState.unk7ef8[0].count);
+    FUN_4334c0(g_renderState.unk7ef8[2].data, g_renderState.unk7ef8[2].count);
+    FUN_4334c0(g_renderState.unk7ef8[3].data, g_renderState.unk7ef8[3].count);
     if (g_624984 == 1)
     {
-        FUN_4336c0(g_6243e0[4].data, g_6243e0[4].count);
-        FUN_4336c0(g_6243e0[5].data, g_6243e0[5].count);
+        FUN_4336c0(g_renderState.unk7ef8[4].data, g_renderState.unk7ef8[4].count);
+        FUN_4336c0(g_renderState.unk7ef8[5].data, g_renderState.unk7ef8[5].count);
     }
     else
     {
-        FUN_4334c0(g_6243e0[4].data, g_6243e0[4].count);
-        FUN_4334c0(g_6243e0[5].data, g_6243e0[5].count);
+        FUN_4334c0(g_renderState.unk7ef8[4].data, g_renderState.unk7ef8[4].count);
+        FUN_4334c0(g_renderState.unk7ef8[5].data, g_renderState.unk7ef8[5].count);
     }
-    FUN_433c50(g_6243e0[6].data, g_6243e0[6].count);
-    FUN_433c50(g_6243e0[7].data, g_6243e0[7].count);
+    FUN_433c50(g_renderState.unk7ef8[6].data, g_renderState.unk7ef8[6].count);
+    FUN_433c50(g_renderState.unk7ef8[7].data, g_renderState.unk7ef8[7].count);
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 1);
-    FUN_4338e0(g_61c600, g_6243cc);
-    FUN_4338e0(g_61c5f8, g_6243dc);
+    FUN_4338e0(g_renderState.unk118, g_renderState.unk7ed8[1].count);
+    FUN_4338e0(g_renderState.unk110, g_renderState.unk7ed8[3].count);
 }
 
 // FUNCTION: STUNTGP_D3D 0x432a90
@@ -2508,9 +2421,9 @@ int FUN_4325e0(BYTE *image, DWORD width, DWORD height)
     ddReleaseSurface(&staging);
     slot->unk04 = (DWORD)texture;
     slot->surface = surface;
-    g_6243b8->texture = texture;
-    g_6243b8++;
-    return g_6243b8 - g_6227d4 - 1;
+    g_renderState.unk7ed0->texture = texture;
+    g_renderState.unk7ed0++;
+    return g_renderState.unk7ed0 - g_renderState.unk62ec - 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4327e0
@@ -2716,10 +2629,10 @@ void FUN_432e00(SpriteDesc *desc)
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 0xa0);
     }
     int tex = d.texture;
-    if (g_61c5e4 != tex)
+    if (g_renderState.unkfc != tex)
     {
-        g_d3dDevice->SetTexture(0, g_6227d4[tex].texture);
-        g_61c5e4 = tex;
+        g_d3dDevice->SetTexture(0, g_renderState.unk62ec[tex].texture);
+        g_renderState.unkfc = tex;
     }
     for (int i = 0; i < 4; i++)
     {
@@ -2748,9 +2661,9 @@ void FUN_432f60()
     OverlayPoly *poly;
 
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 1);
-    poly = g_61c5f0;
+    poly = g_renderState.unk108;
     mode = 0xffffffff;
-    for (i = 0; i < g_61c604; i++)
+    for (i = 0; i < g_renderState.unk11c; i++)
     {
         DWORD alpha = poly->alpha << 24;
         OverlayVertex *src = poly->verts;
@@ -2775,10 +2688,10 @@ void FUN_432f60()
             FUN_432190(newMode);
         }
         int tex = poly->texture;
-        if (g_61c5e4 != tex)
+        if (g_renderState.unkfc != tex)
         {
-            g_d3dDevice->SetTexture(0, g_6227d4[tex].texture);
-            g_61c5e4 = tex;
+            g_d3dDevice->SetTexture(0, g_renderState.unk62ec[tex].texture);
+            g_renderState.unkfc = tex;
         }
         g_d3dDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, FVF_TLVERTEX2, v, poly->numVerts,
                                    D3DDP_DONOTCLIP | D3DDP_DONOTLIGHT);
@@ -2816,26 +2729,17 @@ void FUN_433f20()
     }
 }
 
-// GLOBAL: STUNTGP_D3D 0x61c7cc
-BYTE g_61c7cc[0x6000];
-
-// GLOBAL: STUNTGP_D3D 0x6227cc
-BYTE *g_6227cc = NULL;
-
-// GLOBAL: STUNTGP_D3D 0x6227d0
-int g_6227d0 = 0;
-
 // FUNCTION: STUNTGP_D3D 0x44fd60
 void FUN_44fd60()
 {
-    g_6227cc = g_61c7cc;
-    g_6227d0 = 0;
+    g_renderState.unk62e4 = g_renderState.unk2e4;
+    g_renderState.unk62e8 = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x425870
 void FUN_425870()
 {
-    g_61c604 = 0;
+    g_renderState.unk11c = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x425880
@@ -2861,7 +2765,7 @@ void FUN_425ae0()
 // FUNCTION: STUNTGP_D3D 0x42e420
 void FUN_42e420()
 {
-    g_61c5e4 = -1;
+    g_renderState.unkfc = -1;
 }
 
 void FUN_42f2e0(char *dst, const char *src);

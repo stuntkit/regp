@@ -40,6 +40,7 @@ int g_589600;
 #include "sprite.h"
 
 #include "common.h"
+#include "Game/GameEngine/RenderState.h"
 // #include "pure.h"
 
 struct Unk61c208
@@ -212,7 +213,7 @@ void FUN_44e4b0(BOOL windowMessage)
         g_WindowMessage = 0;
         FUN_44ea10();
         FUN_4411c0();
-        g_6244f4 = 0;
+        g_renderState.unk800c = 0;
         FUN_4320c0(1.0f);
     }
 }
@@ -490,8 +491,8 @@ void FUN_42c0a0(int arg, int sizeCode)
         size = 256;
         break;
     }
-    g_6243b8->unk04[2] = 0;
-    g_6243b8->unk04[4] = 0;
+    g_renderState.unk7ed0->unk04[2] = 0;
+    g_renderState.unk7ed0->unk04[4] = 0;
     int n = FUN_430730(size, arg);
     if (g_58332c == 1)
     {
@@ -591,8 +592,6 @@ extern char *g_582f28[255];
 extern char **g_583324;
 extern SpriteFile g_583334[50];
 extern SpriteFile *g_58358c;
-extern BYTE g_61c608[0x1c0];
-extern BYTE *g_61c7c8;
 extern int g_583328;
 extern int g_582b24;
 extern int g_58271c;
@@ -606,9 +605,9 @@ void FUN_42c480()
     FUN_42c1d0();
     memset(g_583594, 0xff, sizeof(g_583594));
     memset(g_582b28, 0, sizeof(g_582b28));
-    memset(g_6227d4, 0, 255 * sizeof(TextureSlot));
-    g_6243b8 = g_6227d4;
-    g_61c7c8 = g_61c608;
+    memset(g_renderState.unk62ec, 0, 255 * sizeof(TextureSlot));
+    g_renderState.unk7ed0 = g_renderState.unk62ec;
+    g_renderState.unk2e0 = g_renderState.unk120;
     g_582f24 = g_582b28;
     g_583324 = g_582f28;
     g_58358c = g_583334;

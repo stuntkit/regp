@@ -3,6 +3,7 @@
 #include "../../sound.h"
 #include "GameSetup.h"
 #include "GameUpdate.h"
+#include "RenderState.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -148,7 +149,6 @@ void FUN_42c6f0(char *text, char **end, char *value)
 }
 
 extern int g_577660[10];
-extern int g_624460;
 void FUN_425880();
 
 // Queues the sky and track scenes; the animated sky gets its scroll speeds.
@@ -178,7 +178,7 @@ void FUN_42c740(char *script)
     if (Script_FindKey(script, &script, "L_TRACK") == 1)
     {
         Script_ReadString(script, &script, (char *)g_58c234);
-        g_624460 = g_58c234;
+        g_renderState.unk7f78 = g_58c234;
         g_58c540[g_58c808].id = g_58c234;
         g_58c234 += strlen((char *)g_58c234) + 1;
         g_58c540[g_58c808].slot = 3;
@@ -577,27 +577,24 @@ void Script_ParseGameConfig()
     Mem_Free(script);
 }
 
-// GLOBAL: STUNTGP_D3D 0x624504
-Ambience g_624504;
-
 // GLOBAL: STUNTGP_D3D 0x5da264
 char g_5da264[0x80];
 
 // FUNCTION: STUNTGP_D3D 0x42d7e0
 void FUN_42d7e0()
 {
-    float r = g_624504.red * g_624504.intensity;
-    float g = g_624504.green * g_624504.intensity;
-    float b = g_624504.blue * g_624504.intensity;
-    g_624504.r = r;
-    g_624504.g = g;
-    g_624504.b = b;
+    float r = g_renderState.unk801c.red * g_renderState.unk801c.intensity;
+    float g = g_renderState.unk801c.green * g_renderState.unk801c.intensity;
+    float b = g_renderState.unk801c.blue * g_renderState.unk801c.intensity;
+    g_renderState.unk801c.r = r;
+    g_renderState.unk801c.g = g;
+    g_renderState.unk801c.b = b;
     int ir = (int)r;
     int ig = (int)g;
     int ib = (int)b;
-    g_624504.ir = ir << 8;
-    g_624504.ig = ig << 8;
-    g_624504.ib = ib << 8;
+    g_renderState.unk801c.ir = ir << 8;
+    g_renderState.unk801c.ig = ig << 8;
+    g_renderState.unk801c.ib = ib << 8;
 }
 
 // GLOBAL: STUNTGP_D3D 0x477b80

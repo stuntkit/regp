@@ -97,7 +97,6 @@ struct RenderBucket
     int unk0c;    // 0x0c
 };
 
-extern RenderBucket g_6243e0[8];
 extern int g_592054;
 extern int g_592058;
 extern int g_59205c;
@@ -105,10 +104,6 @@ extern int g_592060;
 extern int g_592064;
 extern float g_477ccc;
 
-extern OverlayPoly *g_61c5f0;
-extern DWORD g_61c604;
-extern int g_61c5e4;
-extern TextureSlot g_6227d4[];
 
 struct SpriteDesc;
 
@@ -117,8 +112,6 @@ extern float g_624990;
 extern float g_624994;
 extern float g_576b94;
 extern float g_576b98;
-extern TextureSlot *g_6243b8;
-extern int g_6243bc;
 extern int g_576b8c;
 extern int g_576b90;
 extern float g_576b9c;

@@ -10,6 +10,7 @@
 #include "../../soundsys.h"
 #include "../../sprite.h"
 #include "GameSetup.h"
+#include "RenderState.h"
 
 // STUB: STUNTGP_D3D 0x431f10
 void FUN_431f10(DWORD color, float x0, float y0, float z0, float x1, float y1, float z1)
@@ -677,8 +678,6 @@ void FUN_447100()
     }
 }
 
-extern int g_6244fc;
-extern int g_624500;
 void FUN_447b70(int delay);
 
 // FUNCTION: STUNTGP_D3D 0x4478c0
@@ -688,38 +687,38 @@ void FUN_4478c0()
     g_61b740->faders[0].active = 0;
     g_61b740->faders[0].value = 100.0f;
     g_61b740->faders[0].target = 100.0f;
-    g_61b740->faders[1].unk08 = 640.0f - (g_6244fc + 166.40001f);
-    g_61b740->faders[1].unk0c = 480.0f - (g_624500 + 106.4f);
+    g_61b740->faders[1].unk08 = 640.0f - (g_renderState.unk8014 + 166.40001f);
+    g_61b740->faders[1].unk0c = 480.0f - (g_renderState.unk8018 + 106.4f);
     g_61b740->faders[1].value = 0.0f;
     g_61b740->faders[1].dx = 256;
     g_61b740->faders[1].dy = 0;
     g_61b740->faders[2].unk08 = 255.2f;
-    g_61b740->faders[2].unk0c = g_624500 + 6.0f;
+    g_61b740->faders[2].unk0c = g_renderState.unk8018 + 6.0f;
     g_61b740->faders[2].value = 0.0f;
     g_61b740->faders[2].dx = 0;
     g_61b740->faders[2].dy = -96;
-    g_61b740->faders[7].unk08 = g_6244fc + 35.2f;
-    g_61b740->faders[7].unk0c = 448.0f - g_624500;
+    g_61b740->faders[7].unk08 = g_renderState.unk8014 + 35.2f;
+    g_61b740->faders[7].unk0c = 448.0f - g_renderState.unk8018;
     g_61b740->faders[7].value = 0.0f;
     g_61b740->faders[7].dx = -96;
     g_61b740->faders[7].dy = 0;
-    g_61b740->faders[3].unk08 = 571.2f - g_6244fc;
-    g_61b740->faders[3].unk0c = g_624500 + 3.2f;
+    g_61b740->faders[3].unk08 = 571.2f - g_renderState.unk8014;
+    g_61b740->faders[3].unk0c = g_renderState.unk8018 + 3.2f;
     g_61b740->faders[3].value = 0.0f;
     g_61b740->faders[3].dx = 160;
     g_61b740->faders[3].dy = 0;
-    g_61b740->faders[4].unk08 = 571.2f - g_6244fc;
-    g_61b740->faders[4].unk0c = g_624500 + 3.2f;
+    g_61b740->faders[4].unk08 = 571.2f - g_renderState.unk8014;
+    g_61b740->faders[4].unk0c = g_renderState.unk8018 + 3.2f;
     g_61b740->faders[4].value = 0.0f;
     g_61b740->faders[4].dx = 256;
     g_61b740->faders[4].dy = 0;
-    g_61b740->faders[5].unk08 = 571.2f - g_6244fc;
-    g_61b740->faders[5].unk0c = g_624500 + 3.2f;
+    g_61b740->faders[5].unk08 = 571.2f - g_renderState.unk8014;
+    g_61b740->faders[5].unk0c = g_renderState.unk8018 + 3.2f;
     g_61b740->faders[5].value = 0.0f;
     g_61b740->faders[5].dx = 352;
     g_61b740->faders[5].dy = 0;
-    g_61b740->faders[6].unk08 = g_6244fc + 3.2f;
-    g_61b740->faders[6].unk0c = g_624500 + 19.2f;
+    g_61b740->faders[6].unk08 = g_renderState.unk8014 + 3.2f;
+    g_61b740->faders[6].unk0c = g_renderState.unk8018 + 19.2f;
     g_61b740->faders[6].value = 0.0f;
     g_61b740->faders[6].dx = -192;
     g_61b740->faders[6].dy = 0;

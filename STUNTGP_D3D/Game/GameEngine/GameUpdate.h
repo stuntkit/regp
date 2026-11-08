@@ -367,7 +367,6 @@ struct TrackOctree
     OctRoot roots[2];    // 0x18, roots[0].root is also the node array base
 };
 
-extern TrackOctree *g_624480;
 
 // One of the 32 effect slots at g_612948.unk045c.
 struct Unk612da4

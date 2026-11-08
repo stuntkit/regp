@@ -1,6 +1,7 @@
 #include "vecmath.h"
 
 #include "Game/GameEngine/GameUpdate.h"
+#include "Game/GameEngine/RenderState.h"
 
 #include <math.h>
 #include <string.h>
@@ -82,12 +83,6 @@ void Matrix_Multiply(float *m, float b00, float b01, float b02, float b03, float
     }
 }
 
-// GLOBAL: STUNTGP_D3D 0x61c534
-float g_61c534;
-
-// GLOBAL: STUNTGP_D3D 0x61c538
-float g_61c538;
-
 // Rotation angle and axis of the 3x3 part of m.
 // Multiplies a in place by b.
 // FUNCTION: STUNTGP_D3D 0x44f280
@@ -165,8 +160,8 @@ void FUN_44f4e0(float *m)
                     0.0f, 0.0f, 1.0f);
     Matrix_Multiply(m, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, f / (f - n), 1.0f, 0.0f, 0.0f,
                     -(f * n) / (f - n), 0.0f);
-    g_61c534 = 1.0f / m[10];
-    g_61c538 = m[14];
+    g_renderState.unk4c = 1.0f / m[10];
+    g_renderState.unk50 = m[14];
 }
 
 // FUNCTION: STUNTGP_D3D 0x44f4c0
@@ -210,8 +205,6 @@ void Matrix_Multiply3(float *a, float *b)
     }
 }
 
-extern BYTE *g_6227cc;
-extern int g_6227d0;
 
 // Builds the camera's view matrix and its transpose from pos, target, up and the view roll.
 // FUNCTION: STUNTGP_D3D 0x450190
@@ -250,7 +243,7 @@ void FUN_450190(Camera *cam)
     up = *(Vec4 *)&rot[4];
     dir = *(Vec4 *)&rot[8];
 
-    float *m = (float *)g_6227cc;
+    float *m = (float *)g_renderState.unk62e4;
     cam->matrix = (Vec4 *)m;
     m[0] = side.x;
     m[1] = side.y;
@@ -269,7 +262,7 @@ void FUN_450190(Camera *cam)
     m[14] = 0.0f;
     m[15] = 1.0f;
     m += 16;
-    g_6227d0++;
+    g_renderState.unk62e8++;
     cam->unk44 = (Vec4 *)m;
     m[0] = side.x;
     m[1] = up.x;
@@ -288,8 +281,8 @@ void FUN_450190(Camera *cam)
     m[14] = 0.0f;
     m[15] = 1.0f;
     m += 16;
-    g_6227d0++;
-    g_6227cc = (BYTE *)m;
+    g_renderState.unk62e8++;
+    g_renderState.unk62e4 = (BYTE *)m;
 }
 
 // Re-orthonormalises the rotation rows, keeping the z row's direction.

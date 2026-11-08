@@ -6,6 +6,7 @@
 
 #include "../../sintable.h"
 #include "../../vecmath.h"
+#include "RenderState.h"
 
 // FUNCTION: STUNTGP_D3D 0x402580
 void FUN_402580()
@@ -13,20 +14,14 @@ void FUN_402580()
     g_4722d0 = g_498248;
 }
 
-// GLOBAL: STUNTGP_D3D 0x624474
-CameraPath *g_624474;
-
-// GLOBAL: STUNTGP_D3D 0x624498
-DWORD g_624498;
-
 // FUNCTION: STUNTGP_D3D 0x428800
 CameraPath *FUN_428800(int id)
 {
-    for (DWORD i = 0; i < g_624498; i++)
+    for (DWORD i = 0; i < g_renderState.unk7fb0; i++)
     {
-        if (g_624474[i].id == id)
+        if (g_renderState.unk7f8c[i].id == id)
         {
-            return &g_624474[i];
+            return &g_renderState.unk7f8c[i];
         }
     }
     return NULL;

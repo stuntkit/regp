@@ -11,13 +11,10 @@
 #include "../../random.h"
 #include "../../vecmath.h"
 #include "game_state.h"
+#include "RenderState.h"
 
-extern float g_482678;
-extern float g_48267c;
-extern float g_482680;
-extern float g_482688;
-extern float g_48268c;
-extern float g_482690;
+extern Vec4 g_482678;
+extern Vec4 g_482688;
 extern int g_60eff0;
 extern DWORD g_60eff8;
 extern DWORD g_60effc;
@@ -393,11 +390,11 @@ void FUN_4054b0(float *p, float amount)
     d.x = g_4d5bb8->posX - p[0];
     d.y = g_4d5bb8->posY - p[1];
     d.z = g_4d5bb8->posZ - p[2];
-    float h = g_482688 * d.x + g_48268c * d.y + g_482690 * d.z;
+    float h = g_482688.x * d.x + g_482688.y * d.y + g_482688.z * d.z;
     Vec4 u;
-    u.x = g_482688 * h;
-    u.y = g_48268c * h;
-    u.z = g_482690 * h;
+    u.x = g_482688.x * h;
+    u.y = g_482688.y * h;
+    u.z = g_482688.z * h;
     d.x = d.x + u.x;
     d.y = u.y + d.y;
     d.z = u.z + d.z;
@@ -497,10 +494,10 @@ void FUN_406020(Vec4 *target, float amount)
     d.x = g_4d5bb8->posX - target->x;
     d.y = g_4d5bb8->posY - target->y;
     d.z = g_4d5bb8->posZ - target->z;
-    float dot = g_482688 * d.x + g_48268c * d.y + g_482690 * d.z;
-    p.x = g_482688 * dot;
-    p.y = g_48268c * dot;
-    p.z = g_482690 * dot;
+    float dot = g_482688.x * d.x + g_482688.y * d.y + g_482688.z * d.z;
+    p.x = g_482688.x * dot;
+    p.y = g_482688.y * dot;
+    p.z = g_482688.z * dot;
     d.x += p.x;
     d.y = p.y + d.y;
     d.z = p.z + d.z;
@@ -662,9 +659,9 @@ void FUN_4062b0()
         float roll;
         Vec4 v = g_4d5bb8->unk1c8c;
         Vec3_Normalize(&v.x);
-        s.x = g_482690 * v.y - g_48268c * v.z;
-        s.y = g_482688 * v.z - g_482690 * v.x;
-        s.z = g_48268c * v.x - g_482688 * v.y;
+        s.x = g_482688.z * v.y - g_482688.y * v.z;
+        s.y = g_482688.x * v.z - g_482688.z * v.x;
+        s.z = g_482688.y * v.x - g_482688.x * v.y;
         Vec3_Normalize(&s.x);
         r.x = s.z * v.y - s.y * v.z;
         r.y = s.x * v.z - s.z * v.x;
@@ -677,7 +674,7 @@ void FUN_4062b0()
         pitch = -(m[8] * r.x + m[9] * r.y + m[10] * r.z);
         if (fabs(pitch) <= 0.707f)
         {
-            roll = -(m[0] * g_482688 + m[1] * g_48268c + m[2] * g_482690);
+            roll = -(m[0] * g_482688.x + m[1] * g_482688.y + m[2] * g_482688.z);
             if (fabs(roll) <= 0.34202009f)
             {
                 Matrix_Transpose(b, mat);
@@ -801,9 +798,9 @@ void FUN_406970()
     d.y = b.y - a.y;
     d.z = b.z - a.z;
     Vec4 n;
-    n.x = g_482690 * d.y - g_48268c * d.z;
-    n.y = g_482688 * d.z - g_482690 * d.x;
-    n.z = g_48268c * d.x - g_482688 * d.y;
+    n.x = g_482688.z * d.y - g_482688.y * d.z;
+    n.y = g_482688.x * d.z - g_482688.z * d.x;
+    n.z = g_482688.y * d.x - g_482688.x * d.y;
     Vec3_Normalize(&n.x);
     Vec4 q;
     q.x = c.x - b.x;
@@ -847,11 +844,11 @@ void FUN_406700()
     d.x = g_4d5bb8->posX - g_49a148.x;
     d.y = g_4d5bb8->posY - g_49a148.y;
     d.z = g_4d5bb8->posZ - g_49a148.z;
-    float h = g_482688 * d.x + g_48268c * d.y + g_482690 * d.z;
+    float h = g_482688.x * d.x + g_482688.y * d.y + g_482688.z * d.z;
     Vec4 u;
-    u.x = g_482688 * h;
-    u.y = g_48268c * h;
-    u.z = g_482690 * h;
+    u.x = g_482688.x * h;
+    u.y = g_482688.y * h;
+    u.z = g_482688.z * h;
     d.x = d.x + u.x;
     d.y = u.y + d.y;
     d.z = u.z + d.z;
@@ -1112,7 +1109,7 @@ void FUN_4081d0()
         Car *leader;
         FUN_408180(&leader);
         g_4d5bb8->unk2634 = 1.0f;
-        float gap = (g_4d5bb8->unk23b0 - leader->unk23b0) * g_624474->unk18 * 0.01f;
+        float gap = (g_4d5bb8->unk23b0 - leader->unk23b0) * g_renderState.unk7f8c->unk18 * 0.01f;
         g_4d5bb8->leaderGap = gap;
         g_4d5bb8->unk2634 = 1.0f;
         if (g_4d5bb8 != leader)
@@ -1224,7 +1221,7 @@ extern TrackPoly *g_498164;
 // FUNCTION: STUNTGP_D3D 0x4091e0
 void FUN_4091e0(int wheel)
 {
-    BYTE *s = (BYTE *)&g_624480->surfaces[g_498164->surface];
+    BYTE *s = (BYTE *)&g_renderState.unk7f98->surfaces[g_498164->surface];
     g_4d5bb8->wheels[wheel].unk84 = s[1] * 0.015625f;
     g_4d5bb8->wheels[wheel].unk8c = s[2];
     g_4d5bb8->wheels[wheel].unk88 = s[3];
@@ -2214,10 +2211,10 @@ void FUN_40c500()
 // FUNCTION: STUNTGP_D3D 0x414940
 void FUN_414940()
 {
-    if (g_482688 * g_4d5bb8->axisY.x + g_48268c * g_4d5bb8->axisY.y + g_482690 * g_4d5bb8->axisY.z < 0.0f &&
+    if (g_482688.x * g_4d5bb8->axisY.x + g_482688.y * g_4d5bb8->axisY.y + g_482688.z * g_4d5bb8->axisY.z < 0.0f &&
         (float)fabs(g_4d5bb8->unk7214) >= 0.05f)
     {
-        float d = g_482688 * g_4d5bb8->axisZ.x + g_48268c * g_4d5bb8->axisZ.y + g_482690 * g_4d5bb8->axisZ.z;
+        float d = g_482688.x * g_4d5bb8->axisZ.x + g_482688.y * g_4d5bb8->axisZ.y + g_482688.z * g_4d5bb8->axisZ.z;
         g_4d5bb8->unk7214 = (g_4d5bb8->unk7214 < 0.0f ? -(float)fabs(d) : (float)fabs(d)) * 6.0f;
     }
 }
@@ -3329,7 +3326,7 @@ void FUN_40fbb0()
     Car *car = g_4d5bb8;
     if (car->unk1fd8 == 0)
     {
-        float d = g_482678 * car->axisX.x + g_482680 * car->axisX.z + g_48267c * car->axisX.y;
+        float d = g_482678.x * car->axisX.x + g_482678.z * car->axisX.z + g_482678.y * car->axisX.y;
         if (fabs(d) >= 0.2079116)
         {
             if (car->unk1cf0 < 1.0f)
@@ -3518,7 +3515,7 @@ void FUN_410b30()
     else if (g_4d5bb8->unk2624 > 0)
     {
         g_4d5bb8->unk2624--;
-        float u = g_482688 * g_4d5bb8->axisY.x + g_48268c * g_4d5bb8->axisY.y + g_482690 * g_4d5bb8->axisY.z;
+        float u = g_482688.x * g_4d5bb8->axisY.x + g_482688.y * g_4d5bb8->axisY.y + g_482688.z * g_4d5bb8->axisY.z;
         float s;
         if (u < 0.0f)
         {
@@ -4176,9 +4173,9 @@ void FUN_412270()
         if (len >= 1.0f)
         {
             Vec4 c;
-            c.x = g_482690 * v.y - g_48268c * v.z;
-            c.y = g_482688 * v.z - g_482690 * v.x;
-            c.z = g_48268c * v.x - g_482688 * v.y;
+            c.x = g_482688.z * v.y - g_482688.y * v.z;
+            c.y = g_482688.x * v.z - g_482688.z * v.x;
+            c.z = g_482688.y * v.x - g_482688.x * v.y;
             len *= 0.012f;
             if (len > 1.0f)
             {
@@ -4882,7 +4879,7 @@ void FUN_415770()
 {
     if (g_4d5bb8->unk26b0->objectCount > 10)
     {
-        DWORD count = g_624474->count;
+        DWORD count = g_renderState.unk7f8c->count;
         int pos = g_4d5bb8->unk24a4;
         DWORD wrapped;
         if (pos < 0)
@@ -5430,11 +5427,11 @@ void FUN_418320()
     if (g_60f2b0 != 3)
     {
         Vec4 side;
-        side.x = g_482690 * g_4d5bb8->unk24c0.y - g_48268c * g_4d5bb8->unk24c0.z;
-        side.y = g_482688 * g_4d5bb8->unk24c0.z - g_482690 * g_4d5bb8->unk24c0.x;
-        side.z = g_48268c * g_4d5bb8->unk24c0.x - g_482688 * g_4d5bb8->unk24c0.y;
+        side.x = g_482688.z * g_4d5bb8->unk24c0.y - g_482688.y * g_4d5bb8->unk24c0.z;
+        side.y = g_482688.x * g_4d5bb8->unk24c0.z - g_482688.z * g_4d5bb8->unk24c0.x;
+        side.z = g_482688.y * g_4d5bb8->unk24c0.x - g_482688.x * g_4d5bb8->unk24c0.y;
         Vec3_Normalize(&side.x);
-        unsigned int k = g_4d5bb8->unk24a4 * 255 / g_624474->count & 0xff;
+        unsigned int k = g_4d5bb8->unk24a4 * 255 / g_renderState.unk7f8c->count & 0xff;
         Vec4 d;
         d.x = g_4d5bb8->posX - g_4d5bb8->unk24b0.x;
         d.y = g_4d5bb8->posY - g_4d5bb8->unk24b0.y;
@@ -5454,7 +5451,7 @@ void FUN_418320()
         d.x = g_4d5bb8->posX - g_4d5bb8->unk24b0.x;
         d.y = g_4d5bb8->posY - g_4d5bb8->unk24b0.y;
         d.z = g_4d5bb8->posZ - g_4d5bb8->unk24b0.z;
-        if (g_4d5bb8->unk1fd8 && g_482688 * d.x + g_48268c * d.y + g_482690 * d.z > 3000.0f)
+        if (g_4d5bb8->unk1fd8 && g_482688.x * d.x + g_482688.y * d.y + g_482688.z * d.z > 3000.0f)
         {
             g_4d5bb8->unk763c = 1;
         }
@@ -6029,7 +6026,7 @@ void FUN_407de0()
 // FUNCTION: STUNTGP_D3D 0x41d390
 void FUN_41d390()
 {
-    g_60f010 = FUN_428840(g_624474);
+    g_60f010 = FUN_428840(g_renderState.unk7f8c);
 }
 
 // FUNCTION: STUNTGP_D3D 0x41d3b0
@@ -6431,9 +6428,9 @@ void FUN_41ded0(float *pos, CameraPath *path, int *index)
     float f = t / len;
     g_4d5bb8->unk23b0 = (f + g_4d5bb8->unk24a4) * 100.0f / g_571328->count;
     g_4d5bb8->unk24c0 = d;
-    g_4d5bb8->unk24d0.x = g_482690 * d.y - g_48268c * d.z;
-    g_4d5bb8->unk24d0.y = g_482688 * d.z - g_482690 * d.x;
-    g_4d5bb8->unk24d0.z = g_48268c * d.x - g_482688 * d.y;
+    g_4d5bb8->unk24d0.x = g_482688.z * d.y - g_482688.y * d.z;
+    g_4d5bb8->unk24d0.y = g_482688.x * d.z - g_482688.z * d.x;
+    g_4d5bb8->unk24d0.z = g_482688.y * d.x - g_482688.x * d.y;
     Vec3_Normalize(&g_4d5bb8->unk24d0.x);
     d.x = t * d.x;
     d.y = t * d.y;

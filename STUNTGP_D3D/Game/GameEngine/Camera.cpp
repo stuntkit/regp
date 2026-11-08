@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "../../vecmath.h"
+#include "RenderState.h"
 
 void FUN_402ab0(float fov);
 void FUN_403310(float fov);
@@ -13,9 +14,7 @@ void FUN_4028f0(CameraPreset *preset, int mode);
 extern CameraPreset g_4722d8[32];
 
 extern BYTE g_62d480[256];
-extern float g_482688;
-extern float g_48268c;
-extern float g_482690;
+extern Vec4 g_482688;
 extern float g_60f010;
 
 // GLOBAL: STUNTGP_D3D 0x499f8c
@@ -95,15 +94,15 @@ Vec4 *FUN_420b20(Vec4 *out, WORD *idx);
 // FUNCTION: STUNTGP_D3D 0x41f870
 int FUN_41f870(TrackPoly *poly)
 {
-    WORD *idx = g_624480->indices + poly->firstIndex;
-    Vec4 *a = g_624480->vertices + *idx;
+    WORD *idx = g_renderState.unk7f98->indices + poly->firstIndex;
+    Vec4 *a = g_renderState.unk7f98->vertices + *idx;
     Vec4 n;
     FUN_420b20(&n, idx);
     int flat = 1;
     unsigned int count = poly->vertexCount;
     for (unsigned int i = 0; i < count; i++)
     {
-        Vec4 *b = &g_624480->vertices[*idx];
+        Vec4 *b = &g_renderState.unk7f98->vertices[*idx];
         Vec4 d;
         d.x = b->x - a->x;
         d.y = b->y - a->y;
@@ -135,14 +134,14 @@ void FUN_41f920(TrackPoly *poly, float dist)
 // FUNCTION: STUNTGP_D3D 0x41f970
 int FUN_41f970(TrackPoly *poly, Vec4 *p)
 {
-    WORD *idx = g_624480->indices + poly->firstIndex;
-    Vec4 *b = g_624480->vertices + *idx;
+    WORD *idx = g_renderState.unk7f98->indices + poly->firstIndex;
+    Vec4 *b = g_renderState.unk7f98->vertices + *idx;
     unsigned int n = poly->vertexCount;
     for (unsigned int i = 0; i < n;)
     {
         i++;
         Vec4 *a = b;
-        b = &g_624480->vertices[idx[i % n]];
+        b = &g_renderState.unk7f98->vertices[idx[i % n]];
         Vec4 e;
         e.x = b->x - a->x;
         e.y = b->y - a->y;
@@ -193,13 +192,13 @@ int FUN_41fa80(TrackPoly *poly, Vec4 *p)
 // FUNCTION: STUNTGP_D3D 0x41fb10
 int FUN_41fb10(TrackPoly *poly, Vec4 *p)
 {
-    WORD *idx = g_624480->indices + poly->firstIndex;
+    WORD *idx = g_renderState.unk7f98->indices + poly->firstIndex;
     WORD *cur = idx;
     for (unsigned int i = 0; i < poly->vertexCount; cur++)
     {
-        Vec4 *a = &g_624480->vertices[*cur];
+        Vec4 *a = &g_renderState.unk7f98->vertices[*cur];
         i++;
-        Vec4 *b = &g_624480->vertices[idx[i % poly->vertexCount]];
+        Vec4 *b = &g_renderState.unk7f98->vertices[idx[i % poly->vertexCount]];
         Vec4 e;
         e.x = b->x - a->x;
         e.y = b->y - a->y;
@@ -234,10 +233,10 @@ int FUN_41fb10(TrackPoly *poly, Vec4 *p)
 // FUNCTION: STUNTGP_D3D 0x41fc70
 int FUN_41fc70(TrackPoly *poly, Vec4 *p)
 {
-    WORD *idx = g_624480->indices + poly->firstIndex;
+    WORD *idx = g_renderState.unk7f98->indices + poly->firstIndex;
     for (unsigned int i = 0; i < poly->vertexCount; i++, idx++)
     {
-        Vec4 *v = &g_624480->vertices[*idx];
+        Vec4 *v = &g_renderState.unk7f98->vertices[*idx];
         Vec4 d;
         d.x = v->x - p->x;
         d.y = v->y - p->y;
@@ -282,14 +281,14 @@ int FUN_41fde0(Car *car)
 // FUNCTION: STUNTGP_D3D 0x420690
 int FUN_420690(TrackPoly *poly, Vec4 *p)
 {
-    WORD *idx = g_624480->indices + poly->firstIndex;
-    Vec4 *b = g_624480->vertices + *idx;
+    WORD *idx = g_renderState.unk7f98->indices + poly->firstIndex;
+    Vec4 *b = g_renderState.unk7f98->vertices + *idx;
     unsigned int n = poly->vertexCount;
     for (unsigned int i = 0; i < n;)
     {
         i++;
         Vec4 *a = b;
-        b = &g_624480->vertices[idx[i % n]];
+        b = &g_renderState.unk7f98->vertices[idx[i % n]];
         Vec4 e;
         e.x = b->x - a->x;
         e.y = b->y - a->y;
@@ -338,7 +337,7 @@ int FUN_420a70()
 // FUNCTION: STUNTGP_D3D 0x420b20
 Vec4 *FUN_420b20(Vec4 *out, WORD *idx)
 {
-    TrackOctree *tree = g_624480;
+    TrackOctree *tree = g_renderState.unk7f98;
     Vec4 a;
     a.x = tree->vertices[idx[1]].x - tree->vertices[idx[0]].x;
     a.y = tree->vertices[idx[1]].y - tree->vertices[idx[0]].y;
@@ -370,7 +369,7 @@ void FUN_420f00(OctNode *node)
 {
     if (g_49823c == 0)
     {
-        TrackOctree *tree = g_624480;
+        TrackOctree *tree = g_renderState.unk7f98;
         for (;;)
         {
             int octant = 0;
@@ -399,7 +398,7 @@ void FUN_420f00(OctNode *node)
 // FUNCTION: STUNTGP_D3D 0x420f80
 void FUN_420f80()
 {
-    TrackOctree *tree = g_624480;
+    TrackOctree *tree = g_renderState.unk7f98;
     g_49823c = 0;
     g_498240 = 0;
     while (g_498154 > tree->roots[g_498240].key)
@@ -712,9 +711,9 @@ void FUN_403c80()
     d.y = ahead.y - g_499f78.y;
     d.z = ahead.z - g_499f78.z;
     Vec4 n;
-    n.x = g_482690 * d.y - g_48268c * d.z;
-    n.y = g_482688 * d.z - g_482690 * d.x;
-    n.z = g_48268c * d.x - g_482688 * d.y;
+    n.x = g_482688.z * d.y - g_482688.y * d.z;
+    n.y = g_482688.x * d.z - g_482688.z * d.x;
+    n.z = g_482688.y * d.x - g_482688.x * d.y;
     Vec3_Normalize(&n.x);
     Vec4 e;
     e.x = g_499f78.x - g_4722d0->cam.pos.x;
@@ -932,7 +931,7 @@ void FUN_404450()
         side.x = g_4722d0->data->camOffset.z * fwd.x;
         side.y = g_4722d0->data->camOffset.z * fwd.y;
         side.z = g_4722d0->data->camOffset.z * fwd.z;
-        dot = g_482688 * v.x + g_48268c * v.y + g_482690 * v.z;
+        dot = g_482688.x * v.x + g_482688.y * v.y + g_482688.z * v.z;
         if (dot >= 0.0f)
         {
             off.x = -off.x;
@@ -953,22 +952,22 @@ void FUN_404450()
         tmp.x -= g_4722d0->data->posX;
         tmp.y -= g_4722d0->data->posY;
         tmp.z -= g_4722d0->data->posZ;
-        h = g_482688 * tmp.x + g_48268c * tmp.y + g_482690 * tmp.z;
+        h = g_482688.x * tmp.x + g_482688.y * tmp.y + g_482688.z * tmp.z;
         if (h < 100.0f)
         {
             h = -(h - 100.0f);
-            tmp.x = h * g_482688;
-            tmp.y = h * g_48268c;
-            tmp.z = h * g_482690;
+            tmp.x = h * g_482688.x;
+            tmp.y = h * g_482688.y;
+            tmp.z = h * g_482688.z;
             v.x += tmp.x;
             v.y += tmp.y;
             v.z += tmp.z;
         }
         if (dot >= 0.0f)
         {
-            tmp.x = g_482688 + g_482688;
-            tmp.y = g_48268c + g_48268c;
-            tmp.z = g_482690 + g_482690;
+            tmp.x = g_482688.x + g_482688.x;
+            tmp.y = g_482688.y + g_482688.y;
+            tmp.z = g_482688.z + g_482688.z;
             g_4722d0->accelX -= tmp.x;
             g_4722d0->accelY -= tmp.y;
             g_4722d0->accelZ -= tmp.z;
@@ -997,9 +996,9 @@ void FUN_404450()
                 g_4722d0->accelX *= 0.9f;
                 g_4722d0->accelY *= 0.9f;
                 g_4722d0->accelZ *= 0.9f;
-                tmp.x = g_482688 + g_482688;
-                tmp.y = g_48268c + g_48268c;
-                tmp.z = g_482690 + g_482690;
+                tmp.x = g_482688.x + g_482688.x;
+                tmp.y = g_482688.y + g_482688.y;
+                tmp.z = g_482688.z + g_482688.z;
                 g_4722d0->accelX -= tmp.x;
                 g_4722d0->accelY -= tmp.y;
                 g_4722d0->accelZ -= tmp.z;
@@ -1176,9 +1175,9 @@ void FUN_404450()
         {
             lift = 3000.0f;
         }
-        off.x = g_482688 * lift;
-        off.y = g_48268c * lift;
-        off.z = lift * g_482690;
+        off.x = g_482688.x * lift;
+        off.y = g_482688.y * lift;
+        off.z = lift * g_482688.z;
         g_4722d0->cam.pos.x -= off.x;
         g_4722d0->cam.pos.y -= off.y;
         g_4722d0->cam.pos.z -= off.z;
@@ -1341,11 +1340,11 @@ int g_5715cc;
 // FUNCTION: STUNTGP_D3D 0x420190
 void FUN_420190(TrackPoly *poly, int *hit)
 {
-    WORD *idx = g_624480->indices + poly->firstIndex;
+    WORD *idx = g_renderState.unk7f98->indices + poly->firstIndex;
     unsigned int n = poly->vertexCount;
     for (unsigned int i = 0; i < n; i++)
     {
-        int r = FUN_41ffa0(&g_624480->vertices[*idx]);
+        int r = FUN_41ffa0(&g_renderState.unk7f98->vertices[*idx]);
         *hit |= r;
         if (r == 1)
         {

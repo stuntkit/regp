@@ -78,7 +78,6 @@ void FUN_42e800();
 void FUN_42e820();
 extern int g_624988;
 extern int g_62498c;
-extern DWORD g_61c508;
 void FUN_429510();
 void FUN_42e6e0();
 void FUN_43d0b0();

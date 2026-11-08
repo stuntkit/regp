@@ -14,6 +14,7 @@
 #include "objects.h"
 #include "surface.h"
 #include "windowInit.h"
+#include "Game/GameEngine/RenderState.h"
 
 void FUN_436400(const char *name, int *value);
 void FUN_439da0(int type, int layer, float x0, float y0, float x1, float y1);
@@ -1922,9 +1923,9 @@ int FUN_4309b0(int slot, int width, int height, char *name)
     {
         exitError(ddGetErrMessage(res));
     }
-    g_6243b8->texture = target;
-    g_6243b8->unk04[0] = (DWORD)target;
-    *(WORD *)&g_6243b8->unk04[1] = width;
+    g_renderState.unk7ed0->texture = target;
+    g_renderState.unk7ed0->unk04[0] = (DWORD)target;
+    *(WORD *)&g_renderState.unk7ed0->unk04[1] = width;
     FUN_4300f0(texture);
     ddReleaseSurface(&surface);
     return 1;
@@ -2007,7 +2008,7 @@ void FUN_430d40(int slot, int id)
     int image = g_583594[id];
     surface = NULL;
     texture = NULL;
-    size = (WORD *)&g_6227d4[slot].unk04[1];
+    size = (WORD *)&g_renderState.unk62ec[slot].unk04[1];
     if (*size == g_587998[image].width)
     {
         if (slot == 15)
@@ -2058,8 +2059,8 @@ void FUN_430d40(int slot, int id)
         {
             exitError(ddGetErrMessage(res));
         }
-        g_6243b8->texture = target;
-        g_6243b8->unk04[0] = (DWORD)target;
+        g_renderState.unk7ed0->texture = target;
+        g_renderState.unk7ed0->unk04[0] = (DWORD)target;
         FUN_4300f0(texture);
         ddReleaseSurface(&surface);
     }

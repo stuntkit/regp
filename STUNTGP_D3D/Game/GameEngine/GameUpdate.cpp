@@ -44,6 +44,7 @@ extern int g_489720;
 #include "../../surface.h"
 #include "../../timer.h"
 #include "../../vecmath.h"
+#include "RenderState.h"
 
 // GLOBAL: STUNTGP_D3D 0x60d618
 int g_60d618;
@@ -116,9 +117,6 @@ struct AnimObject
 
 // GLOBAL: STUNTGP_D3D 0x576cd0
 AnimObject g_576cd0[32];
-
-// GLOBAL: STUNTGP_D3D 0x624484
-AnimDef *g_624484;
 
 // 6 entries at 0x49a1f8, 0x7724 bytes each
 // GLOBAL: STUNTGP_D3D 0x49a1f8
@@ -198,7 +196,7 @@ void FUN_4127e0(CameraPath *path, Car *car);
 void FUN_408640(Car *car, float *pos);
 GameSlot *FUN_402590(Car *car);
 extern int g_60df98;
-extern float g_482688;
+extern Vec4 g_482688;
 
 
 // Puts a car back on the track at its last checkpoint, upright and facing along the path.
@@ -219,10 +217,10 @@ void FUN_412940(Car *car)
     FUN_411880(car);
     FUN_411490(car);
     car->unk1f10 = 1;
-    FUN_4127e0(g_624474, car);
+    FUN_4127e0(g_renderState.unk7f8c, car);
     FUN_408640(car, &car->unk24b0.x);
     Vec4 fwd = car->unk24c0;
-    Vec4 down = *(Vec4 *)&g_482688;
+    Vec4 down = g_482688;
     down.x = -down.x;
     down.y = -down.y;
     down.z = -down.z;
@@ -1028,7 +1026,7 @@ void FUN_418d20(Car *car)
     int t = car->unk7674;
     if (t)
     {
-        car->unk24a4 = t - (int)(5000.0f / (g_60f010 / (float)g_624474[1].count));
+        car->unk24a4 = t - (int)(5000.0f / (g_60f010 / (float)g_renderState.unk7f8c[1].count));
         if (g_4d5ca4 == 1)
         {
             FUN_447aa0(&g_498248[0].fx.faders[6]);
@@ -1611,16 +1609,15 @@ void FUN_41e2d0()
     }
 }
 
-extern float g_61c594[16];
 
 // Projects a world point to the screen; fails when it is in front of the near plane.
 // FUNCTION: STUNTGP_D3D 0x41e410
 int FUN_41e410(Vec4 *p, float *out)
 {
     Vec4 t;
-    t.x = g_61c594[0] * p->x + p->z * g_61c594[8] + p->y * g_61c594[4] + g_61c594[12];
-    t.y = g_61c594[1] * p->x + p->z * g_61c594[9] + p->y * g_61c594[5] + g_61c594[13];
-    t.z = g_61c594[2] * p->x + p->z * g_61c594[10] + p->y * g_61c594[6] + g_61c594[14];
+    t.x = g_renderState.unkac[0] * p->x + p->z * g_renderState.unkac[8] + p->y * g_renderState.unkac[4] + g_renderState.unkac[12];
+    t.y = g_renderState.unkac[1] * p->x + p->z * g_renderState.unkac[9] + p->y * g_renderState.unkac[5] + g_renderState.unkac[13];
+    t.z = g_renderState.unkac[2] * p->x + p->z * g_renderState.unkac[10] + p->y * g_renderState.unkac[6] + g_renderState.unkac[14];
     if (t.z < g_4722d0->nearZ)
     {
         return 0;
@@ -1766,12 +1763,12 @@ void FUN_426260()
         ObjectDef *def = scene->lods[0];
         for (DWORD i = 0; i < scene->objectCount; i++)
         {
-            int type = g_624484[i].type;
+            int type = g_renderState.unk7f9c[i].type;
             if (type == 1 || type == 2 || type == 3)
             {
                 FUN_425df0(scene, def, type);
             }
-            AnimDef *src = &g_624484[i];
+            AnimDef *src = &g_renderState.unk7f9c[i];
             AnimObject *obj = &g_576cd0[i];
             obj->type = src->type;
             obj->rot = src->rot;
@@ -2070,9 +2067,7 @@ void FUN_429510()
     FUN_4294f0();
 }
 
-extern int g_61c510;
 
-extern int g_61c510;
 
 // FUN_429660 that also stores clip outcodes for the four frustum sides and the near plane.
 // FUNCTION: STUNTGP_D3D 0x429520
@@ -2080,7 +2075,7 @@ void FUN_429520(Vec4 *in, DWORD count)
 {
     float d[5];
     Vec4 t;
-    float *out = (float *)g_61c510;
+    float *out = (float *)g_renderState.unk28;
     float nearZ = g_4722d0->nearZ;
     for (DWORD i = 0; i < count; i++)
     {
@@ -2106,11 +2101,11 @@ void FUN_429520(Vec4 *in, DWORD count)
     }
 }
 
-// Transforms points by g_61c428 and projects them into the g_61c510 vertex buffer.
+// Transforms points by g_61c428 and projects them into the g_renderState.unk28 vertex buffer.
 // FUNCTION: STUNTGP_D3D 0x429660
 void FUN_429660(Vec4 *in, DWORD count)
 {
-    float *out = (float *)g_61c510;
+    float *out = (float *)g_renderState.unk28;
     for (DWORD i = 0; i < count; i++, in++, out += 8)
     {
         Vec4 t;
@@ -2124,30 +2119,25 @@ void FUN_429660(Vec4 *in, DWORD count)
     }
 }
 
-extern VisIndexList *g_61c51c;
-extern VisIndexList *g_61c528;
-extern ObjectDef *g_61c530;
-extern DWORD g_61c508;
-extern int g_61c520;
 
 // Transforms the points referenced by the visible lists, once per frame each, and queues their
 // vertex-buffer slots.
 // FUNCTION: STUNTGP_D3D 0x429730
 void FUN_429730()
 {
-    VisIndexList *list = g_61c51c;
-    if (list < g_61c528)
+    VisIndexList *list = g_renderState.unk34;
+    if (list < g_renderState.unk40)
     {
-        ObjectDef *obj = g_61c530;
-        DWORD frame = g_61c508;
-        float **dst = (float **)g_61c520;
+        ObjectDef *obj = g_renderState.unk48;
+        DWORD frame = g_renderState.unk20;
+        float **dst = (float **)g_renderState.unk38;
         do
         {
             WORD *idx = list->indices;
             WORD v;
             while ((v = *idx) != 0xffff)
             {
-                float *out = (float *)(g_61c510 + v * 32);
+                float *out = (float *)(g_renderState.unk28 + v * 32);
                 if (((WORD *)out)[9] != frame)
                 {
                     *dst++ = out;
@@ -2164,13 +2154,11 @@ void FUN_429730()
                 }
                 idx++;
             }
-        } while (++list < g_61c528);
-        g_61c520 = (int)dst;
+        } while (++list < g_renderState.unk40);
+        g_renderState.unk38 = (int)dst;
     }
 }
 
-extern VisIndexList *g_61c518;
-extern VisIndexList *g_61c524;
 
 // FUN_429730 for the partly visible lists, also storing each vertex's frustum outcodes.
 // FUNCTION: STUNTGP_D3D 0x429880
@@ -2179,17 +2167,17 @@ void FUN_429880()
     float d[5];
     Vec4 t;
     float nearZ = g_4722d0->nearZ;
-    for (VisIndexList *list = g_61c518; list < g_61c524; list++)
+    for (VisIndexList *list = g_renderState.unk30; list < g_renderState.unk3c; list++)
     {
         WORD *idx = list->indices;
         while (*idx != 0xffff)
         {
-            float *out = (float *)(g_61c510 + *idx * 32);
-            if (((WORD *)out)[9] != g_61c508)
+            float *out = (float *)(g_renderState.unk28 + *idx * 32);
+            if (((WORD *)out)[9] != g_renderState.unk20)
             {
-                *(float **)g_61c520 = out;
-                g_61c520 += 4;
-                Vec4 *in = &g_61c530->points[*idx];
+                *(float **)g_renderState.unk38 = out;
+                g_renderState.unk38 += 4;
+                Vec4 *in = &g_renderState.unk48->points[*idx];
                 t.x = g_61c428[8] * in->z + g_61c428[4] * in->y + g_61c428[0] * in->x + g_61c428[12];
                 t.y = g_61c428[9] * in->z + g_61c428[5] * in->y + g_61c428[1] * in->x + g_61c428[13];
                 t.z = g_61c428[2] * in->x + g_61c428[10] * in->z + g_61c428[6] * in->y + g_61c428[14];
@@ -2204,7 +2192,7 @@ void FUN_429880()
                 d[2] = sx - t.z;
                 d[3] = -t.z - sy;
                 d[4] = sy - t.z;
-                ((WORD *)out)[9] = g_61c508;
+                ((WORD *)out)[9] = g_renderState.unk20;
                 out[7] = t.z;
                 *(WORD *)(out + 4) = ((*(DWORD *)&d[4] >> 26) & 0x20) | ((*(DWORD *)&d[3] >> 27) & 0x10) |
                                      ((*(DWORD *)&d[2] >> 28) & 8) | ((*(DWORD *)&d[1] >> 29) & 4) | (*(DWORD *)&d[0] >> 31) | 2;
@@ -3247,7 +3235,6 @@ void FUN_442de0()
     }
 }
 
-extern int g_624500;
 void FUN_4291f0(const char *text, int align, float x, float y, float z, D3DCOLOR color, float size, DWORD flags);
 
 // Draws the first live message of the current slot, sliding it in and out at the bottom of the screen.
@@ -3258,7 +3245,7 @@ void FUN_442e30()
     {
         return;
     }
-    DWORD limit = g_624500 + 40;
+    DWORD limit = g_renderState.unk8018 + 40;
     SlotEvent *event = g_4722d0->events;
     for (DWORD i = 0; i < 8; event++, i++)
     {
@@ -3546,9 +3533,7 @@ void FUN_447d80()
     fx->faders[6].y = fx->faders[6].dy * v * 0.01f + fx->faders[6].unk0c;
 }
 
-extern float g_482678;
-extern float g_48267c;
-extern float g_482680;
+extern Vec4 g_482678;
 
 // FUNCTION: STUNTGP_D3D 0x401d70
 void FUN_401d70(float *v, float scale)
@@ -3556,9 +3541,9 @@ void FUN_401d70(float *v, float scale)
     if (v[0] * v[0] + v[1] * v[1] + v[2] * v[2] <= 27777.777f)
     {
         float g[4];
-        g[0] = g_482678 * scale;
-        g[1] = g_48267c * scale;
-        g[2] = g_482680 * scale;
+        g[0] = g_482678.x * scale;
+        g[1] = g_482678.y * scale;
+        g[2] = g_482678.z * scale;
         v[0] += g[0];
         v[1] += g[1];
         v[2] += g[2];
@@ -3712,7 +3697,7 @@ void FUN_45e4f0()
             {
                 if (p->anim)
                 {
-                    billboard.texture = (short)(((TextureSlot *)p->anim[0] - g_6227d4) + p->frame / 4096);
+                    billboard.texture = (short)(((TextureSlot *)p->anim[0] - g_renderState.unk62ec) + p->frame / 4096);
                 }
                 else
                 {

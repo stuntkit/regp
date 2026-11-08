@@ -428,6 +428,30 @@ PoolClass g_487a50 = {FUN_452fd0, FUN_452fe0};
 // GLOBAL: STUNTGP_D3D 0x487c18
 PoolClass g_487c18 = {(void (*)(PoolObject *))FUN_4531d0, (int (*)(PoolObject *, int, int))FUN_453210};
 
+// FUN_453480 copies the entries of g_487db8 (up to the one with track 0) whose 16-byte entry at
+// 0x5f9300 is in use into g_624db8, then fills unk08..unk3c from it; FUN_453680/FUN_453710/
+// FUN_453dd0/FUN_454150 index g_624db8 by entry * 0x40.
+struct TrackRecord
+{
+    int unk00;    // 0x00
+    int track;    // 0x04
+    int unk08[5]; // 0x08
+    int unk1c[5]; // 0x1c
+    float unk30;  // 0x30
+    int unk34;    // 0x34
+    int unk38;    // 0x38
+    int unk3c;    // 0x3c
+};
+
+// GLOBAL: STUNTGP_D3D 0x487db8
+TrackRecord g_487db8[12] = {
+    {0x107, 3},  {0x10c, 7},  {0xe9, 4},   {0xf8, 5},   {0xf3, 6}, {0xee, 8},
+    {0x102, 9},  {0xfd, 0xa}, {0x116, 0xb}, {0x111, 0xc}, {0x11b, 0xd}, {0, 0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x624db8
+TrackRecord g_624db8[12];
+
 // GLOBAL: STUNTGP_D3D 0x4880f0
 PoolClass g_4880f0 = {(void (*)(PoolObject *))FUN_4536f0, FUN_453710};
 
