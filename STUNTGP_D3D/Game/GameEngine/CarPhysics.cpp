@@ -90,6 +90,8 @@ void FUN_414ef0(Car *car);
 void FUN_4152c0(Car *car);
 
 CameraPath *FUN_428800(int id);
+DWORD FUN_42b580(Vec4 *pos);
+void FUN_4482a0(DWORD frames, DWORD *digits);
 
 extern int g_60d688[37];
 extern CameraPath *g_571328;
@@ -3423,6 +3425,22 @@ void FUN_413da0()
     g_4d5bb8->unk33cc.unk13c = 1;
 }
 
+// FUNCTION: STUNTGP_D3D 0x413e10
+void FUN_413e10()
+{
+    g_4d5bb8->unk26b0->unk64 = FUN_42b580(&g_4d5bb8->unk1bbc);
+    DWORD lod = FUN_42b580((Vec4 *)&g_4d5bb8->posX);
+    g_4d5bb8->unk26b0->lod = lod;
+    if (lod >= 3)
+    {
+        FUN_413ce0();
+    }
+    else
+    {
+        FUN_413da0();
+    }
+}
+
 // Spins each wheel by the distance it rolled this tick.
 // FUNCTION: STUNTGP_D3D 0x414370
 void FUN_414370()
@@ -4480,9 +4498,32 @@ void FUN_41d3d0()
     }
 }
 
-// STUB: STUNTGP_D3D 0x41d3f0
+// Formats a frame count as a lap time, dropping leading zero fields.
+// FUNCTION: STUNTGP_D3D 0x41d3f0
 void FUN_41d3f0(int time, char *out)
 {
+    DWORD d[8];
+    FUN_4482a0(time, d);
+    if (d[5] != 0)
+    {
+        // STRING: STUNTGP_D3D 0x474898
+        sprintf(out, "%d%d.%d%d.%d%d", d[5], d[4], d[3], d[2], d[1], d[0]);
+    }
+    else if (d[4] != 0)
+    {
+        // STRING: STUNTGP_D3D 0x4748a8
+        sprintf(out, "%d.%d%d.%d%d", d[4], d[3], d[2], d[1], d[0]);
+    }
+    else if (d[3] != 0)
+    {
+        // STRING: STUNTGP_D3D 0x4748b8
+        sprintf(out, "%d%d.%d%d", d[3], d[2], d[1], d[0]);
+    }
+    else
+    {
+        // STRING: STUNTGP_D3D 0x4748c4
+        sprintf(out, "%d.%d%d", d[2], d[1], d[0]);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x41d8a0
@@ -4749,6 +4790,40 @@ void FUN_422200(Body *body)
         body->points[i].local.z += c.z;
     }
     body->unk140 = c.y;
+}
+
+// Returns the palette index (skipping 0) nearest to the colour, by Manhattan distance.
+// FUNCTION: STUNTGP_D3D 0x4222c0
+int FUN_4222c0(BYTE *palette, float r, float g, float b)
+{
+    int best = -1;
+    int ir = (int)r;
+    int ig = (int)g;
+    int ib = (int)b;
+    int bestDist = 10000000;
+    BYTE *p = palette + 5;
+    for (int i = 1; i < 256; i++)
+    {
+        int pr = *p++;
+        int pg = *p++;
+        int pb = *p;
+        p += 2;
+        int d = abs(pr - ir);
+        if (d <= bestDist)
+        {
+            d += abs(pg - ig);
+            if (d <= bestDist)
+            {
+                d += abs(pb - ib);
+                if (d <= bestDist)
+                {
+                    best = i;
+                    bestDist = d;
+                }
+            }
+        }
+    }
+    return best;
 }
 
 // Lays out the collision points for the current car's model.

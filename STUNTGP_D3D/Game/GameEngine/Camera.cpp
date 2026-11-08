@@ -165,6 +165,72 @@ int FUN_4215b0()
     return 0;
 }
 
+// True when two cars are close enough, given their speeds, to possibly touch.
+// FUNCTION: STUNTGP_D3D 0x421830
+int FUN_421830(Car *a, Car *b)
+{
+    Vec4 d;
+    d.x = a->posX - b->posX;
+    d.y = a->posY - b->posY;
+    d.z = a->posZ - b->posZ;
+    float r = a->body.radius + b->body.radius;
+    float bz;
+    float by;
+    float bx;
+    float az;
+    float ay;
+    float ax;
+    az = a->unk1c8c.z;
+    ay = a->unk1c8c.y;
+    ax = a->unk1c8c.x;
+    bz = b->unk1c8c.z;
+    by = b->unk1c8c.y;
+    bx = b->unk1c8c.x;
+    if (d.x * d.x + d.y * d.y + d.z * d.z < r * r + (ax * ax + ay * ay + az * az) + (bx * bx + by * by + bz * bz))
+    {
+        return 1;
+    }
+    return 0;
+}
+
+// GLOBAL: STUNTGP_D3D 0x49a1f4
+Car *g_49a1f4;
+
+// Finds another active car within 300 units of the current car.
+// FUNCTION: STUNTGP_D3D 0x421b80
+int FUN_421b80()
+{
+    if (g_60f2b0 != 4)
+    {
+        Car *self = g_4d5bb8;
+        g_49a1f4 = NULL;
+        Car *car = g_49a1f8;
+        for (unsigned int i = 0; i < 6; car++, i++)
+        {
+            if (car != self && car->active == 1)
+            {
+                Vec4 d;
+                d.x = self->unk1bbc.x - car->unk1bbc.x;
+                d.y = self->unk1bbc.y - car->unk1bbc.y;
+                d.z = self->unk1bbc.z - car->unk1bbc.z;
+                if (d.x * d.x + d.y * d.y + d.z * d.z < 90000.0f)
+                {
+                    if (car->unk7640 == 0)
+                    {
+                        g_49a1f4 = car;
+                        return 1;
+                    }
+                    if (car->unk7640 < 10)
+                    {
+                        car->unk7640 += 60;
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
+
 // FUNCTION: STUNTGP_D3D 0x421c30
 void FUN_421c30(float bounce)
 {
@@ -176,6 +242,43 @@ void FUN_421c30(float bounce)
     g_4980e8.x -= push.x;
     g_4980e8.y -= push.y;
     g_4980e8.z -= push.z;
+}
+
+// Moves a body point to its new world position, keeping the old one.
+// FUNCTION: STUNTGP_D3D 0x421cc0
+void FUN_421cc0(Body *body, int i)
+{
+    body->points[i].prev = body->points[i].world;
+    Vec4 l = body->points[i].local;
+    Vec4 w;
+    w.x = l.x * body->mat0[0] + l.y * body->mat0[4] + l.z * body->mat0[8];
+    w.y = l.x * body->mat0[1] + l.y * body->mat0[5] + l.z * body->mat0[9];
+    w.z = l.x * body->mat0[2] + l.y * body->mat0[6] + l.z * body->mat0[10];
+    w.x += body->pos.x;
+    w.y += body->pos.y;
+    w.z += body->pos.z;
+    body->points[i].world = w;
+}
+
+// Velocity of a body point: the rotation step applied to its offset, plus the body velocity.
+// FUNCTION: STUNTGP_D3D 0x421d90
+void FUN_421d90(Body *body, int i)
+{
+    Vec4 d;
+    d.x = body->points[i].world.x - body->pos.x;
+    d.y = body->points[i].world.y - body->pos.y;
+    d.z = body->points[i].world.z - body->pos.z;
+    Vec4 r;
+    r.x = d.x * body->mat1[0] + d.y * body->mat1[4] + d.z * body->mat1[8];
+    r.y = d.x * body->mat1[1] + d.y * body->mat1[5] + d.z * body->mat1[9];
+    r.z = d.x * body->mat1[2] + d.y * body->mat1[6] + d.z * body->mat1[10];
+    r.x -= d.x;
+    r.y -= d.y;
+    r.z -= d.z;
+    r.x += body->vel[0];
+    r.y += body->vel[1];
+    r.z += body->vel[2];
+    body->points[i].unk30 = r;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4031e0

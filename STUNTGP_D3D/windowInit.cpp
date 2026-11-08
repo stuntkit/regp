@@ -697,6 +697,37 @@ int FUN_423140(LPDIRECTDRAWSURFACE4 surface, LPDIRECTDRAWPALETTE *palette, BYTE 
     return res;
 }
 
+// Copies a block of rows into a locked surface.
+// FUNCTION: STUNTGP_D3D 0x423180
+void FUN_423180(LPDIRECTDRAWSURFACE surface, BYTE *src, int width, int height, int pitch)
+{
+    DDSURFACEDESC ddsd;
+    if (g_DD_DISPLAYRESDEPTH == 16)
+    {
+        width *= 2;
+        pitch *= 2;
+    }
+    ddsd.dwSize = sizeof(ddsd);
+    if (surface->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL) == DD_OK)
+    {
+        BYTE *dst = (BYTE *)ddsd.lpSurface;
+        if (ddsd.dwFlags & DDSD_PITCH)
+        {
+            pitch = ddsd.lPitch;
+        }
+        for (int y = 0; y < height; y++)
+        {
+            if (width > 0)
+            {
+                memcpy(dst, src, width);
+            }
+            src += width;
+            dst += pitch;
+        }
+        surface->Unlock(NULL);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x423230
 void FUN_423230(LPDIRECTDRAWSURFACE4 surface, char color)
 {
