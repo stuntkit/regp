@@ -828,7 +828,7 @@ struct Car
     int unk7260;              // 0x7260
     int unk7264;              // 0x7264
     Replay *unk7268;          // 0x7268
-    BYTE unk726c[0x4];        // 0x726c
+    int *unk726c;             // 0x726c
     Body body;                // 0x7270
     int unk7614;              // 0x7614
     int unk7618;              // 0x7618

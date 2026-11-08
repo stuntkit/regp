@@ -1181,6 +1181,44 @@ void FUN_408dc0(float amount)
     }
 }
 
+void FUN_411340();
+
+// Hands the camera to the free-flying mode 4 when the car is first launched, drifting towards the car
+// unless it is already within 500.
+// FUNCTION: STUNTGP_D3D 0x408e90
+void FUN_408e90()
+{
+    if (g_4722d0->camMode < 10 && (!g_4d5bb8->unk726c || *g_4d5bb8->unk726c != 2))
+    {
+        Vec4 d;
+        d.x = g_4d5bb8->posX - g_4722d0->cam.pos.x;
+        d.y = g_4d5bb8->posY - g_4722d0->cam.pos.y;
+        d.z = g_4d5bb8->posZ - g_4722d0->cam.pos.z;
+        if ((float)sqrt(d.x * d.x + d.y * d.y + d.z * d.z) < 500.0f)
+        {
+            g_4722d0->velX = 0.0f;
+            g_4722d0->velY = 0.0f;
+            g_4722d0->velZ = 0.0f;
+            g_4722d0->accelX = 0.0f;
+            g_4722d0->accelY = 0.0f;
+            g_4722d0->accelZ = 0.0f;
+        }
+        else
+        {
+            g_4722d0->velX = d.x * 0.01f;
+            g_4722d0->velY = d.y * 0.01f;
+            g_4722d0->velZ = d.z * 0.01f;
+        }
+        if (g_4d5bb8->unk762c != 1)
+        {
+            g_4d5bb8->unk762c = 1;
+            g_4d5bb8->unk7630 = g_4722d0->camMode;
+            g_4722d0->camMode = 4;
+            FUN_411340();
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x408f90
 void FUN_408f90()
 {
