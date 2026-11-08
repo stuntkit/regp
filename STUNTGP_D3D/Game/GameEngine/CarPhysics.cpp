@@ -6880,10 +6880,9 @@ void FUN_41cd30(int wheel)
     {
         return;
     }
-    Car *car = g_4d5bb8;
-    SkidMark *skid = &car->skids[wheel];
-    if ((car->unk1cf0 > 30.0f && car->wheels[wheel].unk30 < 8.5f) ||
-        (car->unk1cf0 < 30.0f && car->wheels[wheel].unk30 < 2.0f) || car->unk1fd8)
+    SkidMark *skid = &g_4d5bb8->skids[wheel];
+    if ((g_4d5bb8->unk1cf0 > 30.0f && g_4d5bb8->wheels[wheel].unk30 < 8.5f) ||
+        (g_4d5bb8->unk1cf0 < 30.0f && g_4d5bb8->wheels[wheel].unk30 < 2.0f) || g_4d5bb8->unk1fd8)
     {
         if (skid->unk00)
         {
@@ -6898,11 +6897,11 @@ void FUN_41cd30(int wheel)
         skid->unk00 = 0;
         return;
     }
-    Vec4 p = car->wheels[wheel].pos;
+    Vec4 p = g_4d5bb8->wheels[wheel].pos;
     Vec4 d;
-    d.x = car->axisY.x * -60.0f;
-    d.y = car->axisY.y * -60.0f;
-    d.z = car->axisY.z * -60.0f;
+    d.x = g_4d5bb8->axisY.x * -60.0f;
+    d.y = g_4d5bb8->axisY.y * -60.0f;
+    d.z = g_4d5bb8->axisY.z * -60.0f;
     p.x = p.x + d.x;
     p.y = p.y + d.y;
     p.z = p.z + d.z;
@@ -6939,7 +6938,7 @@ void FUN_41cd30(int wheel)
         end.z = start.z + d.z;
     }
     float step = 200.0f;
-    int surface = car->wheels[wheel].unk78;
+    int surface = g_4d5bb8->wheels[wheel].unk78;
     sp->a = start;
     sp->b = end;
     sp->dir = d;
