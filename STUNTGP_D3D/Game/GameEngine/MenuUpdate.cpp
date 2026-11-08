@@ -3982,12 +3982,11 @@ void FUN_451ed0(Unk451aa0 *object)
     FUN_439450(x0, 366.0f, x1, 444.0f, 12, 0x6f, 0x40);
     FUN_439380(x0, 366.0f, x1, 444.0f, 13, 0, 0, 0.0f);
     x0 += 70.0f;
-    float barX = x0 + 16.0f;
     for (int i = 0; i < 3; i++)
     {
         float y = i * 20 + 384.0f;
         FUN_438be0(x0, y, 12, 2, i + 0x1c, 1.0f, 0xffffffff, 6);
-        FUN_451fd0((&g_486998.unk2c)[i], barX, y, object->unk38[i] * 20.0f);
+        FUN_451fd0((&g_486998.unk2c)[i], x0 + 16.0f, y, object->unk38[i] * 20.0f);
     }
 }
 
