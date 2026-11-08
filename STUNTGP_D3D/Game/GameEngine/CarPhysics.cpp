@@ -1116,6 +1116,35 @@ void Script_GetFloat(char *section, char *key, float *out);
 void Script_GetInt(char *section, char *key, int *out);
 void Script_GetFloatArray(char *section, char *key, float *out, DWORD count);
 
+// FUNCTION: STUNTGP_D3D 0x40b490
+void FUN_40b490(char *text)
+{
+    // STRING: STUNTGP_D3D 0x4734b0
+    char *section = strstr(text, "-DIMENSIONS[] =");
+    // STRING: STUNTGP_D3D 0x4734c0
+    Script_GetFloat(section, "Mass", &g_4d5bb8->unk220);
+    // STRING: STUNTGP_D3D 0x4734c8
+    Script_GetFloat(section, "Com_a", &g_4d5bb8->unk224);
+    // STRING: STUNTGP_D3D 0x4734d0
+    Script_GetFloat(section, "Com_b", &g_4d5bb8->unk228);
+    // STRING: STUNTGP_D3D 0x4734d8
+    Script_GetFloat(section, "Com_h", &g_4d5bb8->unk22c);
+    // STRING: STUNTGP_D3D 0x4734e0
+    Script_GetFloat(section, "WheelBase", &g_4d5bb8->unk230);
+    // STRING: STUNTGP_D3D 0x4734ec
+    Script_GetFloat(section, "TrackFront", &g_4d5bb8->unk234);
+    // STRING: STUNTGP_D3D 0x4734f8
+    Script_GetFloat(section, "TrackRear", &g_4d5bb8->unk238);
+    // STRING: STUNTGP_D3D 0x473504
+    Script_GetFloat(section, "Length", &g_4d5bb8->unk23c);
+    // STRING: STUNTGP_D3D 0x47350c
+    Script_GetFloat(section, "Width", &g_4d5bb8->unk240);
+    // STRING: STUNTGP_D3D 0x473514
+    Script_GetFloat(section, "Height", &g_4d5bb8->unk244);
+    // STRING: STUNTGP_D3D 0x47351c
+    Script_GetFloat(section, "RideHeight", &g_4d5bb8->unk248);
+}
+
 // FUNCTION: STUNTGP_D3D 0x40b5b0
 void FUN_40b5b0(char *text)
 {
@@ -4315,6 +4344,35 @@ int FUN_407860()
         return 1;
     }
     return 0;
+}
+
+// Picks which side to pass the car ahead on.
+// FUNCTION: STUNTGP_D3D 0x4073e0
+void FUN_4073e0()
+{
+    Car *car = g_4d5bb8;
+    Car *target = car->unk2688;
+    Vec4 d;
+    d.x = target->posX - car->posX;
+    d.y = target->posY - car->posY;
+    d.z = target->posZ - car->posZ;
+    if (d.x * car->axisZ.x + d.y * car->axisZ.y + d.z * car->axisZ.z >= 500.0f)
+    {
+        Vec4 p;
+        p.x = car->posX - car->unk24b0.x;
+        p.y = car->posY - car->unk24b0.y;
+        p.z = car->posZ - car->unk24b0.z;
+        float side = p.x * car->unk24d0.x + p.y * car->unk24d0.y + p.z * car->unk24d0.z;
+        if ((float)fabs(side) < 1000.0f)
+        {
+            car->unk2690 =
+                d.x * car->unk24d0.x + d.y * car->unk24d0.y + d.z * car->unk24d0.z > -200.0f ? 500.0f : -500.0f;
+        }
+        else
+        {
+            car->unk2690 = side > 0.0f ? 500.0f : -500.0f;
+        }
+    }
 }
 
 // Nearest active car ahead within the 100-unit lap fraction, else the nearest behind.
