@@ -28,6 +28,7 @@ extern float g_60f010;
 extern float g_60f2d0[31];
 
 
+void Matrix_Multiply3(float *a, float *b);
 int FUN_442fb0();
 void FUN_443de0();
 void FUN_40e360(Car *sub);
@@ -641,6 +642,49 @@ void FUN_4064f0()
             if ((float)fabs(v) < car->unk266c)
             {
                 car->unk266c = v;
+            }
+        }
+    }
+}
+
+// At speed, eases the body's pitch and roll back towards the velocity frame while both are small.
+// FUNCTION: STUNTGP_D3D 0x4062b0
+void FUN_4062b0()
+{
+    if (!g_4d5bb8->unk71ec && g_4d5bb8->unk71f0 != 1 && g_4d5bb8->unk1cf0 >= 8.333333f)
+    {
+        float a[16];
+        float b[16];
+        float m[16];
+        Vec4 r;
+        Vec4 s;
+        float pitch;
+        float roll;
+        Vec4 v = g_4d5bb8->unk1c8c;
+        Vec3_Normalize(&v.x);
+        s.x = g_482690 * v.y - g_48268c * v.z;
+        s.y = g_482688 * v.z - g_482690 * v.x;
+        s.z = g_48268c * v.x - g_482688 * v.y;
+        Vec3_Normalize(&s.x);
+        r.x = s.z * v.y - s.y * v.z;
+        r.y = s.x * v.z - s.z * v.x;
+        r.z = s.y * v.x - s.x * v.y;
+        Vec3_Normalize(&r.x);
+        Matrix_Identity(a);
+        Matrix_Identity(b);
+        float *mat = g_4d5bb8->matrix;
+        memcpy(m, mat, sizeof(m));
+        pitch = -(m[8] * r.x + m[9] * r.y + m[10] * r.z);
+        if (fabs(pitch) <= 0.707f)
+        {
+            roll = -(m[0] * g_482688 + m[1] * g_48268c + m[2] * g_482690);
+            if (fabs(roll) <= 0.34202009f)
+            {
+                Matrix_Transpose(b, mat);
+                Matrix_RotateX(b, ((float)asin(pitch) * 57.295776f) * -0.1f);
+                Matrix_RotateZ(b, ((float)asin(roll) * 57.295776f) * -0.1f);
+                Matrix_Multiply3(b, mat);
+                Matrix_Multiply3(g_4d5bb8->matrix, b);
             }
         }
     }

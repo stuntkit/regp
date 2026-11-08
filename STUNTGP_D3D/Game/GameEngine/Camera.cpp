@@ -1033,6 +1033,68 @@ int FUN_41ff30(Vec4 *p)
     return 0;
 }
 
+// GLOBAL: STUNTGP_D3D 0x498148
+float g_498148;
+
+// GLOBAL: STUNTGP_D3D 0x498188
+Vec4 g_498188;
+
+// GLOBAL: STUNTGP_D3D 0x4981a8
+Vec4 g_4981a8;
+
+// GLOBAL: STUNTGP_D3D 0x4981b8
+Vec4 g_4981b8;
+
+// Sweeps the sphere along g_498128 against point p; on a hit records the contact, its normal and the
+// sphere centre at contact.
+// FUNCTION: STUNTGP_D3D 0x41ffa0
+int FUN_41ffa0(Vec4 *p)
+{
+    Vec4 d;
+    d.x = p->x - g_4980c4.x;
+    d.y = p->y - g_4980c4.y;
+    d.z = p->z - g_4980c4.z;
+    float dist2 = d.x * d.x + d.y * d.y + d.z * d.z;
+    float r = g_498148 + g_498154;
+    if (dist2 > r * r)
+    {
+        return 0;
+    }
+    float t = g_498128.x * d.x + g_498128.y * d.y + g_498128.z * d.z;
+    float h = dist2 - t * t;
+    if (h > g_498158)
+    {
+        return 0;
+    }
+    t = t - (float)sqrt(g_498158 - h);
+    Vec4 q;
+    q.x = g_498128.x * t;
+    q.y = g_498128.y * t;
+    q.z = t * g_498128.z;
+    q.x = g_4980c4.x + q.x;
+    q.y = g_4980c4.y + q.y;
+    q.z = g_4980c4.z + q.z;
+    if (!FUN_41ff30(&q))
+    {
+        return 0;
+    }
+    Vec4 n;
+    n.x = q.x - p->x;
+    g_4981a8 = q;
+    n.y = q.y - p->y;
+    n.z = q.z - p->z;
+    Vec3_Normalize(&n.x);
+    g_4981b8.x = g_498154 * n.x;
+    g_4981b8.y = g_498154 * n.y;
+    g_498198 = n;
+    g_4981b8.z = g_498154 * n.z;
+    g_4981b8.x = g_4981b8.x + p->x;
+    g_4981b8.y = g_4981b8.y + p->y;
+    g_4981b8.z = g_4981b8.z + p->z;
+    g_498188 = g_4981b8;
+    return 1;
+}
+
 // Uniform cubic B-spline basis weights, written to m[0], m[4], m[8], m[12].
 // FUNCTION: STUNTGP_D3D 0x4282a0
 void FUN_4282a0(float *m, float t)
