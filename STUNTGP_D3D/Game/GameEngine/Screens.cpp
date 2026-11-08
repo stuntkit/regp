@@ -5635,7 +5635,7 @@ void FUN_45d630(int sel, int dir)
             }
             if (column == count - 1)
             {
-                FUN_438be0(x * 56.0f + 232.0f, y, 12, 2, textId, 0.8f, 0xffffffff, 2);
+                FUN_438be0(x * 56.0 + 232.0, y, 12, 2, textId, 0.8f, 0xffffffff, 2);
             }
             float px = x * 56.0f + 220.0f;
             FUN_438710(px, y, 12, sprite, 1.0f, 0x103);
@@ -5644,7 +5644,7 @@ void FUN_45d630(int sel, int dir)
                 FUN_438710(px, y, 12, 0x47, 1.0f, 0x103);
                 if (dir < 0)
                 {
-                    FUN_438710(x * 56.0f + 234.0f, y + 8.0f, 12, 0x4a, 1.0f, 0x103);
+                    FUN_438710(x * 56.0 + 234.0, y + 8.0f, 12, 0x4a, 1.0f, 0x103);
                 }
                 if (dir > 0)
                 {
@@ -5662,7 +5662,7 @@ void FUN_45d630(int sel, int dir)
                 }
                 if (g_627fe0[to])
                 {
-                    FUN_438710(x * 56.0f + 234.0f, y - 8.0f, 12, 0x4b, 1.0f, 0x113);
+                    FUN_438710(x * 56.0 + 234.0, y - 8.0f, 12, 0x4b, 1.0f, 0x113);
                 }
             }
             if (g_menuState.unk00ec[index * 2] && (index != current || !blink || dir >= 0))
@@ -5671,7 +5671,7 @@ void FUN_45d630(int sel, int dir)
             }
             if (g_menuState.unk00ec[index * 2 + 1] && (index != current || !blink || dir <= 0))
             {
-                FUN_438710(x * 56.0f + 234.0f, y - 8.0f, 12, 0x4c, 1.0f, 0x113);
+                FUN_438710(x * 56.0 + 234.0, y - 8.0f, 12, 0x4c, 1.0f, 0x113);
             }
             index++;
         }
