@@ -94,7 +94,7 @@ struct CarRace
     int unk1c;        // 0x1c
     int unk20;        // 0x20
     DWORD unk24;      // 0x24
-    BYTE unk28[0x4];  // 0x28
+    DWORD unk28;      // 0x28
     DWORD unk2c;      // 0x2c
     int unk30;        // 0x30
     DWORD unk34;      // 0x34

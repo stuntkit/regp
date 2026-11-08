@@ -2559,9 +2559,88 @@ void FUN_443f10(Car *car, int row)
     g_4856f0[row] = time2;
 }
 
-// STUB: STUNTGP_D3D 0x444070
+extern DWORD g_60d720;
+extern DWORD g_60d724;
+void FUN_442a40(int type, int duration, int delay, int end, int from, int to, float scale);
+void FUN_447ab0(Fader *fader);
+void FUN_447a90(Fader *fader);
+void FUN_45f8e0(int target, int step);
+void FUN_443d80();
+
+// Results sequence: shows one finisher row per second, then on the go-ahead fades the rows out
+// and leaves the race.
+// FUNCTION: STUNTGP_D3D 0x444070
 void FUN_444070()
 {
+    DWORD count;
+    g_61b740 = &g_498248[0].fx;
+    if (++g_60d720 > 60 && g_60d724 < 6)
+    {
+        Car *car = g_612948.unk040c[g_60d724];
+        if (car && car->active == 1)
+        {
+            g_498248[0].fx.faders[g_60d724 + 12].active = 1;
+            FUN_443f10(car, g_60d724);
+            FUN_461150(47, 0, 0, 63, 0, 0, 0);
+            g_60d720 = 0;
+            g_60d724++;
+        }
+    }
+    FUN_41da50((int *)&count);
+    if (g_60d724 >= count)
+    {
+        g_4d5bb8->race.unk20++;
+    }
+    if (++g_4d5bb8->race.unk24 >= 60)
+    {
+        g_4d5bb8->race.unk24 = 0;
+    }
+    FUN_447ab0(&g_61b740->faders[9]);
+    FUN_447ab0(&g_61b740->faders[11]);
+    FUN_447ab0(&g_61b740->faders[10]);
+    Fader *fader = &g_61b740->faders[12];
+    for (count = 0; count < 6; count++, fader++)
+    {
+        FUN_447ab0(fader);
+    }
+    if (FUN_443770() == 3 && !g_612948.unk001c && g_612948.unk0020 == 1 && !g_4d5bb8->race.unk2c)
+    {
+        FUN_443d80();
+        FUN_461150(48, 0, 0, 255, 0, 0, 0);
+        g_4d5bb8->race.unk28 = 0;
+        g_4d5bb8->race.unk2c = 1;
+        FUN_442a40(2, 120, 0, 0, 60, 0, 0.98f);
+        FUN_460ca0();
+        FUN_447a90(&g_61b740->faders[9]);
+        FUN_447a90(&g_61b740->faders[10]);
+        FUN_447a90(&g_61b740->faders[11]);
+        FUN_461150(46, 0, 0, 63, 0, 0, 0);
+    }
+    if (g_4d5bb8->race.unk2c)
+    {
+        if (!(g_4d5bb8->race.unk2c & 7))
+        {
+            FUN_447a90(&g_61b740->faders[g_4d5bb8->race.unk28 + 12]);
+            if (g_4d5bb8->race.unk28 < 6)
+            {
+                g_4d5bb8->race.unk28++;
+            }
+        }
+        g_4d5bb8->race.unk2c++;
+        if (g_4d5bb8->race.unk2c == 60)
+        {
+            FUN_442a40(2, 60, 0, 240, 60, 100, 0.98f);
+        }
+        if (g_4d5bb8->race.unk2c == 120)
+        {
+            FUN_45f8e0(0, -10);
+        }
+        if (g_4d5bb8->race.unk2c == 180)
+        {
+            g_612948.unk02a8 = 1;
+            FUN_441e20();
+        }
+    }
 }
 
 void FUN_447a90(Fader *fader);
