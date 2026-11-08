@@ -163,12 +163,6 @@ int FUN_43ef10(int a, int screen)
     return FUN_43ee40(FUN_43e000(a, screen));
 }
 
-// STUB: STUNTGP_D3D 0x43e000
-PoolObject *FUN_43e000(int a, int screen)
-{
-    return NULL;
-}
-
 // Queues a screen to replace the current one once the fade-out finishes.
 // FUNCTION: STUNTGP_D3D 0x43ee40
 int FUN_43ee40(PoolObject *object)

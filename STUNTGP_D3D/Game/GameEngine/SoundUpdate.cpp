@@ -149,7 +149,7 @@ void FUN_45f7d0(int pan, int volume)
     {
         g_62e110 = pan;
         g_62e0fc = volume;
-        if (g_musicBuffer)
+        if (g_musicStream.buffer)
         {
             int value = g_4897f8[128 - ((abs(pan) + 1) >> 1)];
             if (pan < 0)
@@ -159,7 +159,7 @@ void FUN_45f7d0(int pan, int volume)
             if (value != g_62f5bc)
             {
                 g_62f5bc = value;
-                if (g_musicBuffer->SetPan(value) != DS_OK)
+                if (g_musicStream.buffer->SetPan(value) != DS_OK)
                 {
                     return;
                 }
@@ -168,7 +168,7 @@ void FUN_45f7d0(int pan, int volume)
             if (value != g_62f5b8)
             {
                 g_62f5b8 = value;
-                g_musicBuffer->SetVolume(g_4897f8[value >> 1]);
+                g_musicStream.buffer->SetVolume(g_4897f8[value >> 1]);
             }
         }
     }
@@ -593,6 +593,60 @@ int FUN_460f70(LPDIRECTSOUNDBUFFER *buffer, int channel, int *slotIndex)
     return 1;
 }
 
+// Plays a sample on a 2D channel; the 3D processing is switched off.
+// FUNCTION: STUNTGP_D3D 0x461030
+void FUN_461030(int channel, int loop, DWORD frequency, DWORD volume, int pan, int keep, int *slotIndex)
+{
+    if (!g_soundInitialised)
+    {
+        return;
+    }
+    if ((DWORD)g_62f5b4 > 0x18)
+    {
+        return;
+    }
+    LPDIRECTSOUNDBUFFER buffer = g_62e118[channel].buffer;
+    if (!buffer)
+    {
+        return;
+    }
+    LPDIRECTSOUND3DBUFFER buffer3d = g_62e118[channel].buffer3d;
+    if (!buffer3d)
+    {
+        return;
+    }
+    if (!keep)
+    {
+        if (FUN_460e70(&buffer, &buffer3d, channel, slotIndex) != 1)
+        {
+            return;
+        }
+    }
+    buffer3d->SetMode(DS3DMODE_DISABLE, DS3D_IMMEDIATE);
+    if (!frequency)
+    {
+        frequency = g_62e118[channel].rate;
+    }
+    buffer->SetFrequency(frequency);
+    buffer->SetVolume(g_4897f8[g_sfxVolume * volume >> 9]);
+    int value = g_4897f8[128 - ((abs(pan) + 1) >> 1)];
+    if (pan < 0)
+    {
+        value = -value;
+    }
+    buffer->SetPan(value);
+    if (loop == 1)
+    {
+        buffer->Play(0, 0, DSBPLAY_LOOPING);
+        g_62f5b4++;
+    }
+    else
+    {
+        buffer->Play(0, 0, 0);
+        g_62f5b4++;
+    }
+}
+
 // Nearest active player camera to a point, or the first one in single view.
 // FUNCTION: STUNTGP_D3D 0x461270
 GameSlot *FUN_461270(Vec4 *pos)
@@ -620,6 +674,83 @@ GameSlot *FUN_461270(Vec4 *pos)
         }
     }
     return best;
+}
+
+// GLOBAL: STUNTGP_D3D 0x4897b8
+DS3DBUFFER g_4897b8 = {sizeof(DS3DBUFFER), {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, 360, 360, {0.0f, 0.0f, 1.0f},
+                       0, 1300.0f, 7500.0f, DS3DMODE_NORMAL};
+
+// Plays a sample at a world position; nothing is played out of range of the nearest camera.
+// FUNCTION: STUNTGP_D3D 0x461300
+void FUN_461300(int channel, int loop, DWORD frequency, DWORD volume, Vec4 *pos, Vec4 *velocity, int keep,
+                int *slotIndex)
+{
+    if (!g_soundInitialised)
+    {
+        return;
+    }
+    if ((DWORD)g_62f5b4 > 0x18)
+    {
+        return;
+    }
+    SoundChannel *ch = &g_62e118[channel];
+    if (!ch->buffer)
+    {
+        return;
+    }
+    LPDIRECTSOUNDBUFFER buffer = ch->buffer;
+    LPDIRECTSOUND3DBUFFER buffer3d = ch->buffer3d;
+    if (!buffer3d)
+    {
+        return;
+    }
+    GameSlot *slot = FUN_461270(pos);
+    float dx = slot->cam.pos.x - pos->x;
+    float dy = slot->cam.pos.y - pos->y;
+    float dz = slot->cam.pos.z - pos->z;
+    if (dz * dz + dy * dy + dx * dx > g_4897a4)
+    {
+        return;
+    }
+    if (!frequency)
+    {
+        frequency = ch->rate;
+    }
+    if (slotIndex)
+    {
+        *slotIndex = channel;
+    }
+    if (!keep)
+    {
+        if (FUN_460e70(&buffer, &buffer3d, channel, slotIndex) != 1)
+        {
+            return;
+        }
+    }
+    DS3DBUFFER params = g_4897b8;
+    params.flMaxDistance = g_4897a0;
+    params.vPosition.x = pos->x;
+    params.vPosition.y = pos->y;
+    params.vPosition.z = pos->z;
+    if (velocity)
+    {
+        params.vVelocity.x = velocity->x;
+        params.vVelocity.y = velocity->y;
+        params.vVelocity.z = velocity->z;
+    }
+    buffer3d->SetAllParameters(&params, DS3D_IMMEDIATE);
+    buffer->SetFrequency(frequency);
+    buffer->SetVolume(g_4897f8[g_sfxVolume * volume >> 9]);
+    if (loop == 1)
+    {
+        buffer->Play(0, 0, DSBPLAY_LOOPING);
+        g_62f5b4++;
+    }
+    else
+    {
+        buffer->Play(0, 0, 0);
+        g_62f5b4++;
+    }
 }
 
 // Moves a playing 3D sound; it is stopped once it is out of range of the nearest camera.

@@ -26,6 +26,24 @@ struct ScoreTable
     ScoreEntry entries[10];
 };
 
+struct MenuRaceResult
+{
+    int position; // 0x00
+    int unk04;    // 0x04, time
+    int unk08;    // 0x08, time
+    int unk0c;    // 0x0c, score
+    int unk10;    // 0x10, score
+};
+
+struct ScoreList
+{
+    int unk00;           // 0x00
+    int unk04;           // 0x04
+    int unk08;           // 0x08
+    int count;           // 0x0c
+    ScoreEntry *entries; // 0x10
+};
+
 // High-score initials, copied as one 3-byte block.
 struct Initials
 {
@@ -301,26 +319,43 @@ struct MenuState
     int unk423c; // 0x423c, entries used in unk46ac
     int unk4240; // 0x4240
     int unk4244; // 0x4244
-    BYTE unk4248[0x4258 - 0x4248];
+    BYTE unk4248[0x424c - 0x4248];
+    int unk424c;                // 0x424c, total score
+    BYTE unk4250[0x4254 - 0x4250];
+    int unk4254;                // 0x4254
     int language;               // 0x4258, id of the loaded front-end language
     MenuLanguage languages[8];  // 0x425c, from Setup\languagePC.csv
     int languageCount;          // 0x437c
-    BYTE unk4380[0x4398 - 0x4380];
+    int unk4380; // 0x4380
+    int unk4384; // 0x4384
+    int unk4388; // 0x4388
+    int unk438c; // 0x438c
+    int unk4390; // 0x4390
+    BYTE unk4394[0x4398 - 0x4394];
     int unk4398;     // 0x4398, entries used in unk439c
     int unk439c[20]; // 0x439c
     BYTE unk43ec[0x43f4 - 0x43ec];
     int unk43f4[4];  // 0x43f4, random car per entry of unk46ac
-    BYTE unk4404[0x4408 - 0x4404];
+    int unk4404;     // 0x4404
     int unk4408;     // 0x4408, entries used in unk440c
     int unk440c[26]; // 0x440c
     int unk4474;     // 0x4474
     int unk4478; // 0x4478
     BYTE unk447c[0x44d0 - 0x447c];
     int unk44d0; // 0x44d0
-    BYTE unk44d4[0x46a8 - 0x44d4];
+    char unk44d4[4][0x40]; // 0x44d4, names entered on PageEnterName
+    int unk45d4;   // 0x45d4
+    int unk45d8;   // 0x45d8
+    int unk45dc;   // 0x45dc
+    float unk45e0; // 0x45e0
+    float unk45e4; // 0x45e4
+    int unk45e8; // 0x45e8
+    BYTE unk45ec[0x4694 - 0x45ec];
+    ScoreList unk4694; // 0x4694, copied by FUN_459200
     int unk46a8; // 0x46a8
     int unk46ac[4]; // 0x46ac
-    BYTE unk46bc[0x46c4 - 0x46bc];
+    int unk46bc; // 0x46bc
+    int unk46c0; // 0x46c0
     int unk46c4; // 0x46c4
     int unk46c8; // 0x46c8
     int unk46cc; // 0x46cc
@@ -328,7 +363,13 @@ struct MenuState
     int unk46d4; // 0x46d4
     int unk46d8; // 0x46d8
     int unk46dc; // 0x46dc
-    BYTE unk46e0[0x13148 - 0x46e0];
+    int unk46e0; // 0x46e0
+    int unk46e4; // 0x46e4
+    BYTE unk46e8[0x4704 - 0x46e8];
+    int unk4704; // 0x4704
+    BYTE unk4708[0x4714 - 0x4708];
+    char unk4714[4]; // 0x4714
+    BYTE unk4718[0x13148 - 0x4718];
     Unk4d5cc0 *unk13148; // 0x13148
     ShopCar cars[21];    // 0x1314c, [1..20] used
     BYTE unk144a8[0x14594 - 0x144a8];
@@ -353,7 +394,12 @@ struct MenuState
     int gold;             // 0x1a6a4
     int silver;           // 0x1a6a8
     MenuNode nodes[19];   // 0x1a6ac, [1..18] used
-    BYTE unk1b078[0x1b320 - 0x1b078];
+    int unk1b078;          // 0x1b078, row of unk0114
+    BYTE unk1b07c[0x1b080 - 0x1b07c];
+    Initials unk1b080;     // 0x1b080
+    BYTE unk1b083[0x1b140 - 0x1b083];
+    MenuRaceResult results[6]; // 0x1b140, [0] is the player
+    BYTE unk1b1b8[0x1b320 - 0x1b1b8];
     MenuAiCar aiCars[21]; // 0x1b320, read by FUN_435860
     MenuRace races[8];    // 0x1d0a8, read by FUN_435730
     int numberOfRaces;    // 0x1d548
@@ -362,12 +408,13 @@ struct MenuState
     BYTE unk1d618[0x1d630 - 0x1d618];
     int unk1d630[25][6];          // 0x1d630, read by FUN_434f60
     MenuCarEntry unk1d888[3][4];  // 0x1d888, Easy, Medium, Hard; read by FUN_434e90
-    BYTE unk1d9a8[0x1da5c - 0x1d9a8];
+    int unk1d9a8; // 0x1d9a8
+    BYTE unk1d9ac[0x1da5c - 0x1d9ac];
     int unk1da5c[6][2];           // 0x1da5c, read by FUN_434e10
-    BYTE unk1da8c[0x1da90 - 0x1da8c];
+    int unk1da8c;                 // 0x1da8c
     int unk1da90[4][2];           // 0x1da90
     MenuSlot unk1dab0[4];         // 0x1dab0, sorted by FUN_44d070
-    BYTE unk1dae0[0x1dae4 - 0x1dae0];
+    int unk1dae0;                 // 0x1dae0
     int unk1dae4; // 0x1dae4
 };
 
@@ -403,7 +450,61 @@ struct MenuHolder
     PoolObject *child; // 0x14
 };
 
+struct Unk457770
+{
+    DWORD unk00[5];    // 0x00
+    PoolObject *unk14; // 0x14
+    int unk18;         // 0x18
+};
+
 extern PoolClass g_menuListClass;
+
+// Shop category: text id, FUN_437a90 id, then the entries FUN_4522c0 fills in.
+struct Unk486b88
+{
+    int text;      // 0x00
+    int id;        // 0x04
+    int unk08[32]; // 0x08
+    int unk88[32]; // 0x88
+};
+
+extern Unk486b88 g_486b88[13];
+
+// One memory card slot listed by PageSave.
+struct Unk457e70Entry
+{
+    int id;         // 0x00, card
+    int unk04;      // 0x04, free space
+    int unk08;      // 0x08, FUN_457bf0 state
+    char text[0x20]; // 0x0c
+    char *name;     // 0x2c
+};
+
+// PageSave
+struct Unk457e70
+{
+    BYTE unk000[0x18];         // 0x000
+    int unk18;                 // 0x018
+    int unk1c;                 // 0x01c
+    int unk20;                 // 0x020, selected entry
+    int unk24;                 // 0x024
+    float unk28;               // 0x028
+    float unk2c;               // 0x02c
+    int unk30;                 // 0x030
+    int unk34;                 // 0x034
+    float unk38;               // 0x038
+    float unk3c;               // 0x03c
+    PoolObject *unk40;         // 0x040
+    int unk044[8];             // 0x044, last state per card
+    Unk457e70Entry entries[8]; // 0x064
+    int count;                 // 0x1e4
+    int unk1e8;                // 0x1e8
+    int unk1ec;                // 0x1ec
+    int unk1f0;                // 0x1f0
+    int unk1f4;                // 0x1f4
+    int unk1f8;                // 0x1f8
+    int unk1fc;                // 0x1fc
+};
 
 int FUN_43c860(MenuList *list, MenuDef *def);
 void FUN_424bd0(float x, float y);

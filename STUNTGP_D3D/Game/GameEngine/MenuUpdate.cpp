@@ -68,13 +68,6 @@ struct Unk454b20
     int unk4c;        // 0x4c
 };
 
-struct Unk457770
-{
-    DWORD unk00[5];    // 0x00
-    PoolObject *unk14; // 0x14
-    int unk18;         // 0x18
-};
-
 struct Unk454b40
 {
     BYTE unk00[0x1c]; // 0x00
@@ -118,39 +111,7 @@ struct Unk457ea0
     PoolObject *child; // 0x40
 };
 
-struct Unk457e70Entry
-{
-    int id;
-    int unk04;
-    int unk08;
-    BYTE unk0c[0x24];
-};
-
-struct Unk457e70
-{
-    BYTE unk000[0x20];         // 0x000
-    int unk20;                 // 0x020, selected entry
-    BYTE unk024[0x1c];         // 0x024
-    PoolObject *unk40;         // 0x040
-    BYTE unk044[0x20];         // 0x044
-    Unk457e70Entry entries[8]; // 0x064
-    int count;                 // 0x1e4
-    int unk1e8;                // 0x1e8
-    int unk1ec;                // 0x1ec
-    int unk1f0;                // 0x1f0
-    int unk1f4;                // 0x1f4
-    int unk1f8;                // 0x1f8
-};
-
 typedef Unk457e70 Unk458860;
-
-struct Unk486b88
-{
-    int text;      // 0x00
-    int id;        // 0x04
-    int unk08[32]; // 0x08
-    int unk88[32]; // 0x88
-};
 
 // GLOBAL: STUNTGP_D3D 0x4865a0
 MenuItem g_4865a0[2] = {
@@ -3389,7 +3350,7 @@ void FUN_441210()
 }
 
 // FUNCTION: STUNTGP_D3D 0x450400
-int FUN_450400(Unk4516c0 *object)
+int FUN_450400(Unk4516c0 *object, int arg)
 {
     object->unk1c = 0;
     object->unk20 = 0x167;
@@ -3463,7 +3424,7 @@ void FUN_4507e0(Unk4516c0 *object)
 }
 
 // FUNCTION: STUNTGP_D3D 0x450880
-int FUN_450880(Unk450930 *object)
+int FUN_450880(Unk450930 *object, int arg)
 {
     MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
     memset(list, 0, sizeof(MenuList));
@@ -3614,7 +3575,7 @@ void FUN_450db0(Unk4516c0 *object);
 void FUN_450dd0(Unk4516c0 *object);
 
 // FUNCTION: STUNTGP_D3D 0x450c10
-int FUN_450c10(Unk4516c0 *object)
+int FUN_450c10(Unk4516c0 *object, int arg)
 {
     object->unk28 = 0;
     MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
@@ -3786,7 +3747,7 @@ int FUN_4527d0(int index)
 }
 
 // FUNCTION: STUNTGP_D3D 0x452940
-int FUN_452940(MenuHolder *object)
+int FUN_452940(MenuHolder *object, int arg)
 {
     MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
     memset(list, 0, sizeof(MenuList));
@@ -3833,7 +3794,7 @@ void FUN_452ac0()
 }
 
 // FUNCTION: STUNTGP_D3D 0x452b30
-int FUN_452b30(MenuObject *object)
+int FUN_452b30(MenuObject *object, int arg)
 {
     object->unk14 = 0;
     object->unk18 = 0;
@@ -3861,7 +3822,7 @@ int FUN_452d70(int id)
 }
 
 // FUNCTION: STUNTGP_D3D 0x452fc0
-int FUN_452fc0(MenuObject *object)
+int FUN_452fc0(MenuObject *object, int arg)
 {
     object->unk14 = 0;
     return 1;
@@ -3870,7 +3831,7 @@ int FUN_452fc0(MenuObject *object)
 void FUN_4531a0(Unk4516c0 *object);
 
 // FUNCTION: STUNTGP_D3D 0x4530b0
-int FUN_4530b0(Unk4516c0 *object)
+int FUN_4530b0(Unk4516c0 *object, int arg)
 {
     MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
     memset(list, 0, sizeof(MenuList));
@@ -3968,7 +3929,7 @@ void FUN_4536f0(MenuHolder *object)
 }
 
 // FUNCTION: STUNTGP_D3D 0x454220
-int FUN_454220(MenuHolder *object)
+int FUN_454220(MenuHolder *object, int arg)
 {
     MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
     memset(list, 0, sizeof(MenuList));
@@ -4003,7 +3964,7 @@ void FUN_4542a0(MenuHolder *object)
 }
 
 // FUNCTION: STUNTGP_D3D 0x454410
-int FUN_454410(Unk454b20 *object)
+int FUN_454410(Unk454b20 *object, int arg)
 {
     object->unk1c = 0;
     object->unk20 = 0;
@@ -4084,6 +4045,47 @@ void FUN_454b40(Unk454b40 *object, int x, int y)
     object->unk30 = fy;
 }
 
+// FUNCTION: STUNTGP_D3D 0x454b70
+void FUN_454b70(Unk454b20 *object)
+{
+    if (object->unk4c)
+    {
+        return;
+    }
+    object->unk4c = 1;
+    if (object->unk1c == 7 && object->unk20 == 3)
+    {
+        if (strlen(object->text) < 3)
+        {
+            FUN_440880(9);
+            return;
+        }
+        strcpy(g_menuState.unk44d4[object->unk18], object->text);
+        FUN_440880(3);
+        FUN_43eef0();
+        return;
+    }
+    if (object->unk1c == 6 && object->unk20 == 3)
+    {
+        if (!strlen(object->text))
+        {
+            return;
+        }
+        FUN_440880(5);
+        FUN_454b20(object);
+        return;
+    }
+    if (strlen(object->text) < 3)
+    {
+        FUN_454af0(object, g_4881b0[object->unk20][object->unk1c]);
+        FUN_440880(4);
+    }
+    if (strlen(object->text) == 3)
+    {
+        FUN_454b40((Unk454b40 *)object, 7, 3);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x454c80
 int FUN_454c80(Unk454b20 *object, int column, int row)
 {
@@ -4147,7 +4149,7 @@ void FUN_455410(MenuHolder *object)
 }
 
 // FUNCTION: STUNTGP_D3D 0x4555e0
-int FUN_4555e0(MenuHolder *object)
+int FUN_4555e0(MenuHolder *object, int arg)
 {
     MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
     memset(list, 0, sizeof(MenuList));
@@ -4184,7 +4186,7 @@ void FUN_455690(MenuHolder *object)
 }
 
 // FUNCTION: STUNTGP_D3D 0x4557e0
-int FUN_4557e0()
+int FUN_4557e0(PoolObject *object, int arg)
 {
     FUN_43dc40();
     return 1;
@@ -4268,7 +4270,7 @@ void FUN_455d70(MenuHolder *object)
 }
 
 // FUNCTION: STUNTGP_D3D 0x455c70
-int FUN_455c70(Unk455fc0 *object)
+int FUN_455c70(Unk455fc0 *object, int arg)
 {
     MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
     memset(list, 0, sizeof(MenuList));
@@ -4330,7 +4332,7 @@ int FUN_456000()
 }
 
 // FUNCTION: STUNTGP_D3D 0x456010
-int FUN_456010(Unk456070 *object)
+int FUN_456010(Unk456070 *object, int arg)
 {
     object->unk1c = 0x293;
     object->unk14 = 15;
@@ -4405,6 +4407,41 @@ int FUN_456650(Unk456070 *object)
         }
     }
     return count;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4564b0
+void FUN_4564b0(Unk456070 *object)
+{
+    FUN_456070(object);
+    for (int player = 1; player < 5; player++)
+    {
+        if (object->unk34[player] && object->unk20[player] && FUN_437090(player))
+        {
+            if (FUN_436fd0(player, 5) || FUN_436fd0(player, 6))
+            {
+                if (!FUN_43dd70())
+                {
+                    if (!object->unk48[player])
+                    {
+                        FUN_4565a0(object, player);
+                    }
+                    else
+                    {
+                        FUN_4565d0(object, player);
+                    }
+                }
+            }
+            else if (object->unk48[player] && FUN_456600(player) && !FUN_43dd70() && FUN_456650(object) >= 2)
+            {
+                object->unk1c -= object->unk1c % 60;
+                FUN_440880(3);
+            }
+        }
+        else if (object->unk48[player])
+        {
+            FUN_4565d0(object, player);
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x456670

@@ -206,45 +206,6 @@ SoundTable g_489d40 = {{
     {"fe-vmodscroll", 71, 1},
 }};
 
-// GLOBAL: STUNTGP_D3D 0x62df0c
-int g_62df0c;
-
-// GLOBAL: STUNTGP_D3D 0x62df14
-int g_62df14;
-
-// GLOBAL: STUNTGP_D3D 0x62df18
-char g_62df18;
-
-// GLOBAL: STUNTGP_D3D 0x62df1c
-int g_62df1c;
-
-// GLOBAL: STUNTGP_D3D 0x62df20
-int g_62df20;
-
-// GLOBAL: STUNTGP_D3D 0x62df24
-int g_62df24;
-
-// GLOBAL: STUNTGP_D3D 0x62df3c
-int g_62df3c;
-
-// GLOBAL: STUNTGP_D3D 0x62df40
-int g_62df40;
-
-// GLOBAL: STUNTGP_D3D 0x62df54
-char g_62df54[MAX_PATH];
-
-// GLOBAL: STUNTGP_D3D 0x62e090
-int g_62e090;
-
-// GLOBAL: STUNTGP_D3D 0x62e098
-int g_62e098;
-
-// GLOBAL: STUNTGP_D3D 0x62e09c
-int g_62e09c;
-
-// GLOBAL: STUNTGP_D3D 0x62e0a0
-int g_62e0a0;
-
 // GLOBAL: STUNTGP_D3D 0x62e0fc
 int g_62e0fc;
 
@@ -310,30 +271,30 @@ void FUN_45fa60()
 // FUNCTION: STUNTGP_D3D 0x45fac0
 void FUN_45fac0()
 {
-    g_62df0c = 0;
-    g_62df18 = 0;
-    g_62df1c = 0;
-    g_62df20 = 0;
-    g_62df14 = 0;
-    g_62df24 = 0;
-    g_62df28 = 0;
-    g_62df2c = 0;
-    g_62df30 = 0;
-    g_62df34 = 0;
-    g_62e084 = 0;
-    g_musicFlags = 0;
-    g_62e090 = 0;
-    g_62e098 = 0;
-    g_62e09c = 0;
-    g_62e0a0 = 0;
-    g_62df3c = 0;
-    g_62df40 = 0;
-    g_musicTimer = 0;
-    g_62df54[0] = 0;
-    g_musicFile = 0;
-    g_musicPlaying = 0;
-    g_musicResult = 0;
-    g_musicBuffer = 0;
+    g_musicStream.bufferSize = 0;
+    g_musicStream.blockShift = 0;
+    g_musicStream.timerDelay = 0;
+    g_musicStream.timerResolution = 0;
+    g_musicStream.periods = 0;
+    g_musicStream.blocks = 0;
+    g_musicStream.writePos = 0;
+    g_musicStream.played = 0;
+    g_musicStream.dataRead = 0;
+    g_musicStream.playPos = 0;
+    g_musicStream.unk17c = 0;
+    g_musicStream.flags = 0;
+    g_musicStream.pauseCount = 0;
+    g_musicStream.tickTime = 0;
+    g_musicStream.tickAverage = 0;
+    g_musicStream.ticks = 0;
+    g_musicStream.onEnd = 0;
+    g_musicStream.onEndParam = 0;
+    g_musicStream.timer = 0;
+    g_musicStream.path[0] = 0;
+    g_musicStream.file = 0;
+    g_musicStream.playing = 0;
+    g_musicStream.result = 0;
+    g_musicStream.buffer = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x460c90
