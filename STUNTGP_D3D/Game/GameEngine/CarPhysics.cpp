@@ -8239,6 +8239,7 @@ void FUN_419900()
 
 void FUN_41c530();
 extern Scene *g_571314;
+void FUN_42b7f0(Scene *scene, Camera *camera, int arg);
 
 // Builds the skid mark mesh: 128 copies of the template quad, each its own face and points.
 // FUNCTION: STUNTGP_D3D 0x41c9b0
@@ -8310,6 +8311,15 @@ void FUN_41d180()
     for (int i = 0; i < 4; i++)
     {
         FUN_41d170(&g_4d5bb8->skids[i]);
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x41d1c0
+void FUN_41d1c0()
+{
+    if (g_612948.unk0034 >= 80 && g_5712f8)
+    {
+        FUN_42b7f0(g_571314, &g_4864e8, 0);
     }
 }
 

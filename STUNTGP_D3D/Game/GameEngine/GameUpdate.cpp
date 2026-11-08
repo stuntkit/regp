@@ -4601,6 +4601,151 @@ void FUN_45f8f0(int track, int loop)
 
 // --- sound ---
 
+void FUN_460d90(int *channel);
+void FUN_4614a0(int channel, int loop, DWORD frequency, DWORD volume, Vec4 *pos, Vec4 *velocity, int keep,
+                int *slotIndex);
+void FUN_461850(int *channel, DWORD frequency, DWORD volume, Vec4 *pos, Vec4 *velocity);
+
+// Sound channels per car type and per surface (index 0 is no surface).
+// GLOBAL: STUNTGP_D3D 0x474700
+int g_474700[5] = {11, 11, 11, 11, 11};
+
+// GLOBAL: STUNTGP_D3D 0x47472c
+int g_47472c[6] = {0, 31, 27, 27, 27, 31};
+
+// GLOBAL: STUNTGP_D3D 0x474744
+int g_474744[6] = {0, 26, 27, 27, 27, 26};
+
+// Tyre squeal: loudness from how hard the sliding wheels are loaded, pitch from the heaviest one.
+// FUNCTION: STUNTGP_D3D 0x41af70
+void FUN_41af70()
+{
+    Car *car = g_4d5bb8;
+    if (car->unk1fd8 != 1 && (float)fabs(car->unk1cf0) >= 1.0f)
+    {
+        float sum = 0.0f;
+        float pitch = 0.0f;
+        int muted = 0;
+        unsigned int surface = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            Wheel *w = &car->wheels[i];
+            if (w->unk30 > 0.8f)
+            {
+                muted |= w->unk7c;
+                if ((unsigned int)w->unk78 > surface)
+                {
+                    surface = w->unk78;
+                }
+                float t = w->unk30 * 8.0f + 127.0f;
+                float p = w->unk30 * 32.0f;
+                if (p > pitch)
+                {
+                    pitch = p;
+                }
+                sum += t;
+            }
+        }
+        int vol = (int)(sum * 0.1254902f);
+        if (pitch > 2048.0f)
+        {
+            pitch = 2048.0f;
+        }
+        pitch += 21028.0f;
+        if (vol < 0)
+        {
+            vol = 0;
+        }
+        else if (vol > 255)
+        {
+            vol = 255;
+        }
+        if (vol >= 1 && !muted)
+        {
+            if (!car->unk237c)
+            {
+                FUN_4614a0(g_474744[surface], 1, (int)pitch, vol, (Vec4 *)&car->posX, NULL, 0, &car->unk237c);
+                return;
+            }
+            FUN_461850(&car->unk237c, (int)pitch, vol, (Vec4 *)&car->posX, NULL);
+            return;
+        }
+    }
+    FUN_460d90(&car->unk237c);
+}
+
+// FUNCTION: STUNTGP_D3D 0x41b250
+void FUN_41b250()
+{
+    Car *car = g_4d5bb8;
+    if (car->unk2360 < 4.0f)
+    {
+        car->unk2374 = car->unk2378;
+        car->unk2378 = 0;
+        return;
+    }
+    if (car->unk2378 && !car->unk2374)
+    {
+        int vol = (int)(car->unk2898 * 0.1875f);
+        if (vol < 0)
+        {
+            vol = 0;
+        }
+        else if (vol > 192)
+        {
+            vol = 192;
+        }
+        FUN_4614a0(0x1c, 0, 0, vol + 32, (Vec4 *)&car->posX, NULL, 0, NULL);
+        g_4d5bb8->unk2374 = g_4d5bb8->unk2378;
+    }
+}
+
+// Engine note: pitch and volume follow the revs.
+// FUNCTION: STUNTGP_D3D 0x41b5d0
+void FUN_41b5d0()
+{
+    Car *car = g_4d5bb8;
+    if (car->unk2254 == 0.0f)
+    {
+        FUN_460d90(&car->unk2388);
+        return;
+    }
+    DWORD freq = (DWORD)(car->unk2254 * 5000.0f / car->unkd64 + 11025.0f);
+    DWORD vol = (DWORD)(car->unk2254 * 96.0f / car->unkd64 + 48.0f);
+    if (!car->unk2388)
+    {
+        FUN_4614a0(g_474700[car->race.unk80[3]], 1, freq, vol, (Vec4 *)&car->posX, NULL, 0, &car->unk2388);
+        return;
+    }
+    FUN_461850(&car->unk2388, freq, vol, (Vec4 *)&car->posX, NULL);
+}
+
+// FUNCTION: STUNTGP_D3D 0x41b680
+void FUN_41b680()
+{
+    if (g_4d5bb8->unk234c)
+    {
+        g_4d5bb8->unk234c--;
+        g_4d5bb8->unk2354 = 0;
+        return;
+    }
+    if (g_4d5bb8->unk2354)
+    {
+        g_4d5bb8->unk234c = 120;
+        g_4d5bb8->unk2354 = 0;
+        int vol = (int)(g_4d5bb8->unk235c * 0.75f);
+        if (vol < 0)
+        {
+            vol = 0;
+        }
+        else if (vol > 192)
+        {
+            vol = 192;
+        }
+        FUN_4614a0(g_47472c[g_4d5bb8->wheels[0].unk78], 0, 0, vol + 32, (Vec4 *)&g_4d5bb8->posX, NULL, 0, NULL);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x41bdd0
 void FUN_41bdd0()
 {
