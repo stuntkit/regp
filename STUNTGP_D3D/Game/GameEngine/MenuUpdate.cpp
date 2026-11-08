@@ -2230,7 +2230,7 @@ void FUN_43a910(RaceSetup3 *src, RaceResults3 *dst)
     g_60d730.entries[0].unk004 = 0;
     g_60d730.unk024[0] = 0;
     g_60d730.entries[0].type = 2;
-    FUN_43a430((DWORD *)&g_60d730.entries[0], (DWORD *)g_60d730.entries[0].unk034, src->car, 0);
+    FUN_43a430((DWORD *)&g_60d730.entries[0], (DWORD *)&g_60d730.entries[0].unk034, src->car, 0);
     FUN_43d420();
 }
 
@@ -2287,7 +2287,7 @@ void FUN_43aa50(RaceSetup6 *src, RaceResults6 *dst)
         entry->type = 2;
         entry->unk004 = 0;
         *slot++ = e;
-        FUN_43a430((DWORD *)entry, (DWORD *)entry->unk034, car->unk04, 8);
+        FUN_43a430((DWORD *)entry, (DWORD *)&entry->unk034, car->unk04, 8);
         car++;
     }
     FUN_43d420();
@@ -2322,7 +2322,7 @@ void FUN_43ae00(RaceSetup4 *src, RaceResults4 *dst)
     strcpy((char *)g_60d730.entries[0].unk010, (char *)FUN_43d690(&src->name));
     g_60d730.entries[0].type = 2;
     g_60d730.entries[0].unk004 = 0;
-    FUN_43a430((DWORD *)&g_60d730.entries[0], (DWORD *)g_60d730.entries[0].unk034, src->car, 8);
+    FUN_43a430((DWORD *)&g_60d730.entries[0], (DWORD *)&g_60d730.entries[0].unk034, src->car, 8);
     g_60d730.unk024[0] = 0;
     FUN_43d420();
 }
