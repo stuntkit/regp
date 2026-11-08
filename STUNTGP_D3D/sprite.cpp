@@ -404,6 +404,14 @@ void FUN_438590(int layer, int sub, SpriteNode *node)
     }
 }
 
+void FUN_438740(int layer, int def, float x, float y, float scale, DWORD flags, float fade);
+
+// FUNCTION: STUNTGP_D3D 0x438710
+void FUN_438710(int layer, int def, float x, float y, float scale, DWORD flags)
+{
+    FUN_438740(layer, def, x, y, scale, flags, 1.0f);
+}
+
 // Draws a scaled sprite definition; flags 1/2 centre, 4/8 right/bottom align, 0x10/0x20 mirror.
 // FUNCTION: STUNTGP_D3D 0x438740
 void FUN_438740(int layer, int def, float x, float y, float scale, DWORD flags, float fade)
@@ -1105,6 +1113,16 @@ BOOL FUN_440380(char *path)
 
 int FUN_440480(char *path);
 
+int FUN_4403b0(void *buffer, int size, char *name, int checkSize);
+int FUN_4404e0(void *buffer, int size, char *name);
+
+// FUNCTION: STUNTGP_D3D 0x4403a0
+int FUN_4403a0(void *buffer, int size)
+{
+    // STRING: STUNTGP_D3D 0x479a44
+    return FUN_4403b0(buffer, size, "setup.bin", 1);
+}
+
 // Reads a save file from the current card; with checkSize, the file must be exactly size bytes.
 // FUNCTION: STUNTGP_D3D 0x4403b0
 int FUN_4403b0(void *buffer, int size, char *name, int checkSize)
@@ -1130,6 +1148,13 @@ int FUN_4403b0(void *buffer, int size, char *name, int checkSize)
     int read = fread(buffer, 1, size, file);
     fclose(file);
     return read != size ? 9 : 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x4404d0
+int FUN_4404d0(void *buffer, int size)
+{
+    // STRING: STUNTGP_D3D 0x479a5c
+    return FUN_4404e0(buffer, size, "setup.bin");
 }
 
 // Writes a save file to the current card; an existing file must already be size bytes.
@@ -1190,6 +1215,24 @@ int FUN_4405c0(int ghost)
     // STRING: STUNTGP_D3D 0x479a74
     sprintf(path, "%s\\ghost%02d.bin", dir, ghost);
     return FUN_440380(path) ? 4 : 6;
+}
+
+// FUNCTION: STUNTGP_D3D 0x440660
+int FUN_440660(void *buffer, int size, int ghost)
+{
+    char name[0x40];
+    // STRING: STUNTGP_D3D 0x479a88
+    sprintf(name, "ghost%02d.bin", ghost);
+    return FUN_4403b0(buffer, size, name, 0);
+}
+
+// FUNCTION: STUNTGP_D3D 0x4406a0
+int FUN_4406a0(void *buffer, int size, int ghost)
+{
+    char name[0x40];
+    // STRING: STUNTGP_D3D 0x479a98
+    sprintf(name, "ghost%02d.bin", ghost);
+    return FUN_4404e0(buffer, size, name);
 }
 
 // FUNCTION: STUNTGP_D3D 0x4406e0

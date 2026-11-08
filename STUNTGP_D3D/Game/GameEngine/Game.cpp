@@ -577,6 +577,32 @@ void FUN_443430(Car *car)
     }
 }
 
+void FUN_41aac0(Replay *replay);
+void FUN_419a60(Car *car, Replay *replay);
+GhostRecord *FUN_443300();
+void FUN_443360(Car *car);
+
+// After a recorded lap, keeps it as the ghost if it beats the slower of the two stored ghosts.
+// FUNCTION: STUNTGP_D3D 0x443480
+void FUN_443480()
+{
+    if (g_49a1f8[0].unk7268 && g_49a1f8[0].unk7268->mode == 2)
+    {
+        FUN_41aac0(g_49a1f8[0].unk7268);
+        GhostRecord *rec = FUN_443300();
+        if (g_49a1f8[0].unk23c8 < rec->time)
+        {
+            memcpy(rec->ghost, g_49a1f8[0].unk7268, sizeof(Unk4d5cc0));
+            rec->time = g_49a1f8[0].unk23c8;
+            rec->unk00 = 1;
+            rec->ghost->unk1c = g_49a1f8[0].unk23c8;
+            FUN_419a60((Car *)rec->unk04, (Replay *)rec->ghost);
+            FUN_443360(g_49a1f8);
+            FUN_443430(g_49a1f8);
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x443770
 int FUN_443770()
 {

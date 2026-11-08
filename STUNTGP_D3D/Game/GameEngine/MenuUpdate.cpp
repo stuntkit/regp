@@ -4031,6 +4031,28 @@ void FUN_455be0(int player, int delta)
     }
 }
 
+// FUNCTION: STUNTGP_D3D 0x455c20
+void FUN_455c20(int player, int delta)
+{
+    int mode = FUN_437090(player);
+    if (mode && mode != 5)
+    {
+        mode += delta;
+        if (mode <= 0)
+        {
+            mode = 4;
+        }
+        else if (mode >= 5)
+        {
+            mode = 1;
+        }
+        if (FUN_437130(player, mode))
+        {
+            FUN_440880(1);
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x455d70
 void FUN_455d70(MenuHolder *object)
 {
