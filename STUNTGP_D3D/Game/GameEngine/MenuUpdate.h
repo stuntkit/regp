@@ -337,6 +337,8 @@ struct RaceSetup6
 {
     MenuRoundCar cars[4]; // 0x00, unk08 is the RaceState entry
     int count;            // 0x30
+    int track;            // 0x34, 1-based
+    int unk38;            // 0x38
 };
 
 struct RaceSetup7Car

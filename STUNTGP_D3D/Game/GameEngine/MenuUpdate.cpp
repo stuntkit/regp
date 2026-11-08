@@ -2234,6 +2234,65 @@ void FUN_43a910(RaceSetup3 *src, RaceResults3 *dst)
     FUN_43d420();
 }
 
+// Starts a mode-6 race for the one to four players of src, naming them by player number.
+// FUNCTION: STUNTGP_D3D 0x43aa50
+void FUN_43aa50(RaceSetup6 *src, RaceResults6 *dst)
+{
+    g_5df528.mode = 6;
+    g_5df528.src6 = src;
+    int count = src->count;
+    g_5df528.dst6 = dst;
+    FUN_43d420();
+    FUN_43a720();
+    g_60d730.unk010 = 0;
+    g_60d730.unk020 = 0;
+    g_60d730.unk054 = 4;
+    g_60d730.unk018 = src->track - 1;
+    g_60d730.unk840 = 0;
+    g_60d730.unk000 = ((int(*)[6])g_menuState.unk1d618)[src->track][0];
+    g_60d730.unk01c = ((int(*)[6])g_menuState.unk1d618)[src->track][3];
+    g_60d730.unk034 = src->unk38;
+    g_60d730.unk04c = 2;
+    g_60d730.unk050 = 1;
+    g_60d730.unk83c = 1;
+    g_60d730.unk03c[0] = 7200;
+    g_60d730.unk03c[1] = 36000;
+    g_60d730.unk03c[2] = 0;
+    g_60d730.unk03c[3] = 0;
+    switch (count)
+    {
+    case 1:
+        g_60d730.unk020 = 0;
+        break;
+    case 2:
+        g_60d730.unk020 = 2;
+        break;
+    case 3:
+        g_60d730.unk020 = 3;
+        break;
+    case 4:
+        g_60d730.unk020 = 4;
+        break;
+    default:
+        return;
+    }
+    int *slot = g_60d730.unk024;
+    MenuRoundCar *car = src->cars;
+    for (int player = 1; player - 1 < count; player++)
+    {
+        int e = car->unk08 - 1;
+        RaceEntry *entry = &g_60d730.entries[e];
+        FUN_43a760(car->unk00, e, player);
+        sprintf((char *)entry->unk010, FUN_441170(0x1f), player);
+        entry->type = 2;
+        entry->unk004 = 0;
+        *slot++ = e;
+        FUN_43a430((DWORD *)entry, (DWORD *)entry->unk034, car->unk04, 8);
+        car++;
+    }
+    FUN_43d420();
+}
+
 // Starts a mode-4 race from src: the player's car alone on the track against the clock.
 // FUNCTION: STUNTGP_D3D 0x43ae00
 void FUN_43ae00(RaceSetup4 *src, RaceResults4 *dst)
