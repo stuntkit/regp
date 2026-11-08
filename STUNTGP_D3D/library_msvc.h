@@ -3,6 +3,7 @@
 
 // aka `operator new`
 // LIBRARY: LEGO1 0x10086240
+// LIBRARY: STUNTGP_D3D 0x464029
 // ??2@YAPAXI@Z
 
 // aka `operator delete`
@@ -1431,5 +1432,9 @@
 
 // LIBRARY: STUNTGP_D3D 0x462964
 // _asin
+
+// operator delete; 0x46de46 (the other byte match) is __unlink
+// LIBRARY: STUNTGP_D3D 0x46401e
+// ??3@YAXPAX@Z
 
 #endif
