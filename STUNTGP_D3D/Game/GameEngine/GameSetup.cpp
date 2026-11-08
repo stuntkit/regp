@@ -202,6 +202,10 @@ extern void *g_6243c0;
 extern void *g_6243c8;
 extern void *g_6243d0;
 extern void *g_6243d8;
+extern int g_6243c4;
+extern int g_6243cc;
+extern int g_6243d4;
+extern int g_6243dc;
 extern void *g_61c5f4;
 extern void *g_61c5f8;
 extern void *g_61c5fc;
@@ -842,6 +846,31 @@ int FUN_42b9a0(const char *name)
     return result;
 }
 
+// Replaces texture index `from` with `to` in the vertices of every loaded track scene.
+// FUNCTION: STUNTGP_D3D 0x42ba00
+void FUN_42ba00(int from, int to)
+{
+    for (SceneSlot *slot = &g_636418[2]; slot->scene; slot++)
+    {
+        Scene *scene = slot->scene;
+        for (DWORD lod = 0; lod < scene->maxLod + 1; lod++)
+        {
+            ObjectDef *def = scene->lods[lod];
+            for (DWORD i = 0; i < scene->objectCount; i++, def++)
+            {
+                BYTE *texture = def->verts + 1;
+                for (DWORD j = 0; j < def->vertCount; j++, texture += 8)
+                {
+                    if (*texture == from)
+                    {
+                        *texture = to;
+                    }
+                }
+            }
+        }
+    }
+}
+
 // Camera height for the race scene list.
 // GLOBAL: STUNTGP_D3D 0x60dfa8
 float g_60dfa8;
@@ -1332,6 +1361,15 @@ void FUN_42b180(int *out)
     out[7] = ((int)g_6243d8 - out[6]) / 20;
     out[1] = ((int)g_6243c0 - out[0]) / 20;
     out[3] = ((int)g_6243c8 - out[2]) / 20;
+}
+
+// FUNCTION: STUNTGP_D3D 0x42b200
+void FUN_42b200()
+{
+    g_6243c4 = ((int)g_6243c0 - (int)g_61c5fc) / 20;
+    g_6243cc = ((int)g_6243c8 - (int)g_61c600) / 20;
+    g_6243d4 = ((int)g_6243d0 - (int)g_61c5f4) / 20;
+    g_6243dc = ((int)g_6243d8 - (int)g_61c5f8) / 20;
 }
 
 // STUB: STUNTGP_D3D 0x429a40

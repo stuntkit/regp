@@ -119,12 +119,15 @@ struct TextureFormatList
     DDPIXELFORMAT formats[16]; // 0x174
 };
 
-// Z-buffer formats collected by FUN_42fe40.
+// Z-buffer formats collected by FUN_42fe40; one per Direct3D driver of a
+// DirectDraw device, 0x478 bytes apart from devices[i] + 0x2274.
 struct ZBufferFormatList
 {
-    BYTE unk000[0x374];
+    BYTE unk000[0x64];
+    int unk064;                // 0x064
+    BYTE unk068[0x374 - 0x68];
     DWORD count;               // 0x374
-    DDPIXELFORMAT formats[1];  // 0x378, count unknown
+    DDPIXELFORMAT formats[8];  // 0x378
 };
 
 // Name storage for g_textureFiles.
@@ -1131,6 +1134,32 @@ HRESULT WINAPI FUN_42fe40(LPDDPIXELFORMAT format, LPVOID context)
     return D3DENUMRET_OK;
 }
 
+// Picks the deepest z-buffer format of at least 16 bits, preferring less stencil.
+// FUNCTION: STUNTGP_D3D 0x42fe90
+void FUN_42fe90(int device, int driver)
+{
+    ZBufferFormatList *list = (ZBufferFormatList *)&g_5ba788.devices[device][0x2274] + driver;
+    DDPIXELFORMAT *best = NULL;
+    if (!list->unk064)
+    {
+        return;
+    }
+    g_5ba788.zbufferFormat = best;
+    for (DWORD i = 0; i < list->count; i++)
+    {
+        DDPIXELFORMAT *format = &list->formats[i];
+        DWORD depth = format->dwZBufferBitDepth;
+        DWORD stencil = format->dwStencilBitDepth;
+        if (depth >= 16 &&
+            (!best || depth > best->dwZBufferBitDepth ||
+             (depth == best->dwZBufferBitDepth && stencil < best->dwStencilBitDepth)))
+        {
+            best = format;
+            g_5ba788.zbufferFormat = best;
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x432190
 void FUN_432190(int mode)
 {
@@ -1359,6 +1388,9 @@ struct RenderItem
 // GLOBAL: STUNTGP_D3D 0x6243c0
 void *g_6243c0;
 
+// GLOBAL: STUNTGP_D3D 0x6243c4
+int g_6243c4;
+
 // GLOBAL: STUNTGP_D3D 0x6243c8
 void *g_6243c8;
 
@@ -1367,6 +1399,9 @@ int g_6243cc;
 
 // GLOBAL: STUNTGP_D3D 0x6243d0
 void *g_6243d0;
+
+// GLOBAL: STUNTGP_D3D 0x6243d4
+int g_6243d4;
 
 // GLOBAL: STUNTGP_D3D 0x6243d8
 void *g_6243d8;

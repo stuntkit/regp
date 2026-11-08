@@ -70,7 +70,7 @@ struct DisplayDevices
     int unk1ea34;                  // 0x1ea34
     DDPIXELFORMAT *textureFormat;  // 0x1ea38
     int hasArgb1555;               // 0x1ea3c
-    int unk1ea40;                  // 0x1ea40
+    DDPIXELFORMAT *zbufferFormat;  // 0x1ea40
     DWORD surfaceSlotCount;        // 0x1ea44
     SurfaceSlot surfaceSlots[255]; // 0x1ea48
 };
