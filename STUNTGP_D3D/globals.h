@@ -64,7 +64,7 @@ struct DisplayDevices
     int count;                     // 0x00000
     int unk04;                     // 0x00004
     BYTE devices[8][0x3d44];       // 0x00008
-    int unk1ea28;                  // 0x1ea28
+    BYTE *device;                  // 0x1ea28, selected entry of devices
     int *deviceDesc;               // 0x1ea2c
     int unk1ea30;                  // 0x1ea30
     int unk1ea34;                  // 0x1ea34

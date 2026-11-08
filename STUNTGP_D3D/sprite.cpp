@@ -1461,6 +1461,33 @@ void FUN_430fa0(D3DMATERIAL *material, float r, float g, float b)
     material->dwRampSize = 16;
 }
 
+// GLOBAL: STUNTGP_D3D 0x5da1c0
+D3DMATERIALHANDLE g_5da1c0;
+
+// FUNCTION: STUNTGP_D3D 0x430ff0
+int FUN_430ff0()
+{
+    LPDIRECT3DMATERIAL3 material = NULL;
+    D3DMATERIAL desc;
+    int res = (*(LPDIRECT3D3 *)(g_5ba788.device + 0x2264))->CreateMaterial(&material, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    FUN_430fa0(&desc, 1.0f, 1.0f, 1.0f);
+    res = material->SetMaterial(&desc);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = material->GetHandle((LPDIRECT3DDEVICE3)g_5ba788.deviceDesc[0x164 / 4], &g_5da1c0);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    return 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x437e20
 void FUN_437e20(int *settings)
 {
