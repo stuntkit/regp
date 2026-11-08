@@ -882,6 +882,57 @@ void FUN_406700()
     }
 }
 
+// Tracks the car along the three AI paths and picks the target point g_49a148 ahead on the racing line.
+// FUNCTION: STUNTGP_D3D 0x406b10
+void FUN_406b10()
+{
+    FUN_405370(&g_4d5bb8->posX, g_49a15c, &g_4d5bb8->unk264c, &g_4d5bb8->unk2650);
+    FUN_405370(&g_4d5bb8->posX, g_49a158, &g_4d5bb8->unk2644, &g_4d5bb8->unk2648);
+    FUN_405370(&g_4d5bb8->posX, g_49a160, &g_4d5bb8->unk2654, &g_4d5bb8->unk2658);
+    g_49a16c = g_4d5bb8->unk2648 * g_49a158->unk18 * 0.01f;
+    g_49a170 = g_4d5bb8->unk2650 * g_49a15c->unk18 * 0.01f;
+    g_49a174 = g_4d5bb8->unk2658 * g_49a160->unk18 * 0.01f;
+    float k = g_4d5bb8->unk1cf0 * 0.013333334f;
+    if (k > 1.0f)
+    {
+        k = 1.0f;
+    }
+    else if (k < 0.25f)
+    {
+        k = 0.25f;
+    }
+    Vec4 t;
+    FUN_406870(k * 2000.0f, g_4d5bb8->unk266c, &t);
+    if (!g_4d5bb8->unk1fd8)
+    {
+        Vec4 d;
+        d.x = t.x - g_4d5bb8->posX;
+        d.y = t.y - g_4d5bb8->posY;
+        d.z = t.z - g_4d5bb8->posZ;
+        if (d.x * g_4d5bb8->axisZ.x + d.y * g_4d5bb8->axisZ.y + d.z * g_4d5bb8->axisZ.z < 0.1f)
+        {
+            g_499fb0 = 10.0f;
+            float s;
+            if (d.x * g_4d5bb8->axisX.x + (d.y * g_4d5bb8->axisX.y + d.z * g_4d5bb8->axisX.z) < 0.0f)
+            {
+                s = -10000.0f;
+            }
+            else
+            {
+                s = 10000.0f;
+            }
+            Vec4 o;
+            o.x = s * g_4d5bb8->axisX.x;
+            o.y = s * g_4d5bb8->axisX.y;
+            o.z = s * g_4d5bb8->axisX.z;
+            t.x = o.x + g_4d5bb8->posX;
+            t.y = o.y + g_4d5bb8->posY;
+            t.z = o.z + g_4d5bb8->posZ;
+        }
+    }
+    g_49a148 = t;
+}
+
 // Near the end of the lap: drops the brake, slows the AI and ramps a blend towards the finish point.
 // FUNCTION: STUNTGP_D3D 0x406d30
 void FUN_406d30()
