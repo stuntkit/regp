@@ -4461,6 +4461,24 @@ void FUN_411fa0()
     FUN_406ff0();
 }
 
+// FUNCTION: STUNTGP_D3D 0x412040
+void FUN_412040()
+{
+    g_4d5bb8->unk724c = 15;
+    g_4d5bb8->unk7250 = 0;
+    g_4d5bb8->unk7248 = 0;
+    if (g_4d5bb8->unk71f4 == 1)
+    {
+        FUN_411f10();
+    }
+    FUN_41d230();
+    FUN_41d1f0(&g_4d5bb8->unk2594[0], 100.0f);
+    FUN_41d1f0(&g_4d5bb8->unk2594[1], g_4d5bb8->unk260c - g_4d5bb8->unk2614);
+    g_4d5bb8->unk2594[1].mean = g_4d5bb8->unk260c / g_4d5bb8->unk2594[1].count;
+    g_4d5bb8->unk725c = g_4d5bb8->unk7258;
+    FUN_406ff0();
+}
+
 // FUNCTION: STUNTGP_D3D 0x4121c0
 void FUN_4121c0()
 {
