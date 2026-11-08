@@ -668,7 +668,8 @@ struct Car
     int unk28a0;              // 0x28a0
     int unk28a4;              // 0x28a4
     int unk28a8;              // 0x28a8
-    BYTE unk28ac[0xc];        // 0x28ac
+    BYTE unk28ac[0x8];        // 0x28ac
+    int unk28b4;              // 0x28b4
     int unk28b8;              // 0x28b8
     TrailSlot unk28bc[2];     // 0x28bc
     float unk2cf4[4];         // 0x2cf4
@@ -1133,4 +1134,25 @@ extern Car *g_474630;
 extern Driver g_60f02c[6];
 extern DWORD g_60f2b0;
 void FUN_401220(int type, int mode, unsigned int points);
+
+// 3D billboard draw request, filled from the template g_486538.
+struct Billboard
+{
+    DWORD unk00;      // 0x00
+    short texture;    // 0x04
+    short alpha;      // 0x06
+    DWORD colors[4];  // 0x08
+    Vec4 pos;         // 0x18
+    float size[3];    // 0x28
+    int unk34;        // 0x34
+    Vec4 unk38;       // 0x38
+    Vec4 dir;         // 0x48
+    int unk58;        // 0x58
+    int unk5c;        // 0x5c
+    int unk60;        // 0x60
+    int unk64;        // 0x64
+};
+
+extern Billboard g_486538;
+void FUN_434590(Billboard *billboard);
 #endif /* GAMEUPDATE_H */

@@ -251,6 +251,23 @@ int FUN_41fc70(TrackPoly *poly, Vec4 *p)
     return 0;
 }
 
+// GLOBAL: STUNTGP_D3D 0x571448
+Vec4 g_571448;
+
+// FUNCTION: STUNTGP_D3D 0x41fd20
+int FUN_41fd20(TrackPoly *poly)
+{
+    WORD *idx = g_624480->indices + poly->firstIndex;
+    g_498160 = g_624480->planes + poly->plane;
+    g_49815c = g_624480->vertices + *idx;
+    FUN_420b20(&g_571448, idx);
+    g_498160 = &g_571448;
+    FUN_41fc70(poly, &g_4980c4);
+    FUN_41fb10(poly, &g_4980c4);
+    FUN_41fa80(poly, &g_4980c4);
+    return 0;
+}
+
 // Body the camera sphere ignores.
 // GLOBAL: STUNTGP_D3D 0x4981cc
 Body *g_4981cc;
@@ -273,6 +290,20 @@ int FUN_41fde0(Car *car)
         if (dist < g_498154 + body->points[i].radius - 1.0f)
         {
             FUN_41f920(NULL, dist);
+        }
+    }
+    return 0;
+}
+
+// FUNCTION: STUNTGP_D3D 0x41fe80
+int FUN_41fe80()
+{
+    for (int i = 0; i < 6; i++)
+    {
+        Car *car = &g_49a1f8[i];
+        if (car->active == 1)
+        {
+            FUN_41fde0(car);
         }
     }
     return 0;
@@ -643,6 +674,17 @@ void FUN_403460()
         } while (hit == 1 && i++ < 32);
         g_4722d0->cam.pos = g_4980d4;
     }
+}
+
+// Billboard at the camera position.
+// FUNCTION: STUNTGP_D3D 0x4035e0
+void FUN_4035e0()
+{
+    Billboard billboard = g_486538;
+    billboard.unk00 = 0x58;
+    billboard.texture = 0;
+    billboard.pos = g_4722d0->cam.pos;
+    FUN_434590(&billboard);
 }
 
 // FUNCTION: STUNTGP_D3D 0x403650

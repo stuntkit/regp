@@ -11,6 +11,7 @@
 #include "../../random.h"
 #include "../../vecmath.h"
 #include "game_state.h"
+#include "../../sound.h"
 
 extern float g_482678;
 extern float g_48267c;
@@ -4812,6 +4813,49 @@ void FUN_4152d0()
     }
 }
 
+void FUN_415190(Car *car, Vec4 *p, Vec4 *out);
+
+// FUNCTION: STUNTGP_D3D 0x4154c0
+void FUN_4154c0()
+{
+    if (g_4d5bb8->unk28a0)
+    {
+        Billboard billboard = g_486538;
+        billboard.texture = 6;
+        billboard.unk00 = 0x60;
+        if (g_4d5bb8->unk28bc[0].active)
+        {
+            g_4d5bb8->unk28b4 = (g_4d5bb8->unk28b4 + 0x20) & 0x1fff;
+            g_4d5bb8->unk28b8 = (g_4d5bb8->unk28b8 + 2) & 0x1fff;
+            float dx = g_4d5bb8->posX - g_4722d0->cam.pos.x;
+            float dy = g_4d5bb8->posY - g_4722d0->cam.pos.y;
+            float dz = g_4d5bb8->posZ - g_4722d0->cam.pos.z;
+            float s = (float)sqrt(dx * dx + dy * dy + dz * dz) * 0.00025f + 0.1f;
+            if (s > 1.0f)
+            {
+                s = 1.0f;
+            }
+            float size = g_sinTable[g_4d5bb8->unk28b4] * 0.01f + s * 2.0f;
+            int angle = -g_4d5bb8->unk28b8 & 0x1fff;
+            billboard.alpha = (short)(s * 192.0f);
+            billboard.dir.x = g_cosTable[angle];
+            billboard.dir.z = 0.0f;
+            billboard.dir.y = g_sinTable[angle];
+            billboard.size[0] = size;
+            billboard.size[1] = size;
+            billboard.size[2] = size;
+            FUN_413b60();
+            FUN_415190(g_4d5bb8, &g_4d5bb8->unk28bc[0].trail.pos, &billboard.pos);
+            FUN_434590(&billboard);
+            if (g_4d5bb8->unk28bc[1].active)
+            {
+                FUN_415190(g_4d5bb8, &g_4d5bb8->unk28bc[1].trail.pos, &billboard.pos);
+                FUN_434590(&billboard);
+            }
+        }
+    }
+}
+
 // Fades the light mesh brightness down by 32 a tick, holding at 120 while lit.
 // FUNCTION: STUNTGP_D3D 0x415640
 void FUN_415640()
@@ -6444,9 +6488,48 @@ void FUN_41ded0(float *pos, CameraPath *path, int *index)
 }
 
 
-// STUB: STUNTGP_D3D 0x41e0f0
+// FUNCTION: STUNTGP_D3D 0x41e0f0
 void FUN_41e0f0()
 {
+    if (g_60f2b0 == 1 || g_60f2b0 == 3)
+    {
+        return;
+    }
+    if (g_4d5bb8->unk23b0 > g_4d5bb8->unk23b8)
+    {
+        g_4d5bb8->unk23b8 = g_4d5bb8->unk23b0;
+    }
+    if (!FUN_402590(g_4d5bb8))
+    {
+        return;
+    }
+    if (g_4d5bb8->unk24e0 == 1 || g_4d5bb8->unk24e8 == 1 || g_4d5bb8->unk7648 == 1 ||
+        (unsigned int)g_4d5bb8->unk7638 > 4)
+    {
+        if (g_4d5bb8->unk7678)
+        {
+            g_4d5bb8->unk7678--;
+        }
+        return;
+    }
+    if (g_4d5bb8->unk23b8 - g_4d5bb8->unk23b0 >= 1.0f && g_4d5bb8->unk23b0 < g_4d5bb8->unk23b4)
+    {
+        if (g_4d5bb8->unk7678 == 90)
+        {
+            FUN_461150(44, 0, 0, 0xff, 0, 1, NULL);
+        }
+        if ((unsigned int)g_4d5bb8->unk7678 > 120)
+        {
+            g_4d5bb8->unk7678 = 60;
+            return;
+        }
+        g_4d5bb8->unk7678++;
+        return;
+    }
+    if (g_4d5bb8->unk7678)
+    {
+        g_4d5bb8->unk7678--;
+    }
 }
 
 // Tracks the car along the race path and fires the lap hook once at the 99 -> 0 wrap.

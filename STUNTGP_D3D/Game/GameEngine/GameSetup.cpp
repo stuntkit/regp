@@ -20,6 +20,7 @@
 #include "../../surface.h"
 #include "Engine_LevelScript.h"
 #include "../../common.h"
+#include "../../sound.h"
 
 struct CameraPath;
 
@@ -435,6 +436,34 @@ void FUN_401030(float x, float y)
     e->unkb8 = 1.0f;
     e->x = x - e->halfWidth;
     e->y = y - e->halfHeight;
+}
+
+// Frames left before the sample started by FUN_4011c0 is played again, panned the other way.
+// GLOBAL: STUNTGP_D3D 0x497d10
+int g_497d10;
+
+// GLOBAL: STUNTGP_D3D 0x497d14
+int g_497d14;
+
+// GLOBAL: STUNTGP_D3D 0x497d18
+DWORD g_497d18;
+
+// FUNCTION: STUNTGP_D3D 0x4011c0
+void FUN_4011c0(int channel, DWORD volume)
+{
+    g_497d10 = 6;
+    g_497d14 = channel;
+    g_497d18 = volume;
+    FUN_461150(channel, 0, 0, volume, 0xff, 0, NULL);
+}
+
+// FUNCTION: STUNTGP_D3D 0x4011f0
+void FUN_4011f0()
+{
+    if (g_497d10 && --g_497d10 == 0)
+    {
+        FUN_461150(g_497d14, 0, 0, g_497d18, -0xff, 0, NULL);
+    }
 }
 
 
@@ -938,9 +967,64 @@ void FUN_401d40()
     }
 }
 
-// STUB: STUNTGP_D3D 0x402420
+CameraPath *FUN_428800(int id);
+void FUN_4025d0();
+extern float g_499f88;
+extern float g_499f8c;
+
+// FUNCTION: STUNTGP_D3D 0x402420
 void FUN_402420()
 {
+    FUN_401f00();
+    g_4722d0 = g_498248;
+    g_4722d0->preset = NULL;
+    g_4722d0->presetMode = 0;
+    g_4722d0->fovPending = 0;
+    g_4722d0->fovNext = 0.0f;
+    g_4722d0->active = 1;
+    g_4722d0->data = g_49a1f8;
+    g_4722d0->path = FUN_428800(1);
+    g_4722d0->fov = 3.2f;
+    g_4722d0->unk0b4 = 1.0f;
+    g_4722d0->unk0b8 = 128.0f;
+    g_4722d0->nearZ = 100.0f;
+    g_4722d0->unk19c = 400000.0f;
+    g_4722d0->unk0bc = 1.333f;
+    g_4722d0->unk0c0 = 1.0f;
+    g_4722d0->cam.pos.x = 0.0f;
+    g_4722d0->cam.pos.y = 0.0f;
+    g_4722d0->cam.pos.z = 0.0f;
+    g_4722d0->cam.target.x = 0.0f;
+    g_4722d0->cam.target.y = 0.0f;
+    g_4722d0->cam.target.z = 1000.0f;
+    g_4722d0->cam.up.x = 0.0f;
+    g_4722d0->cam.up.y = 1.0f;
+    g_4722d0->cam.up.z = 0.0f;
+    g_4722d0->cam.scale.x = 1.0f;
+    g_4722d0->cam.scale.y = 1.0f;
+    g_4722d0->cam.scale.z = 1.0f;
+    g_4722d0->unk1ac.x = 0.0f;
+    g_4722d0->unk1ac.y = 1.0f;
+    g_4722d0->unk1ac.z = 0.0f;
+    FUN_44f4c0();
+    g_4722d0->camMode = 1;
+    g_4722d0->angX = 0x1000000;
+    g_4722d0->angY = 0;
+    g_4722d0->angZ = 0;
+    g_4722d0->roll = 0.0f;
+    g_4722d0->fov2 = 1.0f;
+    FUN_4023d0();
+    FUN_4023f0();
+    g_499f88 = 0.0f;
+    g_499f8c = 0.0f;
+    g_4722d0->unk1cc = g_4722d8;
+    g_4722d0->unk1d0 = 10;
+    g_4722d0->unk1d4 = 1;
+    g_4722d0->unk1bc = 0;
+    g_4722d0->unk1c0 = 0.0f;
+    g_4722d0->unk1c4 = 0.0f;
+    *(DWORD *)g_4722d0->unk1c8 = 0;
+    FUN_4025d0();
 }
 
 // GLOBAL: STUNTGP_D3D 0x4d5b28
