@@ -2254,9 +2254,81 @@ int g_60f2c8;
 // GLOBAL: STUNTGP_D3D 0x60f2cc
 int g_60f2cc;
 
-// STUB: STUNTGP_D3D 0x443100
+// GLOBAL: STUNTGP_D3D 0x60f014
+DWORD g_60f014;
+
+extern int g_60d678;
+extern int g_60d67c;
+extern int g_60f284;
+extern int g_60d668;
+extern int g_60eff0;
+extern DWORD g_60eff8;
+extern int g_60f2b4;
+extern Unk4d5cc0 g_4d5cc0[6];
+void FUN_41aac0(Replay *replay);
+void FUN_41d300();
+void FUN_405350();
+void FUN_412b10(Car *car, float dist);
+void FUN_401000();
+void FUN_442c30();
+void FUN_443e10(Car *car);
+void FUN_460cb0(int a);
+void FUN_447b70(int delay);
+void FUN_442ad0(int type, int duration, int delay, int end, int from, int to, float scale);
+
+// Time trial start: hooks the ghost replays to the ghost cars, places the player on the path
+// and starts the intro fade.
+// FUNCTION: STUNTGP_D3D 0x443100
 void FUN_443100()
 {
+    g_60d678 = g_60f284;
+    g_49a1f8[0].unk7268 = (Replay *)&g_4d5cc0[0];
+    g_49a1f8[4].unk7268 = (Replay *)&g_4d5cc0[1];
+    g_49a1f8[3].unk7268 = (Replay *)&g_4d5cc0[2];
+    g_49a1f8[1].unk7268 = (Replay *)&g_4d5cc0[3];
+    g_49a1f8[2].unk7268 = (Replay *)&g_4d5cc0[4];
+    FUN_41aac0(g_49a1f8[0].unk7268);
+    FUN_41aac0(g_49a1f8[4].unk7268);
+    FUN_41aac0(g_49a1f8[3].unk7268);
+    FUN_41aac0(g_49a1f8[1].unk7268);
+    FUN_41aac0(g_49a1f8[2].unk7268);
+    for (int i = 0; i < 6; i++)
+    {
+        g_49a1f8[i].active = 0;
+    }
+    g_49a1f8[0].active = 1;
+    if (g_60f284 == 1 && !g_60d668)
+    {
+        g_60f284 = 0;
+        g_60d628[0].unk00 = 1;
+    }
+    else if (g_60d668 == 1)
+    {
+        g_60d628[1].unk00 = 1;
+    }
+    g_4d5bb8 = g_49a1f8;
+    FUN_41d300();
+    FUN_405350();
+    FUN_412b10(g_4d5bb8, g_571328->unk18 - g_60f014);
+    g_4d5bb8->unk23a8 %= 100;
+    g_4d5bb8->unk23ac %= 100;
+    g_4d5bb8->unk767c = 1;
+    g_4722d0->cam.pos = *(Vec4 *)&g_4d5bb8->posX;
+    g_4d5bb8->unk1f0c = 3;
+    FUN_442ad0(2, 240, 180, 0, 100, 0, 0.96f);
+    g_60f2c4 = 180;
+    g_4d5bb8->unk26a4 = 300;
+    FUN_442c30();
+    FUN_401000();
+    FUN_443e10(g_4d5bb8);
+    FUN_460cb0(0);
+    FUN_447b70(420);
+    g_60eff0 = 3;
+    g_60f2cc = 1;
+    g_60f2b4 = 1;
+    g_60f2b0 = 4;
+    g_60eff8 = 100;
+    g_60d67c = 240;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4434f0

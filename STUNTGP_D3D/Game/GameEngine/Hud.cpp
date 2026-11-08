@@ -846,6 +846,66 @@ void FUN_4492d0(float value)
     }
 }
 
+// Fuel-style gauge at fader 1: a bar sized by unk2570 / unk2574 that blinks, with a warning
+// beep, once it falls under unkf74.
+// FUNCTION: STUNTGP_D3D 0x4493e0
+void FUN_4493e0()
+{
+    Car *car = g_4722d0->data;
+    if (car->unk2570 == 0.0f)
+    {
+        return;
+    }
+    float frac = car->unk2570 / car->unk2574;
+    if (frac < car->unkf74)
+    {
+        if (--g_61b740[1].unk000 <= 0)
+        {
+            g_61b740[1].unk000 = (int)(frac * 200.0f);
+            if (g_61b740[1].unk000 < 24)
+            {
+                g_61b740[1].unk000 = 24;
+            }
+            return;
+        }
+        if (!car->unk24e0 && g_61b740[1].unk000 < 16)
+        {
+            if (g_61b740[1].unk000 == 1 && !g_612948.unk0004)
+            {
+                FUN_461150(22, 0, 0, (int)((car->unkf74 - frac) * 256.0f + 32.0f), 0, 1, 0);
+            }
+            return;
+        }
+    }
+    float w = frac * 94.4f;
+    g_spriteDesc.flags = 6;
+    g_spriteDesc.points[0].x = 0.0f;
+    g_spriteDesc.points[0].y = 0.0f;
+    g_spriteDesc.points[0].u = 0.0f;
+    g_spriteDesc.points[0].v = 680.0f;
+    float x1 = w + 14.0f;
+    g_spriteDesc.points[1].x = x1;
+    g_spriteDesc.points[1].y = 0.0f;
+    g_spriteDesc.points[1].u = x1 * 4.0f;
+    g_spriteDesc.points[1].v = 680.0f;
+    g_spriteDesc.points[2].x = w;
+    g_spriteDesc.points[2].y = 14.400001f;
+    g_spriteDesc.points[2].u = g_spriteDesc.points[2].x * 4.0f;
+    g_spriteDesc.points[2].v = 740.0f;
+    g_spriteDesc.points[3].x = 0.0f;
+    g_spriteDesc.points[3].y = 14.400001f;
+    g_spriteDesc.points[3].u = 0.0f;
+    g_spriteDesc.points[3].v = 740.0f;
+    g_spriteDesc.z = 0.82f;
+    g_spriteDesc.width = 94.4f;
+    g_spriteDesc.height = 14.400001f;
+    g_spriteDesc.texture = 11;
+    g_spriteDesc.blendMode = 0x20;
+    g_spriteDesc.x = g_61b740->faders[1].x + 44.8f;
+    g_spriteDesc.y = g_61b740->faders[1].y + 82.4f - 1.5f;
+    FUN_432e00(&g_spriteDesc);
+}
+
 struct HudPip
 {
     DWORD x;     // 0x00
