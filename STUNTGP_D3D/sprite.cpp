@@ -632,6 +632,52 @@ int FUN_438dc0(int style, int *a, int *b, int *c)
     return 0;
 }
 
+// Three-slice bar: fixed left and right caps around a stretched middle, from row `row` of the sprite.
+// FUNCTION: STUNTGP_D3D 0x438eb0
+void FUN_438eb0(float x, float y, int layer, int sub, int def, int leftWidth, int rightWidth, int rowHeight, int row, float scale, float midWidth, DWORD flags, float fade)
+{
+    SpriteData s;
+    fade = FUN_43d7b0(fade, 0.0f, 1.0f);
+    FUN_441320(&s, def);
+    s.flags = 2;
+    s.alpha = 0xff;
+    if (flags & 0x100)
+    {
+        s.blendMode = 0x58;
+    }
+    else if (flags & 0x200)
+    {
+        s.blendMode = 0x70;
+    }
+    else if (flags & 0x400)
+    {
+        s.blendMode = 0x60;
+        s.alpha = (int)(fade * 255.0f);
+    }
+    else
+    {
+        s.blendMode = 0x20;
+    }
+    s.x = x;
+    s.y = y;
+    s.height = rowHeight * scale;
+    s.v0 += rowHeight * 4.0f * row;
+    s.v1 += rowHeight * 4.0f * row;
+    s.width = leftWidth * scale;
+    s.u1 = leftWidth * 4.0f;
+    FUN_438370(&s, layer, sub);
+    s.x += s.width;
+    s.width = midWidth;
+    s.u0 = s.u1;
+    s.u1 = (256 - rightWidth) * 4.0f;
+    FUN_438370(&s, layer, sub);
+    s.x += s.width;
+    s.u0 = s.u1;
+    s.u1 = 1024.0f;
+    s.width = rightWidth * scale;
+    FUN_438370(&s, layer, sub);
+}
+
 // FUNCTION: STUNTGP_D3D 0x439380
 void FUN_439380(float x0, float y0, float x1, float y1, int layer, int scroll, int flags, float fade)
 {

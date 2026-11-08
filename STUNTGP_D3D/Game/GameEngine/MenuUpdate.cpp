@@ -1156,6 +1156,51 @@ int FUN_436420(int sponsor, ShopItem *item, int *used, int unused)
     return price;
 }
 
+void FUN_436e90(int *p);
+void FUN_436ea0(int *p);
+
+// Rates a car setup on three bars, with unset part levels taken as the defaults.
+// FUNCTION: STUNTGP_D3D 0x436d60
+void FUN_436d60(ShopCar *car, int *stat0, int *stat1, int *stat2)
+{
+    ShopCar setup = *car;
+    FUN_436e90(&setup.parts[5][1]);
+    FUN_436e90(&setup.parts[4][1]);
+    FUN_436e90(&setup.parts[12][1]);
+    FUN_436e90(&setup.parts[8][1]);
+    FUN_436e90(&setup.parts[3][1]);
+    FUN_436e90(&setup.parts[6][1]);
+    FUN_436ea0(&setup.parts[13][1]);
+    FUN_436e90(&setup.parts[9][1]);
+    FUN_436e90(&setup.parts[11][1]);
+    FUN_436e90(&setup.parts[7][1]);
+    FUN_436e90(&setup.parts[10][1]);
+    int s0 = (setup.parts[5][1] + setup.parts[10][1] + setup.parts[11][1] * 4) * 2;
+    int s1 = (setup.parts[7][1] + (6 - setup.parts[12][1]) * 3 + setup.parts[8][1] * 2) * 2;
+    *stat1 = s1;
+    *stat0 = s0;
+    int s2 = setup.parts[11][1] * 6 + (setup.parts[5][1] + setup.parts[10][1]) * 4;
+    *stat2 = s2;
+    switch (car->unk04)
+    {
+    case 1:
+        *stat0 = s0 + 15;
+        *stat1 = s1 + 40;
+        *stat2 = s2 + 5;
+        break;
+    case 2:
+        *stat0 = s0 + 40;
+        *stat1 = s1 + 20;
+        *stat2 = s2 + 10;
+        break;
+    case 3:
+        *stat0 = s0 + 25;
+        *stat1 = s1 + 15;
+        *stat2 = s2 + 30;
+        break;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x436e90
 void FUN_436e90(int *p)
 {
