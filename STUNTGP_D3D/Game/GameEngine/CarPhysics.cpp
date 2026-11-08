@@ -7329,9 +7329,87 @@ void FUN_40bec0()
 
 
 
-// STUB: STUNTGP_D3D 0x412bf0
+// Grid slot offsets behind the start line, alternating sides, for FUN_412bf0.
+// GLOBAL: STUNTGP_D3D 0x4743f0
+Vec4 g_4743f0[6] = {
+    {500.0f, 0.0f, -2000.0f, 0.0f},
+    {-500.0f, 0.0f, -3000.0f, 0.0f},
+    {500.0f, 0.0f, -4000.0f, 0.0f},
+    {-500.0f, 0.0f, -5000.0f, 0.0f},
+    {500.0f, 0.0f, -6000.0f, 0.0f},
+    {-500.0f, 0.0f, -7000.0f, 0.0f},
+};
+
+void FUN_413490(Car *car);
+void FUN_413530(Car *car);
+void FUN_408640(Car *car, float *pos);
+extern int g_60df98;
+
+// Puts every active car on its grid slot behind the first point of the race path.
+// FUNCTION: STUNTGP_D3D 0x412bf0
 void FUN_412bf0()
 {
+    Vec4 side;
+    Vec4 pos;
+    Vec4 up;
+    Vec4 dir;
+    up.x = 0.0f;
+    up.y = 1.0f;
+    up.z = 0.0f;
+    if (!g_571328)
+    {
+        g_571328 = FUN_428800(1);
+    }
+    Vec4 *start = g_571328->points;
+    Vec4 *last = &start[g_571328->count - 1];
+    dir.x = start->x - last->x;
+    dir.y = start->y - last->y;
+    dir.z = start->z - last->z;
+    Vec3_Normalize(&dir.x);
+    g_4d5bb8 = g_49a1f8;
+    for (int i = 0; i < 6; i++)
+    {
+        Vec4 *off = &g_4743f0[i];
+        if (g_4d5bb8->active == 1)
+        {
+            FUN_413490(g_4d5bb8);
+            FUN_413530(g_4d5bb8);
+            g_4d5bb8->unk1c8c.x = 0.0f;
+            g_4d5bb8->unk1c8c.y = 0.0f;
+            g_4d5bb8->unk1c8c.z = 0.0f;
+            g_4d5bb8->unk1cac.x = 0.0f;
+            g_4d5bb8->unk1cac.y = 0.0f;
+            g_4d5bb8->unk1cac.z = 0.0f;
+            side.x = dir.y * up.z - dir.z * up.y;
+            side.y = dir.z * up.x - dir.x * up.z;
+            side.z = dir.x * up.y - dir.y * up.x;
+            Vec3_Normalize(&side.x);
+            Vec3_Normalize(&up.x);
+            Vec3_Normalize(&dir.x);
+            Matrix_Identity(g_4d5bb8->matrix);
+            *(Vec4 *)&g_4d5bb8->matrix[0] = side;
+            *(Vec4 *)&g_4d5bb8->matrix[4] = up;
+            *(Vec4 *)&g_4d5bb8->matrix[8] = dir;
+            memcpy(g_4d5bb8->body.mat0, g_4d5bb8->matrix, sizeof(g_4d5bb8->matrix));
+            g_4d5bb8->unk24ac = i;
+            if (g_60df98 == 3)
+            {
+                pos = *start;
+            }
+            else
+            {
+                pos.x = g_4d5bb8->matrix[4] * off->y + g_4d5bb8->matrix[8] * off->z + off->x * g_4d5bb8->matrix[0];
+                pos.y = g_4d5bb8->matrix[5] * off->y + g_4d5bb8->matrix[9] * off->z + off->x * g_4d5bb8->matrix[1];
+                pos.z = g_4d5bb8->matrix[6] * off->y + g_4d5bb8->matrix[10] * off->z + off->x * g_4d5bb8->matrix[2];
+                pos.x = pos.x + start->x;
+                pos.y = pos.y + start->y;
+                pos.z = pos.z + start->z;
+            }
+            FUN_408640(g_4d5bb8, &pos.x);
+        }
+        g_4d5bb8++;
+    }
+    g_4d5bb8 = g_49a1f8;
 }
 
 // Grid slot offsets, alternating sides, for FUN_412e80.
@@ -7344,10 +7422,6 @@ Vec4 g_4744f0[6] = {
     {300.0f, 0.0f, 0.0f, 0.0f},
     {-300.0f, 0.0f, 0.0f, 0.0f},
 };
-
-void FUN_413490(Car *car);
-void FUN_413530(Car *car);
-void FUN_408640(Car *car, float *pos);
 
 // Lines the cars up along path 2, starting 87% of the way round and two points apart.
 // FUNCTION: STUNTGP_D3D 0x412e80
