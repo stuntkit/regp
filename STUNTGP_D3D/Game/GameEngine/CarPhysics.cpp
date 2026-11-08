@@ -3911,6 +3911,26 @@ void FUN_411330(Car *car)
     car->unk71e8 = 0;
 }
 
+void FUN_4115e0(float dist);
+
+// Tracks the peak height of a jump and scores it once the car has dropped 2 below the peak.
+// FUNCTION: STUNTGP_D3D 0x411680
+void FUN_411680()
+{
+    if (g_60f2b0 != 4)
+    {
+        if (g_4d5bb8->posY > g_4d5bb8->unk723c)
+        {
+            g_4d5bb8->unk723c = g_4d5bb8->posY;
+            return;
+        }
+        if (!g_4d5bb8->unk7240 && g_4d5bb8->unk723c - 2.0f > g_4d5bb8->posY)
+        {
+            FUN_4115e0(g_4d5bb8->unk723c - g_4d5bb8->unk7238);
+        }
+    }
+}
+
 // Upright landing: when the car comes down with its up axis within ~25 degrees of vertical, a one-off
 // bonus and message, at most every 300 ticks.
 // FUNCTION: STUNTGP_D3D 0x411340
@@ -4167,11 +4187,34 @@ void FUN_4118d0()
 // Entry of the 0x98-byte trick table at 0x473a40; the input sequences end with -1.
 struct TrickDef
 {
-    int unk00;         // 0x00, 0 ends the table
-    BYTE unk04[0x14];  // 0x04
+    int msg[3];        // 0x00, message per repeat count; msg[0] 0 ends the table
+    int score[3];      // 0x0c, score id per repeat count
     char seqA[0x40];   // 0x18, matched against Car::unk6fb4
     char seqB[0x40];   // 0x58, matched against Car::unk70b4
 };
+
+// Input-sequence tricks; seqA is matched against Car::unk6fb4, seqB against Car::unk70b4, -1 ends a sequence.
+// GLOBAL: STUNTGP_D3D 0x473a40
+TrickDef g_473a40[11] = {
+    {{31, 32, 33}, {1, 2, 3}, {7, 8, 1, 2, 3, 4, 5, 6, 7, -1}, {-1}},
+    {{34, 35, 36}, {4, 5, 6}, {2, 1, 8, 7, 6, 5, 4, 3, 2, -1}, {-1}},
+    {{40, 41, 42}, {7, 8, 9}, {-1}, {8, 1, 2, 3, 4, 5, 6, 7, 8, -1}},
+    {{37, 38, 39}, {10, 11, 12}, {-1}, {1, 8, 7, 6, 5, 4, 3, 2, 1, -1}},
+    {{82, 82, 82}, {13, 13, 13}, {7, 8, 1, 2, 3, 4, 5, 4, 3, 2, 1, -1}, {-1}},
+    {{81, 81, 81}, {14, 14, 14}, {2, 1, 8, 7, 6, 5, 4, 5, 6, 7, 8, -1}, {-1}},
+    {{92, 92, 92}, {16, 16, 16}, {-1}, {1, 2, 3, 4, 5, 4, 3, 2, 1, -1}},
+    {{91, 91, 91}, {15, 15, 15}, {-1}, {1, 8, 7, 6, 5, 6, 7, 8, 1, -1}},
+    {{85, 85, 85}, {17, 17, 17}, {-1}, {8, 1, 2, 3, 4, 5, 6, 7, 8, 7, 6, 5, 4, 3, 2, 1, -1}},
+    {{85, 85, 85}, {17, 17, 17}, {-1}, {1, 8, 7, 6, 5, 4, 3, 2, 1, 2, 3, 4, 5, 6, 7, 8, -1}},
+    {{0, 0, 0}, {0, 0, 0}, {0}, {0}},
+};
+
+// GLOBAL: STUNTGP_D3D 0x4740c8
+TrickDef g_4740c8 = {{86, 86, 86}, {19, 19, 19}, {-1}, {-1}};
+
+// GLOBAL: STUNTGP_D3D 0x474160
+TrickDef g_474160 = {{87, 87, 87}, {20, 20, 20}, {-1}, {-1}};
+
 
 // Counts how often the trick's input sequence was completed, capped at 3; 0 on a stray input.
 // FUNCTION: STUNTGP_D3D 0x411c10
@@ -4300,12 +4343,12 @@ int g_4742f0[24] = {17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 21, 21, 21, 21, 21, 
 
 void FUN_4190b0(Car *car, unsigned int percent);
 
-// Awards stunt n (1-based) from a stunt table: entries [0..2] are message ids, [3..5] score ids.
+// Awards a trick completed n times (1..3).
 // FUNCTION: STUNTGP_D3D 0x411de0
-void FUN_411de0(int *stunts, int n)
+void FUN_411de0(TrickDef *trick, int n)
 {
     int k = n - 1;
-    int id = stunts[k + 3];
+    int id = trick->score[k];
     int score = FUN_411da0(g_60d688[id], g_4d5bb8->unk725c);
     if (FUN_402590(g_4d5bb8) && g_612948.unk0054 != 1)
     {
@@ -4323,7 +4366,7 @@ void FUN_411de0(int *stunts, int n)
         {
             type = 5;
         }
-        FUN_442cf0(180, g_6127a0[stunts[k]], g_4d5bb8, 2, 0);
+        FUN_442cf0(180, g_6127a0[trick->msg[k]], g_4d5bb8, 2, 0);
         int kind = FUN_42f1f0(1) + 1;
         FUN_401220(type, kind, score);
         FUN_4190b0(g_4d5bb8, (int)(g_4d5bb8->unk2640 == 1 ? g_60f2d0[4] : g_60f2d0[2]));
@@ -4331,6 +4374,32 @@ void FUN_411de0(int *stunts, int n)
         return;
     }
     g_4d5bb8->unk260c += score;
+}
+
+// Awards the first completed trick, else a spin bonus for long input runs.
+// FUNCTION: STUNTGP_D3D 0x411f10
+void FUN_411f10()
+{
+    if (g_60f2b0 != 4)
+    {
+        for (TrickDef *t = g_473a40; t->msg[0]; t++)
+        {
+            int n = FUN_411c10(t);
+            if (n)
+            {
+                FUN_411de0(t, n);
+                return;
+            }
+        }
+        if (g_4d5bb8->unk6dac > 16 || g_4d5bb8->unk6db0 > 16)
+        {
+            FUN_411de0(&g_474160, 1);
+        }
+        else if (g_4d5bb8->unk6dac > 10 || g_4d5bb8->unk6db0 > 10)
+        {
+            FUN_411de0(&g_4740c8, 1);
+        }
+    }
 }
 
 void FUN_41d1f0(Stat *stat, float value);
