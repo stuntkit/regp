@@ -3542,6 +3542,8 @@ int FUN_45b520(Unk45b520 *object, int arg)
     return 1;
 }
 
+// The original recomputes the sin of object->unk18 after each FUN_438710 call; /Oa would reuse it.
+#pragma optimize("a", off)
 // FUNCTION: STUNTGP_D3D 0x45b5d0
 int FUN_45b5d0(Unk45b520 *object, int msg, int arg)
 {
@@ -3588,6 +3590,7 @@ int FUN_45b5d0(Unk45b520 *object, int msg, int arg)
     }
     return 0;
 }
+#pragma optimize("", on)
 
 // FUNCTION: STUNTGP_D3D 0x45b7a0
 int FUN_45b7a0(Unk45b7a0 *object, int arg)
