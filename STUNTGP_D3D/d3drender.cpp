@@ -2959,6 +2959,110 @@ void FUN_4253e0(ClipVertex *a, ClipVertex *b, ClipVertex *out, int edge)
     }
 }
 
+// Clips a queued polygon to the screen, one edge at a time. 0 when a vertex lies outside the guard band, the
+// polygon is entirely off screen or clipping leaves fewer than 3 or more than 6 vertices.
+// FUNCTION: STUNTGP_D3D 0x4255e0
+int FUN_4255e0(OverlayPoly *poly)
+{
+    ClipVertex bufA[16];
+    ClipVertex bufB[16];
+    DWORD n = poly->numVerts;
+    DWORD all = 0xf;
+    DWORD any = 0;
+    ClipVertex *out = bufA;
+    ClipVertex *v = (ClipVertex *)poly->verts;
+    for (DWORD i = 0; i < n; i++, v++)
+    {
+        if (v->x < g_576c24 || v->x > g_576c28 || v->y < g_576c2c || v->y > g_576c30)
+        {
+            return 0;
+        }
+        DWORD f = 0xf;
+        if (v->x < g_576c14)
+        {
+            f = 0xe;
+        }
+        else if (v->x >= g_576c18)
+        {
+            f = 0xd;
+        }
+        if (v->y < g_576c1c)
+        {
+            f &= ~4;
+        }
+        else if (v->y >= g_576c20)
+        {
+            f &= ~8;
+        }
+        v->flags = f;
+        all &= f;
+        any |= f;
+    }
+    if (all == 0xf)
+    {
+        return 1;
+    }
+    if (any != 0xf)
+    {
+        return 0;
+    }
+    if (n)
+    {
+        memcpy(bufB, poly->verts, n * sizeof(ClipVertex));
+    }
+    DWORD edge = 1;
+    DWORD count = n;
+    ClipVertex *in = bufB;
+    for (DWORD pass = 0; pass < 4; pass++)
+    {
+        if (!(all & edge))
+        {
+            ClipVertex *o = out;
+            ClipVertex *prev = &in[count - 1];
+            ClipVertex *cur = in;
+            for (DWORD k = count; k != 0; k--)
+            {
+                if (prev->flags & edge)
+                {
+                    *o++ = *prev;
+                    if (!(cur->flags & edge))
+                    {
+                        FUN_4253e0(prev, cur, o, edge);
+                        o++;
+                    }
+                }
+                else if (cur->flags & edge)
+                {
+                    FUN_4253e0(prev, cur, o, edge);
+                    o++;
+                }
+                prev = cur;
+                cur++;
+            }
+            count = o - out;
+            if (count < 3 || count > 6)
+            {
+                return 0;
+            }
+            ClipVertex *t = in;
+            in = out;
+            out = t;
+        }
+        all |= edge;
+        edge <<= 1;
+        if (all == 0x3f)
+        {
+            break;
+        }
+    }
+    if (count)
+    {
+        memcpy(poly->verts, in, count * sizeof(ClipVertex));
+    }
+    poly->numVerts = count;
+    return 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x425870
 void FUN_425870()
 {
