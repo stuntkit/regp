@@ -269,16 +269,103 @@ int FUN_4421f0()
     return 0;
 }
 
-// STUB: STUNTGP_D3D 0x418180
+void FUN_41d1c0();
+void FUN_413e10();
+void FUN_414350(Car *car);
+void FUN_41c420();
+void FUN_414cf0();
+void FUN_414e50();
+void FUN_415040();
+void FUN_4153a0();
+void FUN_4154c0();
+void FUN_418150();
+void FUN_42b850(Scene *scene, Camera *camera, int arg);
+
+// Per active car: effects and trails, then the model drawn from a camera sitting on the car, blinking for the
+// first 60 ticks of unk7640.
+// FUNCTION: STUNTGP_D3D 0x418180
 void FUN_418180()
 {
+    g_4d5bb8 = g_49a1f8;
+    FUN_41d1c0();
+    for (int n = 6; n != 0; n--)
+    {
+        if (g_4d5bb8->active == 1)
+        {
+            FUN_413e10();
+            FUN_414350(g_4d5bb8);
+            FUN_41c420();
+            FUN_414cf0();
+            FUN_414e50();
+            FUN_415040();
+            FUN_4153a0();
+            FUN_4154c0();
+            Car *car = g_4d5bb8;
+            Camera cam = g_4864e8;
+            cam.pos = *(Vec4 *)&car->posX;
+            float h = 70.0f - car->body.unk140;
+            Vec4 d;
+            d.x = h * car->axisY.x;
+            d.y = h * car->axisY.y;
+            d.z = h * car->axisY.z;
+            cam.pos.x = cam.pos.x - d.x;
+            cam.pos.y = cam.pos.y - d.y;
+            cam.pos.z = cam.pos.z - d.z;
+            cam.up = car->axisY;
+            cam.target = car->axisZ;
+            cam.target.x = cam.target.x + cam.pos.x;
+            cam.target.y = cam.target.y + cam.pos.y;
+            cam.target.z = cam.target.z + cam.pos.z;
+            FUN_418150();
+            car = g_4d5bb8;
+            if (car->unk7640 == 0 || (car->unk7640 < 60 && (BYTE)(car->unk7640 & 7) < 3))
+            {
+                car->unk2708 = 0;
+            }
+            else
+            {
+                car->unk2708 = 0x10;
+            }
+            FUN_42b850(car->unk26b0, &cam, car->unk2708);
+        }
+        g_4d5bb8++;
+    }
+    g_4d5bb8 = g_49a1f8;
 }
 
 void FUN_45e4f0();
 
-// STUB: STUNTGP_D3D 0x416050
+void FUN_41f2f0(TrailParams *params, Vec4 *ring, int head, unsigned int count, float scale, float fade);
+extern TrailParams g_474af8;
+
+// Draws the trails of the effect slots FUN_415df0 queued, newest first, fading out over their last 15 ticks.
+// FUNCTION: STUNTGP_D3D 0x416050
 void FUN_416050()
 {
+    Unk612da4 **pp = (Unk612da4 **)g_612948.unk8cdc;
+    while (pp > (Unk612da4 **)g_612948.unk8c5c)
+    {
+        Unk612da4 *p = *--pp;
+        float f;
+        if (p->life > 15)
+        {
+            f = 1.0f;
+        }
+        else
+        {
+            f = p->life * (1.0f / 15.0f);
+        }
+        f *= p->unk2c;
+        if (f < 0.25f)
+        {
+            f = 0.25f;
+        }
+        else if (f > 1.0f)
+        {
+            f = 1.0f;
+        }
+        FUN_41f2f0(&(&g_474af8)[p->unk04], (Vec4 *)p->unk030, p->unk430, p->unk434, f, f);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x449d60

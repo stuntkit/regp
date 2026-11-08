@@ -5055,6 +5055,11 @@ void FUN_414130()
     }
 }
 
+// STUB: STUNTGP_D3D 0x414350
+void FUN_414350(Car *car)
+{
+}
+
 // Spins each wheel by the distance it rolled this tick.
 // FUNCTION: STUNTGP_D3D 0x414370
 void FUN_414370()
@@ -5314,6 +5319,46 @@ void FUN_414c60()
     FUN_41e510(g_4d5bb8->unk351c, &g_4d5bb8->unk391c, &g_4d5bb8->unk3920, &pos, &g_474c08);
 }
 
+void FUN_41f2f0(TrailParams *params, Vec4 *ring, int head, unsigned int count, float scale, float fade);
+
+// Draws the speed trail once the car is fast enough, unless the camera sits in it.
+// FUNCTION: STUNTGP_D3D 0x414cf0
+void FUN_414cf0()
+{
+    if (g_612948.unk0034 >= 20 && (g_4d5bb8 != g_4722d0->data || g_4722d0->camMode >= 10))
+    {
+        float f = g_4d5bb8->unk1cf0 - 4000.0f / 60.0f;
+        if (f >= 0.0f)
+        {
+            f *= 0.024f;
+            if (f > 1.0f)
+            {
+                f = 1.0f;
+            }
+            FUN_41f2f0(&g_474c08, g_4d5bb8->unk351c, g_4d5bb8->unk391c, g_4d5bb8->unk3920, f, f);
+        }
+    }
+}
+
+// Draws the two exhaust flame trails, faded by unk2260.
+// FUNCTION: STUNTGP_D3D 0x414e50
+void FUN_414e50()
+{
+    Car *car = g_4d5bb8;
+    float f = 0.0f;
+    CarFx *fx = &car->unk328c;
+    if (fx->active == 1 && fx->unk13c == 1)
+    {
+        f = car->unk2260 * (1.0f / 255.0f);
+        FUN_41f2f0(&g_474af8, fx->ring, fx->head, fx->count, f, f);
+    }
+    fx++;
+    if (fx->active == 1 && fx->unk13c == 1)
+    {
+        FUN_41f2f0(&g_474af8, fx->ring, fx->head, fx->count, f, f);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x414f90
 void FUN_414f90()
 {
@@ -5324,6 +5369,18 @@ void FUN_414f90()
         FUN_41e510(trail[0].points, &trail[0].head, &trail[0].count, &pos, &g_474d18);
         pos = trail[1].pos;
         FUN_41e510(trail[1].points, &trail[1].head, &trail[1].count, &pos, &g_474d18);
+    }
+}
+
+// Draws both unk2d04 trails, unless the camera sits in the car.
+// FUNCTION: STUNTGP_D3D 0x415040
+void FUN_415040()
+{
+    if (g_612948.unk0034 >= 60 && g_4d5bb8->unk28a0 && (g_4d5bb8 != g_4722d0->data || g_4722d0->camMode >= 10))
+    {
+        Trail *t = g_4d5bb8->unk2d04;
+        FUN_41f2f0(&g_474d18, t[0].points, t[0].head, t[0].count, 1.0f, 1.0f);
+        FUN_41f2f0(&g_474d18, t[1].points, t[1].head, t[1].count, 1.0f, 1.0f);
     }
 }
 
@@ -5343,6 +5400,37 @@ void FUN_4152d0()
 }
 
 void FUN_415190(Car *car, Vec4 *p, Vec4 *out);
+
+// Draws both unk28bc trails, faded in with the car's distance from the camera.
+// FUNCTION: STUNTGP_D3D 0x4153a0
+void FUN_4153a0()
+{
+    if (g_612948.unk0034 >= 60 && (g_4d5bb8 != g_4722d0->data || g_4722d0->camMode >= 10) && g_4d5bb8->unk28a0)
+    {
+        Vec4 d;
+        d.x = g_4d5bb8->posX - g_4722d0->cam.pos.x;
+        d.y = g_4d5bb8->posY - g_4722d0->cam.pos.y;
+        d.z = g_4d5bb8->posZ - g_4722d0->cam.pos.z;
+        float f = (d.x * d.x + d.y * d.y + d.z * d.z) * 4e-08f;
+        if (f < 0.0f)
+        {
+            f = 0.0f;
+        }
+        else if (f > 1.0f)
+        {
+            f = 1.0f;
+        }
+        TrailSlot *t = g_4d5bb8->unk28bc;
+        if (t[0].active == 1)
+        {
+            FUN_41f2f0(&g_474e28, t[0].trail.points, t[0].trail.head, t[0].trail.count, 1.0f, f);
+        }
+        if (g_4d5bb8->unk28bc[1].active == 1)
+        {
+            FUN_41f2f0(&g_474e28, t[1].trail.points, t[1].trail.head, t[1].trail.count, 1.0f, f);
+        }
+    }
+}
 
 // FUNCTION: STUNTGP_D3D 0x4154c0
 void FUN_4154c0()
@@ -6536,9 +6624,119 @@ void FUN_41bea0()
     FUN_460d20(7500);
 }
 
-// STUB: STUNTGP_D3D 0x41bf20
+int FUN_4212a0();
+extern RenderMaterial *g_589e04;
+
+// Sweeps a sphere from the sun to the two front wheels and the rear axle midpoint; when all three are shadowed,
+// fits the shadow plane (centre unk3934, normal unk3944, forward unk3954) and its fade terms.
+// FUNCTION: STUNTGP_D3D 0x41bf20
 void FUN_41bf20()
 {
+    unsigned int i = 0;
+    if (g_4d5bb8->unk26b4 && (DWORD)g_renderState.unk8044 >= 1 &&
+        (g_612948.unk0034 >= 0x3c || FUN_402590(g_4d5bb8)) && g_612948.unk0034 >= 0x32)
+    {
+        Car *car = g_4d5bb8;
+        car->unk3924 = 1;
+        Vec4 sum;
+        sum.x = 0.0f;
+        sum.y = 0.0f;
+        sum.z = 0.0f;
+        Vec4 pts[3];
+        pts[0] = car->wheels[0].pos;
+        pts[1] = car->wheels[1].pos;
+        pts[2].x = car->wheels[3].pos.x + car->wheels[2].pos.x;
+        pts[2].y = car->wheels[3].pos.y + car->wheels[2].pos.y;
+        pts[2].z = car->wheels[3].pos.z + car->wheels[2].pos.z;
+        pts[2].x *= 0.5f;
+        pts[2].y *= 0.5f;
+        pts[2].z *= 0.5f;
+        Vec4 sun = g_589e04->pos;
+        if (sun.y < 75000.0f)
+        {
+            sun.y = 75000.0f;
+        }
+        Vec4 d;
+        for (; i < 3; i++)
+        {
+            Vec4 q = pts[i];
+            d.x = q.x - sun.x;
+            d.y = q.y - sun.y;
+            d.z = q.z - sun.z;
+            Vec3_Normalize(&d.x);
+            d.x = d.x * 2000.0f;
+            g_cameraSweep.unk94 = 50.0f;
+            g_cameraSweep.unk98 = 2500.0f;
+            g_cameraSweep.unk8c = 2000.0f;
+            g_cameraSweep.unk90 = 1.0f;
+            g_cameraSweep.unk04 = pts[i];
+            d.y = d.y * 2000.0f;
+            d.z = d.z * 2000.0f;
+            g_cameraSweep.unk28 = d;
+            if (FUN_4212a0() != 1)
+            {
+                g_4d5bb8->unk3924 = 0;
+                return;
+            }
+            pts[i] = g_cameraSweep.unke8;
+            sum.x = sum.x + pts[i].x;
+            sum.y = sum.y + pts[i].y;
+            sum.z = sum.z + pts[i].z;
+        }
+        sum.x = sum.x * 0.33333334f;
+        sum.y = sum.y * 0.33333334f;
+        sum.z = sum.z * 0.33333334f;
+        car = g_4d5bb8;
+        car->unk3934 = sum;
+        d.x = pts[1].x + pts[0].x;
+        d.y = pts[1].y + pts[0].y;
+        d.z = pts[1].z + pts[0].z;
+        d.x *= 0.5f;
+        d.y *= 0.5f;
+        d.z *= 0.5f;
+        car->unk3954.x = pts[2].x - d.x;
+        car->unk3954.y = pts[2].y - d.y;
+        car->unk3954.z = pts[2].z - d.z;
+        Vec3_Normalize(&car->unk3954.x);
+        car = g_4d5bb8;
+        d.x = pts[0].x - pts[1].x;
+        d.y = pts[0].y - pts[1].y;
+        d.z = pts[0].z - pts[1].z;
+        Vec4 f;
+        f.x = pts[0].x - pts[2].x;
+        f.y = pts[0].y - pts[2].y;
+        f.z = pts[0].z - pts[2].z;
+        car->unk3944.x = f.y * d.z - f.z * d.y;
+        car->unk3944.y = f.z * d.x - f.x * d.z;
+        car->unk3944.z = f.x * d.y - f.y * d.x;
+        Vec3_Normalize(&car->unk3944.x);
+        car = g_4d5bb8;
+        if (g_482688.x * car->axisY.x + g_482688.y * car->axisY.y + g_482688.z * car->axisY.z > 0.0f)
+        {
+            car->unk3944.x = -car->unk3944.x;
+            car->unk3944.y = -car->unk3944.y;
+            car->unk3944.z = -car->unk3944.z;
+        }
+        d.x = car->unk3944.x * -45.0f;
+        d.y = car->unk3944.y * -45.0f;
+        d.z = car->unk3944.z * -45.0f;
+        car->unk3934.x = d.x + car->unk3934.x;
+        car->unk3934.y = d.y + car->unk3934.y;
+        car->unk3934.z = d.z + car->unk3934.z;
+        d.x = car->posX - sun.x;
+        d.y = car->posY - sun.y;
+        d.z = car->posZ - sun.z;
+        f.x = car->unk3934.x - sun.x;
+        f.y = car->unk3934.y - sun.y;
+        f.z = car->unk3934.z - sun.z;
+        float r = (d.x * d.x + d.y * d.y + d.z * d.z) / (f.x * f.x + f.y * f.y + f.z * f.z);
+        r = r * r;
+        car->unk392c = 1.2f / r;
+        r = r * r;
+        car->unk3930 = r * r * 112.0f;
+        return;
+    }
+    g_4d5bb8->unk3924 = i;
 }
 
 // STUB: STUNTGP_D3D 0x41cd30

@@ -182,8 +182,16 @@ struct TrailParams
     DWORD size;       // 0x004
     int unk08;        // 0x008
     int unk0c;        // 0x00c
-    void *unk10;      // 0x010
-    BYTE unk14[0xd8]; // 0x014
+    Vec4 *unk10;      // 0x010, cross-section points of a tube trail, NULL for a flat one
+    DWORD unk14;      // 0x014, OverlayPoly flags of a flat trail
+    int unk18;        // 0x018, texture of a flat trail
+    float u0;         // 0x01c
+    float v0;         // 0x020
+    float u1;         // 0x024
+    float v1;         // 0x028
+    float widths[16]; // 0x02c, per ring segment
+    float alphas[16]; // 0x06c, per ring segment
+    DWORD colors[16]; // 0x0ac, per ring segment
     int unkec;        // 0x0ec, 1 to draw a sprite at the head
     DWORD unkf0;      // 0x0f0, sprite: OverlayPoly flags
     int unkf4;        // 0x0f4, sprite: texture
@@ -191,7 +199,8 @@ struct TrailParams
     DWORD unkfc;      // 0x0fc, sprite: colour
     float unk100;     // 0x100, sprite: half width
     float unk104;     // 0x104, sprite: half height
-    BYTE unk108[0x8]; // 0x108
+    float unk108;     // 0x108, sprite: depth size, 0 for no sprite
+    BYTE unk10c[0x4]; // 0x10c
 };
 
 // Damped angular spring for a body panel, driven by FUN_417f10.
@@ -373,6 +382,33 @@ struct TrackPoly
     WORD surface;     // 0x6, into TrackOctree::surfaces
 };
 
+// Light record; g_589e04 is the scene's sun.
+struct RenderMaterial
+{
+    DWORD unk00;      // 0x00
+    DWORD unk04;      // 0x04
+    float alpha;      // 0x08
+    DWORD unk0c;      // 0x0c
+    Vec4 pos;         // 0x10
+    Vec4 local;       // 0x20, pos relative to the camera
+    Vec4 colour;      // 0x30, direction for directional lights
+    BYTE unk40[0x10]; // 0x40
+    int unk50;        // 0x50
+    DWORD unk54;      // 0x54
+    DWORD unk58;      // 0x58
+    DWORD unk5c;      // 0x5c
+    BYTE unk60[0x8];  // 0x60
+    float unk68;      // 0x68
+    float unk6c;      // 0x6c
+    float unk70;      // 0x70
+    int unk74;        // 0x74
+    int unk78;        // 0x78
+    int unk7c;        // 0x7c
+    int unk80;        // 0x80
+    int visible;      // 0x84
+    BYTE unk88[0x8];  // 0x88
+};
+
 // Swept-sphere collision state used to keep the camera out of the scenery. One block in the original:
 // FUN_41feb0 saves and restores it with a single copy.
 struct CameraSweep
@@ -407,7 +443,10 @@ struct CameraSweep
     float unk108; // 0x108
     // Body the camera sphere ignores.
     Body *unk10c; // 0x10c
-    BYTE unk110[0x60]; // 0x110
+    BYTE unk110[0x14]; // 0x110
+    // 1 once a sweep has found a contact.
+    int unk124;        // 0x124
+    BYTE unk128[0x48]; // 0x128
 };
 
 extern CameraSweep g_cameraSweep;
@@ -739,7 +778,8 @@ struct Car
     int unk26ac;              // 0x26ac
     Scene *unk26b0;        // 0x26b0
     Scene *unk26b4;        // 0x26b4
-    BYTE unk26b8[0x54];       // 0x26b8
+    BYTE unk26b8[0x50];       // 0x26b8
+    int unk2708;              // 0x2708, draw flags of the car model, 0x10 while it blinks
     float unk270c[16];        // 0x270c
     float wheelMatrix[4][16]; // 0x274c
     Vec4 unk284c;             // 0x284c
@@ -774,7 +814,7 @@ struct Car
     int unk3924;              // 0x3924
     int unk3928;              // 0x3928
     float unk392c;            // 0x392c
-    BYTE unk3930[0x4];        // 0x3930
+    float unk3930;            // 0x3930
     Vec4 unk3934;             // 0x3934
     Vec4 unk3944;             // 0x3944
     Vec4 unk3954;             // 0x3954
@@ -1069,6 +1109,16 @@ struct MeshPolyVertex
     float u;     // 0x10
     float v;     // 0x14
     DWORD color; // 0x18
+};
+
+struct MeshPoly
+{
+    BYTE unk00[0x20];      // 0x00
+    int unk20;             // 0x20
+    int unk24;             // 0x24
+    int unk28;             // 0x28
+    DWORD count;           // 0x2c
+    MeshPolyVertex v[4];   // 0x30
 };
 
 // One visible mesh: its polygon and point indices, each list 0xffff-terminated.

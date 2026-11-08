@@ -997,9 +997,77 @@ void FUN_410a10(int index)
     FUN_4109e0(index);
 }
 
-// STUB: STUNTGP_D3D 0x415df0
+void FUN_41e6e0(Vec4 *ring, DWORD *head, DWORD *count, Vec4 *pos, TrailParams *params);
+int FUN_4215b0();
+void FUN_421c30(float bounce);
+extern TrailParams g_474af8;
+
+// Moves the live effect slots, bouncing them off the scenery from race state 0x50 on, and queues each for drawing.
+// FUNCTION: STUNTGP_D3D 0x415df0
 void FUN_415df0()
 {
+    if (g_612948.unk0458)
+    {
+        g_612948.unk0458--;
+    }
+    g_612948.unk8cdc = (int)g_612948.unk8c5c;
+    if (g_612948.unk0450)
+    {
+        Unk612da4 *p = (Unk612da4 *)g_612948.unk045c;
+        for (int n = 32; n != 0; n--, p++)
+        {
+            if (p->life > 0)
+            {
+                if (--p->life <= 0)
+                {
+                    g_612948.unk0450--;
+                }
+                if (g_612948.unk0034 >= 0x50)
+                {
+                    g_cameraSweep.unk00 = 1.0f;
+                    g_cameraSweep.unk94 = 25.0f;
+                    g_cameraSweep.unk98 = 625.0f;
+                    g_cameraSweep.unk90 = 1.0f;
+                    g_cameraSweep.unk04 = p->pos;
+                    g_cameraSweep.unk28 = p->vel;
+                    g_cameraSweep.unk8c = (float)sqrt(g_cameraSweep.unk28.x * g_cameraSweep.unk28.x +
+                                                      g_cameraSweep.unk28.y * g_cameraSweep.unk28.y +
+                                                      g_cameraSweep.unk28.z * g_cameraSweep.unk28.z);
+                    unsigned int k = 0;
+                    do
+                    {
+                        if (FUN_4215b0() != 1)
+                        {
+                            break;
+                        }
+                        FUN_421c30(1.0f);
+                    } while (k++ < 8);
+                    p->pos = g_cameraSweep.unk14;
+                    p->vel = g_cameraSweep.unk28;
+                }
+                else
+                {
+                    p->pos.x = p->vel.x + p->pos.x;
+                    p->pos.y = p->vel.y + p->pos.y;
+                    p->pos.z = p->vel.z + p->pos.z;
+                }
+                FUN_401d70(&p->vel.x, 1.0f);
+                p->vel.x = p->unk28 * p->vel.x;
+                p->vel.y = p->unk28 * p->vel.y;
+                p->vel.z = p->unk28 * p->vel.z;
+                if (p->unk43c)
+                {
+                    p->vel.x = FUN_42f1c0(3.0f) * p->unk438 + p->vel.x;
+                    p->vel.y = (float)fabs(FUN_42f1c0(2.0f)) * p->unk438 + p->vel.y;
+                    p->vel.z = FUN_42f1c0(3.0f) * p->unk438 + p->vel.z;
+                }
+                FUN_41e6e0((Vec4 *)p->unk030, (DWORD *)&p->unk430, (DWORD *)&p->unk434, &p->pos,
+                           &(&g_474af8)[p->unk04]);
+                *(Unk612da4 **)g_612948.unk8cdc = p;
+                g_612948.unk8cdc += 4;
+            }
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x40e340
@@ -1886,6 +1954,115 @@ void FUN_41e6e0(Vec4 *ring, DWORD *head, DWORD *count, Vec4 *pos, TrailParams *p
     }
 }
 
+// Trail polygon handed to the dynamic mesh.
+// GLOBAL: STUNTGP_D3D 0x571330
+MeshPoly g_571330;
+
+void FUN_4342e0(MeshPoly *poly);
+
+// Two tube segments between ring points a and b: the cross-section, scaled by sa and sb and turned by the car
+// matrix, joins its corners 0-1 and 2-3.
+// FUNCTION: STUNTGP_D3D 0x41e760
+void FUN_41e760(TrailParams *params, Vec4 *a, float sb, float sa, Vec4 *b, int idx)
+{
+    Vec4 outB[4];
+    Vec4 outA[4];
+    Car *car = g_4d5bb8;
+    for (int i = 0; i < 4; i++)
+    {
+        Vec4 *s = &params->unk10[i];
+        float x = sa * s->x;
+        float y = sa * s->y;
+        float z = sa * s->z;
+        Vec4 t;
+        t.x = x * car->matrix[0] + z * car->matrix[8] + y * car->matrix[4];
+        t.y = z * car->matrix[9] + y * car->matrix[5] + x * car->matrix[1];
+        t.z = x * car->matrix[2] + z * car->matrix[10] + y * car->matrix[6];
+        outA[i].x = t.x + a->x;
+        outA[i].y = t.y + a->y;
+        outA[i].z = t.z + a->z;
+        x = sb * s->x;
+        y = sb * s->y;
+        z = sb * s->z;
+        t.x = x * car->matrix[0] + z * car->matrix[8] + y * car->matrix[4];
+        t.y = z * car->matrix[9] + y * car->matrix[5] + x * car->matrix[1];
+        t.z = x * car->matrix[2] + z * car->matrix[10] + y * car->matrix[6];
+        outB[i].x = t.x + b->x;
+        outB[i].y = t.y + b->y;
+        outB[i].z = t.z + b->z;
+    }
+    g_571330.v[0].color = params->colors[idx];
+    g_571330.v[1].color = g_571330.v[0].color;
+    g_571330.v[2].color = params->colors[idx + 1];
+    g_571330.v[3].color = g_571330.v[2].color;
+    g_571330.v[0].pos = outA[0];
+    g_571330.v[1].pos = outA[1];
+    g_571330.v[2].pos = outB[1];
+    g_571330.v[3].pos = outB[0];
+    FUN_4342e0(&g_571330);
+    g_571330.v[0].pos = outA[2];
+    g_571330.v[1].pos = outA[3];
+    g_571330.v[2].pos = outB[3];
+    g_571330.v[3].pos = outB[2];
+    FUN_4342e0(&g_571330);
+}
+
+// Four tube segments between ring points a and b, joining every pair of neighbouring cross-section corners.
+// FUNCTION: STUNTGP_D3D 0x41ea20
+void FUN_41ea20(TrailParams *params, Vec4 *a, float sb, float sa, Vec4 *b, int idx)
+{
+    Vec4 outA[4];
+    Vec4 outB[4];
+    Car *car = g_4d5bb8;
+    for (int i = 0; i < 4; i++)
+    {
+        Vec4 *s = &params->unk10[i];
+        float x = sa * s->x;
+        float y = sa * s->y;
+        float z = sa * s->z;
+        Vec4 t;
+        t.x = x * car->matrix[0] + z * car->matrix[8] + y * car->matrix[4];
+        t.y = z * car->matrix[9] + y * car->matrix[5] + x * car->matrix[1];
+        t.z = x * car->matrix[2] + z * car->matrix[10] + y * car->matrix[6];
+        outA[i].x = t.x + a->x;
+        outA[i].y = t.y + a->y;
+        outA[i].z = t.z + a->z;
+        x = sb * s->x;
+        y = sb * s->y;
+        z = sb * s->z;
+        t.x = x * car->matrix[0] + z * car->matrix[8] + y * car->matrix[4];
+        t.y = z * car->matrix[9] + y * car->matrix[5] + x * car->matrix[1];
+        t.z = x * car->matrix[2] + z * car->matrix[10] + y * car->matrix[6];
+        outB[i].x = t.x + b->x;
+        outB[i].y = t.y + b->y;
+        outB[i].z = t.z + b->z;
+    }
+    g_571330.v[0].color = params->colors[idx];
+    g_571330.v[1].color = g_571330.v[0].color;
+    g_571330.v[2].color = params->colors[idx + 1];
+    g_571330.v[3].color = g_571330.v[2].color;
+    g_571330.v[0].pos = outA[1];
+    g_571330.v[1].pos = outA[2];
+    g_571330.v[2].pos = outB[2];
+    g_571330.v[3].pos = outB[1];
+    FUN_4342e0(&g_571330);
+    g_571330.v[0].pos = outA[0];
+    g_571330.v[1].pos = outA[3];
+    g_571330.v[2].pos = outB[3];
+    g_571330.v[3].pos = outB[0];
+    FUN_4342e0(&g_571330);
+    g_571330.v[0].pos = outA[0];
+    g_571330.v[1].pos = outA[1];
+    g_571330.v[2].pos = outB[1];
+    g_571330.v[3].pos = outB[0];
+    FUN_4342e0(&g_571330);
+    g_571330.v[0].pos = outA[3];
+    g_571330.v[1].pos = outA[2];
+    g_571330.v[2].pos = outB[2];
+    g_571330.v[3].pos = outB[3];
+    FUN_4342e0(&g_571330);
+}
+
 void FUN_425830(OverlayPoly *src);
 
 // Draws the trail's head sprite as a screen-space quad scaled by depth; p is a projected point.
@@ -1926,6 +2103,222 @@ void FUN_41ee10(TrailParams *params, Vec4 *p, float scale, int unused)
         poly.verts[3].v = 1.0f;
         poly.verts[3].color = params->unkfc;
         FUN_425830(&poly);
+    }
+}
+
+// Flat trail: a screen-space ribbon of quads back along the projected ring from head, one per unk08 points.
+// FUNCTION: STUNTGP_D3D 0x41ef90
+void FUN_41ef90(TrailParams *params, Vec4 *ring, int head, unsigned int count, float scale, float fade)
+{
+    if (params->unkec == 1)
+    {
+        FUN_41ee10(params, &ring[head], scale, *(int *)&fade);
+    }
+    OverlayPoly poly;
+    poly.flags = params->unk14;
+    poly.texture = params->unk18;
+    Vec4 cur = ring[head];
+    unsigned int k = 0;
+    poly.numVerts = 4;
+    Vec4 prev;
+    Vec4 l;
+    Vec4 r;
+    Vec4 dir;
+    float len;
+    float half;
+    float w = scale * params->widths[0];
+    for (unsigned int i = 0; i < params->unk0c; i++)
+    {
+        float next = scale * params->widths[i + 1];
+        poly.alpha = (DWORD)(fade * params->alphas[i]);
+        k += params->unk08;
+        if (k >= count)
+        {
+            break;
+        }
+        head -= params->unk08;
+        if (head < 0)
+        {
+            head += params->size;
+        }
+        prev = cur;
+        cur = ring[head];
+        if (i == 0)
+        {
+            half = cur.z * w * 100.0f;
+            dir.z = 0.0f;
+            dir.x = cur.x - prev.x;
+            dir.y = cur.y - prev.y;
+            FUN_44eda0(&dir.x, &len);
+            len = dir.x;
+            dir.x = dir.y;
+            dir.y = -len;
+            dir.x *= half;
+            dir.y *= half;
+            l.x = prev.x - dir.x;
+            l.y = prev.y - dir.y;
+            l.z = prev.z;
+            r.x = dir.x + prev.x;
+            r.y = dir.y + prev.y;
+            r.z = prev.z;
+        }
+        half = cur.z * next * 100.0f;
+        dir.z = 0.0f;
+        dir.x = cur.x - prev.x;
+        dir.y = cur.y - prev.y;
+        FUN_44eda0(&dir.x, &len);
+        len = dir.x;
+        dir.x = dir.y;
+        dir.y = -len;
+        dir.x *= half;
+        dir.y *= half;
+        dir.z *= half;
+        poly.verts[0].x = l.x;
+        poly.verts[0].y = l.y;
+        poly.verts[0].z = l.z;
+        poly.verts[0].unk0c = l.w;
+        poly.verts[0].u = params->u0;
+        poly.verts[0].v = params->v0;
+        poly.verts[0].color = params->colors[i];
+        poly.verts[3].x = r.x;
+        poly.verts[3].y = r.y;
+        poly.verts[3].z = r.z;
+        poly.verts[3].unk0c = r.w;
+        poly.verts[3].u = params->u0;
+        poly.verts[3].v = params->v1;
+        poly.verts[3].color = params->colors[i];
+        l.x = cur.x - dir.x;
+        l.y = cur.y - dir.y;
+        l.z = cur.z;
+        r.x = dir.x + cur.x;
+        r.y = dir.y + cur.y;
+        r.z = cur.z;
+        poly.verts[1].x = l.x;
+        poly.verts[1].y = l.y;
+        poly.verts[1].z = l.z;
+        poly.verts[1].unk0c = l.w;
+        poly.verts[1].u = params->u1;
+        poly.verts[1].v = params->v0;
+        poly.verts[1].color = params->colors[i + 1];
+        poly.verts[2].x = r.x;
+        poly.verts[2].y = r.y;
+        poly.verts[2].z = r.z;
+        poly.verts[2].unk0c = r.w;
+        poly.verts[2].u = params->u1;
+        poly.verts[2].v = params->v1;
+        poly.verts[2].color = params->colors[i + 1];
+        FUN_425830(&poly);
+        w = next;
+    }
+}
+
+void FUN_4343f0(MeshPoly *poly);
+
+// Draws a trail back from ring[head]: the optional head sprite, then a flat ribbon or a tube of unk08-point
+// segments, scale widening it and fade scaling its alpha.
+// FUNCTION: STUNTGP_D3D 0x41f2f0
+void FUN_41f2f0(TrailParams *params, Vec4 *ring, int head, unsigned int count, float scale, float fade)
+{
+    int first = 1;
+    if (params->unkec == first && params->unk108 != 0.0f)
+    {
+        float *size = (float *)(g_571330.unk00 + 0x10);
+        size[0] = scale * params->unk100;
+        g_571330.v[0].color = params->unkfc;
+        g_571330.v[1].color = params->unkfc;
+        g_571330.v[2].color = params->unkfc;
+        g_571330.v[3].color = params->unkfc;
+        size[1] = scale * params->unk104;
+        *(Vec4 *)g_571330.unk00 = ring[params->size];
+        size[2] = scale * params->unk108;
+        g_571330.unk28 = (DWORD)(fade * params->unkf8);
+        g_571330.unk20 = params->unkf4;
+        g_571330.unk24 = params->unkf0;
+        FUN_4343f0(&g_571330);
+    }
+    if (g_576be0 == 0)
+    {
+        if (!params->unk10)
+        {
+            FUN_41ef90(params, ring, head, count, scale, fade);
+            return;
+        }
+        g_571330.unk20 = params->unk18;
+        g_571330.unk24 = params->unk14;
+        g_571330.count = 4;
+        float w = scale * params->widths[0];
+        int h = head;
+        if (count > 1)
+        {
+            unsigned int n;
+            if (count <= params->unk08)
+            {
+                n = 1;
+            }
+            else if (count < params->size)
+            {
+                n = count / params->unk08 + 1;
+            }
+            else
+            {
+                n = count / params->unk08;
+            }
+            Vec4 *b = &ring[head];
+            for (int i = 0; i < (int)n; i++)
+            {
+                float prevW = w;
+                w = scale * params->widths[i + 1];
+                g_571330.unk28 = (DWORD)(fade * params->alphas[i]);
+                h -= params->unk08;
+                int idx = h;
+                if (count < params->size)
+                {
+                    if (h < 1)
+                    {
+                        idx = 1;
+                    }
+                }
+                else if (h < 0)
+                {
+                    idx = params->size + h;
+                }
+                Vec4 *a = b;
+                b = &ring[idx];
+                switch (params->unk00)
+                {
+                case 0:
+                    if (first == 1)
+                    {
+                    g_571330.v[0].v = params->v0;
+                    first = 0;
+                    g_571330.v[0].u = params->u0;
+                    g_571330.v[1].u = params->u1;
+                    g_571330.v[1].v = params->v0;
+                    g_571330.v[2].u = params->u1;
+                    g_571330.v[2].v = params->v1;
+                    g_571330.v[3].u = params->u0;
+                    g_571330.v[3].v = params->v1;
+                    }
+                    FUN_41e760(params, a, w, prevW, b, i);
+                    break;
+                case 1:
+                    if (first == 1)
+                    {
+                    g_571330.v[0].u = params->u0;
+                    first = 0;
+                    g_571330.v[0].v = params->v0;
+                    g_571330.v[1].u = params->u1;
+                    g_571330.v[1].v = params->v0;
+                    g_571330.v[2].u = params->u1;
+                    g_571330.v[2].v = params->v1;
+                    g_571330.v[3].u = params->u0;
+                    g_571330.v[3].v = params->v1;
+                    }
+                    FUN_41ea20(params, a, w, prevW, b, i);
+                    break;
+                }
+            }
+        }
     }
 }
 
