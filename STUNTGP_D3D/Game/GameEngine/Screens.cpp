@@ -349,7 +349,8 @@ void FUN_45be00(MenuHolder *object);
 int FUN_45bf40(MenuHolder *object, int msg, int arg);
 int FUN_459200(Unk459200 *object, int arg);
 void FUN_459300(MenuHolder *object);
-int FUN_459320(PoolObject *object, int msg, int arg);
+struct Unk459320;
+int FUN_459320(Unk459320 *object, int msg, int arg);
 int FUN_45db80(Unk45db80 *object, int arg);
 void FUN_45dde0(MenuHolder *object);
 struct Unk45de00;
@@ -476,7 +477,7 @@ PoolClass g_488be8 = {(void (*)(PoolObject *))FUN_4577c0, (int (*)(PoolObject *,
 PoolClass g_488c90 = {(void (*)(PoolObject *))FUN_457ea0, FUN_457ec0};
 
 // GLOBAL: STUNTGP_D3D 0x488d28
-PoolClass g_488d28 = {(void (*)(PoolObject *))FUN_459300, FUN_459320};
+PoolClass g_488d28 = {(void (*)(PoolObject *))FUN_459300, (int (*)(PoolObject *, int, int))FUN_459320};
 
 // GLOBAL: STUNTGP_D3D 0x488dd0
 PoolClass g_488dd0 = {(void (*)(PoolObject *))FUN_459a20, FUN_459a40};
@@ -2793,9 +2794,178 @@ int FUN_459200(Unk459200 *object, int arg)
     return 1;
 }
 
-// STUB: STUNTGP_D3D 0x459320
-int FUN_459320(PoolObject *object, int msg, int arg)
+// PageHighScore as its handler sees it: unk20 scrolls towards unk1c, unk28 drives the wave.
+struct Unk459320
 {
+    DWORD unk00[5];    // 0x00
+    PoolObject *child; // 0x14
+    int unk18;         // 0x18, set once the wave starts to settle
+    int unk1c;         // 0x1c, first entry shown
+    float unk20;       // 0x20
+    float unk24;       // 0x24
+    float unk28;       // 0x28
+    float unk2c;       // 0x2c
+    float unk30;       // 0x30, wave amplitude
+    float unk34;       // 0x34
+    ScoreList scores;  // 0x38
+};
+
+// GLOBAL: STUNTGP_D3D 0x627c54
+char g_627c54[0x80];
+
+float FUN_43d880(float current, float target, float rate);
+
+// Ten rows of the score list, each line swaying on its own phase.
+// FUNCTION: STUNTGP_D3D 0x459530
+void FUN_459530(Unk459320 *object)
+{
+    int rows = 10;
+    if (object->scores.count < 10)
+    {
+        rows = object->scores.count;
+    }
+    int first = (int)object->unk20;
+    float y = (235.0f - ((rows - 1) * 28.0f) * 0.5f) - (object->unk20 - first) * 28.0f;
+    int i = first;
+    if (first < 0)
+    {
+        i = 0;
+    }
+    int end = first + rows + 1;
+    if (end > object->scores.count)
+    {
+        end = object->scores.count;
+    }
+    float phase = object->unk28;
+    if (i >= end)
+    {
+        return;
+    }
+    int type = object->scores.unk08;
+    ScoreEntry *entry = &object->scores.entries[i];
+    char *name = entry->name;
+    do
+    {
+        phase += 0.02f;
+        int next = i + 1;
+        // STRING: STUNTGP_D3D 0x488d3c
+        sprintf(g_627c54, "%03d:", next);
+        float wave = (float)sin(((i & 1) ? phase + object->unk34 : phase) * 3.1415927f) * object->unk30;
+        D3DCOLOR color;
+        if (name[3] && (FUN_43dd60() & 0x20))
+        {
+            color = 0xffff8080;
+        }
+        else
+        {
+            color = 0xffffffff;
+        }
+        float x = wave + 320.0f;
+        FUN_438960(x - 150.0f, y, 17, 0, 2, g_627c54, 1.5f, color, 3);
+        FUN_438960(x - 70.0f, y, 17, 0, 2, FUN_43d690((Initials *)name)->c, 1.5f, color, 3);
+        // STRING: STUNTGP_D3D 0x488d44
+        FUN_438960(x, y, 17, 0, 2, "..........", 1.5f, color, 3);
+        switch (type)
+        {
+        case 0:
+            strcpy(g_627c54, FUN_43d5f0(entry->time, 7));
+            break;
+        case 1:
+            // STRING: STUNTGP_D3D 0x488d50
+            sprintf(g_627c54, "%03d", entry->time);
+            break;
+        case 2:
+            // STRING: STUNTGP_D3D 0x488d58
+            sprintf(g_627c54, "%07d", entry->time);
+            break;
+        case 3:
+            strcpy(g_627c54, FUN_43d550(entry->time));
+            break;
+        }
+        FUN_438a20(wave + 480.0f, y, 17, 0, 2, g_627c54, 1.5f, color, 6, 14.0f);
+        y += 28.0f;
+        entry++;
+        name += 8;
+        i = next;
+    } while (i < end);
+}
+
+// FUNCTION: STUNTGP_D3D 0x459320
+int FUN_459320(Unk459320 *object, int msg, int arg)
+{
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(6);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(0x61, -0.4f, 0.3f);
+        object->child->message(object->child, msg, 0);
+        object->unk18 = 1;
+        return 0;
+    case 0x14:
+        object->child->message(object->child, msg, 0);
+        return 0;
+    case 0x11:
+        FUN_440890(msg);
+    case 0x10:
+        object->child->message(object->child, msg, 0);
+        FUN_43eef0();
+        return 0;
+    case 0xb:
+        if (object->scores.count > 10 && object->unk1c)
+        {
+            object->unk1c -= 5;
+            if (object->unk1c < 0)
+            {
+                object->unk1c = 0;
+            }
+            FUN_440890(msg);
+            return 0;
+        }
+        break;
+    case 0xc:
+        if (object->scores.count > 10)
+        {
+            int last = object->scores.count - 10;
+            if (object->unk1c != last)
+            {
+                object->unk1c += 5;
+                if (object->unk1c > last)
+                {
+                    object->unk1c = last;
+                }
+                FUN_440890(msg);
+                return 0;
+            }
+        }
+        break;
+    case 2:
+    {
+        object->child->message(object->child, msg, 0);
+        float target = object->unk1c;
+        object->unk24 = target;
+        object->unk20 = FUN_43d810(object->unk20, target, 0.001f);
+        object->unk28 += object->unk2c;
+        if (object->unk18)
+        {
+            object->unk30 = FUN_43d880(object->unk30, 0.0f, 0.001f);
+        }
+        int count = object->scores.count;
+        if (count > 10)
+        {
+            FUN_43df60(0.0f, 0.0f, 0.0f, count, 10.0f, target);
+            return 0;
+        }
+        FUN_43df60(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        return 0;
+    }
+    case 3:
+        FUN_459530(object);
+        FUN_438190(0.0f, 0.0f, 640.0f, 480.0f);
+        object->child->message(object->child, msg, 0);
+        FUN_4392b0(object->scores.unk00, object->scores.unk04);
+        break;
+    }
     return 0;
 }
 
