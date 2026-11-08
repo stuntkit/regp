@@ -4481,6 +4481,39 @@ void FUN_413e10()
     }
 }
 
+// Places the two exhaust-flame meshes at their emitters, oriented like the body.
+// FUNCTION: STUNTGP_D3D 0x414130
+void FUN_414130()
+{
+    Car *car = g_4d5bb8;
+    if (car->unk328c.active)
+    {
+        ObjectDef *meshes = car->unk26b0->lods[car->unk26b0->lod];
+        Vec4 *m = meshes[19].matrix;
+        m[3] = meshes[0].matrix[3];
+        m[2] = meshes[0].matrix[2];
+        Vec4 v = car->unk328c.unk004;
+        float y = v.y + car->unk288c;
+        Vec4 r;
+        r.x = g_4d5b30[0] * v.x + g_4d5b30[4] * y + g_4d5b30[8] * v.z;
+        r.y = g_4d5b30[1] * v.x + g_4d5b30[5] * y + g_4d5b30[9] * v.z;
+        r.z = g_4d5b30[2] * v.x + g_4d5b30[6] * y + g_4d5b30[10] * v.z;
+        m[0] = r;
+        if (car->unk33cc.active)
+        {
+            m = meshes[20].matrix;
+            m[3] = meshes[0].matrix[3];
+            m[2] = meshes[0].matrix[2];
+            v = car->unk33cc.unk004;
+            y = v.y + car->unk288c;
+            r.x = g_4d5b30[0] * v.x + g_4d5b30[4] * y + g_4d5b30[8] * v.z;
+            r.y = g_4d5b30[1] * v.x + g_4d5b30[5] * y + g_4d5b30[9] * v.z;
+            r.z = g_4d5b30[2] * v.x + g_4d5b30[6] * y + g_4d5b30[10] * v.z;
+            m[0] = r;
+        }
+    }
+}
+
 // Spins each wheel by the distance it rolled this tick.
 // FUNCTION: STUNTGP_D3D 0x414370
 void FUN_414370()

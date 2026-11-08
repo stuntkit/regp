@@ -1095,6 +1095,58 @@ int FUN_41ffa0(Vec4 *p)
     return 1;
 }
 
+// FUN_41ffa0 against body point i, with the sphere grown by the point's radius.
+// FUNCTION: STUNTGP_D3D 0x421960
+int FUN_421960(Body *body, int i)
+{
+    float r = g_498154 + body->points[i].radius;
+    Vec4 *p = &body->points[i].prev;
+    Vec4 d;
+    d.x = p->x - g_4980c4.x;
+    d.y = p->y - g_4980c4.y;
+    d.z = p->z - g_4980c4.z;
+    float dist2 = d.x * d.x + d.y * d.y + d.z * d.z;
+    float reach = g_498148 + r;
+    if (dist2 > reach * reach)
+    {
+        return 0;
+    }
+    float t = g_498128.x * d.x + g_498128.y * d.y + g_498128.z * d.z;
+    float h = dist2 - t * t;
+    float r2 = r * r;
+    if (h > r2)
+    {
+        return 0;
+    }
+    t = t - (float)sqrt(r2 - h);
+    Vec4 q;
+    q.x = g_498128.x * t;
+    q.y = g_498128.y * t;
+    q.z = t * g_498128.z;
+    q.x = g_4980c4.x + q.x;
+    q.y = g_4980c4.y + q.y;
+    q.z = g_4980c4.z + q.z;
+    if (!FUN_41ff30(&q))
+    {
+        return 0;
+    }
+    Vec4 n;
+    n.x = q.x - p->x;
+    g_4981a8 = q;
+    n.y = q.y - p->y;
+    n.z = q.z - p->z;
+    Vec3_Normalize(&n.x);
+    g_4981b8.x = g_498154 * n.x;
+    g_4981b8.y = g_498154 * n.y;
+    g_498198 = n;
+    g_4981b8.z = g_498154 * n.z;
+    g_4981b8.x = g_4981b8.x + p->x;
+    g_4981b8.y = g_4981b8.y + p->y;
+    g_4981b8.z = g_4981b8.z + p->z;
+    g_498188 = g_4981b8;
+    return 1;
+}
+
 // Uniform cubic B-spline basis weights, written to m[0], m[4], m[8], m[12].
 // FUNCTION: STUNTGP_D3D 0x4282a0
 void FUN_4282a0(float *m, float t)
