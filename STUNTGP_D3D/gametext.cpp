@@ -507,9 +507,9 @@ void FUN_443d90()
     memset(&car->race, 0, 0x70);
     car->race.unk1c = 0;
     car->race.unk30 = 0;
-    car->race.unk4c[0] = 0;
+    car->race.unk4c = 0;
     car->race.unk04 = 0;
-    car->race.unk4c[7] = 0;
+    car->race.unk68 = 0;
     g_60d71c = 0;
     FUN_449c60();
 }

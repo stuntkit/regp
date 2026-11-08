@@ -4324,6 +4324,54 @@ int FUN_457a20(int value)
     return value > 0 && value <= 3;
 }
 
+int FUN_440300(int value);
+void FUN_4402f0(int value);
+int FUN_440200(int *freeSpace);
+int FUN_440320();
+int FUN_440310(int value);
+int FUN_4405c0(int ghost);
+
+// Checks a memory card for the current save/load screen; 0 bad card, 1 error, 2 no card, 3 full,
+// 4 room to save, 5 save present.
+// FUNCTION: STUNTGP_D3D 0x457bf0
+int FUN_457bf0(int card, int *freeSpace)
+{
+    if (!FUN_440300(card))
+    {
+        return 0;
+    }
+    FUN_4402f0(card);
+    *freeSpace = 0;
+    switch (FUN_440200(freeSpace))
+    {
+    case 0:
+        switch (g_menuState.unk46c8)
+        {
+        case 2:
+            return FUN_440320() == 4 ? 5 : 4;
+        case 1:
+        case 3:
+            if (FUN_440320() == 4)
+            {
+                return 5;
+            }
+            return *freeSpace >= FUN_440310(0x211c) ? 4 : 3;
+        case 4:
+            return FUN_4405c0(g_menuState.unk46cc) == 4 ? 5 : 4;
+        case 5:
+            if (FUN_4405c0(g_menuState.unk46cc) == 4)
+            {
+                return 5;
+            }
+            return *freeSpace >= FUN_4405b0(g_menuState.unk46d4) ? 4 : 3;
+        }
+        break;
+    case 1:
+        return 2;
+    }
+    return 1;
+}
+
 // FUNCTION: STUNTGP_D3D 0x457e70
 int FUN_457e70(Unk457e70 *object, int id)
 {

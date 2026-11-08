@@ -2143,10 +2143,10 @@ void FUN_443dd0()
 // FUNCTION: STUNTGP_D3D 0x443de0
 void FUN_443de0()
 {
-    if (g_4d5bb8->race.unk4c[7] != 1)
+    if (g_4d5bb8->race.unk68 != 1)
     {
-        g_4d5bb8->race.unk4c[7] = 1;
-        g_4d5bb8->race.unk4c[8] = 0;
+        g_4d5bb8->race.unk68 = 1;
+        g_4d5bb8->race.unk6c = 0;
     }
 }
 
@@ -2302,16 +2302,16 @@ void FUN_443980()
 // FUNCTION: STUNTGP_D3D 0x443e10
 void FUN_443e10(Car *car)
 {
-    car->race.unk4c[7] = 0;
-    car->race.unk4c[8] = 0;
+    car->race.unk68 = 0;
+    car->race.unk6c = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x443e20
 void FUN_443e20()
 {
-    if (g_4d5bb8->race.unk4c[7])
+    if (g_4d5bb8->race.unk68)
     {
-        if (!g_4d5bb8->race.unk4c[8])
+        if (!g_4d5bb8->race.unk6c)
         {
             FUN_461150(47, 0, 0, 127, 0, 0, 0);
         }
@@ -2319,9 +2319,9 @@ void FUN_443e20()
         {
             FUN_430d40(15, 20);
         }
-        if (++g_4d5bb8->race.unk4c[8] > 120)
+        if (++g_4d5bb8->race.unk6c > 120)
         {
-            g_4d5bb8->race.unk4c[7] = 0;
+            g_4d5bb8->race.unk68 = 0;
         }
     }
 }
@@ -2356,6 +2356,46 @@ int FUN_444550()
     return 1;
 }
 
+void FUN_447ba0(int delay);
+
+// FUNCTION: STUNTGP_D3D 0x444590
+void FUN_444590()
+{
+    if (!g_576be0)
+    {
+        g_60f2c0 = 1;
+        if ((unsigned int)g_4d5bb8->unk24e4 <= 2)
+        {
+            FUN_45f8f0(0x15, 0);
+        }
+        else
+        {
+            FUN_45f8f0(0x16, 0);
+        }
+    }
+    Car *car = g_4d5bb8;
+    car->race.unk4c = 1;
+    car->race.unk50 = 1;
+    car->race.unk54 = 0.0f;
+    car->race.unk58 = 0.0f;
+    car->race.unk5c = (float)fabs(car->unk1cf0);
+    car->race.unk60 = 0.0f;
+    if (car->race.unk5c < 33.333332f)
+    {
+        car->race.unk5c = 33.333332f;
+    }
+    else if (car->race.unk5c > 100.0f)
+    {
+        car->race.unk5c = 100.0f;
+    }
+    FUN_447ba0(0);
+    FUN_443dd0();
+    if (!g_576be0 || FUN_444550() == 1)
+    {
+        g_60f2c0 = 1;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x444670
 int FUN_444670()
 {
@@ -2367,7 +2407,7 @@ int FUN_444670()
         if (car->active == 1)
         {
             total++;
-            if ((car->unk24e0 == 1 && car->race.unk4c[0] == 0 && car->race.unk30 == 0) || car->unk2640 == 1 ||
+            if ((car->unk24e0 == 1 && car->race.unk4c == 0 && car->race.unk30 == 0) || car->unk2640 == 1 ||
                 car->unk24e8 == 1)
             {
                 finished++;

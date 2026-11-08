@@ -920,11 +920,11 @@ void FUN_4499a0()
     DWORD t;
     DWORD alpha;
 
-    if (race->unk4c[7] != 1 || g_612948.unk8cec != 0x14)
+    if (race->unk68 != 1 || g_612948.unk8cec != 0x14)
     {
         return;
     }
-    t = race->unk4c[8];
+    t = race->unk6c;
     if (t < 30)
     {
         alpha = t * 224 / 30;
@@ -1033,7 +1033,7 @@ void FUN_449c60()
 void FUN_449ce0()
 {
     CarRace *race = &g_4722d0->data->race;
-    if (race->unk4c[6] == 1 && g_498248[0].data->race.unk1c == 0)
+    if (race->unk64 == 1 && g_498248[0].data->race.unk1c == 0)
     {
         DWORD color;
         if (race->unk24 > 30)

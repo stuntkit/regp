@@ -46,7 +46,7 @@ struct Unk61c208
 {
     int unk00;
     int unk04;
-    BYTE unk08[0x18];
+    MenuCarEntry car; // 0x08
 };
 
 // GLOBAL: STUNTGP_D3D 0x61c208
@@ -103,6 +103,29 @@ void FUN_44e2b0()
 void FUN_44e330()
 {
     g_menuState.unk4474 = g_menuState.unk440c[(rand() & 0xff) % g_menuState.unk4408];
+}
+
+int FUN_44e430();
+
+// Fills the remaining opponent slots with random cars from the current difficulty's table.
+// FUNCTION: STUNTGP_D3D 0x44e350
+void FUN_44e350()
+{
+    int level = g_menuState.unk00e4 - 1;
+    if (level >= 0)
+    {
+        for (int n = g_61c2c8; n < 6; n = ++g_61c2c8)
+        {
+            int pick = (rand() >> 8) & 3;
+            g_61c208[n].unk00 = 0;
+            g_61c208[n].unk04 = FUN_44e430();
+            strcpy(g_61c208[n].car.name, g_menuState.unk1d888[level][pick].name);
+            g_61c208[n].car.unk08 = g_menuState.unk1d888[level][pick].unk08;
+            g_61c208[n].car.unk0c = g_menuState.unk1d888[level][pick].unk0c;
+            g_61c208[n].car.unk10 = g_menuState.unk1d888[level][pick].unk10;
+            g_61c208[n].car.unk14 = g_menuState.unk1d888[level][pick].unk14;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x44e430
