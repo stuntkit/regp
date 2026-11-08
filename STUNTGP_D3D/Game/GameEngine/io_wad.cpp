@@ -491,15 +491,15 @@ void FUN_44c0a0(PoolObject *object)
         }
         memset(&g_menuState.unk19d7c, 0, sizeof(g_menuState.unk19d7c));
         g_menuState.unk19d78 = g_menuState.unk4384;
-        if (g_menuState.unk4388)
+        if (!g_menuState.unk4388)
         {
-            g_menuState.unk4234 = 3;
-            g_menuState.unk19d78 = g_menuState.unk4384;
+            g_menuState.unk19d7c = g_menuState.unk0f1c[g_menuState.unk4384];
+            g_menuState.unk1a53c = 1;
+            g_menuState.unk4234 = 7;
             return;
         }
-        g_menuState.unk19d7c = g_menuState.unk0f1c[g_menuState.unk4384];
-        g_menuState.unk1a53c = 1;
-        g_menuState.unk4234 = 7;
+        g_menuState.unk4234 = 3;
+        g_menuState.unk19d78 = g_menuState.unk4384;
         return;
     case 3:
         g_menuState.unk4390 = 0;
@@ -507,13 +507,13 @@ void FUN_44c0a0(PoolObject *object)
         FUN_43dfa0(0x12, 9);
         return;
     case 4:
-        if (!g_menuState.unk44d0)
+        if (g_menuState.unk44d0)
         {
-            FUN_43dfa0(0x13, 13);
-            g_menuState.unk4234 = 5;
+            g_menuState.unk4234 = 1;
             return;
         }
-        g_menuState.unk4234 = 1;
+        FUN_43dfa0(0x13, 13);
+        g_menuState.unk4234 = 5;
         return;
     case 5:
         if (g_menuState.unk438c)
@@ -558,10 +558,10 @@ void FUN_44c0a0(PoolObject *object)
             }
         }
         g_menuState.unk4398 = 0;
-        for (i = 1; i < 21; i++)
+        for (i = 1; i < 22; i++)
         {
             int cost = FUN_437de0(g_menuState.unk19d7c.sponsor, i, &g_menuState.cars[i]);
-            if (FUN_437230(i, g_menuState.unk4230) && cost <= g_menuState.unk19d7c.money)
+            if (FUN_437230(i, g_menuState.unk4230) && g_menuState.unk19d7c.money >= cost)
             {
                 g_menuState.unk439c[g_menuState.unk4398] = i;
                 g_menuState.unk4398++;
@@ -595,13 +595,13 @@ void FUN_44c0a0(PoolObject *object)
             g_menuState.unk1a53c = 0;
             FUN_43dfa0(0x15, 14);
             return;
-        case 2:
-            g_menuState.unk1a53c = 0;
-            g_menuState.unk4234 = 0x18;
-            return;
         case 3:
             g_menuState.unk1a53c = 0;
             g_menuState.unk4234 = 5;
+            return;
+        case 2:
+            g_menuState.unk1a53c = 0;
+            g_menuState.unk4234 = 0x18;
             return;
         case 4:
             g_menuState.unk1a53c = 0;
@@ -611,8 +611,9 @@ void FUN_44c0a0(PoolObject *object)
         return;
     case 8:
         g_menuState.unk4404 = 0;
-        g_menuState.unk440c[0] = g_menuState.rounds[g_menuState.unk19d7c.unk008 - 1].track;
-        g_menuState.unk4408 = 1;
+        g_menuState.unk4408 = 0;
+        g_menuState.unk440c[g_menuState.unk4408] = g_menuState.rounds[g_menuState.unk19d7c.unk008 - 1].track;
+        g_menuState.unk4408++;
         FUN_43dfa0(0x17, 11);
         g_menuState.unk4234 = 9;
         return;
@@ -642,16 +643,17 @@ void FUN_44c0a0(PoolObject *object)
         int scale = g_menuState.unk19d7c.unk008 > g_menuState.numberOfRounds ? 3 : 1;
         FUN_44cd10(g_61bbe0.track, &g_menuState.unk19d7c.name, g_61bed0.results[0].unk04,
                    g_61bed0.results[0].unk08, g_61bed0.results[0].unk0c, g_61bed0.results[0].unk10);
-        int(*tally)[4] = (int(*)[4]) & g_menuState.unk19d7c.unk100;
+        int *tally = &g_menuState.unk19d7c.unk100;
         for (i = 0; i < 6; i++)
         {
             int position = g_61bed0.results[i].position;
-            tally[i][3] = FUN_43dc20(position, 6);
-            if (scale < 2 || i == 0)
+            tally[3] = FUN_43dc20(position, 6);
+            if (scale <= 1 || i == 0)
             {
-                tally[i][0] += position == 1;
-                tally[i][1] += g_menuState.positions[position - 1][0] * scale;
+                tally[0] += position == 1;
+                tally[1] += g_menuState.positions[position - 1][0] * scale;
             }
+            tally += 4;
         }
         int bonus;
         pos = g_61bed0.results[0].position;
@@ -684,10 +686,10 @@ void FUN_44c0a0(PoolObject *object)
         g_menuState.unk1d9b0[2].text = g_61bdcc;
         g_menuState.unk1d9b0[3].color = 0xffc8c8ff;
         g_menuState.unk1d9b0[3].text = FUN_441170(0x26c);
-        g_menuState.unk1da58 = g_menuState.numberOfRounds;
         g_menuState.unk1d9a8 = 0;
         g_menuState.unk1da50 = 4;
         g_menuState.unk1da54 = g_menuState.unk19d7c.unk008;
+        g_menuState.unk1da58 = g_menuState.numberOfRounds;
         FUN_43dfa0(0x2c, 0x20);
         g_menuState.unk4234 = 11;
         return;
@@ -783,9 +785,6 @@ void FUN_44c0a0(PoolObject *object)
         g_menuState.unk1a53c = 1;
         g_menuState.unk4234 = 7;
         return;
-    case 17:
-        g_menuState.unk4234 = 0x15;
-        return;
     case 18:
         g_menuState.unk4404 = 0;
         g_menuState.unk4234 = 9;
@@ -800,13 +799,16 @@ void FUN_44c0a0(PoolObject *object)
         g_menuState.unk4690 = 3;
         FUN_43dfa0(0x2f, 0x26);
         return;
+    case 17:
+        g_menuState.unk4234 = 0x15;
+        return;
     case 19:
     {
         int rank = FUN_44ccf0();
-        if (rank < 4)
+        if (rank <= 3)
         {
-            g_menuState.unk45d8 = rank + 0x17f;
             g_menuState.unk45d4 = 0x5f;
+            g_menuState.unk45d8 = rank + 0x17f;
             g_menuState.unk45dc = 0;
             g_menuState.unk45e0 = 0.015f;
             g_menuState.unk45e4 = 80.0f;
@@ -821,7 +823,7 @@ void FUN_44c0a0(PoolObject *object)
     case 21:
         FUN_44bd00();
         FUN_437790(g_menuState.unk1d5c, 10, &g_menuState.unk19d7c.name,
-                   g_menuState.unk1a648 + g_menuState.unk1a604);
+                   g_menuState.unk1a604 + g_menuState.unk1a648);
         g_menuState.unk4694.unk00 = 0x28b;
         g_menuState.unk4694.unk04 = 0;
         g_menuState.unk4694.unk08 = 0;
@@ -968,9 +970,9 @@ void FUN_44cd70(PoolObject *object)
             g_menuState.unk4234 = 1;
             return;
         }
-        g_61bf50.count = g_menuState.unk447c + 1;
         g_61bf50.track = g_menuState.unk4474;
         g_61bf50.unkb0 = g_menuState.unk4478;
+        g_61bf50.count = g_menuState.unk447c + 1;
         sprintf(name, FUN_441170(0x1f), 1);
         int pos = g_61bf50.count;
         int car = g_menuState.unk43f4[g_menuState.unk4238];
