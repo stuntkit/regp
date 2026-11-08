@@ -189,6 +189,27 @@ int FUN_41fa80(TrackPoly *poly, Vec4 *p)
     return 0;
 }
 
+// Pushes the camera away from every polygon vertex inside the sphere.
+// FUNCTION: STUNTGP_D3D 0x41fc70
+int FUN_41fc70(TrackPoly *poly, Vec4 *p)
+{
+    WORD *idx = g_624480->indices + poly->firstIndex;
+    for (unsigned int i = 0; i < poly->vertexCount; i++, idx++)
+    {
+        Vec4 *v = &g_624480->vertices[*idx];
+        Vec4 d;
+        d.x = v->x - p->x;
+        d.y = v->y - p->y;
+        d.z = v->z - p->z;
+        float dist = (float)sqrt(d.x * d.x + d.y * d.y + d.z * d.z);
+        if (dist < g_498154 - 0.01f)
+        {
+            FUN_41f920(poly, dist);
+        }
+    }
+    return 0;
+}
+
 // Body the camera sphere ignores.
 // GLOBAL: STUNTGP_D3D 0x4981cc
 Body *g_4981cc;

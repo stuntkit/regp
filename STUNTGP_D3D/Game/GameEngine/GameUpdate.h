@@ -188,10 +188,12 @@ struct CarFx
     Vec4 unk004;        // 0x004
     Vec4 unk014;        // 0x014
     Vec4 unk024;        // 0x024
-    BYTE unk034[0x104]; // 0x034
+    Vec4 ring[16];      // 0x034, flame trail fed by FUN_41e510
+    DWORD head;         // 0x134
     DWORD count;        // 0x138
     int unk13c;         // 0x13c
 };
+
 
 struct SkidMark
 {

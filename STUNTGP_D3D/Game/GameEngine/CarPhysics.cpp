@@ -4652,6 +4652,9 @@ void FUN_414b30()
     }
 }
 
+// GLOBAL: STUNTGP_D3D 0x474af8
+TrailParams g_474af8 = {0, 7, 1, 7};
+
 // GLOBAL: STUNTGP_D3D 0x474c08
 TrailParams g_474c08 = {1, 16, 2, 8};
 
@@ -6988,6 +6991,31 @@ void FUN_414c50(Car *car)
 {
     car->unk391c = 0;
     car->unk3920 = 0;
+}
+
+// Feeds both exhaust flames into their trails once the race is under way.
+// FUNCTION: STUNTGP_D3D 0x414d90
+void FUN_414d90()
+{
+    if (g_612948.unk0034 >= 90)
+    {
+        CarFx *fx = &g_4d5bb8->unk328c;
+        Vec4 p;
+        if (fx[0].active == 1)
+        {
+            p.x = fx[0].unk004.x;
+            p.y = fx[0].unk004.y;
+            p.z = fx[0].unk004.z - -25.0f;
+            FUN_41e510(fx[0].ring, &fx[0].head, &fx[0].count, &p, &g_474af8);
+        }
+        if (fx[1].active == 1)
+        {
+            p.x = fx[1].unk004.x;
+            p.y = fx[1].unk004.y;
+            p.z = fx[1].unk004.z - -25.0f;
+            FUN_41e510(fx[1].ring, &fx[1].head, &fx[1].count, &p, &g_474af8);
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x414ef0
