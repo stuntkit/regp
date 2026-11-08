@@ -338,6 +338,7 @@ void FUN_4143e0(float amount);
 void FUN_414420(float amount);
 
 // Turns a target point into steering input, scaled by speed and an initial ramp-in.
+
 // FUNCTION: STUNTGP_D3D 0x4054b0
 void FUN_4054b0(float *p, float amount)
 {
@@ -389,9 +390,8 @@ void FUN_405610(float amount)
 {
 }
 
-void FUN_4143e0(float amount);
-void FUN_414420(float amount);
 void FUN_4288d0(CameraPath *path, Vec4 *out, float dist);
+
 
 // Steers towards a point, harder at low speed.
 // FUNCTION: STUNTGP_D3D 0x406020
@@ -634,6 +634,53 @@ float g_499fb0;
 
 // GLOBAL: STUNTGP_D3D 0x49a148
 Vec4 g_49a148;
+
+// Same steering as FUN_4054b0, aimed at g_49a148 with the g_499fb0 blend.
+// FUNCTION: STUNTGP_D3D 0x406700
+void FUN_406700()
+{
+    if (!g_4d5bb8->unk1f10)
+    {
+        return;
+    }
+    Vec4 d;
+    d.x = g_4d5bb8->posX - g_49a148.x;
+    d.y = g_4d5bb8->posY - g_49a148.y;
+    d.z = g_4d5bb8->posZ - g_49a148.z;
+    float h = g_482688 * d.x + g_48268c * d.y + g_482690 * d.z;
+    Vec4 u;
+    u.x = g_482688 * h;
+    u.y = g_48268c * h;
+    u.z = g_482690 * h;
+    d.x = d.x + u.x;
+    d.y = u.y + d.y;
+    d.z = u.z + d.z;
+    float side = ((d.x * g_4d5bb8->axisX.x + d.y * g_4d5bb8->axisX.y + d.z * g_4d5bb8->axisX.z) * 0.0005f) * 2.25f;
+    float m = g_4d5bb8->unk289c * g_4d5bb8->unk2660 * 0.35f;
+    if (m < 1.0f)
+    {
+        m = 1.0f;
+    }
+    side /= m;
+    if (g_4d5bb8->axisY.y < 0.0f)
+    {
+        side = -side;
+    }
+    if (g_4d5bb8->unk26a4)
+    {
+        float f = (300 - g_4d5bb8->unk26a4) * 0.0033333334f;
+        g_499fb0 = (f * f) * g_499fb0;
+    }
+    float amount = g_499fb0 * side;
+    if (amount >= 0.0f)
+    {
+        FUN_4143e0(amount);
+    }
+    else
+    {
+        FUN_414420(-amount);
+    }
+}
 
 // Near the end of the lap: drops the brake, slows the AI and ramps a blend towards the finish point.
 // FUNCTION: STUNTGP_D3D 0x406d30
@@ -3644,6 +3691,28 @@ void FUN_4138a0()
     }
 }
 
+// Copies the wheel spin into the wheel meshes, turning the front pair by the steering angle.
+// FUNCTION: STUNTGP_D3D 0x4139f0
+void FUN_4139f0()
+{
+    ObjectDef *meshes = g_4d5bb8->unk26b0->lods[g_4d5bb8->unk26b0->lod];
+    float rot[16];
+    float m[16];
+    Matrix_RotationY(rot, g_4d5bb8->unk1cf4);
+    meshes[1].matrix[3] = *(Vec4 *)&g_4d5bb8->wheelMatrix[0][4];
+    meshes[1].matrix[2] = *(Vec4 *)&g_4d5bb8->wheelMatrix[0][8];
+    meshes[2].matrix[3] = *(Vec4 *)&g_4d5bb8->wheelMatrix[1][4];
+    meshes[2].matrix[2] = *(Vec4 *)&g_4d5bb8->wheelMatrix[1][8];
+    Vec4 *front = meshes[3].matrix;
+    FUN_44efd0(m, g_4d5bb8->wheelMatrix[2], rot);
+    front[3] = *(Vec4 *)&m[4];
+    front[2] = *(Vec4 *)&m[8];
+    front = meshes[4].matrix;
+    FUN_44efd0(m, g_4d5bb8->wheelMatrix[3], rot);
+    front[3] = *(Vec4 *)&m[4];
+    front[2] = *(Vec4 *)&m[8];
+}
+
 // FUNCTION: STUNTGP_D3D 0x416590
 void FUN_416590(Vec4 *pos, Vec4 *vel)
 {
@@ -4827,6 +4896,44 @@ int FUN_407860()
     return 0;
 }
 
+// Times the AI boost: runs it while it lasts, then waits out the cooldown before the next one.
+// FUNCTION: STUNTGP_D3D 0x4078f0
+void FUN_4078f0()
+{
+    if (g_4d5bb8->unk2698 != 0)
+    {
+        g_4d5bb8->unk2698--;
+        return;
+    }
+    if (g_4d5bb8->unk2694 != 0)
+    {
+        g_4d5bb8->unk2250 = 1;
+        g_4d5bb8->unk2694--;
+        if (g_4d5bb8->unk045c * 0.99f < g_4d5bb8->unk1cfc || g_4d5bb8->unk2678 > 0)
+        {
+            g_4d5bb8->unk2694 = 0;
+        }
+        if (g_4d5bb8->unk2694 == 0)
+        {
+            g_4d5bb8->unk2250 = 0;
+            g_4d5bb8->unk2698 = g_4d5bb8->unk269c;
+        }
+        return;
+    }
+    if (FUN_407860() == 1)
+    {
+        float k = g_60f2d0[12] * g_4d5bb8->unk2660 + 1.0f;
+        g_4d5bb8->unk2694 = (fabs(FUN_42f1c0(120.0f)) + 180.0) * k;
+        g_4d5bb8->unk269c = (fabs(FUN_42f1c0(300.0f)) + 300.0) / k;
+    }
+    else if (FUN_4077b0() == 1)
+    {
+        float k = g_60f2d0[12] * g_4d5bb8->unk2660 + 1.0f;
+        g_4d5bb8->unk2694 = (fabs(FUN_42f1c0(60.0f)) + 120.0) * k;
+        g_4d5bb8->unk269c = (fabs(FUN_42f1c0(300.0f)) + 300.0) / k;
+    }
+}
+
 // Picks which side to pass the car ahead on.
 // FUNCTION: STUNTGP_D3D 0x4073e0
 void FUN_4073e0()
@@ -5964,6 +6071,39 @@ void FUN_4163e0(Car *car, float value)
     car->unk2268 = 30;
     car->unk2264 = value + value;
 }
+// Rotates a body-mesh point by g_4d5b30 and places it in world space, 70 units below the roof.
+// FUNCTION: STUNTGP_D3D 0x416420
+void FUN_416420(Car *car, Vec4 *in, float *out)
+{
+    Vec4 v = *in;
+    Vec4 *r = (Vec4 *)out;
+    r->x = g_4d5b30[0] * v.x + g_4d5b30[4] * v.y + g_4d5b30[8] * v.z;
+    r->y = g_4d5b30[1] * v.x + g_4d5b30[5] * v.y + g_4d5b30[9] * v.z;
+    r->z = g_4d5b30[2] * v.x + g_4d5b30[6] * v.y + g_4d5b30[10] * v.z;
+    float nx = -r->x;
+    Vec4 a;
+    a.x = nx * car->axisX.x;
+    a.y = nx * car->axisX.y;
+    a.z = nx * car->axisX.z;
+    Vec4 b;
+    b.x = (70.0f - r->y - car->unk288c) * car->axisY.x;
+    b.y = (70.0f - out[1] - car->unk288c) * car->axisY.y;
+    b.z = (70.0f - out[1] - car->unk288c) * car->axisY.z;
+    Vec4 c;
+    c.x = out[2] * car->axisZ.x;
+    c.y = out[2] * car->axisZ.y;
+    c.z = out[2] * car->axisZ.z;
+    a.x = a.x + b.x;
+    a.y = a.y + b.y;
+    a.z = a.z + b.z;
+    a.x = c.x + a.x;
+    a.y = c.y + a.y;
+    a.z = c.z + a.z;
+    out[0] = car->posX - a.x;
+    out[1] = car->posY - a.y;
+    out[2] = car->posZ - a.z;
+}
+
 
 // Finds the top of mesh 11's points and caches its frame.
 // FUNCTION: STUNTGP_D3D 0x417e10

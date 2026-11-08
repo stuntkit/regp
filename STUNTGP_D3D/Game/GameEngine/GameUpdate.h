@@ -628,7 +628,9 @@ struct Car
     int unk268c;              // 0x268c
     float unk2690;            // 0x2690
     int unk2694;              // 0x2694
-    BYTE unk2698[0x8];        // 0x2698
+    int unk2698;              // 0x2698
+    int unk269c;              // 0x269c
+
     int unk26a0;              // 0x26a0
     unsigned int unk26a4;     // 0x26a4
 
