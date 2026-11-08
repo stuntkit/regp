@@ -2189,6 +2189,51 @@ void FUN_43a760(int player, int a, int b)
 void FUN_43a430(DWORD *slot, DWORD *dst, int car, DWORD value);
 Initials *FUN_43d690(Initials *name);
 
+// Starts a mode-3 race from src.
+// FUNCTION: STUNTGP_D3D 0x43a910
+void FUN_43a910(RaceSetup3 *src, RaceResults3 *dst)
+{
+    g_5df528.mode = 3;
+    g_5df528.src3 = src;
+    g_5df528.dst3 = dst;
+    FUN_43d420();
+    FUN_43a720();
+    g_60d730.unk844 = src->unk14;
+    if (src->unk18)
+    {
+        g_60d730.unk85c = (int)src->unk18;
+        g_60d730.unk854 = *(int *)(src->unk18 + 0x3c);
+    }
+    else
+    {
+        g_60d730.unk85c = 0;
+        g_60d730.unk854 = 0;
+    }
+    g_60d730.unk858 = 0;
+    g_60d730.unk010 = 0;
+    g_60d730.unk020 = 0;
+    g_60d730.unk840 = 0;
+    g_60d730.unk03c[2] = 0;
+    g_60d730.unk01c = ((int(*)[6])g_menuState.unk1d618)[src->track][4];
+    g_60d730.unk018 = src->track - 1;
+    g_60d730.unk04c = 4;
+    g_60d730.unk054 = 4;
+    g_60d730.unk034 = src->unk0c;
+    g_60d730.unk03c[3] = 0;
+    g_60d730.unk000 = ((int(*)[6])g_menuState.unk1d618)[src->track][0];
+    g_60d730.unk050 = 3;
+    g_60d730.unk83c = 1;
+    g_60d730.unk03c[0] = src->unk10;
+    g_60d730.unk03c[1] = 36000;
+    FUN_43a760(g_menuState.unk4244, 0, 1);
+    strcpy((char *)g_60d730.entries[0].unk010, (char *)FUN_43d690(&src->name));
+    g_60d730.entries[0].unk004 = 0;
+    g_60d730.unk024[0] = 0;
+    g_60d730.entries[0].type = 2;
+    FUN_43a430((DWORD *)&g_60d730.entries[0], (DWORD *)g_60d730.entries[0].unk034, src->car, 0);
+    FUN_43d420();
+}
+
 // Starts a mode-4 race from src: the player's car alone on the track against the clock.
 // FUNCTION: STUNTGP_D3D 0x43ae00
 void FUN_43ae00(RaceSetup4 *src, RaceResults4 *dst)
