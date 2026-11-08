@@ -165,6 +165,10 @@ Scene *g_58c800;
 // GLOBAL: STUNTGP_D3D 0x58d810
 TrackHeader *g_58d810;
 
+// Name of the track scene from L_TRACK.
+// GLOBAL: STUNTGP_D3D 0x624460
+int g_624460;
+
 // GLOBAL: STUNTGP_D3D 0x624464
 BYTE *g_624464;
 

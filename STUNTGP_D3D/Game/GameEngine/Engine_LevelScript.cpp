@@ -147,6 +147,46 @@ void FUN_42c6f0(char *text, char **end, char *value)
     }
 }
 
+extern int g_577660[10];
+extern int g_624460;
+void FUN_425880();
+
+// Queues the sky and track scenes; the animated sky gets its scroll speeds.
+// FUNCTION: STUNTGP_D3D 0x42c740
+void FUN_42c740(char *script)
+{
+    // STRING: STUNTGP_D3D 0x4777f4
+    if (Script_FindKey(script, &script, "L_SKY") == 1)
+    {
+        Script_ReadString(script, &script, (char *)g_58c234);
+        g_58c540[g_58c808].id = g_58c234;
+        g_58c234 += strlen((char *)g_58c234) + 1;
+        g_58c540[g_58c808].slot = 2;
+        g_58c808++;
+        g_58c540[g_58c808].id = 0;
+        FUN_425880();
+        // STRING: STUNTGP_D3D 0x4777fc
+        if (strstr((char *)g_58c540[g_58c808 - 1].id, "AnimSkyGround"))
+        {
+            ((float *)g_577660)[3] = 0.0f;
+            ((float *)g_577660)[4] = 0.0f;
+            ((float *)g_577660)[8] = 0.0007f;
+            ((float *)g_577660)[9] = 0.0007f;
+        }
+    }
+    // STRING: STUNTGP_D3D 0x47780c
+    if (Script_FindKey(script, &script, "L_TRACK") == 1)
+    {
+        Script_ReadString(script, &script, (char *)g_58c234);
+        g_624460 = g_58c234;
+        g_58c540[g_58c808].id = g_58c234;
+        g_58c234 += strlen((char *)g_58c234) + 1;
+        g_58c540[g_58c808].slot = 3;
+        g_58c808++;
+        g_58c540[g_58c808].id = 0;
+    }
+}
+
 // Queues each car's model and shadow scene from the L_CARn keys.
 // FUNCTION: STUNTGP_D3D 0x42c880
 void FUN_42c880(char *script)
