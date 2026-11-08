@@ -1232,9 +1232,28 @@ void FUN_42d700()
     FUN_42d970();
 }
 
-// STUB: STUNTGP_D3D 0x42e240
+// Rescales the vertex colours of every object; the scale is full brightness, so it is a no-op.
+// FUNCTION: STUNTGP_D3D 0x42e240
 void FUN_42e240(Scene *scene)
 {
+    for (DWORD lod = 0; lod < scene->maxLod + 1; lod++)
+    {
+        for (DWORD i = 0; i < scene->objectCount; i++)
+        {
+            if (!FUN_42b8b0(scene, i, lod))
+            {
+                ObjectDef *def = &scene->lods[lod][i];
+                BYTE *v = def->unk2c;
+                for (DWORD j = 0; j < def->unk26; j++, v += 16)
+                {
+                    v[0xf] = v[0xf] * 255 / 255;
+                    v[0xe] = v[0xe] * 255 / 255;
+                    v[0xd] = v[0xd] * 255 / 255;
+                    v[0xc] = v[0xc] * 255 / 255;
+                }
+            }
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x42e380
@@ -1608,6 +1627,46 @@ void FUN_42a840(Scene *scene)
         return;
     }
     g_62497c = scene->lod != scene->unk64 ? 1 : 4;
+}
+
+// Clips the eight corners of bounding box `box` against the view frustum, using the
+// plane distances' sign bits as outcodes: 0 outside, 1 partly visible, 2 inside.
+// FUNCTION: STUNTGP_D3D 0x42aa70
+int FUN_42aa70(int box)
+{
+    float l;
+    float r;
+    float t;
+    float b;
+    Vec4 *corner = (Vec4 *)(g_62446c + box * 16);
+    DWORD all = 0x3f;
+    DWORD any = 0;
+    DWORD n = 8;
+    while (n-- > 0)
+    {
+        float dx = corner->x - g_4722d0->cam.pos.x;
+        float dy = corner->y - g_4722d0->cam.pos.y;
+        float dz = corner->z - g_4722d0->cam.pos.z;
+        l = dz * g_4722d0->planeLeft.z + dy * g_4722d0->planeLeft.y + dx * g_4722d0->planeLeft.x;
+        r = dx * g_4722d0->planeRight.x + dz * g_4722d0->planeRight.z + dy * g_4722d0->planeRight.y;
+        t = dz * g_4722d0->planeTop.z + dy * g_4722d0->planeTop.y + dx * g_4722d0->planeTop.x;
+        b = dx * g_4722d0->planeBottom.x + (dy * g_4722d0->planeBottom.y + dz * g_4722d0->planeBottom.z);
+        DWORD code = ((((((*(DWORD *)&l | 0x60000000) >> 1) | (*(DWORD *)&r & 0xbfffffff)) >> 1) |
+                       (*(DWORD *)&t & 0x9fffffff)) >> 1 |
+                      (*(DWORD *)&b & 0x8fffffff)) >> 26;
+        if (code == 0x3f && all != 0x3f)
+        {
+            return 2;
+        }
+        all &= code;
+        any |= code;
+        corner++;
+    }
+    if (all == 0x3f)
+    {
+        return 0;
+    }
+    return (any == 0x3f) + 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x42a870
