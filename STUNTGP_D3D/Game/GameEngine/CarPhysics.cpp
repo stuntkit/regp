@@ -6732,6 +6732,48 @@ void FUN_408920(Body *body)
 extern Vec4 g_498198;
 void FUN_413290(float *v);
 
+void FUN_40f760(Body *body, int i, float angle, float *m);
+
+// Turns point i's slide along the contact plane into a capped rotation about it, signed by the body's spin.
+// FUNCTION: STUNTGP_D3D 0x4089b0
+void FUN_4089b0(Body *body, float *m, int i, float limit)
+{
+    BodyPoint *pt = &body->points[i];
+    Vec4 pr;
+    Vec4 dv;
+    Vec4 w;
+    Vec4 p = pt->local;
+    float r = (float)sqrt(p.x * p.x + p.y * p.y + p.z * p.z);
+    w.x = p.x * body->mat1[0] + p.y * body->mat1[4] + p.z * body->mat1[8];
+    w.y = p.x * body->mat1[1] + p.y * body->mat1[5] + p.z * body->mat1[9];
+    w.z = p.x * body->mat1[2] + p.y * body->mat1[6] + p.z * body->mat1[10];
+    dv.x = w.x - p.x;
+    dv.y = w.y - p.y;
+    dv.z = w.z - p.z;
+    float a = g_498198.x * dv.x + g_498198.y * dv.y + g_498198.z * dv.z;
+    pr.x = g_498198.x * a;
+    pr.y = g_498198.y * a;
+    pr.z = g_498198.z * a;
+    p.x = dv.x - pr.x;
+    p.y = dv.y - pr.y;
+    p.z = dv.z - pr.z;
+    FUN_44eda0(&p.x, &a);
+    if (limit * 0.2f < a)
+    {
+        a = limit * 0.1f;
+    }
+    a = a / r;
+    w.x = body->points[i].local.z * body->spin.y - body->spin.z * body->points[i].local.y;
+    w.y = body->points[i].local.x * body->spin.z - body->points[i].local.z * body->spin.x;
+    w.z = body->points[i].local.y * body->spin.x - body->points[i].local.x * body->spin.y;
+    Vec3_Normalize(&w.x);
+    if (p.x * w.x + p.y * w.y + p.z * w.z < 0.0f)
+    {
+        a = -a;
+    }
+    FUN_40f760(body, i, a, m);
+}
+
 // FUNCTION: STUNTGP_D3D 0x408bc0
 void FUN_408bc0(Body *body, float *out, int point, float limit)
 {
