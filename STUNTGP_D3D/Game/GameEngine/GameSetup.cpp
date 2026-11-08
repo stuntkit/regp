@@ -2106,10 +2106,17 @@ void FUN_44efd0(float *out, float *a, float *b);
 
 struct Light
 {
-    BYTE unk00[0x10]; // 0x00
+    int unk00;        // 0x00
+    int type;         // 0x04, 0 directional, 1 point
+    float range;      // 0x08
+    int unk0c;        // 0x0c
     Vec4 pos;         // 0x10
     Vec4 local;       // 0x20, pos relative to the current object
     Vec4 colour;      // 0x30
+    BYTE unk40[0x38]; // 0x40
+    int r;            // 0x78
+    int g;            // 0x7c
+    int b;            // 0x80
 };
 
 // Per-object light record in g_624530, 36 bytes.
@@ -2178,6 +2185,84 @@ void FUN_42b400(Scene *scene, ObjectDef *obj)
         g_624534.next->half.z = h.z * 0.5f;
         g_624534.next->light = light;
         g_624534.next++;
+    }
+}
+
+extern int g_62497c;
+
+// Lights every g_62497c-th vertex of the object (starting from the frame number, so the work is
+// spread over frames) from the ambient level and the active lights, packing the colour into
+// MeshUv::color.
+// FUNCTION: STUNTGP_D3D 0x42a320
+void FUN_42a320(Scene *scene, ObjectDef *obj)
+{
+    DWORD b = g_624504.ib;
+    DWORD r = g_624504.ir;
+    DWORD g = g_624504.ig;
+    if ((WORD)scene->unk04 > 1)
+    {
+        DWORD scale = (WORD)scene->unk04;
+        r = scale * r >> 8;
+        g = scale * g >> 8;
+        b = scale * b >> 8;
+    }
+    FUN_42b400(scene, obj);
+    Vec4 *points = obj->points;
+    Vec4 *normals = (Vec4 *)scene->unk28;
+    MeshUv *uv = (MeshUv *)obj->unk2c;
+    DWORD n = obj->unk26;
+    for (DWORD i = (g_62497c - 1) & g_61c508; i < n; i += g_62497c)
+    {
+        MeshUv *e = &uv[i];
+        Vec4 *p = &points[e->point];
+        DWORD cr = r;
+        Vec4 *nrm = &normals[e->unk0a];
+        DWORD cg = g;
+        DWORD cb = b;
+        LightRec *rec = (LightRec *)g_624530;
+        for (DWORD j = 0; j < (DWORD)g_62452c; j++)
+        {
+            Light *light = rec->light;
+            if (light->type == 0)
+            {
+                float dot = rec->colour.x * nrm->x + rec->colour.y * nrm->y + rec->colour.z * nrm->z;
+                if (*(int *)&dot < 0)
+                {
+                    int k = (int)dot;
+                    cr -= light->r * k;
+                    cg -= light->g * k;
+                    cb -= light->b * k;
+                }
+            }
+            else if (light->type == 1)
+            {
+                float dot = rec->colour.x * nrm->x + rec->colour.y * nrm->y + rec->colour.z * nrm->z;
+                if (*(int *)&dot < 0)
+                {
+                    float dx = light->local.x - p->x;
+                    float dy = light->local.y - p->y;
+                    float dz = light->local.z - p->z;
+                    int k = (int)(light->range * 4177920.0f / (dx * dx + dy * dy + dz * dz));
+                    cr += light->r * k;
+                    cg += light->g * k;
+                    cb += light->b * k;
+                }
+            }
+            rec++;
+        }
+        if (cr > 0xff00)
+        {
+            cr = 0xff00;
+        }
+        if (cg > 0xff00)
+        {
+            cg = 0xff00;
+        }
+        if (cb > 0xff00)
+        {
+            cb = 0xff00;
+        }
+        e->color = ((cb & 0xff00 | 0x10000) << 8) | (cg & 0xff00) | (cr >> 8);
     }
 }
 
