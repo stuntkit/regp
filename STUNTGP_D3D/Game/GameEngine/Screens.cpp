@@ -71,7 +71,7 @@ struct Unk459790
     int unk78;         // 0x78
     int unk7c;         // 0x7c
     int unk80[8];      // 0x80
-    int unka0[8];      // 0xa0
+    float unka0[8];    // 0xa0
 };
 
 int FUN_437d20(ScoreEntry *entry, Initials *name, int score);
@@ -3229,6 +3229,26 @@ int FUN_459790(Unk459790 *object, int arg)
 int FUN_459a40(PoolObject *object, int msg, int arg)
 {
     return 0;
+}
+
+void FUN_438740(int layer, int def, float x, float y, float scale, DWORD flags, float fade);
+
+// Row of medals won on the results screen.
+// FUNCTION: STUNTGP_D3D 0x45a280
+void FUN_45a280(Unk459790 *object)
+{
+    float x = 320.0f - (object->unk7c - 1) * 30.0f;
+    for (int i = 0; i < object->unk78; i++)
+    {
+        FUN_438710(x, 338.0f, 12, 0x55, 0.75f, 0x203);
+        FUN_438710(x, 338.0f, 11, object->unk80[i], 0.75f, 0x103);
+        float fade = object->unka0[i];
+        if (fade > 0.0001)
+        {
+            FUN_438740(10, 0x56, x, 338.0f, 0.75f, 0x403, fade);
+        }
+        x += 60.0f;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x45a360

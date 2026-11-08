@@ -358,6 +358,38 @@ void FUN_44fb00(float *m, DWORD yaw, DWORD pitch, DWORD roll)
     m[15] = 1.0f;
 }
 
+// Object-to-view matrix: the object's own scale, pivot rotation and offset (multi-object scenes),
+// then the scene's, then the view camera's.
+// FUNCTION: STUNTGP_D3D 0x44fbd0
+void FUN_44fbd0(Scene *scene, ObjectDef *obj, float *m)
+{
+    Camera *cam = scene->camera;
+    Matrix_Identity(m);
+    if (scene->objectCount > 1 && obj)
+    {
+        Camera *xf = (Camera *)obj->matrix;
+        FUN_44eeb0(m, xf->scale.x, 0.0f, 0.0f, 0.0f, 0.0f, xf->scale.y, 0.0f, 0.0f, 0.0f, 0.0f, xf->scale.z, 0.0f,
+                   0.0f, 0.0f, 0.0f, 1.0f);
+        Vec4 *pivot = (Vec4 *)((BYTE *)obj + 0x10);
+        float pz = pivot->z;
+        float py = pivot->y;
+        float px = pivot->x;
+        FUN_44f150(m, -px, -py, -pz);
+        FUN_44f280(m, (float *)xf->unk40);
+        FUN_44f150(m, px, py, pz);
+        FUN_44f150(m, xf->pos.x, xf->pos.y, xf->pos.z);
+    }
+    FUN_44eeb0(m, cam->scale.x, 0.0f, 0.0f, 0.0f, 0.0f, cam->scale.y, 0.0f, 0.0f, 0.0f, 0.0f, cam->scale.z, 0.0f,
+               0.0f, 0.0f, 0.0f, 1.0f);
+    Vec4 *pivot = (Vec4 *)scene->unk10;
+    FUN_44f150(m, pivot->x, pivot->y, pivot->z);
+    FUN_44f280(m, (float *)cam->unk44);
+    FUN_44f150(m, -pivot->x, -pivot->y, -pivot->z);
+    FUN_44f150(m, cam->pos.x - g_4722d0->cam.pos.x, cam->pos.y - g_4722d0->cam.pos.y,
+               cam->pos.z - g_4722d0->cam.pos.z);
+    FUN_44f280(m, (float *)g_4722d0->cam.unk44);
+}
+
 // FUNCTION: STUNTGP_D3D 0x44eb70
 void FUN_44eb70(DWORD yaw, DWORD pitch, DWORD roll, float *x, float *y, float *z)
 {

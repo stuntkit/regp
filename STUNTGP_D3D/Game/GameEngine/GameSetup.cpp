@@ -3380,6 +3380,32 @@ void FUN_45a3f0(MenuHolder *object)
     object->child = NULL;
 }
 
+float FUN_438a60(const char *text, float size);
+float FUN_438ab0(float x, float y, int layer, int style, char *text, float size, D3DCOLOR color, DWORD flags);
+
+// Framed block of text lines centred low on the screen.
+// FUNCTION: STUNTGP_D3D 0x45a500
+void FUN_45a500(MenuLine *lines, int count)
+{
+    float height = 0.0f;
+    int i;
+    for (i = 0; i < count; i++)
+    {
+        height += FUN_438a60(lines[i].text, 1.25f);
+    }
+    height += (count - 1) * 4.0f;
+    float h = (height + 20.0f) * 0.5f;
+    float y0 = 380.0f - h;
+    float y1 = h + 384.0f;
+    FUN_439450(100.0f, y0, 540.0f, y1, 10, 0x6f, 0x40);
+    FUN_439380(100.0f, y0, 540.0f, y1, 13, 2, 0, 0.0f);
+    float y = 380.0f - height * 0.5f;
+    for (i = 0; i < count; i++)
+    {
+        y = FUN_438ab0(320.0f, y, 12, 4, lines[i].text, 1.25f, lines[i].color, 1) + y + 4.0f;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x45a610
 int FUN_45a610(MenuObject *object, int arg)
 {
@@ -3463,9 +3489,6 @@ void FUN_45be00(MenuHolder *object)
     Pool_Free(child);
     object->child = NULL;
 }
-
-float FUN_438a60(const char *text, float size);
-float FUN_438ab0(float x, float y, int layer, int style, char *text, float size, D3DCOLOR color, DWORD flags);
 
 // Framed block of text lines centred on (x, y).
 // FUNCTION: STUNTGP_D3D 0x45be20

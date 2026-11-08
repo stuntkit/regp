@@ -5413,6 +5413,18 @@ int FUN_458eb0()
     return 0;
 }
 
+// Yes/no confirmation panel for a memory card operation.
+// FUNCTION: STUNTGP_D3D 0x459070
+void FUN_459070(Unk457e70 *object, int textId)
+{
+    FUN_439450(440.0f, 332.0f, 600.0f, 432.0f, 10, 0x6e, 0x40);
+    FUN_439380(440.0f, 332.0f, 600.0f, 432.0f, 13, 2, 0, 0.0f);
+    FUN_439450(40.0f, 332.0f, 408.0f, 432.0f, 10, (FUN_43dd60() & 0x20) ? 0x6f : 0x70, 0x40);
+    FUN_439380(40.0f, 332.0f, 408.0f, 432.0f, 13, 2, 0x100, 0.0f);
+    FUN_438ba0(224.0f, 382.0f, 12, 4, textId, 1.5f, 0xffffffff, 0x803);
+    object->unk40->message(object->unk40, 3, 0);
+}
+
 // FUNCTION: STUNTGP_D3D 0x459300
 void FUN_459300(MenuHolder *object)
 {
