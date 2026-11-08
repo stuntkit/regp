@@ -343,7 +343,7 @@ struct MenuState
     int unk4478; // 0x4478
     BYTE unk447c[0x44d0 - 0x447c];
     int unk44d0; // 0x44d0
-    BYTE unk44d4[0x45d4 - 0x44d4];
+    char unk44d4[4][0x40]; // 0x44d4, names entered on PageEnterName
     int unk45d4;   // 0x45d4
     int unk45d8;   // 0x45d8
     int unk45dc;   // 0x45dc

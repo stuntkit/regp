@@ -3867,6 +3867,47 @@ void FUN_454b40(Unk454b40 *object, int x, int y)
     object->unk30 = fy;
 }
 
+// FUNCTION: STUNTGP_D3D 0x454b70
+void FUN_454b70(Unk454b20 *object)
+{
+    if (object->unk4c)
+    {
+        return;
+    }
+    object->unk4c = 1;
+    if (object->unk1c == 7 && object->unk20 == 3)
+    {
+        if (strlen(object->text) < 3)
+        {
+            FUN_440880(9);
+            return;
+        }
+        strcpy(g_menuState.unk44d4[object->unk18], object->text);
+        FUN_440880(3);
+        FUN_43eef0();
+        return;
+    }
+    if (object->unk1c == 6 && object->unk20 == 3)
+    {
+        if (!strlen(object->text))
+        {
+            return;
+        }
+        FUN_440880(5);
+        FUN_454b20(object);
+        return;
+    }
+    if (strlen(object->text) < 3)
+    {
+        FUN_454af0(object, g_4881b0[object->unk20][object->unk1c]);
+        FUN_440880(4);
+    }
+    if (strlen(object->text) == 3)
+    {
+        FUN_454b40((Unk454b40 *)object, 7, 3);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x454c80
 int FUN_454c80(Unk454b20 *object, int column, int row)
 {
