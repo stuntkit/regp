@@ -26,6 +26,15 @@ struct ScoreTable
     ScoreEntry entries[10];
 };
 
+struct MenuRaceResult
+{
+    int position; // 0x00
+    int unk04;    // 0x04, time
+    int unk08;    // 0x08, time
+    int unk0c;    // 0x0c, score
+    int unk10;    // 0x10, score
+};
+
 struct ScoreList
 {
     int unk00;           // 0x00
@@ -310,7 +319,9 @@ struct MenuState
     int unk423c; // 0x423c, entries used in unk46ac
     int unk4240; // 0x4240
     int unk4244; // 0x4244
-    BYTE unk4248[0x4254 - 0x4248];
+    BYTE unk4248[0x424c - 0x4248];
+    int unk424c;                // 0x424c, total score
+    BYTE unk4250[0x4254 - 0x4250];
     int unk4254;                // 0x4254
     int language;               // 0x4258, id of the loaded front-end language
     MenuLanguage languages[8];  // 0x425c, from Setup\languagePC.csv
@@ -373,7 +384,12 @@ struct MenuState
     int gold;             // 0x1a6a4
     int silver;           // 0x1a6a8
     MenuNode nodes[19];   // 0x1a6ac, [1..18] used
-    BYTE unk1b078[0x1b320 - 0x1b078];
+    int unk1b078;          // 0x1b078, row of unk0114
+    BYTE unk1b07c[0x1b080 - 0x1b07c];
+    Initials unk1b080;     // 0x1b080
+    BYTE unk1b083[0x1b140 - 0x1b083];
+    MenuRaceResult results[6]; // 0x1b140, [0] is the player
+    BYTE unk1b1b8[0x1b320 - 0x1b1b8];
     MenuAiCar aiCars[21]; // 0x1b320, read by FUN_435860
     MenuRace races[8];    // 0x1d0a8, read by FUN_435730
     int numberOfRaces;    // 0x1d548
