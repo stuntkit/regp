@@ -130,7 +130,7 @@ BOOL FUN_440380(char *path);
 int FUN_440250(char *dir);
 char *FUN_4401e0(int card);
 void FUN_441340();
-void FUN_441380(SpriteDef *def, int id);
+int FUN_441380(SpriteDef *def, int id);
 void FUN_4411c0();
 void FUN_437ec0();
 void FUN_437ed0();
