@@ -428,21 +428,6 @@ PoolClass g_487a50 = {FUN_452fd0, FUN_452fe0};
 // GLOBAL: STUNTGP_D3D 0x487c18
 PoolClass g_487c18 = {(void (*)(PoolObject *))FUN_4531d0, (int (*)(PoolObject *, int, int))FUN_453210};
 
-// FUN_453480 copies the entries of g_487db8 (up to the one with track 0) whose 16-byte entry at
-// 0x5f9300 is in use into g_624db8, then fills unk08..unk3c from it; FUN_453680/FUN_453710/
-// FUN_453dd0/FUN_454150 index g_624db8 by entry * 0x40.
-struct TrackRecord
-{
-    int unk00;    // 0x00
-    int track;    // 0x04
-    int unk08[5]; // 0x08
-    int unk1c[5]; // 0x1c
-    float unk30;  // 0x30
-    int unk34;    // 0x34
-    int unk38;    // 0x38
-    int unk3c;    // 0x3c
-};
-
 // GLOBAL: STUNTGP_D3D 0x487db8
 TrackRecord g_487db8[12] = {
     {0x107, 3},  {0x10c, 7},  {0xe9, 4},   {0xf8, 5},   {0xf3, 6}, {0xee, 8},
@@ -1685,15 +1670,212 @@ int FUN_453210(Unk4516c0 *object, int msg, int arg)
     return 0;
 }
 
-// STUB: STUNTGP_D3D 0x453480
-int FUN_453480(PoolObject *object, int arg)
+extern MenuItem g_487c38[12];
+extern MenuDef g_4880b8;
+void FUN_453680(Unk453710 *object);
+
+// Part shop init: lists the part groups the car can still upgrade, then their part ranges.
+// FUNCTION: STUNTGP_D3D 0x453480
+int FUN_453480(PoolObject *base, int arg)
 {
-    return 0;
+    Unk453710 *object = (Unk453710 *)base;
+    object->unk1c = 0;
+    object->unk20 = 0;
+    object->unk24 = 0;
+    object->unk28 = 0;
+    object->unk18 = 0;
+    object->unk50 = 0;
+    object->unk54 = 0xe0;
+    int i;
+    for (i = 0; i < 3; i++)
+    {
+        object->unk2c[i] = 0;
+        object->unk38[i] = 0;
+    }
+    for (i = 0; g_487db8[i].track; i++)
+    {
+        int track = g_487db8[i].track;
+        FUN_437a90(track);
+        g_487c38[i].id = -1;
+        if (g_menuState.unk19d7c.carSetup.parts[track][1] &&
+            g_menuState.unk19d7c.carSetup.parts[track][2] < g_menuState.unk19d7c.carSetup.parts[track][3])
+        {
+            g_487c38[i].id = object->unk18;
+            g_624db8[object->unk18] = g_487db8[i];
+            object->unk18++;
+        }
+    }
+    for (i = 0; i < object->unk18; i++)
+    {
+        int track = g_624db8[i].track;
+        g_624db8[i].unk34 = g_menuState.unk19d7c.carSetup.parts[track][1];
+        g_624db8[i].unk38 = g_menuState.unk19d7c.carSetup.parts[track][2];
+        g_624db8[i].unk3c = g_menuState.unk19d7c.carSetup.parts[track][3];
+        g_624db8[i].unk30 = g_624db8[i].unk34 - 1;
+        for (int j = 0; j < 5; j++)
+        {
+            g_624db8[i].unk08[j] = 0;
+            g_624db8[i].unk1c[j] = 0;
+        }
+    }
+    for (i = 0; i < object->unk18; i++)
+    {
+        int track = g_624db8[i].track;
+        int first = FUN_437af0(track);
+        int last = g_menuState.unk19d7c.carSetup.parts[track][3] - 1;
+        for (int k = g_menuState.unk19d7c.carSetup.parts[track][2] - 1; k <= last; k++)
+        {
+            g_624db8[i].unk08[k] = first + k;
+            g_624db8[i].unk1c[k] = g_624db8[i].unk00 + k;
+        }
+    }
+    MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
+    memset(list, 0, sizeof(MenuList));
+    *(PoolClass *)&list->base.destroy = g_menuListClass;
+    list->base.type = 0x29;
+    // STRING: STUNTGP_D3D 0x4880f8
+    list->base.name = "MenuText";
+    list->base.unk08 = 0;
+    if (!FUN_43c860(list, &g_4880b8))
+    {
+        Pool_Free(list);
+        object->child = NULL;
+    }
+    else
+    {
+        object->child = &list->base;
+    }
+    object->child->message(object->child, 0x18, 0);
+    FUN_453680(object);
+    return 1;
 }
 
-// STUB: STUNTGP_D3D 0x453710
-int FUN_453710(PoolObject *object, int msg, int arg)
+void FUN_453a90(Unk453710 *object);
+void FUN_453b50(Unk453710 *object, float x, float y);
+void FUN_453dd0(Unk453710 *object);
+int FUN_454150(Unk453710 *object);
+
+// Part shop: pick a part group, step through its parts and buy one.
+// FUNCTION: STUNTGP_D3D 0x453710
+int FUN_453710(PoolObject *base, int msg, int arg)
 {
+    Unk453710 *object = (Unk453710 *)base;
+    PoolObject *child;
+    int sel;
+    int pos;
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(2);
+        FUN_43dd10(0x534527);
+        FUN_43dd40(0x69, -0.3f, 0.5f);
+    case 0x14:
+        object->child->message(object->child, msg, 0);
+        return 0;
+    case 0xb:
+        child = object->child;
+        if (child->message(child, 0x1a, 0) <= 0)
+        {
+            break;
+        }
+        goto group;
+    case 0xc:
+        child = object->child;
+        if (child->message(child, 0x1a, 0) < object->unk18 - 1)
+        {
+        group:
+            FUN_440880(0x14);
+            child->message(child, msg, 0);
+            object->unk1c = 0;
+            FUN_453680(object);
+            object->unk50 = 0;
+            return 0;
+        }
+        break;
+    case 0xd:
+        sel = object->child->message(object->child, 0x1a, 0);
+        pos = object->unk1c;
+        if (g_624db8[sel].unk34 + pos - 1 >= g_624db8[sel].unk38)
+        {
+            FUN_440880(0x14);
+            FUN_440890(msg);
+            pos--;
+            goto part;
+        }
+        break;
+    case 0xe:
+        sel = object->child->message(object->child, 0x1a, 0);
+        pos = object->unk1c;
+        if (g_624db8[sel].unk34 + pos + 1 <= g_624db8[sel].unk3c)
+        {
+            FUN_440880(0x14);
+            FUN_440890(msg);
+            pos++;
+        part:
+            object->unk1c = pos;
+            FUN_453680(object);
+            object->unk50 = 0;
+            return 0;
+        }
+        break;
+    case 0x10:
+        if (object->unk1c == 0)
+        {
+            FUN_440880(9);
+            return 0;
+        }
+        if (FUN_454150(object))
+        {
+            object->unk1c = 0;
+            FUN_453680(object);
+            FUN_440890(msg);
+            object->unk50 = 0;
+            return 0;
+        }
+        FUN_440880(9);
+        return 0;
+    case 0x11:
+        if (FUN_43eef0())
+        {
+            FUN_440890(msg);
+            return 0;
+        }
+        break;
+    case 2:
+    {
+        object->unk50++;
+        child = object->child;
+        child->message(child, msg, 0);
+        sel = child->message(child, 0x1a, 0);
+        float shown = sel;
+        object->unk28 = shown;
+        object->unk24 = FUN_43d810(object->unk24, shown, 0.001f);
+        object->unk20 = FUN_43d810(object->unk20, object->unk1c, 0.001f);
+        FUN_43df60(g_624db8[sel].unk3c - g_624db8[sel].unk38 + 1, 1.0f,
+                   g_624db8[sel].unk34 - g_624db8[sel].unk38 + object->unk1c, object->unk18, 1.0f, shown);
+        object->unk38[0] = object->unk44[0] * 0.01f;
+        object->unk38[1] = object->unk44[1] * 0.01f;
+        object->unk38[2] = object->unk44[2] * 0.01f;
+        for (int i = 0; i < 3; i++)
+        {
+            object->unk2c[i] = FUN_43d810(object->unk2c[i], object->unk38[i], 0.001f);
+        }
+        for (int j = 0; j < object->unk18; j++)
+        {
+            float target = g_624db8[j].unk34 - 1;
+            g_624db8[j].unk30 = FUN_43d810(g_624db8[j].unk30, target, 0.001f);
+        }
+        return 0;
+    }
+    case 3:
+        FUN_453b50(object, object->unk20, object->unk24);
+        FUN_438190(0.0f, 0.0f, 640.0f, 480.0f);
+        FUN_4392b0(0xdf, 0);
+        FUN_439340(object->unk54);
+        FUN_453a90(object);
+        FUN_453dd0(object);
+        break;
+    }
     return 0;
 }
 
