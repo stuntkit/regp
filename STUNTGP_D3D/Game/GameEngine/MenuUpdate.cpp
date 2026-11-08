@@ -68,13 +68,6 @@ struct Unk454b20
     int unk4c;        // 0x4c
 };
 
-struct Unk457770
-{
-    DWORD unk00[5];    // 0x00
-    PoolObject *unk14; // 0x14
-    int unk18;         // 0x18
-};
-
 struct Unk454b40
 {
     BYTE unk00[0x1c]; // 0x00

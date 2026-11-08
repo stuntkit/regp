@@ -305,7 +305,10 @@ struct MenuState
     int language;               // 0x4258, id of the loaded front-end language
     MenuLanguage languages[8];  // 0x425c, from Setup\languagePC.csv
     int languageCount;          // 0x437c
-    BYTE unk4380[0x4398 - 0x4380];
+    BYTE unk4380[0x438c - 0x4380];
+    int unk438c; // 0x438c
+    int unk4390; // 0x4390
+    BYTE unk4394[0x4398 - 0x4394];
     int unk4398;     // 0x4398, entries used in unk439c
     int unk439c[20]; // 0x439c
     BYTE unk43ec[0x43f4 - 0x43ec];
@@ -317,7 +320,9 @@ struct MenuState
     int unk4478; // 0x4478
     BYTE unk447c[0x44d0 - 0x447c];
     int unk44d0; // 0x44d0
-    BYTE unk44d4[0x46a8 - 0x44d4];
+    BYTE unk44d4[0x45e8 - 0x44d4];
+    int unk45e8; // 0x45e8
+    BYTE unk45ec[0x46a8 - 0x45ec];
     int unk46a8; // 0x46a8
     int unk46ac[4]; // 0x46ac
     BYTE unk46bc[0x46c4 - 0x46bc];
@@ -362,7 +367,8 @@ struct MenuState
     BYTE unk1d618[0x1d630 - 0x1d618];
     int unk1d630[25][6];          // 0x1d630, read by FUN_434f60
     MenuCarEntry unk1d888[3][4];  // 0x1d888, Easy, Medium, Hard; read by FUN_434e90
-    BYTE unk1d9a8[0x1da5c - 0x1d9a8];
+    int unk1d9a8; // 0x1d9a8
+    BYTE unk1d9ac[0x1da5c - 0x1d9ac];
     int unk1da5c[6][2];           // 0x1da5c, read by FUN_434e10
     BYTE unk1da8c[0x1da90 - 0x1da8c];
     int unk1da90[4][2];           // 0x1da90
@@ -401,6 +407,13 @@ struct MenuHolder
 {
     DWORD unk00[5];    // 0x00
     PoolObject *child; // 0x14
+};
+
+struct Unk457770
+{
+    DWORD unk00[5];    // 0x00
+    PoolObject *unk14; // 0x14
+    int unk18;         // 0x18
 };
 
 extern PoolClass g_menuListClass;
