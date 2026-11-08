@@ -4562,6 +4562,51 @@ void FUN_412040()
     FUN_406ff0();
 }
 
+// Trick window countdown: closes it when it runs out or the car lands, or arms landing detection once all
+// four wheels are off the ground.
+// FUNCTION: STUNTGP_D3D 0x4120f0
+void FUN_4120f0()
+{
+    Car *car = g_4d5bb8;
+    if (car->unk7250)
+    {
+        if (--car->unk7250 == 0)
+        {
+            car->unk71f4 = 0;
+        }
+        if (car->unk724c == 1)
+        {
+            if (!car->unk7250)
+            {
+                FUN_411fa0();
+                return;
+            }
+            if (!car->unk1fd8 && (DWORD)++car->unk7248 > 10)
+            {
+                FUN_412040();
+                return;
+            }
+        }
+        else
+        {
+            if ((float)(DWORD)++car->unk7248 >= 896.0f)
+            {
+                FUN_411fa0();
+                return;
+            }
+            for (DWORD i = 0; i < 4; i++)
+            {
+                if (car->wheels[i].unk70 < 4)
+                {
+                    return;
+                }
+            }
+            car->unk7248 = 0;
+            car->unk724c = 1;
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x4121c0
 void FUN_4121c0()
 {
