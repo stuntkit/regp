@@ -325,7 +325,7 @@ struct MenuState
     int unk439c[20]; // 0x439c
     BYTE unk43ec[0x43f4 - 0x43ec];
     int unk43f4[4];  // 0x43f4, random car per entry of unk46ac
-    BYTE unk4404[0x4408 - 0x4404];
+    int unk4404;     // 0x4404
     int unk4408;     // 0x4408, entries used in unk440c
     int unk440c[26]; // 0x440c
     int unk4474;     // 0x4474

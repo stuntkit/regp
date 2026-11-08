@@ -11,6 +11,20 @@ int FUN_4371c0(int track, int mode);
 int FUN_4375a0(int *tracks, int count);
 
 // PageSlot
+// PageSelectTrack
+struct Unk45c4b0
+{
+    DWORD unk00[5];    // 0x00
+    PoolObject *child; // 0x14
+    int unk18;         // 0x18
+    int unk1c;         // 0x1c, selected track
+    float unk20;       // 0x20
+    float unk24;       // 0x24
+    int unk28;         // 0x28
+    int unk2c;         // 0x2c
+    int unk30;         // 0x30
+};
+
 struct Unk45a9c0
 {
     DWORD unk00[5];    // 0x00
@@ -122,7 +136,7 @@ int FUN_454460(PoolObject *object, int msg, int arg);
 int FUN_451700(PoolObject *object, int arg);
 void FUN_451a80(MenuHolder *object);
 int FUN_451aa0(PoolObject *object, int msg, int arg);
-int FUN_45c4b0(PoolObject *object, int arg);
+int FUN_45c4b0(Unk45c4b0 *object, int arg);
 void FUN_45c640(Unk45c670 *object);
 int FUN_45c6a0(PoolObject *object, int msg, int arg);
 int FUN_45d1a0(PoolObject *object, int arg);
@@ -560,6 +574,52 @@ MenuItem g_489020[3] = {
 
 // GLOBAL: STUNTGP_D3D 0x489080
 MenuDef g_489080 = {0xb, 0.0f, 0, 520.0f, 382.0f, 1.0f, 2, 1.25f, 1, 0x50, g_489020, 0};
+
+// GLOBAL: STUNTGP_D3D 0x4892a0
+MenuItem g_4892a0[5] = {
+    {0, 0xffc8c8ff, 0xffffffff, 0x18, 0, 1, 0, 0},
+    {1, 0xffc8c8ff, 0xffffffff, 0x1ff, 0, 2, 0, 0},
+    {2, 0xffc8c8ff, 0xffffffff, 0x202, 0, 2, 0, 0},
+    {3, 0xffc8c8ff, 0xffffffff, 0x205, 0, 2, 0, 0},
+    {0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x489340
+MenuItem g_489340[4] = {
+    {0, 0xffc8c8ff, 0xffffffff, 0x18, 0, 1, 0, 0},
+    {1, 0xffc8c8ff, 0xffffffff, 0x20, 0, 1, 0, 0},
+    {2, 0xffc8c8ff, 0xffffffff, 0x21, 0, 1, 0, 0},
+    {0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x4893c0
+MenuItem g_4893c0[2] = {
+    {0, 0xffc8c8ff, 0xffffffff, 0x18, 0, 1, 0, 0},
+    {0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x489400
+MenuItem g_489400[2] = {
+    {0, 0xffc8c8ff, 0xffffffff, 0x18, 0, 1, 0, 0},
+    {0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x489440
+MenuItem g_489440[3] = {
+    {0, 0xffc8c8ff, 0xffffffff, 0x18, 0, 1, 0, 0},
+    {1, 0xffc8c8ff, 0xffffffff, 0x1ff, 0, 2, 0, 0},
+    {0},
+};
+
+// GLOBAL: STUNTGP_D3D 0x4894a0
+MenuItem g_4894a0[2] = {
+    {0, 0xffc8c8ff, 0xffffffff, 0x18, 0, 1, 0, 0},
+    {0},
+};
+
+// Items are picked by FUN_45c4b0.
+// GLOBAL: STUNTGP_D3D 0x4894e0
+MenuDef g_4894e0 = {0xb, 0.0f, 0x3f800000, 220.0f, 400.0f, 0.8f, 2, 1.1f, 1, 0xbe, NULL, 0};
 
 // STUB: STUNTGP_D3D 0x450550
 int FUN_450550(PoolObject *object, int msg, int arg)
@@ -1453,10 +1513,83 @@ int FUN_45c080(PoolObject *object, int msg, int arg)
     return 0;
 }
 
-// STUB: STUNTGP_D3D 0x45c4b0
-int FUN_45c4b0(PoolObject *object, int arg)
+// FUNCTION: STUNTGP_D3D 0x45c4b0
+int FUN_45c4b0(Unk45c4b0 *object, int arg)
 {
-    return 0;
+    object->unk1c = 0;
+    FUN_4375a0(g_menuState.unk440c, g_menuState.unk4408);
+    int track = g_menuState.unk4474;
+    if (track)
+    {
+        for (int i = 0; i < g_menuState.unk4408; i++)
+        {
+            if (g_menuState.unk440c[i] == track)
+            {
+                object->unk1c = i;
+                break;
+            }
+        }
+    }
+    object->unk28 = 0;
+    object->unk18 = g_menuState.unk4238;
+    object->unk2c = 0;
+    object->unk24 = object->unk20 = object->unk1c;
+    g_menuState.unk4404 = 0;
+    switch (g_menuState.unk4478)
+    {
+    default:
+        g_menuState.unk4478 = 3;
+    case 3:
+        object->unk30 = 0;
+        break;
+    case 9:
+        object->unk30 = 2;
+        break;
+    case 5:
+        object->unk30 = 1;
+        break;
+    }
+    switch (g_menuState.unk4230)
+    {
+    case 2:
+        g_4894e0.items = g_4892a0;
+        break;
+    case 3:
+        g_4894e0.items = g_489340;
+        break;
+    case 6:
+        g_4894e0.items = g_489440;
+        break;
+    case 7:
+        g_4894e0.items = g_4894a0;
+        break;
+    case 1:
+        g_4894e0.items = g_4893c0;
+        break;
+    case 5:
+        g_4894e0.items = g_489400;
+        break;
+    }
+    MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
+    memset(list, 0, sizeof(MenuList));
+    *(PoolClass *)&list->base.destroy = g_menuListClass;
+    list->base.type = 0x29;
+    // STRING: STUNTGP_D3D 0x489518
+    list->base.name = "MenuText";
+    list->base.unk08 = 0;
+    if (!FUN_43c860(list, &g_4894e0))
+    {
+        Pool_Free(list);
+        object->child = NULL;
+    }
+    else
+    {
+        object->child = &list->base;
+    }
+    PoolObject *child = object->child;
+    child->message(child, 0x18, 0);
+    child->message(child, 0x16, 0);
+    return 1;
 }
 
 // STUB: STUNTGP_D3D 0x45c6a0
@@ -1590,7 +1723,7 @@ PoolObject *FUN_43e000(int a, int screen)
         break;
     case 11:
         // STRING: STUNTGP_D3D 0x47973c
-        object = NewScreen(0x34, 9, "PageSelectTrack", &g_489510, FUN_45c4b0);
+        object = NewScreen(0x34, 9, "PageSelectTrack", &g_489510, (ScreenInit)FUN_45c4b0);
         break;
     case 12:
         // STRING: STUNTGP_D3D 0x47974c
