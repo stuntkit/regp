@@ -2078,6 +2078,53 @@ void FUN_4058f0()
     }
 }
 
+// Catch-up: eases the leader's throttle scale down and raises the trailing cars' back towards 1.
+// FUNCTION: STUNTGP_D3D 0x405960
+void FUN_405960()
+{
+    Car *car = g_4d5bb8;
+    if (car->catchUp)
+    {
+        if (car->unk24ac == 0)
+        {
+            if (g_612948.unk03cc[1])
+            {
+                float d = -g_612948.unk03cc[1]->leaderGap - g_60f2d0[20];
+                if (d >= 0.0f)
+                {
+                    d = 1.0f / g_60f2d0[20] * d;
+                    if (d > 1.0f)
+                    {
+                        d = 1.0f;
+                    }
+                    car->unk2660 -= d * g_60f2d0[21];
+                    if (car->unk2660 < 0.0f)
+                    {
+                        car->unk2660 = 0.0f;
+                    }
+                }
+            }
+        }
+        else if (car->unk2660 < 1.0f)
+        {
+            float d = -car->leaderGap - g_60f2d0[18];
+            if (d >= 0.0f)
+            {
+                d = 1.0f / g_60f2d0[18] * d;
+                if (d > 1.0f)
+                {
+                    d = 1.0f;
+                }
+                car->unk2660 += d * g_60f2d0[19];
+                if (car->unk2660 > 1.0f)
+                {
+                    car->unk2660 = 1.0f;
+                }
+            }
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x405a80
 void FUN_405a80()
 {

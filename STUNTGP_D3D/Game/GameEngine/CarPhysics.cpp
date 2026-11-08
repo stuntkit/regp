@@ -2301,6 +2301,30 @@ void FUN_40ee70()
     g_4d5bb8->unk288c += g_4d5bb8->unk248;
 }
 
+extern float g_482670;
+
+// Static wheel loads plus the pitch and roll transfer from the current acceleration.
+// FUNCTION: STUNTGP_D3D 0x40f130
+void FUN_40f130()
+{
+    float lat = g_4d5bb8->axisX.z * g_4d5bb8->unk1cac.z + g_4d5bb8->axisX.y * g_4d5bb8->unk1cac.y +
+                g_4d5bb8->axisX.x * g_4d5bb8->unk1cac.x;
+    float weight = g_482670 * g_4d5bb8->unk2618;
+    float front = g_4d5bb8->unk224 * 0.5f;
+    float rear = g_4d5bb8->unk228 * 0.5f;
+    float pitch = (g_4d5bb8->axisZ.z * g_4d5bb8->unk1cac.z + g_4d5bb8->axisZ.y * g_4d5bb8->unk1cac.y +
+                   g_4d5bb8->axisZ.x * g_4d5bb8->unk1cac.x) *
+                  g_4d5bb8->unk2618 * g_4d5bb8->unk261c / g_4d5bb8->unk230;
+    g_4d5bb8->wheels[1].unk0c = g_4d5bb8->wheels[0].unk0c = front * weight + pitch;
+    g_4d5bb8->wheels[3].unk0c = g_4d5bb8->wheels[2].unk0c = weight * rear - pitch;
+    float roll =
+        lat * (g_4d5bb8->unk2618 * g_4d5bb8->unk261c) / ((g_4d5bb8->unk238 + g_4d5bb8->unk234) * 0.5f);
+    g_4d5bb8->wheels[0].unk0c -= roll;
+    g_4d5bb8->wheels[2].unk0c -= roll;
+    g_4d5bb8->wheels[1].unk0c += roll;
+    g_4d5bb8->wheels[3].unk0c += roll;
+}
+
 void Matrix_Multiply3(float *a, float *b);
 
 // FUNCTION: STUNTGP_D3D 0x40f250
@@ -2345,7 +2369,6 @@ void FUN_40f330(float *m, float scale)
     Matrix_FromRows(&r0.x, &r1.x, &r2.x, m);
 }
 
-extern float g_482670;
 
 // FUNCTION: STUNTGP_D3D 0x40f3c0
 void FUN_40f3c0()
