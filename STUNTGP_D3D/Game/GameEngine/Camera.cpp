@@ -64,6 +64,62 @@ void FUN_403180(float delta)
     }
 }
 
+// Polygon list offset of the octree leaf holding g_4980d4, 0 when not found yet.
+// GLOBAL: STUNTGP_D3D 0x49823c
+int g_49823c;
+
+// GLOBAL: STUNTGP_D3D 0x498240
+int g_498240;
+
+// FUNCTION: STUNTGP_D3D 0x420f00
+void FUN_420f00(OctNode *node)
+{
+    if (g_49823c == 0)
+    {
+        TrackOctree *tree = g_624480;
+        for (;;)
+        {
+            int octant = 0;
+            if (g_4980d4.x >= node->x)
+            {
+                octant = 1;
+            }
+            if (g_4980d4.y <= node->y)
+            {
+                octant |= 4;
+            }
+            if (g_4980d4.z <= node->z)
+            {
+                octant |= 2;
+            }
+            if (node->children[octant] == 0)
+            {
+                g_49823c = node->leaves[octant];
+                return;
+            }
+            node = &tree->roots[0].root[node->children[octant]];
+        }
+    }
+}
+
+// FUNCTION: STUNTGP_D3D 0x420f80
+void FUN_420f80()
+{
+    TrackOctree *tree = g_624480;
+    g_49823c = 0;
+    g_498240 = 0;
+    while (g_498154 > tree->roots[g_498240].key)
+    {
+        g_498240++;
+        if (g_498240 == 1)
+        {
+            FUN_420f00(tree->roots[g_498240].root);
+            return;
+        }
+    }
+    FUN_420f00(tree->roots[g_498240].root);
+}
+
 // STUB: STUNTGP_D3D 0x4215b0
 int FUN_4215b0()
 {

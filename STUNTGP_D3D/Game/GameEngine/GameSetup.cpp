@@ -106,10 +106,17 @@ struct RenderMaterial
 // GLOBAL: STUNTGP_D3D 0x62447c
 RenderMaterial *g_62447c;
 
+// GLOBAL: STUNTGP_D3D 0x624480
+TrackOctree *g_624480;
+
 // Loaded track file; the offsets are relative to data.
 struct TrackHeader
 {
-    BYTE unk000[0x38];
+    BYTE unk000[0x20];
+    int unk020;               // 0x020
+    BYTE unk024[0x2c - 0x24];
+    int unk02c;               // 0x02c
+    BYTE unk030[0x38 - 0x30];
     int unk038;               // 0x038
     int unk03c;               // 0x03c
     BYTE unk040[0x58 - 0x40];
@@ -125,7 +132,13 @@ struct TrackHeader
     int unk080;               // 0x080
     int unk084;               // 0x084
     int unk088;               // 0x088
-    BYTE unk08c[0xd4 - 0x8c];
+    int unk08c;               // 0x08c
+    int unk090;               // 0x090
+    int unk094;               // 0x094
+    int unk098;               // 0x098
+    int unk09c;               // 0x09c
+    int unk0a0;               // 0x0a0
+    BYTE unk0a4[0xd4 - 0xa4];
     DWORD unk0d4;             // 0x0d4
     BYTE unk0d8[0xe4 - 0xd8];
     int unk0e4;               // 0x0e4
@@ -1163,6 +1176,24 @@ void FUN_42ed30()
     g_62446c = &g_58d810->data[g_58d810->unk07c];
     g_624468 = &g_58d810->data[g_58d810->unk084];
     g_624464 = &g_58d810->data[g_58d810->unk080];
+}
+
+// FUNCTION: STUNTGP_D3D 0x42ed80
+void FUN_42ed80()
+{
+    TrackHeader *header = g_58d810;
+    TrackOctree *tree = (TrackOctree *)&header->data[header->unk0a0];
+    g_624480 = tree;
+    tree->polyLists = (short *)&header->data[header->unk090] + (int)tree->polyLists;
+    tree->indices = (WORD *)&header->data[header->unk08c] + (int)tree->indices;
+    tree->vertices = (Vec4 *)&header->data[header->unk02c] + (int)tree->vertices;
+    tree->planes = (Vec4 *)&header->data[header->unk020] + (int)tree->planes;
+    tree->polys = (TrackPoly *)&header->data[header->unk098] + (int)tree->polys;
+    tree->surfaces = (DWORD *)&header->data[header->unk094] + (int)tree->surfaces;
+    for (int i = 0; i < 2; i++)
+    {
+        tree->roots[i].root = (OctNode *)&header->data[header->unk09c] + (int)tree->roots[i].root;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x42ee50

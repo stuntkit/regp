@@ -295,6 +295,46 @@ struct Suspension
     float maxStiffnessOut; // 0x14
 };
 
+// Collision polygon of the track octree.
+struct TrackPoly
+{
+    BYTE unk0;        // 0x0
+    BYTE vertexCount; // 0x1
+    WORD firstIndex;  // 0x2, into TrackOctree::indices
+    WORD plane;       // 0x4, into TrackOctree::planes
+    WORD surface;     // 0x6, into TrackOctree::surfaces
+};
+
+struct OctNode
+{
+    float x;          // 0x00
+    float y;          // 0x04
+    float z;          // 0x08
+    int unk0c;        // 0x0c
+    WORD children[8]; // 0x10, node index, 0 for a leaf
+    WORD leaves[8];   // 0x20, polygon list offset per octant
+};
+
+struct OctRoot
+{
+    float key;     // 0x0
+    OctNode *root; // 0x4
+};
+
+// Track collision octree; FUN_42ed80 turns its file offsets into pointers.
+struct TrackOctree
+{
+    short *polyLists;    // 0x00, -1 terminated polygon lists
+    WORD *indices;       // 0x04
+    Vec4 *vertices;      // 0x08
+    Vec4 *planes;        // 0x0c
+    TrackPoly *polys;    // 0x10
+    DWORD *surfaces;     // 0x14, low byte holds the surface flags
+    OctRoot roots[2];    // 0x18, roots[0].root is also the node array base
+};
+
+extern TrackOctree *g_624480;
+
 // One of the 32 effect slots at g_612948.unk045c.
 struct Unk612da4
 {
