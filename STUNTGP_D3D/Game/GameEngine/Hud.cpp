@@ -242,6 +242,67 @@ void FUN_445120()
     }
 }
 
+int FUN_42f1f0(int range);
+void FUN_443010(int enable);
+void FUN_442ef0();
+void FUN_442f60(Unk4d5cc0 *ghost);
+
+// Copies the player's race entry to the AI slots, then adds the replay and level ghosts when
+// present and clears the rest.
+// FUNCTION: STUNTGP_D3D 0x445150
+void FUN_445150()
+{
+    if (g_60d730.entries[0].unk02c == 8)
+    {
+        g_60d730.entries[0].unk02c = 0;
+    }
+    if (g_60d730.entries[0].unk02c == 0)
+    {
+        g_60d730.entries[0].unk02c = abs(FUN_42f1f0(5)) + 2;
+    }
+    g_60d730.entries[0].unk008 = 1;
+    for (int i = 1; i < 3; i++)
+    {
+        g_60d730.entries[i] = g_60d730.entries[0];
+        g_60d730.entries[i].unk004 = 2;
+    }
+    Unk4d5cc0 *ghost = (Unk4d5cc0 *)g_60d730.unk85c;
+    if (ghost)
+    {
+        FUN_443010((int)ghost);
+        g_60d730.unk854 = 0;
+        g_60d730.unk85c = 0;
+        g_60d730.unk858 = 0;
+        g_60d730.entries[3] = g_60d730.entries[0];
+        g_60d730.entries[3].unk024 = ghost->unk20;
+        g_60d730.entries[3].unk028 = ghost->unk22;
+        g_60d730.entries[3].unk030 = ghost->unk26;
+        g_60d730.entries[3].unk02c = ghost->unk24;
+    }
+    else
+    {
+        g_60d730.entries[3] = g_60d730.entries[0];
+    }
+    int count = 4;
+    FUN_442ef0();
+    ghost = g_60d730.unk850;
+    if (ghost)
+    {
+        FUN_442f60(ghost);
+        g_60d730.unk848 = 0;
+        g_60d730.unk850 = NULL;
+        g_60d730.unk84c = 0;
+        g_60d730.entries[4] = g_60d730.entries[0];
+        g_60d730.entries[4].unk024 = ghost->unk20;
+        g_60d730.entries[4].unk028 = ghost->unk22;
+        g_60d730.entries[4].unk030 = ghost->unk26;
+        g_60d730.entries[4].unk02c = 1;
+        count = 5;
+    }
+    RaceEntry *rest = &g_60d730.entries[count];
+    memset(rest, 0, (BYTE *)&g_60d730.entries[6] - (BYTE *)rest);
+}
+
 // FUNCTION: STUNTGP_D3D 0x4452e0
 void FUN_4452e0()
 {

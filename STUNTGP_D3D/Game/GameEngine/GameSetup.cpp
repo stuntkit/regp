@@ -1874,6 +1874,61 @@ void FUN_429d50(Scene *scene, ObjectDef *obj, PolyRef **lists)
     lists[2] = blended;
 }
 
+// Polygons queued for the track so far.
+// GLOBAL: STUNTGP_D3D 0x61c550
+DWORD g_61c550;
+
+// FUN_429d50 for the track: queues the camera-facing polygons of the visible meshes of g_61c530.
+// FUNCTION: STUNTGP_D3D 0x42a090
+void FUN_42a090(PolyRef **lists, VisIndexList *vis, DWORD count)
+{
+    PolyRef *blended = lists[2];
+    PolyRef *opaque = lists[0];
+    Vec4 *normals = (Vec4 *)g_61c52c->unk28;
+    WORD *refs = (WORD *)g_61c52c->unk38;
+    Vec4 *points = g_61c530->points;
+    g_61c550 += count;
+    BYTE *src = g_61c530->unk2c;
+    for (DWORD i = 0; i < count; i++)
+    {
+        WORD *idx = vis->polys;
+        while (*idx != 0xffff)
+        {
+            DWORD *poly = (DWORD *)(g_61c530->verts + *idx * 8);
+            WORD *ref = &refs[((WORD *)poly)[3]];
+            Vec4 *p = &points[*(WORD *)(src + *ref * 16 + 8)];
+            Vec4 d;
+            d.x = p->x - g_61c4e8.x;
+            d.y = p->y - g_61c4e8.y;
+            d.z = p->z - g_61c4e8.z;
+            Vec4 *n = &normals[((WORD *)poly)[2]];
+            if ((int)poly[0] < 0 || d.x * n->x + d.y * n->y + d.z * n->z < 0.0f)
+            {
+                if (poly[0] & 0x40000000)
+                {
+                    blended->poly = poly;
+                    blended->ref = ref;
+                    blended->verts = g_61c510;
+                    blended->src = src;
+                    blended++;
+                }
+                else
+                {
+                    opaque->poly = poly;
+                    opaque->ref = ref;
+                    opaque->verts = g_61c510;
+                    opaque->src = src;
+                    opaque++;
+                }
+            }
+            idx++;
+        }
+        vis++;
+    }
+    lists[0] = opaque;
+    lists[2] = blended;
+}
+
 // FUNCTION: STUNTGP_D3D 0x42a840
 void FUN_42a840(Scene *scene)
 {

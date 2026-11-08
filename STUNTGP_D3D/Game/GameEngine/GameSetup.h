@@ -8,7 +8,11 @@ struct Unk4d5cc0
     short unk00;
     BYTE unk02[0x1a];
     DWORD unk1c;
-    BYTE unk20[0x1c];
+    WORD unk20;
+    WORD unk22;
+    WORD unk24;
+    WORD unk26;
+    BYTE unk28[0x14];
     int unk3c;
     BYTE unk40[0x19d00 - 0x40];
 };
@@ -71,7 +75,11 @@ struct RaceEntry
     int unk004;            // 0x004
     int unk008;            // 0x008
     int unk00c;            // 0x00c
-    char unk010[0x24];     // 0x010
+    BYTE unk010[0x14];     // 0x010
+    int unk024;            // 0x024
+    int unk028;            // 0x028
+    int unk02c;            // 0x02c
+    int unk030;            // 0x030
     BYTE unk034[0x104];    // 0x034
     RaceResult result;     // 0x138
 };

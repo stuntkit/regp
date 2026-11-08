@@ -316,6 +316,88 @@ void FUN_42e870()
 }
 
 extern SlotFx *g_61b740;
+extern DWORD g_60eff4;
+extern int g_6244fc;
+extern int g_624500;
+
+// Cell of the large HUD digit texture.
+struct HudDigit
+{
+    int texture;  // 0x00
+    float u0;     // 0x04
+    float v0;     // 0x08
+    float u1;     // 0x0c
+    float v1;     // 0x10
+    float width;  // 0x14
+    float height; // 0x18
+};
+
+// GLOBAL: STUNTGP_D3D 0x4720d8
+HudDigit g_4720d8[11] = {
+    {12, 4.0f, 4.0f, 192.0f, 256.0f, 47.0f, 63.0f},
+    {12, 4.0f, 260.0f, 192.0f, 512.0f, 47.0f, 63.0f},
+    {12, 4.0f, 516.0f, 192.0f, 768.0f, 47.0f, 63.0f},
+    {12, 4.0f, 772.0f, 192.0f, 1024.0f, 47.0f, 63.0f},
+    {12, 196.0f, 4.0f, 384.0f, 256.0f, 47.0f, 63.0f},
+    {12, 196.0f, 260.0f, 384.0f, 512.0f, 47.0f, 63.0f},
+    {12, 196.0f, 516.0f, 384.0f, 768.0f, 47.0f, 63.0f},
+    {12, 196.0f, 772.0f, 384.0f, 1024.0f, 47.0f, 63.0f},
+    {12, 388.0f, 4.0f, 576.0f, 256.0f, 47.0f, 63.0f},
+    {12, 388.0f, 260.0f, 576.0f, 512.0f, 47.0f, 63.0f},
+    {12, 388.0f, 516.0f, 576.0f, 768.0f, 47.0f, 63.0f},
+};
+
+// Draws the remaining race time (frames in g_60eff4) as three large digits, flashing red in the
+// last ten seconds.
+// FUNCTION: STUNTGP_D3D 0x44aad0
+void FUN_44aad0()
+{
+    float x;
+    int shown;
+    float y;
+    int i;
+    if (g_60eff4 && g_60eff4 <= 5400)
+    {
+        g_spriteDesc.flags = 0x22;
+        g_spriteDesc.z = 0.98f;
+        g_spriteDesc.blendMode = 0x48;
+        g_spriteDesc.alpha = 0xc0;
+        g_spriteDesc.color = 0xffff64;
+        if (g_60eff4 < 600 && (g_60eff4 / 30 & 1))
+        {
+            g_spriteDesc.color = 0xff0000;
+        }
+        float left = (float)(5400 - g_60eff4);
+        if (left > 128.0f)
+        {
+            left = 128.0f;
+        }
+        int div = 100;
+        x = left - 160.0f + g_61b740->faders[6].x + g_6244fc;
+        shown = 0;
+        y = g_624500 + (g_61b740->faders[6].y + 4.0f);
+        for (i = 0; i < 3; i++)
+        {
+            DWORD digit = g_60eff4 / (div * 60) % 10;
+            if (digit || shown || i >= 2)
+            {
+                g_spriteDesc.y = y;
+                g_spriteDesc.x = x;
+                shown = 1;
+                g_spriteDesc.u0 = g_4720d8[digit].u0;
+                g_spriteDesc.v0 = g_4720d8[digit].v0;
+                g_spriteDesc.u1 = g_4720d8[digit].u1;
+                g_spriteDesc.v1 = g_4720d8[digit].v1;
+                g_spriteDesc.texture = g_4720d8[digit].texture;
+                g_spriteDesc.width = g_4720d8[digit].width;
+                g_spriteDesc.height = g_4720d8[digit].height;
+                FUN_432e00(&g_spriteDesc);
+            }
+            x += 40.0f;
+            div /= 10;
+        }
+    }
+}
 
 // Shakes the HUD faders by the car's clamped jolt.
 // FUNCTION: STUNTGP_D3D 0x44ac90
