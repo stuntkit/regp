@@ -547,6 +547,19 @@ struct MenuHolder
     PoolObject *child; // 0x14
 };
 
+// Controls page: each field cycles through its options.
+struct Unk455fc0
+{
+    DWORD unk00[5];    // 0x00
+    PoolObject *child; // 0x14
+    int unk18;         // 0x18
+    int unk1c;         // 0x1c
+    int unk20;         // 0x20
+    int unk24;         // 0x24
+    int unk28;         // 0x28
+    int unk2c;         // 0x2c
+};
+
 struct Unk457770
 {
     DWORD unk00[5];    // 0x00

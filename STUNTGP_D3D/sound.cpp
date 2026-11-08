@@ -581,9 +581,3 @@ void Sound_Shutdown()
         }
     }
 }
-
-// STUB: STUNTGP_D3D 0x461150
-int FUN_461150(int id, int a, int b, int volume, int c, int d, int e)
-{
-    return 0;
-}
