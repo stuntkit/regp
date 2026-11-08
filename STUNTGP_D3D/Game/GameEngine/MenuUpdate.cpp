@@ -3841,29 +3841,15 @@ struct Unk452000
     float unk34;    // 0x34
 };
 
-// Car part page with named fields; groups is laid out as in Unk451a50.
-struct Unk451aa0
-{
-    DWORD unk00[5];    // 0x00
-    PoolObject *child; // 0x14
-    int unk18;         // 0x18, selected item
-    int unk1c;         // 0x1c, selected group
-    float unk20;       // 0x20
-    float unk24;       // 0x24
-    float unk28;       // 0x28
-    float unk2c;       // 0x2c
-    float unk30;       // 0x30
-    float unk34;       // 0x34
-    float unk38[3];    // 0x38, shown stat bars
-    float unk44[3];    // 0x44, stat targets
-    int groups[0x31];  // 0x50
-    char unk114[0x20]; // 0x114
-    int unk134[1];     // 0x134
-};
+// GLOBAL: STUNTGP_D3D 0x624b18
+MenuItem g_624b18[5];
 
-// Sprite ids of the three stat bars.
-// GLOBAL: STUNTGP_D3D 0x4869c4
-int g_4869c4[3] = {0x3f, 0x3d, 0x3e};
+// Part menu; unk2c and g_4869c8 are the sprite ids of the three stat bars.
+// GLOBAL: STUNTGP_D3D 0x486998
+MenuDef g_486998 = {0xb, 1.0f, 0, 507.0f, 400.0f, 0.8f, 2, 1.1f, 4, 0x8c, g_624b18, 0x3f};
+
+// GLOBAL: STUNTGP_D3D 0x4869c8
+int g_4869c8[2] = {0x3d, 0x3e};
 
 void FUN_438230(int layer, int def, float x, float y, float middle, DWORD flags);
 void FUN_438a20(float x, float y, int layer, int sub, int style, const char *text, float size, D3DCOLOR color,
@@ -3895,7 +3881,7 @@ void FUN_451ed0(Unk451aa0 *object)
     {
         float y = i * 20 + 384.0f;
         FUN_438be0(x0, y, 12, 2, i + 0x1c, 1.0f, 0xffffffff, 6);
-        FUN_451fd0(g_4869c4[i], barX, y, object->unk38[i] * 20.0f);
+        FUN_451fd0((&g_486998.unk2c)[i], barX, y, object->unk38[i] * 20.0f);
     }
 }
 

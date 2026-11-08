@@ -435,7 +435,7 @@ struct MenuState
     int unk4388; // 0x4388
     int unk438c; // 0x438c
     int unk4390; // 0x4390
-    BYTE unk4394[0x4398 - 0x4394];
+    int unk4394; // 0x4394, set when the car page is left without a choice
     int unk4398;     // 0x4398, entries used in unk439c
     int unk439c[20]; // 0x439c
     BYTE unk43ec[0x43f4 - 0x43ec];
@@ -558,6 +558,30 @@ struct MenuHolder
     PoolObject *child; // 0x14
 };
 
+// Car part page with named fields; groups is laid out as in Unk451a50.
+struct Unk451aa0
+{
+    DWORD unk00[5];    // 0x00
+    PoolObject *child; // 0x14
+    int unk18;         // 0x18, selected item
+    int unk1c;         // 0x1c, selected group
+    float unk20;       // 0x20
+    float unk24;       // 0x24
+    float unk28;       // 0x28
+    float unk2c;       // 0x2c
+    float unk30;       // 0x30
+    float unk34;       // 0x34
+    float unk38[3];    // 0x38, shown stat bars
+    float unk44[3];    // 0x44, stat targets
+    int groups[48];    // 0x50
+    int unk110;        // 0x110, groups in use
+    char unk114[0x20]; // 0x114
+    int unk134[22];    // 0x134
+    BYTE unk18c[1][3]; // 0x18c, stats per item
+};
+
+extern MenuDef g_486998;
+
 // Per-player front-end panel; the arrays are indexed by player, 1 to 4.
 struct Unk456070
 {
@@ -654,6 +678,7 @@ int FUN_43c860(MenuList *list, MenuDef *def);
 void FUN_424bd0(float x, float y);
 int FUN_43d790(int value, int min, int max);
 float FUN_43d810(float current, float target, float rate);
+void FUN_43df60(float a, float b, float c, float d, float e, float f);
 int FUN_43dd70();
 void FUN_43dd90(int player);
 void FUN_43de40();

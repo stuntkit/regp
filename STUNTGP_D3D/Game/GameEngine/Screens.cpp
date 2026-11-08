@@ -259,7 +259,7 @@ void FUN_454450(PoolObject *object);
 int FUN_454460(PoolObject *object, int msg, int arg);
 int FUN_451700(PoolObject *object, int arg);
 void FUN_451a80(MenuHolder *object);
-int FUN_451aa0(PoolObject *object, int msg, int arg);
+int FUN_451aa0(Unk451aa0 *object, int msg, int arg);
 int FUN_45c4b0(Unk45c4b0 *object, int arg);
 void FUN_45c640(Unk45c670 *object);
 struct Unk45c6a0;
@@ -408,7 +408,7 @@ PoolClass g_486738 = {(void (*)(PoolObject *))FUN_450930, (int (*)(PoolObject *,
 PoolClass g_4868d0 = {(void (*)(PoolObject *))FUN_450e10, FUN_4512b0};
 
 // GLOBAL: STUNTGP_D3D 0x4869d0
-PoolClass g_4869d0 = {(void (*)(PoolObject *))FUN_451a80, FUN_451aa0};
+PoolClass g_4869d0 = {(void (*)(PoolObject *))FUN_451a80, (int (*)(PoolObject *, int, int))FUN_451aa0};
 
 // GLOBAL: STUNTGP_D3D 0x487920
 PoolClass g_487920 = {(void (*)(PoolObject *))FUN_452530, (int (*)(PoolObject *, int, int))FUN_452550};
@@ -999,9 +999,149 @@ int FUN_451700(PoolObject *object, int arg)
     return 0;
 }
 
-// STUB: STUNTGP_D3D 0x451aa0
-int FUN_451aa0(PoolObject *object, int msg, int arg)
+struct Unk451a50;
+struct Unk452000;
+int FUN_451e80(Unk451a50 *object, float x, float y);
+void FUN_451ed0(Unk451aa0 *object);
+void FUN_452000(Unk452000 *object, float x, float y);
+void FUN_452070(int id, float x, float y);
+void FUN_452130(Unk451aa0 *object, float x, float y, float phase);
+void FUN_4521b0(Unk451aa0 *object, int index);
+
+// Car part page: a grid of part groups, with the stats of the highlighted part.
+// FUNCTION: STUNTGP_D3D 0x451aa0
+int FUN_451aa0(Unk451aa0 *object, int msg, int arg)
 {
+    PoolObject *child;
+    int count;
+    int sel;
+    int item;
+    switch (msg)
+    {
+    case 0x13:
+    {
+        int music = 5;
+        if (g_menuState.unk4230 == 5)
+        {
+            music = 7;
+        }
+        FUN_4400a0(music);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(0x60, -0.3f, -0.5f);
+    }
+    case 0x14:
+        object->child->message(object->child, msg, 0);
+        return 0;
+    case 0xd:
+        count = object->groups[object->unk1c * 12];
+        if (object->unk18 >= count)
+        {
+            object->unk18 = count - 1;
+        }
+        if (object->unk18 > 0)
+        {
+            object->unk18--;
+            FUN_440890(msg);
+            FUN_440880(0x14);
+            return 0;
+        }
+        break;
+    case 0xe:
+        if (object->unk18 < object->groups[object->unk1c * 12] - 1)
+        {
+            object->unk18++;
+            FUN_440890(msg);
+            FUN_440880(0x14);
+            return 0;
+        }
+        break;
+    case 0xb:
+    case 0xc:
+        child = object->child;
+        if (child->message(child, msg, 0))
+        {
+            FUN_440880(0x14);
+        }
+        object->unk1c = child->message(child, 0x1a, 0);
+        return 0;
+    case 0x11:
+        g_menuState.unk4394 = 1;
+        FUN_440890(msg);
+        FUN_43eef0();
+        return 0;
+    case 0x10:
+        count = object->groups[object->unk1c * 12];
+        sel = object->unk18;
+        if (sel >= count)
+        {
+            sel = count - 1;
+        }
+        g_menuState.unk43f4[g_menuState.unk4238] = object->groups[object->unk1c * 12 + sel + 2];
+        FUN_440890(msg);
+        FUN_43eef0();
+        return 0;
+    case 1:
+        count = object->groups[object->unk1c * 12];
+        sel = object->unk18;
+        if (sel >= count)
+        {
+            sel = count - 1;
+        }
+        item = object->groups[object->unk1c * 12 + sel + 2];
+        object->unk44[0] = object->unk18c[item][0] * 0.01f;
+        object->unk44[1] = object->unk18c[item][1] * 0.01f;
+        object->unk44[2] = object->unk18c[item][2] * 0.01f;
+        return 0;
+    case 2:
+    {
+        object->child->message(object->child, msg, 0);
+        float phase = object->unk34 + 0.03f;
+        object->unk34 = phase - (int)phase;
+        int group = object->unk1c;
+        sel = object->unk18;
+        count = object->groups[group * 12];
+        if (sel >= count)
+        {
+            sel = count - 1;
+        }
+        float target = sel;
+        object->unk2c = target;
+        float row = group;
+        object->unk30 = row;
+        object->unk24 = FUN_43d810(object->unk24, target, 0.001f);
+        object->unk28 = FUN_43d810(object->unk28, row, 0.001f);
+        FUN_43df60(count, 1.0f, target, object->unk110, 1.0f, row);
+        for (int i = 0; i < 3; i++)
+        {
+            object->unk38[i] = FUN_43d810(object->unk38[i], object->unk44[i], 0.001f);
+        }
+        return 0;
+    }
+    case 3:
+        item = FUN_451e80((Unk451a50 *)object, object->unk24, object->unk28);
+        if (item > 0)
+        {
+            FUN_452070(item, object->unk24, object->unk28);
+        }
+        FUN_438190(0.0f, 0.0f, 640.0f, 480.0f);
+        count = object->groups[object->unk1c * 12];
+        sel = object->unk18;
+        if (sel >= count)
+        {
+            sel = count - 1;
+        }
+        item = object->groups[object->unk1c * 12 + sel + 2];
+        FUN_452130(object, 69.0f, 82.0f, object->unk28);
+        FUN_4521b0(object, item);
+        FUN_4392b0(0x184, 0);
+        object->child->message(object->child, msg, 0);
+        if (g_menuState.unk423c > 1)
+        {
+            FUN_452000((Unk452000 *)object, g_486998.x, g_486998.y);
+        }
+        FUN_451ed0(object);
+        break;
+    }
     return 0;
 }
 
@@ -1115,7 +1255,6 @@ struct Unk452550
 };
 
 void FUN_4527f0(int entry, int category);
-void FUN_43df60(float a, float b, float c, float d, float e, float f);
 
 // FUNCTION: STUNTGP_D3D 0x452550
 int FUN_452550(Unk452550 *object, int msg, int arg)
