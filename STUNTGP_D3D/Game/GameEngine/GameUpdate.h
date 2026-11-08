@@ -236,7 +236,8 @@ struct ReplayFrame
     char unk23;           // 0x23
     BYTE flags;           // 0x24
     BYTE unk25;           // 0x25
-    BYTE unk26[0x6];      // 0x26
+    char axisZ[3];        // 0x26, scaled by 127
+    char axisY[3];        // 0x29
 };
 
 // Ghost/replay buffer: 0x80 byte header followed by frames.
@@ -591,7 +592,9 @@ struct Car
     float unk265c;            // 0x265c
     float unk2660;            // 0x2660
     unsigned int unk2664;     // 0x2664
-    BYTE unk2668[0xc];        // 0x2668
+    BYTE unk2668[0x4];        // 0x2668
+    float unk266c;            // 0x266c steering bias, -1..1
+    BYTE unk2670[0x4];        // 0x2670
     int unk2674;              // 0x2674
     int unk2678;              // 0x2678
     BYTE unk267c[0x10];       // 0x267c

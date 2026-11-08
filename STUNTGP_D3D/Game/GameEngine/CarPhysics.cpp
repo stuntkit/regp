@@ -398,6 +398,56 @@ int g_499fac;
 
 void FUN_40cc90();
 
+// Pulls the steering bias towards zero when closing on the car ahead.
+// FUNCTION: STUNTGP_D3D 0x4064f0
+void FUN_4064f0()
+{
+    Car *car = g_4d5bb8;
+    Car *ahead = g_612948.unk03cc[car->unk24ac + 1];
+    if (ahead)
+    {
+        float gap = car->leaderGap - ahead->leaderGap;
+        if (gap > 0.0f && gap < 7500.0f)
+        {
+            float t = gap * 0.00013333333f;
+            t = t * t;
+            if (t < 0.1f)
+            {
+                t = 0.0f;
+            }
+            float v;
+            if (car->unk266c >= 0.0f)
+            {
+                v = car->unk266c - (1.0f - t);
+                if (v < 0.0f)
+                {
+                    v = 0.0f;
+                }
+                else if (v > 1.0f)
+                {
+                    v = 1.0f;
+                }
+            }
+            else
+            {
+                v = (1.0f - t) + car->unk266c;
+                if (v > 0.0f)
+                {
+                    v = 0.0f;
+                }
+                else if (v < -1.0f)
+                {
+                    v = -1.0f;
+                }
+            }
+            if ((float)fabs(v) < car->unk266c)
+            {
+                car->unk266c = v;
+            }
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x406610
 void FUN_406610()
 {

@@ -654,6 +654,42 @@ void FUN_419e90()
     }
 }
 
+extern Replay *g_570ac0;
+extern ReplayFrame *g_570ac4;
+extern ReplayFrame *g_4d5cb8;
+
+// Replay playback: interpolates the position between the two recorded frames and derives the velocity.
+// FUNCTION: STUNTGP_D3D 0x419ee0
+void FUN_419ee0()
+{
+    Vec4 a;
+    a.x = g_4d5cb8->pos[0];
+    a.y = g_4d5cb8->pos[1];
+    a.z = g_4d5cb8->pos[2];
+    Vec4 b;
+    b.x = g_570ac4->pos[0];
+    b.y = g_570ac4->pos[1];
+    b.z = g_570ac4->pos[2];
+    Vec4 d;
+    d.x = b.x - a.x;
+    d.y = b.y - a.y;
+    d.z = b.z - a.z;
+    d.x = d.x * g_570ac0->unk08;
+    d.y = g_570ac0->unk08 * d.y;
+    d.z = g_570ac0->unk08 * d.z;
+    b.x = d.x + a.x;
+    b.y = d.y + a.y;
+    b.z = d.z + a.z;
+    g_4d5bb8->unk1c9c = g_4d5bb8->unk1c8c;
+    g_4d5bb8->unk1c8c.x = b.x - g_4d5bb8->posX;
+    g_4d5bb8->unk1c8c.y = b.y - g_4d5bb8->posY;
+    g_4d5bb8->unk1c8c.z = b.z - g_4d5bb8->posZ;
+    g_4d5bb8->unk1cf0 = g_4d5bb8->axisZ.x * g_4d5bb8->unk1c8c.x + g_4d5bb8->axisZ.y * g_4d5bb8->unk1c8c.y +
+                        g_4d5bb8->axisZ.z * g_4d5bb8->unk1c8c.z;
+    g_4d5bb8->unk1bbc = b;
+    *(Vec4 *)&g_4d5bb8->posX = b;
+}
+
 void FUN_429510();
 
 // FUNCTION: STUNTGP_D3D 0x401d40

@@ -1058,6 +1058,30 @@ void FUN_41a4c0()
 
 void FUN_40c160();
 
+// Replay playback: rebuilds the car's orientation from the packed axes of the frame.
+// FUNCTION: STUNTGP_D3D 0x41a570
+void FUN_41a570()
+{
+    Vec4 x;
+    Vec4 z;
+    Vec4 y;
+    y.x = g_570ac4->axisY[0] * 0.007874016f;
+    y.y = g_570ac4->axisY[1] * 0.007874016f;
+    y.z = g_570ac4->axisY[2] * 0.007874016f;
+    z.x = g_570ac4->axisZ[0] * 0.007874016f;
+    z.y = g_570ac4->axisZ[1] * 0.007874016f;
+    z.z = g_570ac4->axisZ[2] * 0.007874016f;
+    x.x = z.y * y.z - z.z * y.y;
+    x.y = z.z * y.x - z.x * y.z;
+    x.z = z.x * y.y - z.y * y.x;
+    Vec3_Normalize(&x.x);
+    Vec3_Normalize(&y.x);
+    Vec3_Normalize(&z.x);
+    g_4d5bb8->axisX = x;
+    g_4d5bb8->axisY = y;
+    g_4d5bb8->axisZ = z;
+}
+
 // FUNCTION: STUNTGP_D3D 0x41a6a0
 void FUN_41a6a0()
 {
