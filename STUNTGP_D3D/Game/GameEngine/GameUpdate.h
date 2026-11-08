@@ -565,7 +565,7 @@ struct Car
     int unk1f0c;              // 0x1f0c
     unsigned int unk1f10;     // 0x1f10
     float unk1f14;            // 0x1f14
-    BYTE unk1f18[0x4];        // 0x1f18
+    int unk1f18;              // 0x1f18
     int unk1f1c;              // 0x1f1c
     float unk1f20;            // 0x1f20
     float unk1f24;            // 0x1f24
@@ -739,7 +739,8 @@ struct Car
     int unk26ac;              // 0x26ac
     Scene *unk26b0;        // 0x26b0
     Scene *unk26b4;        // 0x26b4
-    BYTE unk26b8[0x54];       // 0x26b8
+    Camera unk26b8;           // 0x26b8
+    BYTE unk2708[0x4];        // 0x2708
     float unk270c[16];        // 0x270c
     float wheelMatrix[4][16]; // 0x274c
     Vec4 unk284c;             // 0x284c
@@ -753,7 +754,8 @@ struct Car
     int unk28a0;              // 0x28a0
     int unk28a4;              // 0x28a4
     int unk28a8;              // 0x28a8
-    BYTE unk28ac[0x8];        // 0x28ac
+    int unk28ac;              // 0x28ac
+    float unk28b0;            // 0x28b0
     int unk28b4;              // 0x28b4
     int unk28b8;              // 0x28b8
     TrailSlot unk28bc[2];     // 0x28bc
@@ -833,7 +835,7 @@ struct Car
     int unk7614;              // 0x7614
     int unk7618;              // 0x7618
     int unk761c;              // 0x761c, spark frames left
-    BYTE unk7620[0x4];        // 0x7620
+    unsigned int unk7620;     // 0x7620
 
     unsigned int unk7624;     // 0x7624
 

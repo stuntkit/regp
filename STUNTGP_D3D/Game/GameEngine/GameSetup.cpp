@@ -808,9 +808,184 @@ void FUN_401f00()
 }
 
 
-// STUB: STUNTGP_D3D 0x40a2f0
+extern float g_482670;
+void FUN_40a2c0(float (*m)[16]);
+void FUN_40a160();
+void FUN_40a1d0();
+
+// Clears every car and loads the default vehicle setup into car 0.
+// FUNCTION: STUNTGP_D3D 0x40a2f0
 void FUN_40a2f0()
 {
+    memset(g_49a1f8, 0, sizeof(Car) * 8);
+    g_4d5bb8 = g_49a1f8;
+    g_49a1f8[0].active = 1;
+    Matrix_Identity(g_49a1f8[0].matrix);
+    Matrix_Identity(g_4d5bb8->unk1c0c);
+    Matrix_Identity(g_4d5bb8->unk1c4c);
+    Car *car = g_4d5bb8;
+    car->posX = 0.0f;
+    car->posY = 0.0f;
+    car->posZ = 0.0f;
+    car->unk1cac.x = 0.0f;
+    car->unk1cac.y = 0.0f;
+    car->unk1cac.z = 0.0f;
+    car->unk1c8c.x = 0.0f;
+    car->unk1c8c.y = 0.0f;
+    car->unk1c8c.z = 0.0f;
+    car->unk1c9c.x = 0.0f;
+    car->unk1c9c.y = 0.0f;
+    car->unk1c9c.z = 0.0f;
+    car->unk22ec = 0.0f;
+    car->unk22f4 = 0.0f;
+    car->unk22f0 = 180.0f;
+    car->unk22fc = 1000.0f;
+    g_49a1f8[0].unk26b4 = g_636418[5].scene;
+    g_49a1f8[0].unk26b0 = g_636418[4].scene;
+    FUN_40a2c0((float(*)[16])car->unk270c);
+    g_49a1f8[0].unk26b8 = g_4864e8;
+    g_49a1f8[0].unk26b8.target.x = g_4864e8.pos.x + g_4864e8.target.x;
+    g_49a1f8[0].unk26b8.target.y = g_49a1f8[0].unk26b8.pos.y + g_49a1f8[0].unk26b8.target.y;
+    g_49a1f8[0].unk26b8.target.z = g_49a1f8[0].unk26b8.pos.z + g_49a1f8[0].unk26b8.target.z;
+    car = g_4d5bb8;
+    // STRING: STUNTGP_D3D 0x472c60
+    strcpy((char *)car->unk0000, "VehicleConfig v0.5");
+    car->unk220 = 1000.0f;
+    car->unk224 = 0.5f;
+    car->unk228 = 0.5f;
+    car->unk22c = 30.000002f;
+    car->unk230 = 244.0f;
+    car->unk234 = 152.0f;
+    car->unk238 = 152.0f;
+    car->unk23c = 400.0f;
+    car->unk240 = 152.0f;
+    car->unk244 = 115.0f;
+    car->unk24c = 25.0f;
+    car->unk250 = 1.0f;
+    int i;
+    for (i = 0; i < 128; i++)
+    {
+        car->unk258[i] = 1.0f;
+    }
+    car->unkd58 = 2.5f;
+    car->unkd5c = 0.4f;
+    car->unk28a8 = 0xff;
+    car->unk28b0 = -60.0f;
+    car->unk28ac = 0;
+    car->unk2cf4[0] = 0.0f;
+    car->unk2cf4[1] = 0.0f;
+    car->unk2cf4[2] = 0.0f;
+    car->unk2cf4[3] = 0.0f;
+    car->unkcac = 0.6f;
+    car->unkcb0 = 0.3f;
+    car->unkcb4 = 1.86f;
+    car->unk1fd0 = 1.0f;
+    for (i = 0; i < 4; i++)
+    {
+        car->unkcb8[i].x = 0.33f;
+        car->unkcb8[i].y = 30.0f;
+        car->wheels[i].unk0c = g_482670;
+        car->unkcb8[i].z = 0.7f;
+        car->unkcb8[i].w = 0.4f;
+        car->suspension[i].maxTravelIn = 10.0f;
+        car->suspension[i].maxDampingIn = 0.8f;
+        car->suspension[i].maxStiffnessIn = 0.005f;
+        car->suspension[i].maxTravelOut = 10.0f;
+        car->suspension[i].maxDampingOut = 0.8f;
+        car->suspension[i].maxStiffnessOut = 0.005f;
+    }
+    car->unkc70 = 0;
+    car->unkca0 = 0.5f;
+    car->unkc74 = 6;
+    car->unkc78 = 0;
+    car->unk1f10 = 1;
+    car->unk1f14 = 1.0f;
+    car->unk1f18 = 0;
+    car->unkc7c[1] = -2.06f;
+    car->unkc7c[2] = 0.0f;
+    car->unkc7c[3] = 3.36f;
+    car->unkc7c[4] = 2.06f;
+    car->unkc7c[5] = 1.38f;
+    car->unkc7c[6] = 1.04f;
+    car->unkc7c[7] = 0.92f;
+    car->unkc7c[8] = 0.8f;
+    car->unkc7c[0] = 3.89f;
+    car->unkca4 = 0.9f;
+    car->inputMode = 2;
+    car->unk2298 = 0;
+    car->unk229c = 0;
+    for (i = 0; i < 128; i++)
+    {
+        car->unk1188[0][i] = 1.0f;
+        car->unk1188[1][i] = 1.0f;
+        car->unk1188[2][i] = 1.0f;
+        car->unk1188[3][i] = 1.0f;
+        car->unk1188[4][i] = 1.0f;
+    }
+    car->unk045c = 9000.0f;
+    car->unk464 = 7000.0f;
+    car->unk460 = 150.0f;
+    car->unk468 = 0.97f;
+    car->unk1d04 = 300.0f;
+    car->unk46c = 394.0f;
+    FUN_40a160();
+    FUN_40a1d0();
+    car = g_4d5bb8;
+    car->unk2250 = 0;
+    car->unkd60 = 25.0f;
+    car->unkd68 = 0.6f;
+    car->unkd64 = 5000.0f;
+    car->unkd6c = 0.5f;
+    car->unk2258 = 1.0f;
+    car->unkf70 = 0.01f;
+    car->unkf74 = 0.3f;
+    unsigned int n;
+    for (n = 0; n < 128; n++)
+    {
+        car->unkd70[n] = n * 0.0078125f;
+    }
+    car->unkf78 = 75.0f;
+    car->unk2270 = 75.0f;
+    car->unkf7c = 1.0f;
+    car->unkf80 = 0.005f;
+    car->unk1184 = 1.0f;
+    for (i = 0; i < 128; i++)
+    {
+        car->unkf84[i] = 1.0f;
+    }
+    car->unkf84[0] = 0.0f;
+    car->unk1b94 = 18.0f;
+    car->unk1b98 = 4.002f;
+    car->unk1b9c = car->unk220 * 25.0f;
+    car->unk1ba0 = 7500.0f;
+    car->unk1ba4 = 7500.0f;
+    car->unk1fd8 = 0;
+    car->unk71ec = 0;
+    car->unk71f0 = 0;
+    car->unk71f8 = 0;
+    car->unk71fc = 0;
+    car->unk7200 = 0;
+    car->unk7234 = 0;
+    car->unk7238 = 20000.0f;
+    car->unk2568 = 0;
+    car->unk256c = 1000;
+    car->unk2574 = 1000.0f;
+    car->unk2570 = 1000.0f;
+    car->unk2274 = car->unk1184;
+    car->race.unk80[1] = 1;
+    car->race.unk80[2] = 6;
+    car->race.unk80[3] = 11;
+    for (n = 0; n < 128; n++)
+    {
+        if (n < 51.2f)
+        {
+            car->tyreFrictionEnv[n] = 1.0f;
+        }
+        else
+        {
+            car->tyreFrictionEnv[n] = 0.4f;
+        }
+    }
 }
 
 // GLOBAL: STUNTGP_D3D 0x5898c8
