@@ -152,6 +152,7 @@ if(STUNTGP_BUILD_D3D)
     STUNTGP_D3D/Game/GameEngine/Camera.cpp
     STUNTGP_D3D/Game/GameEngine/Hud.cpp
     STUNTGP_D3D/fetext.cpp
+    STUNTGP_D3D/Game/GameEngine/Screens.cpp
   )
   reccmp_add_target(StuntGP_D3D ID STUNTGP_D3D)
 

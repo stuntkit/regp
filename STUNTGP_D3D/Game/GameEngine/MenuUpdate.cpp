@@ -3211,7 +3211,7 @@ void FUN_441210()
 }
 
 // FUNCTION: STUNTGP_D3D 0x450400
-int FUN_450400(Unk4516c0 *object)
+int FUN_450400(Unk4516c0 *object, int arg)
 {
     object->unk1c = 0;
     object->unk20 = 0x167;
@@ -3285,7 +3285,7 @@ void FUN_4507e0(Unk4516c0 *object)
 }
 
 // FUNCTION: STUNTGP_D3D 0x450880
-int FUN_450880(Unk450930 *object)
+int FUN_450880(Unk450930 *object, int arg)
 {
     MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
     memset(list, 0, sizeof(MenuList));
@@ -3436,7 +3436,7 @@ void FUN_450db0(Unk4516c0 *object);
 void FUN_450dd0(Unk4516c0 *object);
 
 // FUNCTION: STUNTGP_D3D 0x450c10
-int FUN_450c10(Unk4516c0 *object)
+int FUN_450c10(Unk4516c0 *object, int arg)
 {
     object->unk28 = 0;
     MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
@@ -3608,7 +3608,7 @@ int FUN_4527d0(int index)
 }
 
 // FUNCTION: STUNTGP_D3D 0x452940
-int FUN_452940(MenuHolder *object)
+int FUN_452940(MenuHolder *object, int arg)
 {
     MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
     memset(list, 0, sizeof(MenuList));
@@ -3655,7 +3655,7 @@ void FUN_452ac0()
 }
 
 // FUNCTION: STUNTGP_D3D 0x452b30
-int FUN_452b30(MenuObject *object)
+int FUN_452b30(MenuObject *object, int arg)
 {
     object->unk14 = 0;
     object->unk18 = 0;
@@ -3683,7 +3683,7 @@ int FUN_452d70(int id)
 }
 
 // FUNCTION: STUNTGP_D3D 0x452fc0
-int FUN_452fc0(MenuObject *object)
+int FUN_452fc0(MenuObject *object, int arg)
 {
     object->unk14 = 0;
     return 1;
@@ -3692,7 +3692,7 @@ int FUN_452fc0(MenuObject *object)
 void FUN_4531a0(Unk4516c0 *object);
 
 // FUNCTION: STUNTGP_D3D 0x4530b0
-int FUN_4530b0(Unk4516c0 *object)
+int FUN_4530b0(Unk4516c0 *object, int arg)
 {
     MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
     memset(list, 0, sizeof(MenuList));
@@ -3790,7 +3790,7 @@ void FUN_4536f0(MenuHolder *object)
 }
 
 // FUNCTION: STUNTGP_D3D 0x454220
-int FUN_454220(MenuHolder *object)
+int FUN_454220(MenuHolder *object, int arg)
 {
     MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
     memset(list, 0, sizeof(MenuList));
@@ -3825,7 +3825,7 @@ void FUN_4542a0(MenuHolder *object)
 }
 
 // FUNCTION: STUNTGP_D3D 0x454410
-int FUN_454410(Unk454b20 *object)
+int FUN_454410(Unk454b20 *object, int arg)
 {
     object->unk1c = 0;
     object->unk20 = 0;
@@ -3969,7 +3969,7 @@ void FUN_455410(MenuHolder *object)
 }
 
 // FUNCTION: STUNTGP_D3D 0x4555e0
-int FUN_4555e0(MenuHolder *object)
+int FUN_4555e0(MenuHolder *object, int arg)
 {
     MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
     memset(list, 0, sizeof(MenuList));
@@ -4006,7 +4006,7 @@ void FUN_455690(MenuHolder *object)
 }
 
 // FUNCTION: STUNTGP_D3D 0x4557e0
-int FUN_4557e0()
+int FUN_4557e0(PoolObject *object, int arg)
 {
     FUN_43dc40();
     return 1;
@@ -4090,7 +4090,7 @@ void FUN_455d70(MenuHolder *object)
 }
 
 // FUNCTION: STUNTGP_D3D 0x455c70
-int FUN_455c70(Unk455fc0 *object)
+int FUN_455c70(Unk455fc0 *object, int arg)
 {
     MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
     memset(list, 0, sizeof(MenuList));
@@ -4152,7 +4152,7 @@ int FUN_456000()
 }
 
 // FUNCTION: STUNTGP_D3D 0x456010
-int FUN_456010(Unk456070 *object)
+int FUN_456010(Unk456070 *object, int arg)
 {
     object->unk1c = 0x293;
     object->unk14 = 15;

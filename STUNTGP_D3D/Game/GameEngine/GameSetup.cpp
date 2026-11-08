@@ -2218,7 +2218,7 @@ void FUN_45a3f0(MenuHolder *object)
 }
 
 // FUNCTION: STUNTGP_D3D 0x45a610
-int FUN_45a610(MenuObject *object)
+int FUN_45a610(MenuObject *object, int arg)
 {
     object->unk14 = 0;
     return 1;
@@ -2286,7 +2286,7 @@ void FUN_45ba30(Unk45ba30 *object)
 }
 
 // FUNCTION: STUNTGP_D3D 0x45bba0
-int FUN_45bba0(MenuObject *object)
+int FUN_45bba0(MenuObject *object, int arg)
 {
     object->unk14 = 1;
     return 1;
@@ -2305,7 +2305,7 @@ void FUN_43dc40();
 void FUN_45c050(MenuObject *object);
 
 // FUNCTION: STUNTGP_D3D 0x45c030
-int FUN_45c030(MenuObject *object)
+int FUN_45c030(MenuObject *object, int arg)
 {
     FUN_43dc40();
     FUN_43c400();
