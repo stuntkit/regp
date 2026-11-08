@@ -788,6 +788,56 @@ void FUN_44a4a0(DWORD value, int alt, float x, float y)
     }
 }
 
+extern DWORD g_60eff8;
+
+// Draws the position panel on fader 5: frame, label, current and total counts, and its shadow.
+// FUNCTION: STUNTGP_D3D 0x44a5c0
+void FUN_44a5c0()
+{
+    if (g_4722d0->data->unk23c4 == -1)
+    {
+        return;
+    }
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.z = 0.94f;
+    g_spriteDesc.u0 = 684.0f;
+    g_spriteDesc.v0 = 120.0f;
+    g_spriteDesc.u1 = 916.0f;
+    g_spriteDesc.v1 = 260.0f;
+    g_spriteDesc.x = g_61b740->faders[5].x - 46.4f + 0.8f;
+    g_spriteDesc.width = 46.4f;
+    g_spriteDesc.height = 28.0f;
+    g_spriteDesc.texture = 12;
+    g_spriteDesc.blendMode = 0x20;
+    g_spriteDesc.y = g_61b740->faders[5].y + 65.0f - 0.5f;
+    FUN_432e00(&g_spriteDesc);
+    g_spriteDesc.z = 0.94f;
+    g_spriteDesc.u0 = 684.0f;
+    g_spriteDesc.y = g_61b740->faders[5].y + 65.0f;
+    g_spriteDesc.x = g_61b740->faders[5].x;
+    g_spriteDesc.v0 = 0.0f;
+    g_spriteDesc.u1 = 1016.0f;
+    g_spriteDesc.v1 = 108.0f;
+    g_spriteDesc.width = 66.4f;
+    g_spriteDesc.height = 21.6f;
+    FUN_432e00(&g_spriteDesc);
+    FUN_44a4a0(g_60eff8, 0, g_61b740->faders[5].x + 50.4f, g_61b740->faders[5].y + 65.0f);
+    FUN_44a4a0(g_4722d0->data->unk23a4, 1, g_61b740->faders[5].x + 50.4f - 38.0f, g_61b740->faders[5].y + 65.0f);
+    g_spriteDesc.z = 0.96f;
+    g_spriteDesc.u0 = 524.0f;
+    g_spriteDesc.v0 = 672.0f;
+    g_spriteDesc.x = g_61b740->faders[5].x + 2.4f;
+    g_spriteDesc.u1 = 816.0f;
+    g_spriteDesc.v1 = 744.0f;
+    g_spriteDesc.width = 58.4f;
+    g_spriteDesc.height = 14.400001f;
+    g_spriteDesc.y = g_61b740->faders[5].y + 67.4f;
+    g_spriteDesc.texture = 11;
+    g_spriteDesc.blendMode = 0x48;
+    g_spriteDesc.alpha = 0x80;
+    FUN_432e00(&g_spriteDesc);
+}
+
 struct QuadVertex
 {
     float x;     // 0x00

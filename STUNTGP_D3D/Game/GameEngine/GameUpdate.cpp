@@ -3271,6 +3271,64 @@ void FUN_447c90()
     FUN_442de0();
 }
 
+// Moves HUD faders 1-7 out by their offsets, scaled by their own value plus the master fader's,
+// capped at 100.
+// FUNCTION: STUNTGP_D3D 0x447d80
+void FUN_447d80()
+{
+    SlotFx *fx = g_61b740;
+    float v;
+    v = fx->faders[1].value + fx->faders[0].value;
+    if (v > 100.0f)
+    {
+        v = 100.0f;
+    }
+    fx->faders[1].x = fx->faders[1].dx * v * 0.01f + fx->faders[1].unk08;
+    fx->faders[1].y = fx->faders[1].dy * v * 0.01f + fx->faders[1].unk0c;
+    v = fx->faders[2].value + fx->faders[0].value;
+    if (v > 100.0f)
+    {
+        v = 100.0f;
+    }
+    fx->faders[2].x = fx->faders[2].dx * v * 0.01f + fx->faders[2].unk08;
+    fx->faders[2].y = fx->faders[2].dy * v * 0.01f + fx->faders[2].unk0c;
+    v = fx->faders[7].value + fx->faders[0].value;
+    if (v > 100.0f)
+    {
+        v = 100.0f;
+    }
+    fx->faders[7].x = fx->faders[7].dx * v * 0.01f + fx->faders[7].unk08;
+    fx->faders[7].y = fx->faders[7].dy * v * 0.01f + fx->faders[7].unk0c;
+    v = fx->faders[3].value + fx->faders[0].value;
+    if (v > 100.0f)
+    {
+        v = 100.0f;
+    }
+    fx->faders[3].x = fx->faders[3].dx * v * 0.01f + fx->faders[3].unk08;
+    fx->faders[3].y = fx->faders[3].dy * v * 0.01f + fx->faders[3].unk0c;
+    v = fx->faders[4].value + fx->faders[0].value;
+    if (v > 100.0f)
+    {
+        v = 100.0f;
+    }
+    fx->faders[4].x = fx->faders[4].dx * v * 0.01f + fx->faders[4].unk08;
+    fx->faders[4].y = fx->faders[4].dy * v * 0.01f + fx->faders[4].unk0c;
+    v = fx->faders[5].value + fx->faders[0].value;
+    if (v > 100.0f)
+    {
+        v = 100.0f;
+    }
+    fx->faders[5].x = fx->faders[5].dx * v * 0.01f + fx->faders[5].unk08;
+    fx->faders[5].y = fx->faders[5].dy * v * 0.01f + fx->faders[5].unk0c;
+    v = fx->faders[6].value + fx->faders[0].value;
+    if (v > 100.0f)
+    {
+        v = 100.0f;
+    }
+    fx->faders[6].x = fx->faders[6].dx * v * 0.01f + fx->faders[6].unk08;
+    fx->faders[6].y = fx->faders[6].dy * v * 0.01f + fx->faders[6].unk0c;
+}
+
 extern float g_482678;
 extern float g_48267c;
 extern float g_482680;

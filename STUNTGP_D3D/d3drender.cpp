@@ -1299,6 +1299,63 @@ void FUN_42fa40()
     }
 }
 
+// Sets the default light, render and texture-stage states inside a scene.
+// FUNCTION: STUNTGP_D3D 0x42fa80
+BOOL FUN_42fa80()
+{
+    LPDIRECT3DDEVICE3 device = ((D3DDriver *)g_5ba788.deviceDesc)->device;
+    if (device->BeginScene() != D3D_OK)
+    {
+        return FALSE;
+    }
+    device->SetLightState(D3DLIGHTSTATE_MATERIAL, 0);
+    device->SetLightState(D3DLIGHTSTATE_AMBIENT, 0);
+    device->SetLightState(D3DLIGHTSTATE_COLORMODEL, D3DCOLOR_RGB);
+    device->SetLightState(D3DLIGHTSTATE_FOGMODE, D3DFOG_NONE);
+    device->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
+    device->SetRenderState(D3DRENDERSTATE_ANTIALIAS, D3DANTIALIAS_NONE);
+    device->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, TRUE);
+    device->SetRenderState(D3DRENDERSTATE_ZENABLE, TRUE);
+    device->SetRenderState(D3DRENDERSTATE_ZFUNC, D3DCMP_LESSEQUAL);
+    device->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, TRUE);
+    device->SetRenderState(D3DRENDERSTATE_FILLMODE, D3DFILL_SOLID);
+    device->SetRenderState(D3DRENDERSTATE_SHADEMODE, D3DSHADE_GOURAUD);
+    device->SetRenderState(D3DRENDERSTATE_MONOENABLE, FALSE);
+    device->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, TRUE);
+    device->SetRenderState(D3DRENDERSTATE_LASTPIXEL, FALSE);
+    device->SetRenderState(D3DRENDERSTATE_TEXTUREMAG, D3DFILTER_LINEAR);
+    device->SetRenderState(D3DRENDERSTATE_TEXTUREMIN, D3DFILTER_LINEAR);
+    device->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_ONE);
+    device->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ZERO);
+    device->SetRenderState(D3DRENDERSTATE_CULLMODE, D3DCULL_NONE);
+    device->SetRenderState(D3DRENDERSTATE_ALPHAREF, 0xf0);
+    device->SetRenderState(D3DRENDERSTATE_ALPHAFUNC, D3DCMP_GREATEREQUAL);
+    device->SetRenderState(D3DRENDERSTATE_DITHERENABLE, TRUE);
+    device->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, FALSE);
+    device->SetRenderState(D3DRENDERSTATE_FOGENABLE, FALSE);
+    device->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, FALSE);
+    device->SetRenderState(D3DRENDERSTATE_SUBPIXEL, TRUE);
+    device->SetRenderState(D3DRENDERSTATE_SUBPIXELX, FALSE);
+    device->SetRenderState(D3DRENDERSTATE_STIPPLEDALPHA, FALSE);
+    device->SetRenderState(D3DRENDERSTATE_FOGCOLOR, 0);
+    device->SetRenderState(D3DRENDERSTATE_FOGTABLEMODE, D3DFOG_NONE);
+    device->SetRenderState(D3DRENDERSTATE_FOGTABLEDENSITY, 1);
+    device->SetRenderState(D3DRENDERSTATE_EDGEANTIALIAS, FALSE);
+    device->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, FALSE);
+    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+    g_d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+    g_d3dDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+    g_d3dDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+    g_d3dDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+    FUN_42f9c0();
+    FUN_42f930();
+    FUN_42fa10();
+    FUN_42fa00();
+    FUN_42fa40();
+    return device->EndScene() == D3D_OK;
+}
+
 // Total video memory reported by ddGetMemory.
 // GLOBAL: STUNTGP_D3D 0x5da1cc
 DWORD g_5da1cc;
