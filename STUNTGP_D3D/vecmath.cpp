@@ -482,6 +482,39 @@ void FUN_44fa00(float *m)
     Vec3_Normalize(m + 8);
 }
 
+// Inverse of the yaw/pitch/roll rotation: the angles negated, applied in reverse order.
+// FUNCTION: STUNTGP_D3D 0x44fa20
+void FUN_44fa20(float *m, int yaw, int pitch, int roll)
+{
+    yaw = -yaw & 0x1fff;
+    pitch = -pitch & 0x1fff;
+    roll = -roll & 0x1fff;
+    m[15] = 1.0f;
+    float cy = g_cosTable[yaw];
+    float cp = g_cosTable[pitch];
+    float cr = g_cosTable[roll];
+    float sy = g_sinTable[yaw];
+    float sp = g_sinTable[pitch];
+    float sr = g_sinTable[roll];
+    float spcr = sp * cr;
+    m[3] = 0.0f;
+    m[7] = 0.0f;
+    m[11] = 0.0f;
+    m[12] = 0.0f;
+    m[0] = cr * cp;
+    m[13] = 0.0f;
+    m[14] = 0.0f;
+    m[1] = spcr * sy + sr * cy;
+    m[2] = sr * sy - spcr * cy;
+    float srsp = sr * sp;
+    m[4] = -(sr * cp);
+    m[5] = cr * cy - srsp * sy;
+    m[6] = sy * cr + srsp * cy;
+    m[8] = sp;
+    m[9] = -(sy * cp);
+    m[10] = cp * cy;
+}
+
 // FUNCTION: STUNTGP_D3D 0x44fb00
 void FUN_44fb00(float *m, DWORD yaw, DWORD pitch, DWORD roll)
 {
