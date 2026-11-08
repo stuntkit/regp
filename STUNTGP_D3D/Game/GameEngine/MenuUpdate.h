@@ -26,6 +26,15 @@ struct ScoreTable
     ScoreEntry entries[10];
 };
 
+struct ScoreList
+{
+    int unk00;           // 0x00
+    int unk04;           // 0x04
+    int unk08;           // 0x08
+    int count;           // 0x0c
+    ScoreEntry *entries; // 0x10
+};
+
 // High-score initials, copied as one 3-byte block.
 struct Initials
 {
@@ -322,7 +331,8 @@ struct MenuState
     int unk44d0; // 0x44d0
     BYTE unk44d4[0x45e8 - 0x44d4];
     int unk45e8; // 0x45e8
-    BYTE unk45ec[0x46a8 - 0x45ec];
+    BYTE unk45ec[0x4694 - 0x45ec];
+    ScoreList unk4694; // 0x4694, copied by FUN_459200
     int unk46a8; // 0x46a8
     int unk46ac[4]; // 0x46ac
     BYTE unk46bc[0x46c4 - 0x46bc];
@@ -370,10 +380,10 @@ struct MenuState
     int unk1d9a8; // 0x1d9a8
     BYTE unk1d9ac[0x1da5c - 0x1d9ac];
     int unk1da5c[6][2];           // 0x1da5c, read by FUN_434e10
-    BYTE unk1da8c[0x1da90 - 0x1da8c];
+    int unk1da8c;                 // 0x1da8c
     int unk1da90[4][2];           // 0x1da90
     MenuSlot unk1dab0[4];         // 0x1dab0, sorted by FUN_44d070
-    BYTE unk1dae0[0x1dae4 - 0x1dae0];
+    int unk1dae0;                 // 0x1dae0
     int unk1dae4; // 0x1dae4
 };
 
