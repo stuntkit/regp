@@ -5791,9 +5791,53 @@ void FUN_417ca0()
 }
 
 
-// STUB: STUNTGP_D3D 0x417f10
+// Swings the body panels against the car's sideways and forward acceleration.
+// FUNCTION: STUNTGP_D3D 0x417f10
 void FUN_417f10()
 {
+    if (g_4d5bb8->unk3134)
+    {
+        Vec4 v = g_4d5bb8->unk1cac;
+        Vec4 a = g_4d5bb8->unk3148;
+        Vec4 n;
+        n.x = a.z * g_4d5bb8->matrix[8] + a.y * g_4d5bb8->matrix[4] + a.x * g_4d5bb8->matrix[0];
+        n.y = a.z * g_4d5bb8->matrix[9] + a.y * g_4d5bb8->matrix[5] + a.x * g_4d5bb8->matrix[1];
+        n.z = a.z * g_4d5bb8->matrix[10] + a.y * g_4d5bb8->matrix[6] + a.x * g_4d5bb8->matrix[2];
+        float d = v.z * n.z + v.y * n.y + v.x * n.x;
+        Vec4 s;
+        s.x = d * n.x;
+        s.y = d * n.y;
+        s.z = d * n.z;
+        Vec4 t;
+        t.x = v.x - s.x;
+        t.y = v.y - s.y;
+        t.z = v.z - s.z;
+        v.x = (t.z * g_4d5bb8->axisZ.z + t.y * g_4d5bb8->axisZ.y + t.x * g_4d5bb8->axisZ.x) * -0.125f;
+        if (g_4d5bb8->unk2254 > 0.1f)
+        {
+            v.x = (g_4d5bb8->unk2254 * 4.0f / g_4d5bb8->unkd64 + 1.0f) * v.x;
+            if ((float)fabs(v.x) > 0.15f)
+            {
+                v.x = v.x < 0.0f ? -0.15f : 0.15f;
+            }
+        }
+        v.y = 0.0f;
+        v.z = (t.z * g_4d5bb8->axisX.z + t.y * g_4d5bb8->axisX.y + t.x * g_4d5bb8->axisX.x) * 0.125f;
+        CarWobble *w = g_4d5bb8->unk315c;
+        for (int k = 6; k != 0; k--, w++)
+        {
+            FUN_44ec00(w->ang, &a.x);
+            w->dir = a;
+            w->vel[0] = w->vel[0] - v.x;
+            w->vel[1] = w->vel[1] - v.y;
+            w->vel[2] = w->vel[2] - v.z;
+            w->ang[0] = w->vel[0] + w->ang[0];
+            w->ang[1] = w->vel[1] + w->ang[1];
+            w->ang[2] = w->vel[2] + w->ang[2];
+            w->vel[0] = (w->vel[0] - w->ang[0] * 0.03125f) * 0.9f;
+            w->vel[2] = (w->vel[2] - w->ang[2] * 0.03125f) * 0.9f;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x418150

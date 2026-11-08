@@ -184,6 +184,16 @@ struct TrailParams
     BYTE unk14[0xfc]; // 0x014
 };
 
+// Damped angular spring for a body panel, driven by FUN_417f10.
+struct CarWobble
+{
+    float ang[3]; // 0x00
+    float unk0c;  // 0x0c
+    float vel[3]; // 0x10
+    float unk1c;  // 0x1c
+    Vec4 dir;     // 0x20
+};
+
 struct CarFx
 {
     int active;         // 0x000
@@ -680,7 +690,8 @@ struct Car
     Vec4 unk3138;             // 0x3138
     Vec4 unk3148;             // 0x3148
     float unk3158;            // 0x3158
-    BYTE unk315c[0x130];      // 0x315c
+    CarWobble unk315c[6];     // 0x315c
+    BYTE unk327c[0x10];       // 0x327c
     CarFx unk328c;            // 0x328c
     CarFx unk33cc;            // 0x33cc
     BYTE unk350c[0x10];       // 0x350c
