@@ -432,6 +432,430 @@ void FUN_44bf10()
     FUN_43af20(&g_61bbe0, &g_61bed0);
 }
 
+int FUN_437230(int car, int mode);
+int FUN_437790(ScoreEntry *table, int count, Initials *name, int score);
+void FUN_437880(int index);
+int FUN_437de0(int sponsor, int car, ShopCar *setup);
+void FUN_437e20(int *settings);
+void FUN_43ae00(RaceSetup4 *src, RaceResults4 *dst);
+void FUN_43bf30();
+void FUN_43d500(int a);
+int FUN_43dc20(int first, int last);
+char *FUN_441170(int id);
+void FUN_44bd00();
+int FUN_44cc90(int value);
+void FUN_44ccc0();
+int FUN_44ccf0();
+void FUN_44cd10(int track, Initials *name, int time0, int time1, int score2, int score3);
+
+// GLOBAL: STUNTGP_D3D 0x61b9c0
+RaceResults4 g_61b9c0;
+
+// GLOBAL: STUNTGP_D3D 0x61b9c8
+char g_61b9c8[0x100];
+
+// GLOBAL: STUNTGP_D3D 0x61bac8
+RaceSetup4 g_61bac8;
+
+// GLOBAL: STUNTGP_D3D 0x61bdcc
+char g_61bdcc[0x100];
+
+// Championship state machine: sponsor and car choice, the shop, the rounds with their bonus
+// time trials, then the final tables.
+// FUNCTION: STUNTGP_D3D 0x44c0a0
+void FUN_44c0a0(PoolObject *object)
+{
+    int i;
+    int pos;
+    int team;
+    switch (g_menuState.unk4234)
+    {
+    case 0:
+        g_menuState.unk4238 = 0;
+        g_menuState.unk423c = 1;
+        g_menuState.unk424c = 0;
+        g_menuState.unk4248 = 0;
+        g_menuState.unk43f4[0] = 0;
+        g_menuState.unk1a540 = 0;
+        g_menuState.unk4234 = 1;
+        return;
+    case 1:
+        FUN_43dfa0(0x11, 0x1c);
+        g_menuState.unk4234 = 2;
+        return;
+    case 2:
+        if (g_menuState.unk4380)
+        {
+            FUN_43eef0();
+            return;
+        }
+        memset(&g_menuState.unk19d7c, 0, sizeof(g_menuState.unk19d7c));
+        g_menuState.unk19d78 = g_menuState.unk4384;
+        if (g_menuState.unk4388)
+        {
+            g_menuState.unk4234 = 3;
+            g_menuState.unk19d78 = g_menuState.unk4384;
+            return;
+        }
+        g_menuState.unk19d7c = g_menuState.unk0f1c[g_menuState.unk4384];
+        g_menuState.unk1a53c = 1;
+        g_menuState.unk4234 = 7;
+        return;
+    case 3:
+        g_menuState.unk4390 = 0;
+        g_menuState.unk4234 = 4;
+        FUN_43dfa0(0x12, 9);
+        return;
+    case 4:
+        if (!g_menuState.unk44d0)
+        {
+            FUN_43dfa0(0x13, 13);
+            g_menuState.unk4234 = 5;
+            return;
+        }
+        g_menuState.unk4234 = 1;
+        return;
+    case 5:
+        if (g_menuState.unk438c)
+        {
+            g_menuState.unk4234 = 3;
+            return;
+        }
+        team = 1;
+        g_menuState.unk19d7c.car = 0;
+        g_menuState.unk19d7c.unk000 = 1;
+        g_menuState.unk19d7c.unk008 = 1;
+        g_menuState.unk19d7c.money = g_menuState.sponsors[g_menuState.unk4390].unk00;
+        g_menuState.unk19d7c.name = *(Initials *)g_menuState.unk44d4[g_menuState.unk4238];
+        pos = 1;
+        g_menuState.unk19d7c.unk10c = 6;
+        g_menuState.unk19d7c.sponsor = g_menuState.unk4390;
+        g_menuState.unk19d7c.unk104 = 0;
+        g_menuState.unk19d7c.unk100 = 0;
+        for (i = 0; i < 5; i++)
+        {
+            if (g_menuState.unk19d7c.unk10c == pos)
+            {
+                pos++;
+            }
+            if (g_menuState.unk19d7c.sponsor == team)
+            {
+                team++;
+            }
+            g_menuState.unk19d7c.unk110[i][0] = 0;
+            g_menuState.unk19d7c.unk110[i][1] = 0;
+            g_menuState.unk19d7c.unk110[i][2] = team;
+            g_menuState.unk19d7c.unk110[i][3] = pos;
+            pos++;
+            team++;
+            if (g_menuState.unk19d7c.unk10c == pos)
+            {
+                pos++;
+            }
+            if (g_menuState.unk19d7c.sponsor == team)
+            {
+                team++;
+            }
+        }
+        g_menuState.unk4398 = 0;
+        for (i = 1; i < 21; i++)
+        {
+            int cost = FUN_437de0(g_menuState.unk19d7c.sponsor, i, &g_menuState.cars[i]);
+            if (FUN_437230(i, g_menuState.unk4230) && cost <= g_menuState.unk19d7c.money)
+            {
+                g_menuState.unk439c[g_menuState.unk4398] = i;
+                g_menuState.unk4398++;
+            }
+        }
+        g_menuState.unk4234 = 6;
+        FUN_43dfa0(0x14, 10);
+        return;
+    case 6:
+    {
+        if (g_menuState.unk4394)
+        {
+            g_menuState.unk4234 = 4;
+            return;
+        }
+        FUN_437e20((int *)&g_menuState.unk19d7c);
+        int car = g_menuState.unk43f4[g_menuState.unk4238];
+        g_menuState.unk19d7c.money -= FUN_437de0(g_menuState.unk19d7c.sponsor, car, &g_menuState.cars[car]);
+        g_menuState.unk19d7c.car = g_menuState.unk43f4[g_menuState.unk4238];
+        g_menuState.unk19d7c.carSetup = g_menuState.cars[car];
+        FUN_437e20((int *)&g_menuState.unk19d7c);
+        g_menuState.unk1a53c = 1;
+        g_menuState.unk4234 = 7;
+        return;
+    }
+    case 7:
+        FUN_44bd00();
+        switch (g_menuState.unk1a53c)
+        {
+        case 1:
+            g_menuState.unk1a53c = 0;
+            FUN_43dfa0(0x15, 14);
+            return;
+        case 2:
+            g_menuState.unk1a53c = 0;
+            g_menuState.unk4234 = 0x18;
+            return;
+        case 3:
+            g_menuState.unk1a53c = 0;
+            g_menuState.unk4234 = 5;
+            return;
+        case 4:
+            g_menuState.unk1a53c = 0;
+            g_menuState.unk4234 = 8;
+            return;
+        }
+        return;
+    case 8:
+        g_menuState.unk4404 = 0;
+        g_menuState.unk440c[0] = g_menuState.rounds[g_menuState.unk19d7c.unk008 - 1].track;
+        g_menuState.unk4408 = 1;
+        FUN_43dfa0(0x17, 11);
+        g_menuState.unk4234 = 9;
+        return;
+    case 9:
+        if (g_menuState.unk4404)
+        {
+            g_menuState.unk1a53c = 1;
+            g_menuState.unk4234 = 7;
+            return;
+        }
+        g_menuState.unk19d7c.carSetup.unk00 = 1;
+        for (i = 0; i < 14; i++)
+        {
+            g_menuState.unk19d7c.carSetup.parts[i][0] = 1;
+        }
+        FUN_44bf10();
+        FUN_43dfa0(0, 25);
+        g_menuState.unk4234 = 10;
+        return;
+    case 10:
+    {
+        if (g_61bed0.won)
+        {
+            g_menuState.unk4234 = 0x18;
+            return;
+        }
+        int scale = g_menuState.unk19d7c.unk008 > g_menuState.numberOfRounds ? 3 : 1;
+        FUN_44cd10(g_61bbe0.track, &g_menuState.unk19d7c.name, g_61bed0.results[0].unk04,
+                   g_61bed0.results[0].unk08, g_61bed0.results[0].unk0c, g_61bed0.results[0].unk10);
+        int(*tally)[4] = (int(*)[4]) & g_menuState.unk19d7c.unk100;
+        for (i = 0; i < 6; i++)
+        {
+            int position = g_61bed0.results[i].position;
+            tally[i][3] = FUN_43dc20(position, 6);
+            if (scale < 2 || i == 0)
+            {
+                tally[i][0] += position == 1;
+                tally[i][1] += g_menuState.positions[position - 1][0] * scale;
+            }
+        }
+        int bonus;
+        pos = g_61bed0.results[0].position;
+        if (g_menuState.unk19d7c.unk008 > g_menuState.numberOfRounds)
+        {
+            bonus = g_menuState.positions[g_61bed0.results[0].position - 1][3] + g_61bed0.results[0].unk10;
+            if (g_61bed0.results[0].position == 1)
+            {
+                FUN_437880(0x12);
+            }
+            else
+            {
+                FUN_437880(0x11);
+            }
+        }
+        else
+        {
+            bonus = g_menuState.positions[g_61bed0.results[0].position - 1][1] + g_61bed0.results[0].unk10;
+        }
+        g_menuState.unk19d7c.money += bonus;
+        FUN_44bd00();
+        g_menuState.unk1d9ac = 0x5f;
+        g_menuState.unk1d9b0[0].color = 0xffffffff;
+        g_menuState.unk1d9b0[0].text = FUN_441170(pos + 0x27c);
+        sprintf(g_61b9c8, FUN_441170(0x283), g_menuState.positions[pos - 1][0] * scale);
+        g_menuState.unk1d9b0[1].color = 0xffff8080;
+        g_menuState.unk1d9b0[1].text = g_61b9c8;
+        sprintf(g_61bdcc, FUN_441170(0x284), bonus);
+        g_menuState.unk1d9b0[2].color = 0xffff8080;
+        g_menuState.unk1d9b0[2].text = g_61bdcc;
+        g_menuState.unk1d9b0[3].color = 0xffc8c8ff;
+        g_menuState.unk1d9b0[3].text = FUN_441170(0x26c);
+        g_menuState.unk1da58 = g_menuState.numberOfRounds;
+        g_menuState.unk1d9a8 = 0;
+        g_menuState.unk1da50 = 4;
+        g_menuState.unk1da54 = g_menuState.unk19d7c.unk008;
+        FUN_43dfa0(0x2c, 0x20);
+        g_menuState.unk4234 = 11;
+        return;
+    }
+    case 11:
+        FUN_43dfa0(0x30, 0x28);
+        g_menuState.unk4234 = 12;
+        return;
+    case 12:
+        g_menuState.unk19d7c.unk008++;
+        g_menuState.unk4234 = 13;
+        return;
+    case 13:
+        if (g_menuState.unk19d7c.unk008 > g_menuState.numberOfRounds)
+        {
+            g_menuState.unk4234 = g_menuState.unk19d7c.unk008 > g_menuState.numberOfRounds + 1 ? 0x11 : 0x13;
+            return;
+        }
+        if (!FUN_44cc90(g_menuState.unk19d7c.unk008))
+        {
+            g_menuState.unk1a53c = 1;
+            g_menuState.unk4234 = 7;
+            return;
+        }
+        g_menuState.unk4234 = 14;
+        return;
+    case 14:
+    {
+        int minutes = 0x5a;
+        switch (FUN_44ccf0())
+        {
+        case 1:
+            minutes = 0x1e;
+            break;
+        case 2:
+            minutes = 0x28;
+            break;
+        case 3:
+            minutes = 0x32;
+            break;
+        case 4:
+            minutes = 0x3c;
+            break;
+        case 5:
+            minutes = 0x46;
+            break;
+        case 6:
+            minutes = 0x5a;
+            break;
+        }
+        g_61bac8.name = g_menuState.unk19d7c.name;
+        g_61bac8.car = 0x15;
+        g_61bac8.track = 0x19;
+        g_61bac8.unk0c = g_menuState.unk1dfc[0].time;
+        g_menuState.unk4234 = 15;
+        g_menuState.unk45ec = 0x5f;
+        g_menuState.unk45f0[0].color = 0xffffffff;
+        g_61bac8.minutes = minutes;
+        g_menuState.unk45f0[0].text = FUN_441170(0x263);
+        sprintf(g_61b9c8, FUN_441170(0x264), minutes);
+        g_menuState.unk45f0[1].color = 0xffff8080;
+        g_menuState.unk45f0[1].text = g_61b9c8;
+        g_menuState.unk45f0[2].color = 0xffc8c8ff;
+        g_menuState.unk45f0[2].text = FUN_441170(0x265);
+        g_menuState.unk45f0[3].color = 0xffc8c8ff;
+        g_menuState.unk45f0[3].text = FUN_441170(0x266);
+        g_menuState.unk45e8 = 0;
+        g_menuState.unk4690 = 4;
+        FUN_43dfa0(0x2d, 0x26);
+        return;
+    }
+    case 15:
+        FUN_43ae00(&g_61bac8, &g_61b9c0);
+        g_menuState.unk4234 = 16;
+        FUN_43dfa0(0, 25);
+        return;
+    case 16:
+        if (!g_61b9c0.won)
+        {
+            g_menuState.unk19d7c.money += g_61b9c0.unk04;
+            g_menuState.unk45ec = 0x5f;
+            sprintf(g_61b9c8, FUN_441170(0x268), g_61b9c0.unk04);
+            g_menuState.unk45f0[0].color = 0xffff8080;
+            g_menuState.unk45f0[0].text = g_61b9c8;
+            g_menuState.unk45f0[1].color = 0xffc8c8ff;
+            g_menuState.unk45f0[1].text = FUN_441170(0x267);
+            g_menuState.unk45f0[2].color = 0xffc8c8ff;
+            g_menuState.unk45f0[2].text = FUN_441170(0x269);
+            g_menuState.unk45e8 = 0;
+            g_menuState.unk4690 = 3;
+            FUN_43dfa0(0x2e, 0x26);
+        }
+        g_menuState.unk1a53c = 1;
+        g_menuState.unk4234 = 7;
+        return;
+    case 17:
+        g_menuState.unk4234 = 0x15;
+        return;
+    case 18:
+        g_menuState.unk4404 = 0;
+        g_menuState.unk4234 = 9;
+        g_menuState.unk45ec = 0x5f;
+        g_menuState.unk45f0[0].color = 0xffffffff;
+        g_menuState.unk45f0[0].text = FUN_441170(0x26a);
+        g_menuState.unk45f0[1].color = 0xffc8c8ff;
+        g_menuState.unk45f0[1].text = FUN_441170(0x26b);
+        g_menuState.unk45f0[2].color = 0xffc8c8ff;
+        g_menuState.unk45f0[2].text = FUN_441170(0x26c);
+        g_menuState.unk45e8 = 0;
+        g_menuState.unk4690 = 3;
+        FUN_43dfa0(0x2f, 0x26);
+        return;
+    case 19:
+    {
+        int rank = FUN_44ccf0();
+        if (rank < 4)
+        {
+            g_menuState.unk45d8 = rank + 0x17f;
+            g_menuState.unk45d4 = 0x5f;
+            g_menuState.unk45dc = 0;
+            g_menuState.unk45e0 = 0.015f;
+            g_menuState.unk45e4 = 80.0f;
+            FUN_43dfa0(0x2c, 0x25);
+        }
+        g_menuState.unk4234 = 20;
+        return;
+    }
+    case 20:
+        g_menuState.unk4234 = FUN_44ccf0() != 1 ? 0x15 : 0x12;
+        return;
+    case 21:
+        FUN_44bd00();
+        FUN_437790(g_menuState.unk1d5c, 10, &g_menuState.unk19d7c.name,
+                   g_menuState.unk1a648 + g_menuState.unk1a604);
+        g_menuState.unk4694.unk00 = 0x28b;
+        g_menuState.unk4694.unk04 = 0;
+        g_menuState.unk4694.unk08 = 0;
+        g_menuState.unk4694.count = 10;
+        g_menuState.unk4694.entries = g_menuState.unk1d5c;
+        FUN_43dfa0(0x31, 0x27);
+        g_menuState.unk4234 = 22;
+        return;
+    case 22:
+        FUN_437790(g_menuState.unk1dac, 10, &g_menuState.unk19d7c.name, g_menuState.unk19d7c.unk104);
+        g_menuState.unk4694.unk00 = 0x28a;
+        g_menuState.unk4694.unk04 = 0;
+        g_menuState.unk4694.unk08 = 1;
+        g_menuState.unk4694.count = 10;
+        g_menuState.unk4694.entries = g_menuState.unk1dac;
+        FUN_43dfa0(0x31, 0x27);
+        g_menuState.unk4234 = 23;
+        return;
+    case 23:
+        g_menuState.unk19d7c.unk000 = 0;
+        FUN_43bf30();
+        g_menuState.unk4234 = 24;
+        return;
+    case 24:
+        FUN_44ccc0();
+        g_menuState.unk4234 = 25;
+        FUN_43d500(0);
+        return;
+    case 25:
+        FUN_43eef0();
+        return;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x44cc90
 int FUN_44cc90(int value)
 {
