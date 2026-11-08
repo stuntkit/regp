@@ -1145,10 +1145,141 @@ int FUN_4512b0(PoolObject *base, int msg, int arg)
     return 0;
 }
 
-// STUB: STUNTGP_D3D 0x451700
-int FUN_451700(PoolObject *object, int arg)
+// GLOBAL: STUNTGP_D3D 0x4868f8
+MenuItem g_4868f8[5] = {
+    {0, 0xffc8c8ff, 0xffffffff, 0x187, 0, 1, 0, 0},
+    {1, 0xffc8c8ff, 0xffffffff, 0x189, 0, 1, 0, 0},
+    {2, 0xffc8c8ff, 0xffffffff, 0x188, 0, 1, 0, 0},
+    {3, 0xffc8c8ff, 0xffffffff, 0x18a, 0, 1, 0, 0},
+    {0},
+};
+
+// One car group of Unk451aa0::groups: its size, its id (1 to 4), then its cars.
+struct CarGroup
 {
-    return 0;
+    int count;     // 0x00
+    int id;        // 0x04
+    int cars[10];  // 0x08
+};
+
+extern MenuItem g_624b18[5];
+int FUN_437cc0(int track);
+struct Unk451a50;
+void FUN_451a50(Unk451a50 *object, int value, int group);
+void FUN_436d60(ShopCar *car, int *stat0, int *stat1, int *stat2);
+
+// Car select init: groups the unlocked cars, drops empty groups, finds the current car and
+// caches each car's price and stats.
+// FUNCTION: STUNTGP_D3D 0x451700
+int FUN_451700(PoolObject *base, int arg)
+{
+    Unk451aa0 *object = (Unk451aa0 *)base;
+    CarGroup *groups = (CarGroup *)object->groups;
+    int i;
+    int j;
+    int stat0;
+    int stat1;
+    int stat2;
+    object->unk18 = 0;
+    object->unk1c = 0;
+    object->unk34 = 0;
+    for (i = 0; i < 3; i++)
+    {
+        object->unk38[i] = 0;
+        object->unk44[i] = 0;
+    }
+    object->unk20 = g_menuState.unk4238;
+    g_menuState.unk4394 = 0;
+    FUN_437710(g_menuState.unk439c, g_menuState.unk4398);
+    for (i = 0; i < 4; i++)
+    {
+        groups[i].id = i + 1;
+        groups[i].count = 0;
+    }
+    object->unk110 = 4;
+    for (i = 0; i < g_menuState.unk4398; i++)
+    {
+        int car = g_menuState.unk439c[i];
+        FUN_451a50((Unk451a50 *)object, car, FUN_437cc0(car));
+    }
+    for (i = 0; i < object->unk110; i++)
+    {
+        if (groups[i].count <= 0)
+        {
+            for (j = i; j < object->unk110 - 1; j++)
+            {
+                groups[j] = groups[j + 1];
+            }
+            object->unk110--;
+            i--;
+        }
+    }
+    if (g_menuState.unk43f4)
+    {
+        for (i = 0; i < object->unk110; i++)
+        {
+            for (j = 0; j < groups[i].count; j++)
+            {
+                if (groups[i].cars[j] == g_menuState.unk43f4[g_menuState.unk4238])
+                {
+                    object->unk18 = j;
+                    object->unk1c = i;
+                    break;
+                }
+            }
+        }
+    }
+    object->unk2c = object->unk24 = object->unk18;
+    int group = object->unk1c;
+    object->unk30 = object->unk28 = group;
+    for (i = 0; i < object->unk110; i++)
+    {
+        g_624b18[i] = g_4868f8[groups[i].id - 1];
+        g_624b18[i].id = i;
+    }
+    g_624b18[i] = g_4868f8[4];
+    MenuList *list = (MenuList *)Pool_Alloc(sizeof(MenuList));
+    memset(list, 0, sizeof(MenuList));
+    list->base.type = 0x29;
+    // STRING: STUNTGP_D3D 0x4869d8
+    list->base.name = "MenuText";
+    list->base.unk08 = 0;
+    *(PoolClass *)&list->base.destroy = g_menuListClass;
+    if (!FUN_43c860(list, &g_486998))
+    {
+        Pool_Free(list);
+        object->child = NULL;
+    }
+    else
+    {
+        object->child = &list->base;
+    }
+    PoolObject *child = object->child;
+    child->message(child, 0x18, 0);
+    child->message(child, 0x16, 0);
+    child->message(child, 0x1c, group);
+    int money = 0;
+    if (g_menuState.unk4230 == 5)
+    {
+        money = g_menuState.unk19d7c.money;
+        for (i = 1; i < 21; i++)
+        {
+            object->unk134[i] = FUN_437de0(g_menuState.unk19d7c.sponsor, i, &g_menuState.cars[i]);
+        }
+        if (g_menuState.unk19d7c.car)
+        {
+            money += FUN_437de0(g_menuState.unk19d7c.sponsor, g_menuState.unk19d7c.car, &g_menuState.unk19d7c.carSetup);
+        }
+    }
+    strcpy(object->unk114, FUN_43d5f0(money, 0));
+    for (i = 1; i < 21; i++)
+    {
+        FUN_436d60(&g_menuState.cars[i], &stat0, &stat1, &stat2);
+        object->unk18c[i][0] = stat0;
+        object->unk18c[i][1] = stat1;
+        object->unk18c[i][2] = stat2;
+    }
+    return 1;
 }
 
 struct Unk451a50;

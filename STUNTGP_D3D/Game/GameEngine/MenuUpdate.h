@@ -618,7 +618,7 @@ struct Unk451aa0
     PoolObject *child; // 0x14
     int unk18;         // 0x18, selected item
     int unk1c;         // 0x1c, selected group
-    float unk20;       // 0x20
+    int unk20;         // 0x20, player
     float unk24;       // 0x24
     float unk28;       // 0x28
     float unk2c;       // 0x2c
