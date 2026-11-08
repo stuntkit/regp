@@ -2599,6 +2599,58 @@ void FUN_40e4f0()
     }
 }
 
+// Automatic gearbox: shifts up near the rev limit, down when the revs drop or the car slows.
+// FUNCTION: STUNTGP_D3D 0x40e550
+void FUN_40e550()
+{
+    if ((g_4722d0->data->unk767c == 1 || g_4722d0->data->race.unk00 <= 60) && !g_4d5bb8->unkc78)
+    {
+        if (g_4d5bb8->unk1cfc < g_4d5bb8->unk460 + 200.0f && !g_4d5bb8->unk22b4 && !g_4d5bb8->unk22bc &&
+            !g_4d5bb8->unk22b8 && !g_4d5bb8->unk22c0 && g_4d5bb8->unk1f10 != 1 && !g_4d5bb8->controls[4])
+        {
+            FUN_40c1f0();
+        }
+        if (g_4d5bb8->unk1f1c)
+        {
+            g_4d5bb8->unk1f1c--;
+            g_4d5bb8->unk1cfc += 200.0f;
+        }
+        if (g_4d5bb8->unk1f14 == 1.0f)
+        {
+            if (g_4d5bb8->unk1cf8 >= 0.4f)
+            {
+                if (g_4d5bb8->unk1f10 == 1)
+                {
+                    if (g_4d5bb8->unk464 * 0.5f < g_4d5bb8->unk1cfc)
+                    {
+                        FUN_40c170();
+                    }
+                }
+                else if (g_4d5bb8->unk1f10 != 0)
+                {
+                    FUN_40e4f0();
+                    if (g_4d5bb8->unk1f10 < 7 && g_4d5bb8->unk464 * 0.9f < g_4d5bb8->unk1cfc)
+                    {
+                        FUN_40c170();
+                    }
+                }
+            }
+            else
+            {
+                if ((g_4d5bb8->unk1f10 == 1 || g_4d5bb8->unk1f10 == 2) && g_4d5bb8->unk22c0 == 1 &&
+                    (float)fabs(g_4d5bb8->unk1cf0 < 8.333333f) != 0.0f)
+                {
+                    FUN_40c1a0();
+                }
+                if (g_4d5bb8->unk1f10 > 2 && g_4d5bb8->unk1cfc < g_4d5bb8->unk464 * 0.4f)
+                {
+                    FUN_40c1a0();
+                }
+            }
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x40e710
 float FUN_40e710(float v)
 {
@@ -5065,10 +5117,62 @@ void FUN_417b50(Vec4 *pos, Vec4 *vel, float speed)
     g_612948.unk0450++;
 }
 
-// STUB: STUNTGP_D3D 0x417ca0
+// Hard landing on two or more wheels: queues sparks under the car for a few frames.
+// FUNCTION: STUNTGP_D3D 0x417ca0
 void FUN_417ca0()
 {
+    Car *car = g_4d5bb8;
+    if (car->unk1fd8 == 1 || car->unk1cf0 < 10.0f)
+    {
+        car->unk761c = 0;
+        return;
+    }
+    float s = g_482670 * car->unk2618 * 3.0f;
+    float sum = 0.0f;
+    unsigned int hits = 0;
+    Wheel *w = car->wheels;
+    for (int i = 0; i < 4; i++)
+    {
+        if (w->unk78 == 1 && w->unk80 > s)
+        {
+            hits++;
+        }
+        sum += w->unk80;
+        w++;
+    }
+    if (hits >= 2)
+    {
+        unsigned int n = sum * 0.001953125f;
+        if (n > 8)
+        {
+            n = 8;
+        }
+        if (car->unk761c < 15)
+        {
+            car->unk761c += n;
+        }
+    }
+    if (car->unk761c > 0)
+    {
+        car->unk761c--;
+        s = sum * 0.25f;
+        Vec4 off;
+        off.x = car->axisY.x * -25.0f;
+        off.y = car->axisY.y * -25.0f;
+        off.z = car->axisY.z * -25.0f;
+        Vec4 p;
+        p.x = off.x + car->posX;
+        p.y = off.y + car->posY;
+        p.z = off.z + car->posZ;
+        for (int j = 0; j < 2; j++)
+        {
+            FUN_417b50(&p, &g_4d5bb8->unk1c8c, s);
+        }
+        g_4d5bb8->unk2354 = 1;
+        g_4d5bb8->unk235c = s;
+    }
 }
+
 
 // STUB: STUNTGP_D3D 0x417f10
 void FUN_417f10()
@@ -5561,6 +5665,47 @@ Car *FUN_407b20(Car *self)
         }
     }
     return ahead ? ahead : behind;
+}
+
+// Slipstreaming: builds up a draft counter behind a similar-speed car and pulls the finish target towards it.
+// FUNCTION: STUNTGP_D3D 0x407c10
+void FUN_407c10()
+{
+    if (g_4d5bb8->unk26a0 > 0)
+    {
+        g_4d5bb8->unk26a0--;
+    }
+    if (!g_4d5bb8->unk1fd8 && (float)fabs(g_4d5bb8->unk2668) <= 100.0f && g_4d5bb8->unk1cf0 >= 41.666668f)
+    {
+        Car *other = FUN_407a70(g_4d5bb8);
+        float dv = other->unk1cf0 - g_4d5bb8->unk1cf0;
+        if (dv <= 16.666666f && dv >= -33.333332f)
+        {
+            float len = g_571328->unk18 * 0.01f;
+            float gap = len * other->unk23b0 - len * g_4d5bb8->unk23b0;
+            if (gap > 1000.0f && gap < 10000.0f && g_4d5bb8->unk26a0 < 240)
+            {
+                g_4d5bb8->unk26a0 += 2;
+            }
+            Vec4 p = *(Vec4 *)&other->posX;
+            float dx = p.x - g_49a148.x;
+            float dy = p.y - g_49a148.y;
+            float dz = p.z - g_49a148.z;
+            if ((float)fabs(dx * g_4d5bb8->unk24d0.x + dy * g_4d5bb8->unk24d0.y + dz * g_4d5bb8->unk24d0.z) <= 500.0f)
+            {
+                float k = g_4d5bb8->unk26a0 * 0.0041666669f;
+                p.x = dx;
+                p.y = dy;
+                p.z = dz;
+                p.x *= k;
+                p.y *= k;
+                p.z *= k;
+                g_49a148.x = g_49a148.x + p.x;
+                g_49a148.y = g_49a148.y + p.y;
+                g_49a148.z = g_49a148.z + p.z;
+            }
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x407dd0

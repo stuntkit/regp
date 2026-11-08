@@ -531,7 +531,8 @@ struct Car
     int unk2350;              // 0x2350
     int unk2354;              // 0x2354
     int unk2358;              // 0x2358
-    int unk235c;              // 0x235c
+    float unk235c;            // 0x235c
+
     float unk2360;            // 0x2360
     float unk2364;            // 0x2364
     int unk2368;              // 0x2368
@@ -730,7 +731,9 @@ struct Car
     Body body;                // 0x7270
     int unk7614;              // 0x7614
     int unk7618;              // 0x7618
-    BYTE unk761c[0x8];        // 0x761c
+    int unk761c;              // 0x761c, spark frames left
+    BYTE unk7620[0x4];        // 0x7620
+
     unsigned int unk7624;     // 0x7624
 
     int unk7628;              // 0x7628
