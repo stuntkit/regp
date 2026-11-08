@@ -778,7 +778,8 @@ struct Car
     int unk26ac;              // 0x26ac
     Scene *unk26b0;        // 0x26b0
     Scene *unk26b4;        // 0x26b4
-    BYTE unk26b8[0x54];       // 0x26b8
+    BYTE unk26b8[0x50];       // 0x26b8
+    int unk2708;              // 0x2708, draw flags of the car model, 0x10 while it blinks
     float unk270c[16];        // 0x270c
     float wheelMatrix[4][16]; // 0x274c
     Vec4 unk284c;             // 0x284c
