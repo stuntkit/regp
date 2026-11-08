@@ -3542,6 +3542,8 @@ int FUN_45b520(Unk45b520 *object, int arg)
     return 1;
 }
 
+// The original recomputes the sin of object->unk18 after each FUN_438710 call; /Oa would reuse it.
+#pragma optimize("a", off)
 // FUNCTION: STUNTGP_D3D 0x45b5d0
 int FUN_45b5d0(Unk45b520 *object, int msg, int arg)
 {
@@ -3588,6 +3590,7 @@ int FUN_45b5d0(Unk45b520 *object, int msg, int arg)
     }
     return 0;
 }
+#pragma optimize("", on)
 
 // FUNCTION: STUNTGP_D3D 0x45b7a0
 int FUN_45b7a0(Unk45b7a0 *object, int arg)
@@ -4713,6 +4716,8 @@ void FUN_45cc40(int track)
     FUN_438ba0(507.0f, 208.0f, 12, 4, track + 0x1d0, 1.25f, 0xffffffff, 3);
 }
 
+// The original reloads g_4894e0.items after every store through it, which /Oa folds away.
+#pragma optimize("a", off)
 // Updates the track page's menu texts for the game mode, and the record tables beside it.
 // FUNCTION: STUNTGP_D3D 0x45cc70
 void FUN_45cc70(Unk45c4b0 *object)
@@ -4751,6 +4756,7 @@ void FUN_45cc70(Unk45c4b0 *object)
         return;
     }
 }
+#pragma optimize("", on)
 
 // FUNCTION: STUNTGP_D3D 0x45cf10
 void FUN_45cf10(int row)
