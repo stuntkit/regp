@@ -2393,9 +2393,92 @@ void FUN_4338e0(void *data, int count)
     FUN_432a90();
 }
 
-// STUB: STUNTGP_D3D 0x433c50
+// Two-texture pass: FUN_4334c0 with the shared detail texture (slot 0) added on stage 1.
+// FUNCTION: STUNTGP_D3D 0x433c50
 void FUN_433c50(void *data, int count)
 {
+    if (!count)
+    {
+        return;
+    }
+    if (!g_592074 || !g_624984)
+    {
+        FUN_4334c0(data, count);
+        return;
+    }
+    if (g_624984 == 1)
+    {
+        FUN_42f340();
+    }
+    int base = 0;
+    DWORD texture = 0xffffffff;
+    BatchVertex *v;
+    WORD *idx;
+    g_d3dDevice->SetTexture(1, (LPDIRECT3DTEXTURE2)g_6227d4[0].unk04[0]);
+    g_d3dDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+    g_d3dDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_ADD);
+    PolyRef *ref = (PolyRef *)data;
+    for (DWORD i = 0; i < (DWORD)count; i++)
+    {
+        if (ref->poly)
+        {
+            BYTE *src = ref->src;
+            BYTE *verts = (BYTE *)ref->verts;
+            WORD *r = ref->ref;
+            DWORD slot = ((BYTE *)ref->poly)[1];
+            if (slot != texture)
+            {
+                if (base)
+                {
+                    g_d3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0x2c4, g_592780, v - g_592780, g_590018, idx - g_590018, 0x1c);
+                }
+                base = 0;
+                v = g_592780;
+                idx = g_590018;
+                g_d3dDevice->SetTexture(0, g_6227d4[slot].texture);
+                texture = slot;
+            }
+            DWORD n = *(BYTE *)ref->poly;
+            for (DWORD k = 0; k < n; k++)
+            {
+                BYTE *e = src + *r++ * 16;
+                float *p = (float *)(verts + *(WORD *)(e + 8) * 32);
+                v->x = p[0];
+                v->y = p[1];
+                v->rhw = v->z = p[7];
+                v->u0 = ((float *)e)[0];
+                v->v0 = ((float *)e)[1];
+                v->u1 = p[5];
+                v->v1 = p[6];
+                D3DCOLOR color = *(D3DCOLOR *)(e + 12);
+                v->diffuse = color;
+                DWORD a = color >> 24;
+                v->specular = ((a << 8 | a) << 8) | a;
+                v++;
+            }
+            int first = base;
+            base++;
+            for (DWORD j = 2; j < n; j++)
+            {
+                idx[0] = first;
+                idx[1] = base;
+                base++;
+                idx[2] = base;
+                idx += 3;
+            }
+            base++;
+        }
+        ref++;
+    }
+    if (base)
+    {
+        g_d3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0x2c4, g_592780, v - g_592780, g_590018, idx - g_590018, 0x1c);
+    }
+    g_d3dDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+    if (g_624984 == 1)
+    {
+        FUN_42f380();
+    }
 }
 
 // Draws the queued world primitives pass by pass.
