@@ -1600,7 +1600,7 @@ int FUN_453210(Unk4516c0 *object, int msg, int arg)
                 FUN_453460((Unk453460 *)object);
                 return 0;
             }
-            _exit(0);
+            exit(0);
         }
         child = object->unk14;
         child->message(child, msg, 0);
