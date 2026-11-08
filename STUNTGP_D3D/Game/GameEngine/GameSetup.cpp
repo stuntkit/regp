@@ -1711,9 +1711,53 @@ void FUN_42c510()
     FUN_42ba90();
 }
 
-// STUB: STUNTGP_D3D 0x42d070
+void FUN_4452e0();
+void FUN_4453a0();
+void FUN_42cfa0(char *script);
+void FUN_42c740(char *script);
+void FUN_42c9b0(char *script);
+void FUN_42cb00(char *script);
+void FUN_42cb70(char *script);
+void FUN_42ca20(char *script);
+void FUN_42ca90(char *script);
+void FUN_42cc20(char *script);
+extern char *g_ScriptSectionEnd;
+extern BYTE g_58c238[0x300];
+
+// Loads Config\LvScript.cfg and parses the section of the current level.
+// FUNCTION: STUNTGP_D3D 0x42d070
 void FUN_42d070()
 {
+    char path[128];
+    char *section;
+
+    // STRING: STUNTGP_D3D 0x47796c
+    sprintf(path, "%s\\Config\\LvScript.cfg", g_GameDirectory);
+    FUN_4452e0();
+    int size = size_of_file(path);
+    char *script = (char *)Mem_Alloc(size + 0x20, 0);
+    bload(path, script, size);
+    // STRING: STUNTGP_D3D 0x477984
+    FUN_42d060(script, "ClogMeister");
+    g_ScriptSectionEnd = NULL;
+    FUN_42cfa0(script);
+    g_ScriptSectionEnd = NULL;
+    section = script;
+    Script_FindKey(script, &section, g_LevelScript);
+    // STRING: STUNTGP_D3D 0x477990
+    g_ScriptSectionEnd = strstr(section, "-END");
+    g_58c234 = (int)g_58c238;
+    g_58c540[0].id = 0;
+    g_58c808 = 0;
+    FUN_42c740(section);
+    FUN_42c9b0(section);
+    FUN_42cb00(section);
+    FUN_42cb70(section);
+    FUN_42ca20(section);
+    FUN_42ca90(section);
+    FUN_42cc20(section);
+    FUN_4453a0();
+    Mem_Free(script);
 }
 
 // UV scroll record; unk00 is the mode (0 still, 2 u scrolls and v follows the wave, -1 ends the list).
