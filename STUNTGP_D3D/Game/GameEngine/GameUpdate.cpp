@@ -1864,6 +1864,154 @@ int FUN_427b40(Scene *scene, ObjectDef *obj, WORD *box)
     return (any == 0x3f) + 1;
 }
 
+// Tests an object's bounding sphere (radius box[0], centre point index box[1]) against the
+// view frustum: 1 outside, 2 partly visible, 0 inside. index -1 tests the whole scene.
+// FUNCTION: STUNTGP_D3D 0x427cc0
+int FUN_427cc0(Scene *scene, ObjectDef *obj, int index, WORD *box)
+{
+    Vec4 *c = (Vec4 *)scene->unk40[box[1]];
+    Camera *cam = scene->camera;
+    Vec4 d;
+    if (index != -1)
+    {
+        float nx = -obj->unk10.x;
+        float ny = -obj->unk10.y;
+        float nz = -obj->unk10.z;
+        Camera *oc = (Camera *)obj->matrix;
+        float *r = (float *)oc->unk40;
+        Vec4 t;
+        t.x = nz * r[8] + nx * r[0] + ny * r[4];
+        t.y = nx * r[1] + nz * r[9] + ny * r[5];
+        t.z = nx * r[2] + nz * r[10] + ny * r[6];
+        t.x += obj->unk10.x;
+        t.y += obj->unk10.y;
+        t.z += obj->unk10.z;
+        t.x += oc->pos.x;
+        t.y += oc->pos.y;
+        t.z += oc->pos.z;
+        Vec4 u;
+        u.x = c->y * r[4] + c->z * r[8] + c->x * r[0];
+        u.y = c->y * r[5] + c->z * r[9] + r[1] * c->x;
+        u.z = c->y * r[6] + c->z * r[10] + c->x * r[2];
+        d.x = t.x + u.x;
+        d.y = t.y + u.y;
+        d.z = t.z + u.z;
+        d.x += cam->pos.x;
+        d.y += cam->pos.y;
+        d.z += cam->pos.z;
+        d.x -= g_4722d0->cam.pos.x;
+        d.y -= g_4722d0->cam.pos.y;
+        d.z -= g_4722d0->cam.pos.z;
+    }
+    else
+    {
+        d.x = cam->pos.x - g_4722d0->cam.pos.x;
+        d.y = cam->pos.y - g_4722d0->cam.pos.y;
+        d.z = cam->pos.z - g_4722d0->cam.pos.z;
+    }
+    Camera *oc = (Camera *)obj->matrix;
+    float rad = (float)box[0];
+    float f;
+    float rz = oc->scale.z * cam->scale.z * rad;
+    float dz = d.z * g_4722d0->axisZ.z + d.y * g_4722d0->axisZ.y + d.x * g_4722d0->axisZ.x;
+    f = dz + rz;
+    if (*(int *)&f < 0)
+    {
+        return 1;
+    }
+    float dfar = dz - g_4722d0->unk19c;
+    f = dfar;
+    if (*(int *)&f >= 0)
+    {
+        return 1;
+    }
+    float rx = oc->scale.x * cam->scale.x * rad;
+    float dl = d.z * g_4722d0->planeLeft.z + d.y * g_4722d0->planeLeft.y + d.x * g_4722d0->planeLeft.x;
+    f = dl - rx;
+    if (*(int *)&f >= 0)
+    {
+        return 1;
+    }
+    float dr = d.z * g_4722d0->planeRight.z + d.y * g_4722d0->planeRight.y + d.x * g_4722d0->planeRight.x;
+    f = dr - rx;
+    if (*(int *)&f >= 0)
+    {
+        return 1;
+    }
+    float ry = oc->scale.y * cam->scale.y * rad;
+    float dt = d.z * g_4722d0->planeTop.z + d.y * g_4722d0->planeTop.y + d.x * g_4722d0->planeTop.x;
+    f = dt - rx;
+    if (*(int *)&f >= 0)
+    {
+        return 1;
+    }
+    float db = d.z * g_4722d0->planeBottom.z + d.y * g_4722d0->planeBottom.y + d.x * g_4722d0->planeBottom.x;
+    f = db - rx;
+    if (*(int *)&f >= 0)
+    {
+        return 1;
+    }
+    f = dz - rz;
+    if (*(int *)&f < 0)
+    {
+        return 2;
+    }
+    f = dl + rx;
+    if (*(int *)&f >= 0)
+    {
+        return 2;
+    }
+    f = dr + rx;
+    if (*(int *)&f >= 0)
+    {
+        return 2;
+    }
+    f = dt + ry;
+    if (*(int *)&f >= 0)
+    {
+        return 2;
+    }
+    f = db + ry;
+    if (*(int *)&f >= 0)
+    {
+        return 2;
+    }
+    f = dfar;
+    return *(int *)&f < 0 ? 0 : 2;
+}
+
+// Visibility of object index of the scene (-1 for the whole scene) from its bounding data: a
+// sphere when box[0] is set, else a box when box[1] is set, else always partly visible.
+// FUNCTION: STUNTGP_D3D 0x428040
+int FUN_428040(Scene *scene, int index)
+{
+    ObjectDef *obj;
+    WORD *box;
+    if (index == -1)
+    {
+        box = (WORD *)(scene->unk10 + 0x10);
+        obj = scene->lods[scene->lod];
+    }
+    else
+    {
+        obj = scene->lods[scene->lod] + index;
+        box = &obj->unk20;
+    }
+    if (box[0] == 0 && box[1] == 0)
+    {
+        return 2;
+    }
+    if (box[0] == 0)
+    {
+        if (index == -1)
+        {
+            obj = NULL;
+        }
+        return FUN_427b40(scene, obj, box);
+    }
+    return FUN_427cc0(scene, obj, index, box);
+}
+
 // STUB: STUNTGP_D3D 0x425df0
 void FUN_425df0(Scene *scene, ObjectDef *def, int type)
 {
