@@ -451,13 +451,13 @@ void FUN_44dd10(PoolObject *object)
     switch (g_menuState.unk4234)
     {
     case 0:
-        g_menuState.unk43f4[0] = 0;
+        for (i = 0; i < 4; i++)
+        {
+            g_menuState.unk43f4[i] = 0;
+        }
         g_menuState.unk4238 = 0;
-        g_menuState.unk43f4[1] = 0;
         g_menuState.unk423c = 0;
-        g_menuState.unk43f4[2] = 0;
         g_menuState.unk1dae0 = 0;
-        g_menuState.unk43f4[3] = 0;
         g_menuState.unk4404 = 0;
         g_menuState.unk4394 = 0;
         for (i = 0; i < 4; i++)
@@ -584,6 +584,8 @@ void FUN_44dd10(PoolObject *object)
             g_61c2d4 = 5;
             break;
         case 0:
+            g_61c2d4 = 3;
+            break;
         default:
             g_61c2d4 = 3;
             break;
