@@ -554,7 +554,8 @@ struct Car
     int unk23a8;              // 0x23a8
     int unk23ac;              // 0x23ac
     float unk23b0;            // 0x23b0
-    BYTE unk23b4[0x4];        // 0x23b4
+    float unk23b4;            // 0x23b4, unk23b0 last tick
+
     float unk23b8;            // 0x23b8
     int unk23bc;              // 0x23bc
     int unk23c0;              // 0x23c0
@@ -576,7 +577,8 @@ struct Car
     int unk24e0;              // 0x24e0
     int unk24e4;              // 0x24e4
     int unk24e8;              // 0x24e8
-    int unk24ec;              // 0x24ec, current split
+    unsigned int unk24ec;     // 0x24ec, current split
+
 
     DWORD unk24f0[10];        // 0x24f0
     DWORD unk2518[10];        // 0x2518
@@ -728,7 +730,9 @@ struct Car
     Body body;                // 0x7270
     int unk7614;              // 0x7614
     int unk7618;              // 0x7618
-    BYTE unk761c[0xc];        // 0x761c
+    BYTE unk761c[0x8];        // 0x761c
+    unsigned int unk7624;     // 0x7624
+
     int unk7628;              // 0x7628
     int unk762c;              // 0x762c
     int unk7630;              // 0x7630

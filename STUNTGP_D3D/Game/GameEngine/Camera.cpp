@@ -117,6 +117,20 @@ int FUN_41f870(TrackPoly *poly)
     return flat;
 }
 
+// GLOBAL: STUNTGP_D3D 0x498118
+Vec4 g_498118;
+
+// FUNCTION: STUNTGP_D3D 0x41f920
+void FUN_41f920(TrackPoly *poly, float dist)
+{
+    Vec4 dir = g_498118;
+    Vec3_Normalize(&dir.x);
+    if (poly)
+    {
+        FUN_41f870(poly);
+    }
+}
+
 // Same test as FUN_420690.
 // FUNCTION: STUNTGP_D3D 0x41f970
 int FUN_41f970(TrackPoly *poly, Vec4 *p)

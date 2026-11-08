@@ -4164,6 +4164,26 @@ void FUN_416590(Vec4 *pos, Vec4 *vel)
     g_612948.unk0450++;
 }
 
+void FUN_416420(Car *car, Vec4 *in, float *out);
+
+// Every other tick of the unk2268 countdown, puffs smoke from the two exhaust meshes.
+// FUNCTION: STUNTGP_D3D 0x416650
+void FUN_416650()
+{
+    ObjectDef *meshes = g_4d5bb8->unk26b0->lods[g_4d5bb8->unk26b0->lod];
+    if (g_4d5bb8->unk2268 && (--g_4d5bb8->unk2268 & 1) == 0 && g_4d5bb8->unk328c.active == 1)
+    {
+        Vec4 p;
+        FUN_416420(g_4d5bb8, meshes[19].matrix, &p.x);
+        FUN_416590(&p, &g_4d5bb8->unk1c8c);
+        if (g_4d5bb8->unk33cc.active == 1)
+        {
+            FUN_416420(g_4d5bb8, meshes[20].matrix, &p.x);
+            FUN_416590(&p, &g_4d5bb8->unk1c8c);
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x4166f0
 void FUN_4166f0()
 {
@@ -5322,10 +5342,48 @@ void FUN_41d140()
     FUN_41cd30(1);
 }
 
-// STUB: STUNTGP_D3D 0x41d760
+void FUN_41d4b0();
+void FUN_41d5c0();
+
+// Lap percentage of each of the ten splits.
+// GLOBAL: STUNTGP_D3D 0x474870
+float g_474870[10] = {10.0f, 20.0f, 30.0f, 40.0f, 50.0f, 60.0f, 70.0f, 80.0f, 90.0f, 99.0f};
+
+// Records a split time when the car crosses the next split point, announcing the gap on some.
+// FUNCTION: STUNTGP_D3D 0x41d760
 void FUN_41d760()
 {
+    if (g_60f2b0 == 3 || g_4d5bb8->unk23bc < 0)
+    {
+        return;
+    }
+    float prev = fmod(g_4d5bb8->unk23b4, 100.0);
+    float cur = fmod(g_4d5bb8->unk23b0, 100.0);
+    unsigned int split = g_4d5bb8->unk24ec;
+    if (g_60f2b0 == 2)
+    {
+        if (prev <= g_474870[split] && cur >= g_474870[split] && split == 9)
+        {
+            FUN_41d5c0();
+        }
+    }
+    else if (g_60f2b0 == 4)
+    {
+        if (prev <= g_474870[split] && cur >= g_474870[split] && (split == 2 || split == 5 || split == 8))
+        {
+            FUN_41d4b0();
+        }
+    }
+    if (prev <= g_474870[split] && cur >= g_474870[split])
+    {
+        g_4d5bb8->unk24f0[g_4d5bb8->unk24ec] = g_4d5bb8->unk23a4 * 12000 + g_4d5bb8->unk23c4;
+        if (++g_4d5bb8->unk24ec >= 10)
+        {
+            g_4d5bb8->unk24ec = 0;
+        }
+    }
 }
+
 
 // FUNCTION: STUNTGP_D3D 0x407000
 void FUN_407000()
@@ -6336,10 +6394,44 @@ void FUN_408d10(float amount)
     }
 }
 
-// STUB: STUNTGP_D3D 0x40bde0
+int size_of_file(char *path);
+int bload(char *path, char *buffer, int maxSize);
+void *Mem_Alloc(int size, int type);
+int Mem_Free(void *ptr);
+void FUN_4436e0(Car *car);
+extern int g_ControlMethod;
+
+// Loads Car<n>.cfg into the template car and runs every section parser over it.
+// FUNCTION: STUNTGP_D3D 0x40bde0
 void FUN_40bde0()
 {
+    char path[128];
+    // STRING: STUNTGP_D3D 0x4738e4
+    sprintf(path, "%s\\Config\\Vehicles\\Car%d.cfg", g_GameDirectory, g_472c74);
+    g_4d5bb8 = g_474630;
+    int size = size_of_file(path);
+    char *text = (char *)Mem_Alloc(size + 0x20, 0);
+    bload(path, text, size);
+    FUN_40b490(text);
+    FUN_40b5b0(text);
+    FUN_40b690(text);
+    FUN_40b750(text);
+    FUN_40b7a0(text);
+    FUN_40b930(text);
+    FUN_40b990(text);
+    FUN_40ba10(text);
+    FUN_40bac0(text);
+    FUN_40bb60(text);
+    FUN_40bc30(text);
+    FUN_40bcb0(text);
+    Mem_Free(text);
+    FUN_40a1d0();
+    FUN_40a120();
+    g_4d5bb8->inputMode = g_ControlMethod;
+    g_4d5bb8->unk28a8 = 1;
+    FUN_4436e0(g_4d5bb8);
 }
+
 
 // STUB: STUNTGP_D3D 0x412bf0
 void FUN_412bf0()
@@ -6639,6 +6731,66 @@ void FUN_4150d0()
         car++;
     }
     g_4d5bb8 = g_49a1f8;
+}
+
+extern float g_482674;
+
+// GLOBAL: STUNTGP_D3D 0x474634
+DWORD g_474634[3] = {0xffff80, 0xff8010, 0xff1000};
+
+// Every other call, puffs a flame particle from pos, sized by the scaled strength.
+// FUNCTION: STUNTGP_D3D 0x416100
+void FUN_416100(Vec4 *pos, Vec4 *vel, float strength)
+{
+    g_4d5bb8->unk7624 = (g_4d5bb8->unk7624 - 1) & 1;
+    if (g_4d5bb8->unk7624)
+    {
+        return;
+    }
+    strength = (float)fabs(g_482674 * strength);
+    if (strength < 0.1f)
+    {
+        strength = 0.1f;
+    }
+    else if (strength > 1.0f)
+    {
+        strength = 1.0f;
+    }
+    Vec4 r;
+    Unk62a078 p;
+    *(Camera *)&p.pos = g_4864e8;
+    p.vel[0] = vel->x * 0.1f;
+    p.vel[1] = vel->y * 0.1f;
+    p.vel[2] = vel->z * 0.1f;
+    p.pos = *pos;
+    p.flags = 15;
+    r.x = FUN_42f1c0(10.0f);
+    r.z = FUN_42f1c0(10.0f);
+    float rz = r.z;
+    p.vel[0] = r.x + p.vel[0];
+    p.gravity = g_48266c;
+    p.colors[1] = g_474634[1];
+    p.vel[1] = p.vel[1] + 10.0f;
+    p.unk98 = 0x60;
+    p.mode = 2;
+    p.texture = 4;
+    p.lifetime = 60;
+    p.unk68 = 0.01f;
+    p.unk7c = 1;
+    p.anim = NULL;
+    p.vel[2] = rz + p.vel[2];
+    p.sizeIn = 6.0f;
+    p.sizeOut = 54.0f;
+    p.alphaIn = 9.0f;
+    p.alphaOut = 45.0f;
+    p.spin = 8.0f;
+    p.colors[0] = g_474634[0];
+    p.colors[2] = g_474634[2];
+    p.colorIn = 12.0f;
+    p.colorOut = 24.0f;
+    p.size = strength * 0.1f + 0.25f;
+    p.alpha = strength * 255.0f;
+    FUN_45e110(&p);
 }
 
 // FUNCTION: STUNTGP_D3D 0x4162c0
