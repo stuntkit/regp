@@ -171,16 +171,29 @@ struct TrailSlot
     Trail trail; // 0x004
 };
 
+// Static description of a trail's look; the ring length is size.
+struct TrailParams
+{
+    int unk00;        // 0x000
+    DWORD size;       // 0x004
+    int unk08;        // 0x008
+    int unk0c;        // 0x00c
+    void *unk10;      // 0x010
+    BYTE unk14[0xfc]; // 0x014
+};
+
 struct CarFx
 {
     int active;         // 0x000
     Vec4 unk004;        // 0x004
     Vec4 unk014;        // 0x014
     Vec4 unk024;        // 0x024
-    BYTE unk034[0x104]; // 0x034
+    Vec4 ring[16];      // 0x034, flame trail fed by FUN_41e510
+    DWORD head;         // 0x134
     DWORD count;        // 0x138
     int unk13c;         // 0x13c
 };
+
 
 struct SkidMark
 {
@@ -233,8 +246,13 @@ struct Body
     float mat0[16];        // 0x048
     float mat1[16];        // 0x088
     float mat2[16];        // 0x0c8
-    BYTE unk108[0x34];     // 0x108
+    float *unk108;         // 0x108, 3x3 matrix
+    BYTE unk10c[0x10];     // 0x10c
+    Vec4 spin;             // 0x11c
+    BYTE unk12c[0x10];     // 0x12c
+
     DWORD numPoints;       // 0x13c
+
     float unk140;          // 0x140
     BodyPoint points[8];   // 0x144
 };
@@ -523,7 +541,8 @@ struct Car
     int unk2350;              // 0x2350
     int unk2354;              // 0x2354
     int unk2358;              // 0x2358
-    int unk235c;              // 0x235c
+    float unk235c;            // 0x235c
+
     float unk2360;            // 0x2360
     float unk2364;            // 0x2364
     int unk2368;              // 0x2368
@@ -538,14 +557,16 @@ struct Car
     int unk238c;              // 0x238c
     int unk2390;              // 0x2390
     int unk2394;              // 0x2394
-    int unk2398;              // 0x2398
+    float unk2398;            // 0x2398
+
     int unk239c;              // 0x239c
     int unk23a0;              // 0x23a0
     unsigned int unk23a4;     // 0x23a4
     int unk23a8;              // 0x23a8
     int unk23ac;              // 0x23ac
     float unk23b0;            // 0x23b0
-    BYTE unk23b4[0x4];        // 0x23b4
+    float unk23b4;            // 0x23b4, unk23b0 last tick
+
     float unk23b8;            // 0x23b8
     int unk23bc;              // 0x23bc
     int unk23c0;              // 0x23c0
@@ -567,7 +588,9 @@ struct Car
     int unk24e0;              // 0x24e0
     int unk24e4;              // 0x24e4
     int unk24e8;              // 0x24e8
-    BYTE unk24ec[0x4];        // 0x24ec
+    unsigned int unk24ec;     // 0x24ec, current split
+
+
     DWORD unk24f0[10];        // 0x24f0
     DWORD unk2518[10];        // 0x2518
     DWORD unk2540[10];        // 0x2540
@@ -590,9 +613,10 @@ struct Car
     float unk2618;            // 0x2618
     float unk261c;            // 0x261c
     int unk2620;              // 0x2620
-    int unk2624;              // 0x2624
-    int unk2628;              // 0x2628
-    int unk262c;              // 0x262c
+    unsigned int unk2624;     // 0x2624
+    float unk2628;            // 0x2628
+    float unk262c;            // 0x262c
+
     int catchUp;              // 0x2630
     float unk2634;            // 0x2634
     float leaderGap;          // 0x2638
@@ -607,7 +631,8 @@ struct Car
     float unk265c;            // 0x265c
     float unk2660;            // 0x2660
     unsigned int unk2664;     // 0x2664
-    BYTE unk2668[0x4];        // 0x2668
+    float unk2668;            // 0x2668
+
     float unk266c;            // 0x266c steering bias, -1..1
     BYTE unk2670[0x4];        // 0x2670
     int unk2674;              // 0x2674
@@ -619,9 +644,12 @@ struct Car
     int unk268c;              // 0x268c
     float unk2690;            // 0x2690
     int unk2694;              // 0x2694
-    BYTE unk2698[0x8];        // 0x2698
+    int unk2698;              // 0x2698
+    int unk269c;              // 0x269c
+
     int unk26a0;              // 0x26a0
-    int unk26a4;              // 0x26a4
+    unsigned int unk26a4;     // 0x26a4
+
     int unk26a8;              // 0x26a8
     int unk26ac;              // 0x26ac
     Scene *unk26b0;        // 0x26b0
@@ -634,7 +662,8 @@ struct Car
     float unk288c;            // 0x288c
     float unk2890;            // 0x2890
     float unk2894;            // 0x2894
-    BYTE unk2898[0x4];        // 0x2898
+    float unk2898;            // 0x2898
+
     float unk289c;            // 0x289c
     int unk28a0;              // 0x28a0
     int unk28a4;              // 0x28a4
@@ -681,9 +710,11 @@ struct Car
     unsigned int unk71ec;     // 0x71ec
     int unk71f0;              // 0x71f0
     int unk71f4;              // 0x71f4
-    BYTE unk71f8[0x4];        // 0x71f8
+    int unk71f8;              // 0x71f8
     unsigned int unk71fc;     // 0x71fc
-    BYTE unk7200[0x14];       // 0x7200
+    BYTE unk7200[0x4];        // 0x7200
+    Vec4 unk7204;             // 0x7204
+
     float unk7214;            // 0x7214
     float unk7218;            // 0x7218
     float unk721c;            // 0x721c
@@ -710,7 +741,11 @@ struct Car
     Body body;                // 0x7270
     int unk7614;              // 0x7614
     int unk7618;              // 0x7618
-    BYTE unk761c[0xc];        // 0x761c
+    int unk761c;              // 0x761c, spark frames left
+    BYTE unk7620[0x4];        // 0x7620
+
+    unsigned int unk7624;     // 0x7624
+
     int unk7628;              // 0x7628
     int unk762c;              // 0x762c
     int unk7630;              // 0x7630
@@ -720,9 +755,12 @@ struct Car
     DWORD unk7640;            // 0x7640
     int unk7644;              // 0x7644
     int unk7648;              // 0x7648
-    BYTE unk764c[0x8];        // 0x764c
+    int unk764c;              // 0x764c, segment along g_4d5c9c
+    unsigned int unk7650;     // 0x7650, unk764c as a percentage of the path
     int unk7654;              // 0x7654
-    BYTE unk7658[0x1c];       // 0x7658
+    BYTE unk7658[0xc];        // 0x7658
+    Vec4 unk7664;             // 0x7664, nearest point on the path
+
     int unk7674;              // 0x7674
     int unk7678;              // 0x7678
     int unk767c;              // 0x767c

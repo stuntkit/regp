@@ -187,6 +187,97 @@ void FUN_412910()
         car++;
     }
 }
+void FUN_418710(Car *car);
+void FUN_4187a0();
+void FUN_413490(Car *car);
+void FUN_418d20(Car *car);
+void FUN_418d90(Car *car);
+void FUN_411880(Car *car);
+void FUN_411490(Car *car);
+void FUN_4127e0(CameraPath *path, Car *car);
+void FUN_408640(Car *car, float *pos);
+GameSlot *FUN_402590(Car *car);
+extern int g_60df98;
+extern float g_482688;
+
+
+// Puts a car back on the track at its last checkpoint, upright and facing along the path.
+// FUNCTION: STUNTGP_D3D 0x412940
+void FUN_412940(Car *car)
+{
+    FUN_418710(car);
+    FUN_4187a0();
+    if (car->unk24e8 == 1)
+    {
+        return;
+    }
+    FUN_413490(car);
+    car->unk763c = 0;
+    FUN_4128f0(car);
+    FUN_418d20(car);
+    FUN_418d90(car);
+    FUN_411880(car);
+    FUN_411490(car);
+    car->unk1f10 = 1;
+    FUN_4127e0(g_624474, car);
+    FUN_408640(car, &car->unk24b0.x);
+    Vec4 fwd = car->unk24c0;
+    Vec4 down = *(Vec4 *)&g_482688;
+    down.x = -down.x;
+    down.y = -down.y;
+    down.z = -down.z;
+    Vec4 side;
+    side.x = fwd.y * down.z - fwd.z * down.y;
+    side.y = fwd.z * down.x - fwd.x * down.z;
+    side.z = fwd.x * down.y - fwd.y * down.x;
+    Vec3_Normalize(&side.x);
+    Matrix_Identity(car->matrix);
+    *(Vec4 *)&car->matrix[0] = side;
+    *(Vec4 *)&car->matrix[4] = down;
+    *(Vec4 *)&car->matrix[8] = fwd;
+    memcpy(car->body.mat0, car->matrix, sizeof(car->matrix));
+    if (g_60df98 == 2)
+    {
+        car->unk7640 = 300;
+    }
+    car->unk7680 = 0;
+    car->unk7644 = 30;
+    g_4722d0 = FUN_402590(car);
+    if (g_4722d0)
+    {
+        g_4722d0->unk1a4 = 300;
+    }
+    FUN_402580();
+}
+void FUN_4289a0(CameraPath *path, Vec4 *out, float dist, DWORD *knot);
+extern CameraPath *g_571328;
+
+
+// Places the car dist along the race path, facing along it, and resets it there.
+// FUNCTION: STUNTGP_D3D 0x412b10
+void FUN_412b10(Car *car, float dist)
+{
+    CameraPath *path = g_571328;
+    FUN_4289a0(path, &car->unk24b0, dist, (DWORD *)&car->unk24a4);
+    DWORD i = car->unk24a4;
+    int pct = i * 100 / path->count;
+    car->unk23ac = pct;
+    car->unk23a8 = pct - 1;
+    DWORD j = (i + 1) % path->count;
+    car->unk23b0 = pct;
+    Vec4 d;
+    d.x = path->points[j].x - path->points[i].x;
+    d.y = path->points[j].y - path->points[i].y;
+    d.z = path->points[j].z - path->points[i].z;
+    Vec3_Normalize(&d.x);
+    car->unk2644 = i;
+    car->unk264c = i;
+    car->unk2654 = i;
+    car->unk24c0 = d;
+    FUN_412940(car);
+}
+
+
 
 // FUNCTION: STUNTGP_D3D 0x4028d0
 void FUN_4028d0(int mode)
@@ -971,6 +1062,66 @@ void FUN_418d90(Car *car)
     }
     g_4d5bb8 = saved;
 }
+// Walks the segment index along the path until p projects inside the segment.
+// FUNCTION: STUNTGP_D3D 0x418e10
+void FUN_418e10(Vec4 *p, CameraPath *path, int *index)
+{
+    Vec4 *pts = path->points;
+    int i = *index;
+    int step = 0;
+    unsigned int a;
+    Vec4 d;
+    float t;
+    for (;;)
+    {
+        if (i < 0)
+        {
+            a = path->count - (unsigned int)-i % path->count;
+        }
+        else
+        {
+            a = (unsigned int)i % path->count;
+        }
+        unsigned int b = (a + 1) % path->count;
+        d.x = pts[b].x - pts[a].x;
+        d.y = pts[b].y - pts[a].y;
+        d.z = pts[b].z - pts[a].z;
+        float len;
+        FUN_44eda0(&d.x, &len);
+        Vec4 q;
+        q.x = p->x - pts[a].x;
+        q.y = p->y - pts[a].y;
+        q.z = p->z - pts[a].z;
+        t = q.x * d.x + q.y * d.y + q.z * d.z;
+        if (t < 0.0f)
+        {
+            if (step > 0)
+            {
+                break;
+            }
+            i--;
+            step = -1;
+        }
+        else
+        {
+            if (t < len || step < 0)
+            {
+                break;
+            }
+            i++;
+            step = 1;
+        }
+    }
+    *index = i;
+    d.x = t * d.x;
+    d.y = t * d.y;
+    d.z = t * d.z;
+    g_4d5bb8->unk7664.x = d.x + pts[a].x;
+    g_4d5bb8->unk7664.y = d.y + pts[a].y;
+    g_4d5bb8->unk7664.z = d.z + pts[a].z;
+    g_4d5bb8->unk7650 = i * 100 / path->count;
+}
+
 
 // GLOBAL: STUNTGP_D3D 0x570ac0
 Replay *g_570ac0;
@@ -1484,6 +1635,23 @@ int FUN_41e410(Vec4 *p, float *out)
     out[1] = s.y;
     out[2] = inv * 32.0f;
     return 1;
+}
+
+// Pushes a position into a trail ring; slot size mirrors the newest point.
+// FUNCTION: STUNTGP_D3D 0x41e6e0
+void FUN_41e6e0(Vec4 *ring, DWORD *head, DWORD *count, Vec4 *pos, TrailParams *params)
+{
+    if (*count < params->size)
+    {
+        (*count)++;
+    }
+    *head = (*head + 1) % params->size;
+    ring[params->size] = *pos;
+    ring[*head] = *pos;
+    if (!params->unk10)
+    {
+        FUN_41e410(pos, &ring[*head].x);
+    }
 }
 
 // GLOBAL: STUNTGP_D3D 0x477658

@@ -89,6 +89,48 @@ int g_49823c;
 // GLOBAL: STUNTGP_D3D 0x498240
 int g_498240;
 
+Vec4 *FUN_420b20(Vec4 *out, WORD *idx);
+
+// 1 when every vertex of the polygon lies within 0.1 of its plane.
+// FUNCTION: STUNTGP_D3D 0x41f870
+int FUN_41f870(TrackPoly *poly)
+{
+    WORD *idx = g_624480->indices + poly->firstIndex;
+    Vec4 *a = g_624480->vertices + *idx;
+    Vec4 n;
+    FUN_420b20(&n, idx);
+    int flat = 1;
+    unsigned int count = poly->vertexCount;
+    for (unsigned int i = 0; i < count; i++)
+    {
+        Vec4 *b = &g_624480->vertices[*idx];
+        Vec4 d;
+        d.x = b->x - a->x;
+        d.y = b->y - a->y;
+        d.z = b->z - a->z;
+        if ((float)fabs(n.x * d.x + n.y * d.y + n.z * d.z) > 0.1f)
+        {
+            flat = 0;
+        }
+        idx++;
+    }
+    return flat;
+}
+
+// GLOBAL: STUNTGP_D3D 0x498118
+Vec4 g_498118;
+
+// FUNCTION: STUNTGP_D3D 0x41f920
+void FUN_41f920(TrackPoly *poly, float dist)
+{
+    Vec4 dir = g_498118;
+    Vec3_Normalize(&dir.x);
+    if (poly)
+    {
+        FUN_41f870(poly);
+    }
+}
+
 // Same test as FUN_420690.
 // FUNCTION: STUNTGP_D3D 0x41f970
 int FUN_41f970(TrackPoly *poly, Vec4 *p)
@@ -122,6 +164,118 @@ int FUN_41f970(TrackPoly *poly, Vec4 *p)
         }
     }
     return 1;
+}
+
+int FUN_420690(TrackPoly *poly, Vec4 *p);
+
+// 1 when p lies within the sphere radius of the plane and inside the polygon.
+// FUNCTION: STUNTGP_D3D 0x41fa80
+int FUN_41fa80(TrackPoly *poly, Vec4 *p)
+{
+    Vec4 v;
+    v.x = p->x - g_49815c->x;
+    v.y = p->y - g_49815c->y;
+    v.z = p->z - g_49815c->z;
+    float d = v.x * g_498160->x + v.y * g_498160->y + v.z * g_498160->z;
+    float ad = (float)fabs(d);
+    if (ad < g_498154 - 0.01f && FUN_420690(poly, p) == 1)
+    {
+        if (ad < g_498154 - 0.01f)
+        {
+            FUN_41f920(poly, d);
+        }
+        return 1;
+    }
+    return 0;
+}
+
+// Pushes the camera away from every polygon edge inside the sphere.
+// FUNCTION: STUNTGP_D3D 0x41fb10
+int FUN_41fb10(TrackPoly *poly, Vec4 *p)
+{
+    WORD *idx = g_624480->indices + poly->firstIndex;
+    WORD *cur = idx;
+    for (unsigned int i = 0; i < poly->vertexCount; cur++)
+    {
+        Vec4 *a = &g_624480->vertices[*cur];
+        i++;
+        Vec4 *b = &g_624480->vertices[idx[i % poly->vertexCount]];
+        Vec4 e;
+        e.x = b->x - a->x;
+        e.y = b->y - a->y;
+        e.z = b->z - a->z;
+        float len;
+        FUN_44eda0(&e.x, &len);
+        Vec4 q;
+        q.x = p->x - a->x;
+        q.y = p->y - a->y;
+        q.z = p->z - a->z;
+        float t = q.x * e.x + q.y * e.y + q.z * e.z;
+        if (t >= 0.0f && t <= len)
+        {
+            Vec4 s;
+            s.x = t * e.x;
+            s.y = t * e.y;
+            s.z = t * e.z;
+            q.x = q.x - s.x;
+            q.y = q.y - s.y;
+            q.z = q.z - s.z;
+            t = (float)sqrt(q.x * q.x + q.y * q.y + q.z * q.z);
+            if (t < g_498154 - 0.01f)
+            {
+                FUN_41f920(poly, t);
+            }
+        }
+    }
+    return 0;
+}
+
+// Pushes the camera away from every polygon vertex inside the sphere.
+// FUNCTION: STUNTGP_D3D 0x41fc70
+int FUN_41fc70(TrackPoly *poly, Vec4 *p)
+{
+    WORD *idx = g_624480->indices + poly->firstIndex;
+    for (unsigned int i = 0; i < poly->vertexCount; i++, idx++)
+    {
+        Vec4 *v = &g_624480->vertices[*idx];
+        Vec4 d;
+        d.x = v->x - p->x;
+        d.y = v->y - p->y;
+        d.z = v->z - p->z;
+        float dist = (float)sqrt(d.x * d.x + d.y * d.y + d.z * d.z);
+        if (dist < g_498154 - 0.01f)
+        {
+            FUN_41f920(poly, dist);
+        }
+    }
+    return 0;
+}
+
+// Body the camera sphere ignores.
+// GLOBAL: STUNTGP_D3D 0x4981cc
+Body *g_4981cc;
+
+// FUNCTION: STUNTGP_D3D 0x41fde0
+int FUN_41fde0(Car *car)
+{
+    Body *body = &car->body;
+    if (body == g_4981cc)
+    {
+        return 0;
+    }
+    for (DWORD i = 0; i < body->numPoints; i++)
+    {
+        Vec4 d;
+        d.x = body->points[i].prev.x - g_4980c4.x;
+        d.y = body->points[i].prev.y - g_4980c4.y;
+        d.z = body->points[i].prev.z - g_4980c4.z;
+        float dist = (float)sqrt(d.x * d.x + d.y * d.y + d.z * d.z);
+        if (dist < g_498154 + body->points[i].radius - 1.0f)
+        {
+            FUN_41f920(NULL, dist);
+        }
+    }
+    return 0;
 }
 
 // 1 when the point lies inside every edge of the polygon, seen along the g_498160 normal.
@@ -525,6 +679,81 @@ void FUN_403bc0()
             speed *= 0.5f;
         }
         FUN_403310(2.09f - speed);
+    }
+}
+
+void FUN_405370(float *pos, CameraPath *path, int *index, float *distance);
+void FUN_4288d0(CameraPath *path, Vec4 *out, float dist);
+
+// Camera path tracking for the current slot.
+// GLOBAL: STUNTGP_D3D 0x499f78
+Vec4 g_499f78;
+
+// GLOBAL: STUNTGP_D3D 0x499f98
+int g_499f98;
+
+// GLOBAL: STUNTGP_D3D 0x499f9c
+float g_499f9c;
+
+// GLOBAL: STUNTGP_D3D 0x499fa0
+float g_499fa0;
+
+// Shake builds up while the camera strays from the camera path and the wheels are slipping.
+// FUNCTION: STUNTGP_D3D 0x403c80
+void FUN_403c80()
+{
+    FUN_405370(&g_4722d0->cam.pos.x, g_4722d0->path, &g_499f98, &g_499f9c);
+    g_499fa0 = g_499f9c * g_4722d0->path->unk18 * 0.01f;
+    FUN_4288d0(g_4722d0->path, &g_499f78, g_499fa0);
+    Vec4 ahead;
+    FUN_4288d0(g_4722d0->path, &ahead, g_499fa0 + 5000.0f);
+    Vec4 d;
+    d.x = ahead.x - g_499f78.x;
+    d.y = ahead.y - g_499f78.y;
+    d.z = ahead.z - g_499f78.z;
+    Vec4 n;
+    n.x = g_482690 * d.y - g_48268c * d.z;
+    n.y = g_482688 * d.z - g_482690 * d.x;
+    n.z = g_48268c * d.x - g_482688 * d.y;
+    Vec3_Normalize(&n.x);
+    Vec4 e;
+    e.x = g_499f78.x - g_4722d0->cam.pos.x;
+    e.y = g_499f78.y - g_4722d0->cam.pos.y;
+    e.z = g_499f78.z - g_4722d0->cam.pos.z;
+    float off = e.x * n.x + e.y * n.y + e.z * n.z;
+    g_4722d0->unk1c4 *= 0.97f;
+    off = (float)fabs(off) - 1300.0f;
+    if (off >= 0.0f)
+    {
+        off *= 0.0025f;
+        if (off > 1.0f)
+        {
+            off = 1.0f;
+        }
+        off = off * off * 5000.0f;
+        float slip = 0.0f;
+        for (int i = 0; i < 4; i++)
+        {
+            slip += g_4722d0->data->wheels[i].unk30;
+        }
+        slip = slip * 0.25f - 10.0f;
+        if (slip < 0.0f)
+        {
+            slip = 0.0f;
+        }
+        else
+        {
+            slip *= 0.02f;
+            if (slip > 1.0f)
+            {
+                slip = 1.0f;
+            }
+        }
+        g_4722d0->unk1c4 = off * slip * 0.05f + g_4722d0->unk1c4;
+        if (g_4722d0->unk1c4 > 400.0f)
+        {
+            g_4722d0->unk1c4 = 400.0f;
+        }
     }
 }
 
@@ -989,6 +1218,142 @@ int FUN_41ff30(Vec4 *p)
         return 1;
     }
     return 0;
+}
+
+// GLOBAL: STUNTGP_D3D 0x498148
+float g_498148;
+
+// GLOBAL: STUNTGP_D3D 0x498188
+Vec4 g_498188;
+
+// GLOBAL: STUNTGP_D3D 0x4981a8
+Vec4 g_4981a8;
+
+// GLOBAL: STUNTGP_D3D 0x4981b8
+Vec4 g_4981b8;
+
+// Sweeps the sphere along g_498128 against point p; on a hit records the contact, its normal and the
+// sphere centre at contact.
+// FUNCTION: STUNTGP_D3D 0x41ffa0
+int FUN_41ffa0(Vec4 *p)
+{
+    Vec4 d;
+    d.x = p->x - g_4980c4.x;
+    d.y = p->y - g_4980c4.y;
+    d.z = p->z - g_4980c4.z;
+    float dist2 = d.x * d.x + d.y * d.y + d.z * d.z;
+    float r = g_498148 + g_498154;
+    if (dist2 > r * r)
+    {
+        return 0;
+    }
+    float t = g_498128.x * d.x + g_498128.y * d.y + g_498128.z * d.z;
+    float h = dist2 - t * t;
+    if (h > g_498158)
+    {
+        return 0;
+    }
+    t = t - (float)sqrt(g_498158 - h);
+    Vec4 q;
+    q.x = g_498128.x * t;
+    q.y = g_498128.y * t;
+    q.z = t * g_498128.z;
+    q.x = g_4980c4.x + q.x;
+    q.y = g_4980c4.y + q.y;
+    q.z = g_4980c4.z + q.z;
+    if (!FUN_41ff30(&q))
+    {
+        return 0;
+    }
+    Vec4 n;
+    n.x = q.x - p->x;
+    g_4981a8 = q;
+    n.y = q.y - p->y;
+    n.z = q.z - p->z;
+    Vec3_Normalize(&n.x);
+    g_4981b8.x = g_498154 * n.x;
+    g_4981b8.y = g_498154 * n.y;
+    g_498198 = n;
+    g_4981b8.z = g_498154 * n.z;
+    g_4981b8.x = g_4981b8.x + p->x;
+    g_4981b8.y = g_4981b8.y + p->y;
+    g_4981b8.z = g_4981b8.z + p->z;
+    g_498188 = g_4981b8;
+    return 1;
+}
+
+// FUN_41ffa0 against body point i, with the sphere grown by the point's radius.
+// FUNCTION: STUNTGP_D3D 0x421960
+int FUN_421960(Body *body, int i)
+{
+    float r = g_498154 + body->points[i].radius;
+    Vec4 *p = &body->points[i].prev;
+    Vec4 d;
+    d.x = p->x - g_4980c4.x;
+    d.y = p->y - g_4980c4.y;
+    d.z = p->z - g_4980c4.z;
+    float dist2 = d.x * d.x + d.y * d.y + d.z * d.z;
+    float reach = g_498148 + r;
+    if (dist2 > reach * reach)
+    {
+        return 0;
+    }
+    float t = g_498128.x * d.x + g_498128.y * d.y + g_498128.z * d.z;
+    float h = dist2 - t * t;
+    float r2 = r * r;
+    if (h > r2)
+    {
+        return 0;
+    }
+    t = t - (float)sqrt(r2 - h);
+    Vec4 q;
+    q.x = g_498128.x * t;
+    q.y = g_498128.y * t;
+    q.z = t * g_498128.z;
+    q.x = g_4980c4.x + q.x;
+    q.y = g_4980c4.y + q.y;
+    q.z = g_4980c4.z + q.z;
+    if (!FUN_41ff30(&q))
+    {
+        return 0;
+    }
+    Vec4 n;
+    n.x = q.x - p->x;
+    g_4981a8 = q;
+    n.y = q.y - p->y;
+    n.z = q.z - p->z;
+    Vec3_Normalize(&n.x);
+    g_4981b8.x = g_498154 * n.x;
+    g_4981b8.y = g_498154 * n.y;
+    g_498198 = n;
+    g_4981b8.z = g_498154 * n.z;
+    g_4981b8.x = g_4981b8.x + p->x;
+    g_4981b8.y = g_4981b8.y + p->y;
+    g_4981b8.z = g_4981b8.z + p->z;
+    g_498188 = g_4981b8;
+    return 1;
+}
+
+// GLOBAL: STUNTGP_D3D 0x5715cc
+int g_5715cc;
+
+// Tests every vertex of the polygon with FUN_41ffa0, remembering the polygon on a hit.
+// FUNCTION: STUNTGP_D3D 0x420190
+void FUN_420190(TrackPoly *poly, int *hit)
+{
+    WORD *idx = g_624480->indices + poly->firstIndex;
+    unsigned int n = poly->vertexCount;
+    for (unsigned int i = 0; i < n; i++)
+    {
+        int r = FUN_41ffa0(&g_624480->vertices[*idx]);
+        *hit |= r;
+        if (r == 1)
+        {
+            g_498164 = poly;
+            g_5715cc = 3;
+        }
+        idx++;
+    }
 }
 
 // Classifies a box (centre pos, half extents size / 75) against the view frustum: 1 outside,
