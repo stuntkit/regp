@@ -23,7 +23,7 @@ void FUN_42fe90(int device, int driver);
 // FUNCTION: STUNTGP_D3D 0x42ff20
 void FUN_42ff20(int device, int driver)
 {
-    if (((D3DDriver *)&g_5ba788.devices[device][0x2274])[driver].rasterCaps & D3DPRASTERCAPS_ZBUFFERLESSHSR)
+    if (((D3DDriver *)&g_5ba788.devices[device][0x2274])[driver].desc.dpcTriCaps.dwRasterCaps & D3DPRASTERCAPS_ZBUFFERLESSHSR)
     {
         return;
     }

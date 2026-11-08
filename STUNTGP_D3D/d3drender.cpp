@@ -973,6 +973,50 @@ BOOL WINAPI FUN_42f530(GUID *guid, LPSTR description, LPSTR name, LPVOID context
     return TRUE;
 }
 
+HRESULT WINAPI FUN_42fe40(LPDDPIXELFORMAT format, LPVOID context);
+
+// Direct3D device enumeration callback; records up to six drivers of a DirectDraw device.
+// FUNCTION: STUNTGP_D3D 0x42f420
+HRESULT WINAPI FUN_42f420(GUID *guid, LPSTR description, LPSTR name, LPD3DDEVICEDESC hw, LPD3DDEVICEDESC hel, LPVOID context)
+{
+    BYTE *dev = (BYTE *)context;
+    D3DDriver *drv = (D3DDriver *)(dev + 0x2274) + *(DWORD *)(dev + 0x2270);
+    if (*(DWORD *)(dev + 0x2270) >= 6)
+    {
+        return D3DENUMRET_CANCEL;
+    }
+    drv->guid = *guid;
+    strncpy(drv->description, description, sizeof(drv->description));
+    strncpy(drv->name, name, sizeof(drv->name));
+    if (hw->dcmColorModel)
+    {
+        drv->hardware = 1;
+        drv->desc = *hw;
+    }
+    else
+    {
+        drv->hardware = 0;
+        drv->desc = *hel;
+    }
+    drv->perspective = drv->desc.dpcTriCaps.dwTextureCaps & D3DPTEXTURECAPS_PERSPECTIVE;
+    if (drv->desc.dpcTriCaps.dwRasterCaps & D3DPRASTERCAPS_WBUFFER)
+    {
+        drv->zbufferMode = 2;
+    }
+    else
+    {
+        drv->zbufferMode = 1;
+    }
+    drv->zbufferFormatCount = 0;
+    (*(LPDIRECT3D3 *)(dev + 0x2264))->EnumZBufferFormats(drv->guid, FUN_42fe40, drv);
+    if (!drv->zbufferFormatCount)
+    {
+        drv->zbufferMode = 0;
+    }
+    (*(DWORD *)(dev + 0x2270))++;
+    return D3DENUMRET_OK;
+}
+
 // FUNCTION: STUNTGP_D3D 0x42f6a0
 void FUN_42f6a0()
 {
@@ -1061,8 +1105,8 @@ void FUN_42f7f0(D3DVIEWPORT2 *viewport, DWORD width, DWORD height)
 int FUN_42f840()
 {
     BYTE *dev = g_5ba788.device;
-    D3DDriver *drv = (D3DDriver *)g_5ba788.deviceDesc;
-    LPDIRECT3DDEVICE3 d3dDevice = drv->device;
+    LPDIRECT3DDEVICE3 *device = &((D3DDriver *)g_5ba788.deviceDesc)->device;
+    LPDIRECT3DDEVICE3 d3dDevice = *device;
     LPDIRECT3DVIEWPORT3 *viewport = (LPDIRECT3DVIEWPORT3 *)(dev + 0x2268);
     if (*viewport)
     {
@@ -1075,7 +1119,7 @@ int FUN_42f840()
     {
         exitError(ddGetErrMessage(res));
     }
-    res = drv->device->AddViewport(*viewport);
+    res = (*device)->AddViewport(*viewport);
     if (res != DD_OK)
     {
         exitError(ddGetErrMessage(res));
@@ -1646,7 +1690,7 @@ void FUN_42bcf0(char *suffix, char *path, int highDetail)
         level = 0;
     }
     char *dir = dirs[level];
-    do
+    for (;;)
     {
         if (FUN_42bc30(suffix, dir, path) == 1)
         {
@@ -1657,8 +1701,11 @@ void FUN_42bcf0(char *suffix, char *path, int highDetail)
             return;
         }
         dir -= 128;
-        level--;
-    } while (level >= 0);
+        if (--level < 0)
+        {
+            return;
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x42bdd0

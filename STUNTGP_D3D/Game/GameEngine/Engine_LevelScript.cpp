@@ -551,7 +551,16 @@ void FUN_42d870()
     float diff = g_477b80 - g_477b84;
     if ((float)fabs(diff) > 0.2f)
     {
-        g_477b84 += diff > 0.0f ? 0.5f : -0.05f;
+        float step;
+        if (diff > 0.0f)
+        {
+            step = 0.5f;
+        }
+        else
+        {
+            step = -0.05f;
+        }
+        g_477b84 += step;
     }
     if (g_477b84 > 3.0f)
     {
