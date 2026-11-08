@@ -517,6 +517,80 @@ void FUN_401e50()
         g_499f94 = 0;
     }
 }
+// Loads the track's camera presets from Config\Cams\<track>.cam, or takes them from the track data.
+// FUNCTION: STUNTGP_D3D 0x401f00
+void FUN_401f00()
+{
+    char path[128];
+    if (g_612948.unk02a0 != 1)
+    {
+        memset(g_4722d8, 0, sizeof(g_4722d8));
+        g_499f90 = 0;
+        return;
+    }
+    // STRING: STUNTGP_D3D 0x472ad8
+    sprintf(path, "%s\\Config\\Cams\\%s.cam", g_GameDirectory, g_624460);
+    int size = size_of_file(path);
+    if (!size)
+    {
+        FUN_401e50();
+        return;
+    }
+    char *text = (char *)Mem_Alloc(size + 0x20, 0);
+    bload(path, text, size);
+    // STRING: STUNTGP_D3D 0x472af0
+    char *p = strstr(text, "-CAMERA[] =");
+    // STRING: STUNTGP_D3D 0x472afc
+    Script_GetInt(p, "TotalCameraCnt", &g_499f90);
+    char *cur = text;
+    for (int i = 0; i < g_499f90; i++)
+    {
+        // STRING: STUNTGP_D3D 0x472b0c
+        p = strstr(cur, "-Position[] =");
+        g_4722d8[i].pos.x = 0.0f;
+        g_4722d8[i].pos.y = 0.0f;
+        g_4722d8[i].pos.z = 0.0f;
+        // STRING: STUNTGP_D3D 0x472b1c
+        Script_GetFloat(p, "x", &g_4722d8[i].pos.x);
+        // STRING: STUNTGP_D3D 0x472b20
+        Script_GetFloat(p, "y", &g_4722d8[i].pos.y);
+        // STRING: STUNTGP_D3D 0x472b24
+        Script_GetFloat(p, "z", &g_4722d8[i].pos.z);
+        // STRING: STUNTGP_D3D 0x472b28
+        p = strstr(cur, "-OFP[] =");
+        g_4722d8[i].target.x = 0.0f;
+        g_4722d8[i].target.y = 0.0f;
+        g_4722d8[i].target.z = 0.0f;
+        // STRING: STUNTGP_D3D 0x472b34
+        Script_GetFloat(p, "x", &g_4722d8[i].target.x);
+        // STRING: STUNTGP_D3D 0x472b38
+        Script_GetFloat(p, "y", &g_4722d8[i].target.y);
+        // STRING: STUNTGP_D3D 0x472b3c
+        Script_GetFloat(p, "z", &g_4722d8[i].target.z);
+        // STRING: STUNTGP_D3D 0x472b40
+        p = strstr(cur, "-UP[] =");
+        g_4722d8[i].up.x = 0.0f;
+        g_4722d8[i].up.y = 0.0f;
+        g_4722d8[i].up.z = 0.0f;
+        // STRING: STUNTGP_D3D 0x472b48
+        Script_GetFloat(p, "x", &g_4722d8[i].up.x);
+        // STRING: STUNTGP_D3D 0x472b4c
+        Script_GetFloat(p, "y", &g_4722d8[i].up.y);
+        // STRING: STUNTGP_D3D 0x472b50
+        Script_GetFloat(p, "z", &g_4722d8[i].up.z);
+        // STRING: STUNTGP_D3D 0x472b54
+        Script_GetFloat(p, "Zoom", &g_4722d8[i].fov);
+        // STRING: STUNTGP_D3D 0x472b5c
+        Script_GetInt(p, "Tracking", &g_4722d8[i].unk34);
+        // STRING: STUNTGP_D3D 0x472b68
+        Script_GetFloat(p, "Twist", &g_4722d8[i].roll);
+        // STRING: STUNTGP_D3D 0x472b70
+        cur = strstr(cur, "Twist") + 5;
+    }
+    Mem_Free(text);
+    g_499f94 = 0;
+}
+
 
 // STUB: STUNTGP_D3D 0x40a2f0
 void FUN_40a2f0()
