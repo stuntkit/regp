@@ -454,7 +454,10 @@ struct MenuState
     int unk4478; // 0x4478
     int unk447c; // 0x447c
     int unk4480; // 0x4480
-    BYTE unk4484[0x44d0 - 0x4484];
+    int unk4484;     // 0x4484
+    int unk4488;     // 0x4488
+    int unk448c;     // 0x448c, entries used in unk4490
+    int unk4490[16]; // 0x4490, nodes visited, the last is the current one
     int unk44d0; // 0x44d0
     char unk44d4[4][0x40]; // 0x44d4, names entered on PageEnterName
     int unk45d4;   // 0x45d4

@@ -5043,10 +5043,234 @@ void FUN_45d2e0(Unk45d2e0 *object)
     object->unk18 = NULL;
 }
 
-// STUB: STUNTGP_D3D 0x45d320
-int FUN_45d320(PoolObject *object, int msg, int arg)
+void FUN_45d630(int sel, int dir);
+void FUN_45da40(int index);
+void FUN_45da70(Unk45d2e0 *object, int index, float pos);
+void FUN_45db10(Unk4516c0 *object);
+void FUN_45db50(Unk4516c0 *object);
+
+// Node choice: pick the left or right branch out of the current node, then confirm it.
+// FUNCTION: STUNTGP_D3D 0x45d320
+int FUN_45d320(PoolObject *base, int msg, int arg)
 {
+    Unk45d2e0 *object = (Unk45d2e0 *)base;
+    PoolObject *child;
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(5);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(0x60, -0.3f, -0.5f);
+        child = object->unk14;
+        child->message(child, msg, 0);
+        return 0;
+    case 0xd:
+        if (!object->unk1c)
+        {
+            if (object->unk20 >= 2)
+            {
+                object->unk20 = 1;
+            }
+            if (object->unk20 > 0)
+            {
+                object->unk20--;
+                FUN_440890(msg);
+                return 0;
+            }
+        }
+        break;
+    case 0xe:
+        if (!object->unk1c && object->unk20 < 1)
+        {
+            object->unk20++;
+            FUN_440890(msg);
+            return 0;
+        }
+        break;
+    case 0xb:
+    case 0xc:
+        if (object->unk1c)
+        {
+            object->unk18->message(object->unk18, msg, 0);
+            return 0;
+        }
+    case 0x14:
+        object->unk14->message(object->unk14, msg, 0);
+        return 0;
+    case 0x11:
+        if (!object->unk1c)
+        {
+            FUN_440890(msg);
+            FUN_45db10((Unk4516c0 *)object);
+            return 0;
+        }
+        FUN_45db50((Unk4516c0 *)object);
+        FUN_440890(msg);
+        return 0;
+    case 0x10:
+        if (object->unk1c)
+        {
+            FUN_440890(msg);
+            if (object->unk18->message(object->unk18, 0x1a, 0) == 1)
+            {
+                FUN_45db50((Unk4516c0 *)object);
+                return 0;
+            }
+            g_menuState.unk4484 = 1;
+            FUN_43eef0();
+            return 0;
+        }
+        if (object->unk14->message(object->unk14, 0x1a, 0))
+        {
+            FUN_440890(msg);
+            FUN_45db10((Unk4516c0 *)object);
+            return 0;
+        }
+    {
+        int side = object->unk20;
+        int node = (&object->unk2c)[side];
+        g_menuState.unk00ec[g_menuState.unk4490[g_menuState.unk448c - 1] * 2 + side] = 1;
+        g_menuState.unk4490[g_menuState.unk448c] = node;
+        g_menuState.unk448c++;
+        g_menuState.unk4488 = side;
+    }
+        FUN_440890(msg);
+        FUN_43eef0();
+        return 0;
+    case 2:
+    {
+        object->unk14->message(object->unk14, msg, 0);
+        object->unk18->message(object->unk18, msg, 0);
+        int side = object->unk20;
+        float shown = side >= 2 ? 1 : side;
+        object->unk28 = shown;
+        object->unk24 = FUN_43d810(object->unk24, shown, 0.001f);
+        FUN_43df60(2.0f, 1.0f, side >= 2 ? 1 : side, 0.0f, 0.0f, 0.0f);
+        return 0;
+    }
+    case 3:
+    {
+        FUN_45da70(object, object->unk20, object->unk24);
+        FUN_438190(0.0f, 0.0f, 640.0f, 480.0f);
+        FUN_4392b0(0x1f9, 0);
+        object->unk14->message(object->unk14, msg, 0);
+        object->unk18->message(object->unk18, msg, 0);
+        int side = object->unk20;
+        int node = (&object->unk2c)[side];
+        FUN_45da40(node);
+        FUN_45d630(node, side ? 1 : -1);
+        break;
+    }
+    }
     return 0;
+}
+
+// GLOBAL: STUNTGP_D3D 0x627fe0
+char g_627fe0[0x13];
+
+int FUN_43dd60();
+int FUN_4371c0(int track, int mode);
+int FUN_437920(int index);
+int FUN_437930(int id, int *from, int *to);
+
+// Node map: a pyramid of rows of 6 down to 3 nodes, with the links between visited nodes and the
+// cursor arrows on the current one.
+// FUNCTION: STUNTGP_D3D 0x45d630
+void FUN_45d630(int sel, int dir)
+{
+    int blink = FUN_43dd60() & 0x10;
+    memset(g_627fe0, 0, sizeof(g_627fe0));
+    for (int i = 0; i < g_menuState.unk448c; i++)
+    {
+        g_627fe0[g_menuState.unk4490[i]] = 1;
+    }
+    int current = g_menuState.unk4490[g_menuState.unk448c - 1];
+    FUN_439450(49.0f, 366.0f, 391.0f, 444.0f, 10, 0x6f, 0x40);
+    FUN_439380(49.0f, 366.0f, 391.0f, 444.0f, 13, 0, 0, 0.0f);
+    int index = 1;
+    float y = 382.0f;
+    int textId = 3;
+    for (int count = 6; count >= 3; count--)
+    {
+        for (int column = 0; column < count; column++)
+        {
+            float x = column - (count - 1) * 0.5f;
+            int sprite;
+            if (FUN_4371c0(FUN_437920(index), g_menuState.unk4230))
+            {
+                if (x <= -1.0f)
+                {
+                    sprite = 0x41;
+                }
+                else if (x >= 1.0f)
+                {
+                    sprite = 0x43;
+                }
+                else
+                {
+                    sprite = 0x42;
+                }
+            }
+            else
+            {
+                if (x <= -1.0f)
+                {
+                    sprite = 0x44;
+                }
+                else if (x >= 1.0f)
+                {
+                    sprite = 0x46;
+                }
+                else
+                {
+                    sprite = 0x45;
+                }
+            }
+            if (column == count - 1)
+            {
+                FUN_438be0(x * 56.0f + 232.0f, y, 12, 2, textId, 0.8f, 0xffffffff, 2);
+            }
+            float px = x * 56.0f + 220.0f;
+            FUN_438710(px, y, 12, sprite, 1.0f, 0x103);
+            if (index == sel && blink)
+            {
+                FUN_438710(px, y, 12, 0x47, 1.0f, 0x103);
+                if (dir < 0)
+                {
+                    FUN_438710(x * 56.0f + 234.0f, y + 8.0f, 12, 0x4a, 1.0f, 0x103);
+                }
+                if (dir > 0)
+                {
+                    FUN_438710(px - 14.0f, y + 8.0f, 12, 0x4a, 1.0f, 0x113);
+                }
+            }
+            if (g_627fe0[index] && index > 6)
+            {
+                int from;
+                int to;
+                FUN_437930(index, &from, &to);
+                if (g_627fe0[from])
+                {
+                    FUN_438710(px - 14.0f, y - 8.0f, 12, 0x4b, 1.0f, 0x103);
+                }
+                if (g_627fe0[to])
+                {
+                    FUN_438710(x * 56.0f + 234.0f, y - 8.0f, 12, 0x4b, 1.0f, 0x113);
+                }
+            }
+            if (g_menuState.unk00ec[index * 2] && (index != current || !blink || dir >= 0))
+            {
+                FUN_438710(px - 14.0f, y - 8.0f, 12, 0x4c, 1.0f, 0x103);
+            }
+            if (g_menuState.unk00ec[index * 2 + 1] && (index != current || !blink || dir <= 0))
+            {
+                FUN_438710(x * 56.0f + 234.0f, y - 8.0f, 12, 0x4c, 1.0f, 0x113);
+            }
+            index++;
+        }
+        y += 16.0f;
+        textId++;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x45db80
