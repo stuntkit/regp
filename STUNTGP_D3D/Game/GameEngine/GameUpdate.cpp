@@ -2001,6 +2001,51 @@ void FUN_429730()
     }
 }
 
+extern VisIndexList *g_61c518;
+extern VisIndexList *g_61c524;
+
+// FUN_429730 for the partly visible lists, also storing each vertex's frustum outcodes.
+// FUNCTION: STUNTGP_D3D 0x429880
+void FUN_429880()
+{
+    float d[5];
+    Vec4 t;
+    float nearZ = g_4722d0->nearZ;
+    for (VisIndexList *list = g_61c518; list < g_61c524; list++)
+    {
+        WORD *idx = list->indices;
+        while (*idx != 0xffff)
+        {
+            float *out = (float *)(g_61c510 + *idx * 32);
+            if (((WORD *)out)[9] != g_61c508)
+            {
+                *(float **)g_61c520 = out;
+                g_61c520 += 4;
+                Vec4 *in = &g_61c530->points[*idx];
+                t.x = g_61c428[8] * in->z + g_61c428[4] * in->y + g_61c428[0] * in->x + g_61c428[12];
+                t.y = g_61c428[9] * in->z + g_61c428[5] * in->y + g_61c428[1] * in->x + g_61c428[13];
+                t.z = g_61c428[2] * in->x + g_61c428[10] * in->z + g_61c428[6] * in->y + g_61c428[14];
+                float sx = g_61c3e8[0] * t.x;
+                out[0] = sx;
+                float sy = g_61c3e8[5] * t.y;
+                out[1] = sy;
+                float sz = g_61c3e8[10] * t.z + g_61c3e8[14];
+                out[2] = sz;
+                d[0] = nearZ - sz;
+                d[1] = -t.z - sx;
+                d[2] = sx - t.z;
+                d[3] = -t.z - sy;
+                d[4] = sy - t.z;
+                ((WORD *)out)[9] = g_61c508;
+                out[7] = t.z;
+                *(WORD *)(out + 4) = ((*(DWORD *)&d[4] >> 26) & 0x20) | ((*(DWORD *)&d[3] >> 27) & 0x10) |
+                                     ((*(DWORD *)&d[2] >> 28) & 8) | ((*(DWORD *)&d[1] >> 29) & 4) | (*(DWORD *)&d[0] >> 31) | 2;
+            }
+            idx++;
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x431810
 void FUN_431810()
 {

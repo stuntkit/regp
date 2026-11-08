@@ -1299,7 +1299,7 @@ void *g_61c5fc;
 void *g_61c600;
 
 // GLOBAL: STUNTGP_D3D 0x61c518
-void *g_61c518;
+VisIndexList *g_61c518;
 
 // GLOBAL: STUNTGP_D3D 0x61c51c
 VisIndexList *g_61c51c;
@@ -1321,7 +1321,7 @@ void FUN_42e430()
     g_61c5fc = Mem_Alloc(0xf000, 0);
     g_61c600 = Mem_Alloc(0xf000, 0);
     g_61c5f0 = (OverlayPoly *)Mem_Alloc(0x11000, 0);
-    g_61c518 = Mem_Alloc(0x1000, 0);
+    g_61c518 = (VisIndexList *)Mem_Alloc(0x1000, 0);
     g_61c51c = (VisIndexList *)Mem_Alloc(0x1000, 0);
     g_624530 = Mem_Alloc(0x4800, 0);
 }
@@ -1359,7 +1359,7 @@ extern int g_6244a0;
 extern int g_6244a4;
 
 // GLOBAL: STUNTGP_D3D 0x61c524
-void *g_61c524;
+VisIndexList *g_61c524;
 
 // GLOBAL: STUNTGP_D3D 0x61c528
 VisIndexList *g_61c528;
