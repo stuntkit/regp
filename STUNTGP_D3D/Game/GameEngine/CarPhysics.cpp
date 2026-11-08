@@ -8222,9 +8222,59 @@ void FUN_419900()
 {
 }
 
-// STUB: STUNTGP_D3D 0x41c9b0
+void FUN_41c530();
+extern Scene *g_571314;
+
+// Builds the skid mark mesh: 128 copies of the template quad, each its own face and points.
+// FUNCTION: STUNTGP_D3D 0x41c9b0
 void FUN_41c9b0()
 {
+    FUN_41c530();
+    Scene *scene = g_571314;
+    ObjectDef *obj = scene->lods[0];
+    *(WORD *)(scene->unk10 + 0x10) = 0;
+    *(WORD *)(scene->unk10 + 0x12) = 0;
+    WORD *idx = (WORD *)scene->unk38;
+    MeshFace *faces = (MeshFace *)obj->verts;
+    MeshUv *uvs = (MeshUv *)obj->unk2c;
+    *(WORD *)(obj->unk0c + 0x14) = 0;
+    *(WORD *)(obj->unk0c + 0x16) = 0;
+    Vec4 *pts = obj->points;
+    faces[0].unk01 = 5;
+    uvs[0].color = 0xffffff;
+    uvs[1].color = 0xffffff;
+    uvs[2].color = 0xffffff;
+    uvs[3].color = 0xffffff;
+    faces[0].flags = 0x70;
+    WORD *ip = &idx[faces[0].index + 6];
+    int k = 0;
+    int v = 4;
+    for (int off = 0x40; off < 0x2000; off += 0x40)
+    {
+        k++;
+        memcpy((BYTE *)uvs + off, uvs, 0x40);
+        memcpy((BYTE *)pts + off, pts, 0x40);
+        for (int j = 0; j < 4; j++)
+        {
+            ip[-2] = v + 2;
+            ip[-1] = v;
+            ip[0] = v + 1;
+            ip[1] = v + 3;
+        }
+        g_571314->unk28[k] = g_571314->unk28[0];
+        faces[k] = faces[0];
+        faces[k].unk04 = k;
+        faces[k].index = v;
+        uvs[k * 4 + 0].point = v;
+        uvs[k * 4 + 1].point = v + 1;
+        uvs[k * 4 + 2].point = v + 2;
+        uvs[k * 4 + 3].point = v + 3;
+        ip += 4;
+        v += 4;
+    }
+    obj->vertCount = 0;
+    obj->unk26 = 0;
+    obj->pointCount = 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x41d170
