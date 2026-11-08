@@ -1946,21 +1946,21 @@ int FUN_4550d0(Unk4516c0 *object, int msg, int arg)
             g_menuState.unk46c8 = 2;
             g_menuState.unk46bc = 0;
             g_menuState.unk46c0 = 0;
-            break;
+            g_menuState.unk46c4 = 0;
+            FUN_43dfa0(0, 0x1b);
+            return 0;
         case 2:
-            g_menuState.unk46c8 = 3;
             g_menuState.unk46bc = 0;
             g_menuState.unk46c0 = 0;
-            break;
+            g_menuState.unk46c8 = 3;
+            g_menuState.unk46c4 = 0;
+            FUN_43dfa0(0, 0x1b);
+            return 0;
         case 3:
             FUN_4552f0((Unk453460 *)object);
             object->unk14->message(object->unk14, msg, 0);
             return 0;
-        default:
-            return 0;
         }
-        g_menuState.unk46c4 = 0;
-        FUN_43dfa0(0, 0x1b);
         return 0;
     case 0x14:
         object->unk14->message(object->unk14, msg, 0);
