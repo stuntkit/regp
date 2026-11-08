@@ -302,7 +302,7 @@ void FUN_450510(Unk4516c0 *object);
 int FUN_450550(Unk4516c0 *object, int msg, int arg);
 int FUN_456010(Unk456070 *object, int arg);
 void FUN_4560b0(PoolObject *object);
-int FUN_4560c0(PoolObject *object, int msg, int arg);
+int FUN_4560c0(Unk456070 *object, int msg, int arg);
 int FUN_452b30(MenuObject *object, int arg);
 void FUN_452b50(PoolObject *object);
 int FUN_452b60(MenuObject *object, int msg, int arg);
@@ -454,7 +454,7 @@ PoolClass g_488610 = {FUN_4557f0, FUN_455800};
 PoolClass g_488748 = {(void (*)(PoolObject *))FUN_455d70, (int (*)(PoolObject *, int, int))FUN_455d90};
 
 // GLOBAL: STUNTGP_D3D 0x488760
-PoolClass g_488760 = {FUN_4560b0, FUN_4560c0};
+PoolClass g_488760 = {FUN_4560b0, (int (*)(PoolObject *, int, int))FUN_4560c0};
 
 // GLOBAL: STUNTGP_D3D 0x4888f8
 PoolClass g_4888f8 = {(void (*)(PoolObject *))FUN_456910, (int (*)(PoolObject *, int, int))FUN_456950};
@@ -2067,9 +2067,68 @@ void FUN_4560b0(PoolObject *object)
 {
 }
 
-// STUB: STUNTGP_D3D 0x4560c0
-int FUN_4560c0(PoolObject *object, int msg, int arg)
+void FUN_456220(Unk456070 *object);
+void FUN_4562b0(Unk456070 *object);
+void FUN_4564b0(Unk456070 *object);
+int FUN_456670(Unk456070 *object);
+void FUN_4566b0(Unk456070 *object);
+void FUN_456760(Unk456070 *object);
+
+// Player join page; unk14 delays the input, unk18 is set while too few players have joined.
+// FUNCTION: STUNTGP_D3D 0x4560c0
+int FUN_4560c0(Unk456070 *object, int msg, int arg)
 {
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(1);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(99, 0.3f, -0.5f);
+        return 0;
+    case 1:
+        if (object->unk14)
+        {
+            object->unk14--;
+            return 0;
+        }
+        FUN_4564b0(object);
+        FUN_456760(object);
+        if (!object->unk1c && FUN_456670(object))
+        {
+            FUN_440880(3);
+            FUN_43eef0();
+            return 0;
+        }
+        break;
+    case 0x11:
+        FUN_440880(2);
+        g_menuState.unk46a8 = 1;
+        FUN_43eef0();
+        return 0;
+    case 3:
+        FUN_4392b0(0xc1, 0);
+        FUN_439340(0xd0);
+        if (FUN_456000() < 2)
+        {
+            if (!object->unk18)
+            {
+                FUN_440880(7);
+                object->unk18 = 1;
+            }
+            FUN_456220(object);
+        }
+        else if (object->unk18)
+        {
+            FUN_440880(8);
+            object->unk18 = 0;
+        }
+        FUN_4562b0(object);
+        if (!object->unk18)
+        {
+            FUN_4566b0(object);
+        }
+        break;
+    }
     return 0;
 }
 

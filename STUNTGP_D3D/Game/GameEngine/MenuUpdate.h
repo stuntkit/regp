@@ -558,6 +558,18 @@ struct MenuHolder
     PoolObject *child; // 0x14
 };
 
+// Per-player front-end panel; the arrays are indexed by player, 1 to 4.
+struct Unk456070
+{
+    BYTE unk00[0x14]; // 0x00
+    int unk14;        // 0x14
+    int unk18;        // 0x18
+    int unk1c;        // 0x1c
+    int unk20[5];     // 0x20
+    int unk34[5];     // 0x34
+    int unk48[5];     // 0x48
+};
+
 // Screen position page; unk1c/unk20 are the offsets being adjusted.
 struct Unk450930
 {

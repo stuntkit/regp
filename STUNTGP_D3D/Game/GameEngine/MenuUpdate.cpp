@@ -69,19 +69,6 @@ struct Unk454b40
     float unk30;      // 0x30
 };
 
-
-// Per-player front-end panel; the arrays are indexed by player, 1 to 4.
-struct Unk456070
-{
-    BYTE unk00[0x14]; // 0x00
-    int unk14;        // 0x14
-    int unk18;        // 0x18
-    int unk1c;        // 0x1c
-    int unk20[5];     // 0x20
-    int unk34[5];     // 0x34
-    int unk48[5];     // 0x48
-};
-
 void FUN_456070(Unk456070 *object);
 
 struct Unk457ea0
@@ -4547,6 +4534,74 @@ int FUN_456650(Unk456070 *object)
         }
     }
     return count;
+}
+
+// Flashing "more players needed" box.
+// FUNCTION: STUNTGP_D3D 0x456220
+void FUN_456220(Unk456070 *object)
+{
+    FUN_439450(120.0f, 310.0f, 520.0f, 370.0f, 3, (FUN_43dd60() & 0x20) ? 0x6f : 0x70, 0x40);
+    FUN_439380(120.0f, 310.0f, 520.0f, 370.0f, 6, 2, 0, 0.0f);
+    FUN_438ba0(320.0f, 340.0f, 5, 4, 0xce, 1.5f, 0xffffffff, 0x803);
+}
+
+void FUN_438710(float x, float y, int layer, int def, float scale, DWORD flags);
+
+// One panel per player: car picture, join state and the selected handicap.
+// FUNCTION: STUNTGP_D3D 0x4562b0
+void FUN_4562b0(Unk456070 *object)
+{
+    int count = FUN_43d9c0(4, 4);
+    int text = 0x2d4;
+    for (int i = 1; i < count + 1; i++)
+    {
+        int joined = FUN_437090(i);
+        int car = FUN_437050(i);
+        float x = ((i - 1) - (count - 1) * 0.5f) * 150.0f + 320.0f;
+        int def = FUN_43dcc0(joined, car ? car - 1 : 0);
+        float x0 = x - 64.0f;
+        float x1 = x + 64.0f;
+        FUN_439450(x0, 126.0f, x1, 274.0f, 10, 0x6f, 0x40);
+        FUN_439380(x0, 126.0f, x1, 274.0f, 13, 0, 0, 0.0f);
+        if (def)
+        {
+            FUN_438710(x, 200.0f, 12, def, 0.8f, 3);
+            FUN_43dd60();
+        }
+        else
+        {
+            FUN_438710(x, 200.0f, 12, 0x170, 0.8f, 3);
+        }
+        D3DCOLOR color = 0xffffffff;
+        if (joined)
+        {
+            int id;
+            if (!object->unk34[i])
+            {
+                color = 0xffc8c8ff;
+                id = 0x2d3;
+            }
+            else if (object->unk48[i])
+            {
+                color = 0xffffffff;
+                id = text++;
+            }
+            else
+            {
+                color = (FUN_43dd60() & 0x20) ? 0xffffffff : 0xffc8c8ff;
+                id = 0x2d2;
+            }
+            if (id)
+            {
+                FUN_438be0(x, 140.0f, 12, 4, id, 1.25f, color, 3);
+            }
+        }
+        int handicap = FUN_437010(i);
+        if (def && handicap)
+        {
+            FUN_438be0(x, 260.0f, 12, 4, handicap + 0x2c7, 1.25f, color, 3);
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x4564b0
