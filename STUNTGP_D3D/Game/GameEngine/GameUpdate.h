@@ -946,7 +946,10 @@ struct ObjectDef
     WORD unk04;        // 0x04
     BYTE unk06[0x2];   // 0x06
     Vec4 *matrix;      // 0x08
-    BYTE unk0c[0x18];  // 0x0c
+    BYTE unk0c[0x4];   // 0x0c
+    Vec4 unk10;        // 0x10, offset in the object's frame
+    WORD unk20;        // 0x20
+    WORD unk22;        // 0x22
     WORD vertCount;    // 0x24, entries in verts
     WORD unk26;        // 0x26, entries in unk2c
     WORD pointCount;   // 0x28, entries in points

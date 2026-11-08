@@ -1968,6 +1968,70 @@ void FUN_426970(Unk62a078 *p)
     p->unk98 = 0x60;
 }
 
+void FUN_45e110(Unk62a078 *particle);
+
+// Every other frame (every frame above 80 fps), puffs a FUN_426970 particle out of the
+// object, 2000 units behind its offset point.
+// FUNCTION: STUNTGP_D3D 0x426a00
+void FUN_426a00(AnimObject *obj, ObjectDef *def)
+{
+    if (!(def->flags & 0x10))
+    {
+        obj->unk40++;
+        if (g_612948.unk0034 > 80 || (DWORD)obj->unk40 >= 2)
+        {
+            obj->unk40 = 0;
+            Unk62a078 p;
+            *(Camera *)&p.pos = g_4864e8;
+            float m[16];
+            FUN_44fb00(m, (DWORD)(obj->rot.x * (8192.0f / 360.0f)), (DWORD)(obj->rot.y * (8192.0f / 360.0f)),
+                       (DWORD)(obj->rot.z * (8192.0f / 360.0f)));
+            Vec4 off = def->unk10;
+            off.z += 2000.0f;
+            off.x = -off.x;
+            off.y = -off.y;
+            off.z = -off.z;
+            p.pos.x = m[4] * off.y + m[0] * off.x + m[8] * off.z;
+            p.pos.y = m[5] * off.y + m[1] * off.x + m[9] * off.z;
+            p.pos.z = m[6] * off.y + m[2] * off.x + m[10] * off.z;
+            p.pos.x += def->matrix->x;
+            p.pos.y += def->matrix->y;
+            p.pos.z += def->matrix->z;
+            p.pos.x += def->unk10.x;
+            p.pos.y += def->unk10.y;
+            p.pos.z += def->unk10.z;
+            p.pos.y -= 400.0f;
+            FUN_426970(&p);
+            p.lifetime = (DWORD)((float)fabs(FUN_42f1c0(18.0f)) + 45.0f);
+            float speed = FUN_42f1c0(100.0f);
+            float s = speed * 8.0f;
+            if ((float)fabs(s) < 800.0f)
+            {
+                if (s < 0.0f)
+                {
+                    s = -800.0f;
+                }
+                else
+                {
+                    s = 800.0f;
+                }
+            }
+            off.x = s * m[0];
+            off.y = s * m[1];
+            off.z = s * m[2];
+            p.pos.x += off.x;
+            p.pos.y += off.y;
+            p.pos.z += off.z;
+            p.vel[0] = speed * m[0];
+            p.vel[1] = speed * m[1];
+            p.vel[2] = speed * m[2];
+            p.vel[1] = (float)fabs(FUN_42f1c0(50.0f));
+            p.spin = FUN_42f1c0(22.5f);
+            FUN_45e110(&p);
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x426c70
 void FUN_426c70(AnimObject *obj, ObjectDef *def)
 {
