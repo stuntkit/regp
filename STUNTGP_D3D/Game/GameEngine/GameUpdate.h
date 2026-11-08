@@ -929,6 +929,14 @@ struct Scene
     int unk64;           // 0x64
 };
 
+struct MeshPolyVertex
+{
+    Vec4 pos;    // 0x00
+    float u;     // 0x10
+    float v;     // 0x14
+    DWORD color; // 0x18
+};
+
 // One visible mesh: its polygon and point indices, each list 0xffff-terminated.
 struct VisIndexList
 {

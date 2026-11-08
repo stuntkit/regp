@@ -17,6 +17,26 @@ struct Unk4d5cc0
     BYTE unk40[0x19d00 - 0x40];
 };
 
+// 8-byte face record of the dynamic mesh built by FUN_4342e0.
+struct MeshFace
+{
+    BYTE count; // 0x00
+    BYTE unk01; // 0x01
+    BYTE unk02; // 0x02
+    BYTE flags; // 0x03
+    WORD unk04; // 0x04
+    WORD index; // 0x06, first entry in the index buffer
+};
+
+struct MeshUv
+{
+    float u;     // 0x00
+    float v;     // 0x04
+    WORD point;  // 0x08
+    WORD unk0a;  // 0x0a
+    DWORD color; // 0x0c
+};
+
 // Queued polygon for the render lists, 20 bytes. poly's first byte is its vertex count, the
 // second its texture slot.
 struct PolyRef

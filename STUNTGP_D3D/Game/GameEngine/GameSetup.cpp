@@ -1063,26 +1063,6 @@ void FUN_42b6e0()
     }
 }
 
-// 8-byte face record of the dynamic mesh built by FUN_4342e0.
-struct MeshFace
-{
-    BYTE count; // 0x00
-    BYTE unk01; // 0x01
-    BYTE unk02; // 0x02
-    BYTE flags; // 0x03
-    WORD unk04; // 0x04
-    WORD index; // 0x06, first entry in the index buffer
-};
-
-struct MeshUv
-{
-    float u;     // 0x00
-    float v;     // 0x04
-    WORD point;  // 0x08
-    WORD unk0a;  // 0x0a
-    DWORD color; // 0x0c
-};
-
 // Buffer starts of the dynamic mesh, allocated by FUN_434090.
 // GLOBAL: STUNTGP_D3D 0x5da234
 MeshFace *g_5da234;
@@ -2607,14 +2587,6 @@ void FUN_4342c0()
     FUN_434030();
     Matrix_Identity(g_5da1e0);
 }
-
-struct MeshPolyVertex
-{
-    Vec4 pos;    // 0x00
-    float u;     // 0x10
-    float v;     // 0x14
-    DWORD color; // 0x18
-};
 
 struct MeshPoly
 {

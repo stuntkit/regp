@@ -3460,9 +3460,71 @@ void FUN_45e4b0(Billboard *billboard, float angle)
     billboard->dir.y = g_sinTable[i];
 }
 
-// STUB: STUNTGP_D3D 0x434590
+int FUN_4280a0(Vec4 *pos, Vec4 *size);
+extern MeshFace *g_5da234;
+extern WORD *g_5da238;
+extern Vec4 *g_5da23c;
+extern MeshUv *g_5da240;
+extern MeshFace *g_5da24c;
+extern WORD *g_5da250;
+extern Vec4 *g_5da254;
+extern MeshUv *g_5da258;
+extern ObjectDef *g_5da25c;
+extern float g_5da1e0[16];
+extern MeshPolyVertex g_478910[4];
+
+// Appends the billboard as a quad facing along dir to the dynamic mesh unless it is outside the
+// view; g_5da1e0 rows 0-2 become the billboard's basis.
+// FUNCTION: STUNTGP_D3D 0x434590
 void FUN_434590(Billboard *billboard)
 {
+    if (g_5da24c < g_5da234 + 0x200)
+    {
+        if (FUN_4280a0(&billboard->pos, (Vec4 *)billboard->size) != 1)
+        {
+            ObjectDef *object = g_5da25c;
+            object->vertCount++;
+            object->unk26 += 4;
+            object->pointCount += 4;
+            g_5da24c->count = 4;
+            g_5da24c->flags = (BYTE)billboard->unk00 | 0x80;
+            g_5da24c->unk01 = (BYTE)billboard->texture;
+            g_5da24c->unk02 = (BYTE)billboard->alpha;
+            g_5da24c->index = g_5da250 - g_5da238;
+            g_5da24c++;
+            *(Vec4 *)&g_5da1e0[4] = billboard->dir;
+            g_5da1e0[0] = g_5da1e0[10] * g_5da1e0[5] - g_5da1e0[9] * g_5da1e0[6];
+            g_5da1e0[1] = g_5da1e0[8] * g_5da1e0[6] - g_5da1e0[4] * g_5da1e0[10];
+            g_5da1e0[2] = g_5da1e0[4] * g_5da1e0[9] - g_5da1e0[8] * g_5da1e0[5];
+            Vec4 *m = g_4722d0->cam.matrix;
+            int point = g_5da254 - g_5da23c;
+            for (int i = 0; i < 4; i++)
+            {
+                Vec4 r;
+                Vec4 t;
+                float x = g_478910[i].pos.x * billboard->size[0];
+                float y = billboard->size[1] * g_478910[i].pos.y;
+                float z = g_478910[i].pos.z * billboard->size[2];
+                g_5da258->point = point;
+                g_5da258->color = billboard->colors[0];
+                g_5da258->u = g_478910[i].u;
+                g_5da258->v = g_478910[i].v;
+                r.x = g_5da1e0[0] * x + g_5da1e0[4] * y + g_5da1e0[8] * z;
+                r.y = g_5da1e0[5] * y + g_5da1e0[1] * x + g_5da1e0[9] * z;
+                r.z = g_5da1e0[6] * y + g_5da1e0[10] * z + g_5da1e0[2] * x;
+                t.x = r.x * m[0].x + r.y * m[1].x + r.z * m[2].x;
+                t.y = r.y * m[1].y + r.z * m[2].y + r.x * m[0].y;
+                t.z = r.y * m[1].z + r.z * m[2].z + r.x * m[0].z;
+                g_5da254->x = t.x + billboard->pos.x;
+                g_5da254->y = t.y + billboard->pos.y;
+                g_5da254->z = t.z + billboard->pos.z;
+                *g_5da250++ = g_5da258 - g_5da240;
+                g_5da258++;
+                point++;
+                g_5da254++;
+            }
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x45e4f0
