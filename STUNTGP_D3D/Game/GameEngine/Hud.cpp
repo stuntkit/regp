@@ -716,6 +716,37 @@ void FUN_448a70()
     FUN_4487d0(index, g_61b740->faders[6].x, g_61b740->faders[6].y, 0.95f);
 }
 
+int FUN_448150(DWORD value, int *digits, DWORD count, int leadingZeros);
+
+// Three-digit readout at fader 1, right-aligned by skipping the blank leading digits.
+// FUNCTION: STUNTGP_D3D 0x4492d0
+void FUN_4492d0(float value)
+{
+    int digits[3];
+    int blanks = FUN_448150((int)value, digits, 3, 0);
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.z = 0.95f;
+    g_spriteDesc.width = 19.2f;
+    g_spriteDesc.height = 24.800001f;
+    g_spriteDesc.texture = 11;
+    g_spriteDesc.blendMode = 0x20;
+    g_spriteDesc.v0 = 896.0f;
+    g_spriteDesc.v1 = 1020.0f;
+    float x = blanks * 16.0f + g_61b740->faders[1].x + 82.4f;
+    g_spriteDesc.y = g_61b740->faders[1].y + 52.8f;
+    for (int i = 0; i < 3; i++)
+    {
+        if (digits[i] != -1)
+        {
+            g_spriteDesc.x = x;
+            g_spriteDesc.u0 = ((digits[i] * 25 + 1) * 1024.0f) * 0.00390625f;
+            g_spriteDesc.u1 = g_spriteDesc.u0 + 96.0f;
+            FUN_432e00(&g_spriteDesc);
+            x += 16.0f;
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x449e80
 void FUN_449e80()
 {

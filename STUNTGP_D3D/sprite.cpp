@@ -404,6 +404,64 @@ void FUN_438590(int layer, int sub, SpriteNode *node)
     }
 }
 
+// Draws a scaled sprite definition; flags 1/2 centre, 4/8 right/bottom align, 0x10/0x20 mirror.
+// FUNCTION: STUNTGP_D3D 0x438740
+void FUN_438740(int layer, int def, float x, float y, float scale, DWORD flags, float fade)
+{
+    if (def != 0)
+    {
+        SpriteData s;
+        FUN_441320(&s, def);
+        s.flags = 2;
+        s.alpha = (int)(fade * 255.0f);
+        if (flags & 0x100)
+        {
+            s.blendMode = 0x58;
+        }
+        else if (flags & 0x200)
+        {
+            s.blendMode = 0x70;
+        }
+        else
+        {
+            s.blendMode = ((flags & 0x400) | 0x200) >> 4;
+        }
+        s.width *= scale;
+        s.x = x;
+        s.y = y;
+        s.height *= scale;
+        if (flags & 1)
+        {
+            s.x = x - s.width * 0.5f;
+        }
+        else if (flags & 4)
+        {
+            s.x = x - s.width;
+        }
+        if (flags & 2)
+        {
+            s.y = y - s.height * 0.5f;
+        }
+        else if (flags & 8)
+        {
+            s.y = y - s.height;
+        }
+        if (flags & 0x10)
+        {
+            float t = s.u0;
+            s.u0 = s.u1;
+            s.u1 = t;
+        }
+        if (flags & 0x20)
+        {
+            float t = s.v0;
+            s.v0 = s.v1;
+            s.v1 = t;
+        }
+        FUN_438370(&s, layer, 0);
+    }
+}
+
 // Tiles a 64-pixel texture over a rectangle, scrolled by the fractional part of u/v.
 // FUNCTION: STUNTGP_D3D 0x438830
 void FUN_438830(float x0, float y0, float x1, float y1, int layer, int def, float u, float v)
