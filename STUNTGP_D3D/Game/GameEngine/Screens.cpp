@@ -90,6 +90,7 @@ int FUN_440160();
 int FUN_4402e0();
 int FUN_440660(void *buffer, int size, int ghost);
 char *FUN_43d550(int frames);
+float FUN_43d8f0(float current, float target, float step);
 int FUN_457a20(int value);
 int FUN_457bf0(int card, int *freeSpace);
 int FUN_457e70(Unk457e70 *object, int id);
@@ -3166,6 +3167,14 @@ int FUN_4577e0(Unk457770 *object, int msg, int arg)
     return 0;
 }
 
+int FUN_440170();
+
+// FUNCTION: STUNTGP_D3D 0x457910
+int FUN_457910()
+{
+    return FUN_440170();
+}
+
 // FUNCTION: STUNTGP_D3D 0x457920
 int FUN_457920(Unk457e70 *object, int arg)
 {
@@ -3214,9 +3223,116 @@ int FUN_457920(Unk457e70 *object, int arg)
     return 1;
 }
 
-// STUB: STUNTGP_D3D 0x457ec0
-int FUN_457ec0(PoolObject *object, int msg, int arg)
+// GLOBAL: STUNTGP_D3D 0x627bd4
+char g_627bd4[0x80];
+
+int FUN_457a20(int value);
+void FUN_4581b0(Unk457e70 *object);
+void FUN_458730(Unk457e70 *object);
+int FUN_458800(Unk457e70 *object);
+int FUN_458820(Unk457e70 *object);
+void FUN_458880(Unk457e70 *object, int msg);
+char *FUN_43d550(int frames);
+
+// PageSave: card checks, the card list and the prompt, with the page title for the action.
+// FUNCTION: STUNTGP_D3D 0x457ec0
+int FUN_457ec0(PoolObject *base, int msg, int arg)
 {
+    Unk457e70 *object = (Unk457e70 *)base;
+    switch (msg)
+    {
+    case 2:
+    {
+        object->unk40->message(object->unk40, msg, 0);
+        object->unk1c++;
+        float sel = object->unk20;
+        object->unk2c = sel;
+        object->unk28 = FUN_43d810(object->unk28, sel, 0.2f);
+        object->unk30 = FUN_43d810(object->unk30, object->unk34, 0.001f);
+        float fade = FUN_43d8f0(object->unk38, object->unk3c, 0.025f);
+        object->unk38 = fade;
+        if (FUN_457a20(g_menuState.unk46c8) && g_menuState.unk46bc)
+        {
+            FUN_43dd40(0, 0.0f, 0.0f);
+            return 0;
+        }
+        if (object->unk24)
+        {
+            FUN_43dd40(object->unk1ec ? 0x69 : 0x5c, fade * 0.75f, fade * 0.45f);
+            return 0;
+        }
+        break;
+    }
+    case 1:
+        if (FUN_458820(object))
+        {
+            break;
+        }
+        object->unk40->message(object->unk40, msg, 0);
+        FUN_458880(object, msg);
+        if (g_menuState.unk46c8 == 1 && g_menuState.unk46bc && object->unk1ec && (object->unk1f0 || object->unk1e8))
+        {
+            object->unk14 = 1;
+        }
+        if (object->unk14)
+        {
+            FUN_458800(object);
+            return 0;
+        }
+        break;
+    case 0xb:
+    case 0xc:
+    case 0x10:
+    case 0x11:
+        if (!FUN_458820(object))
+        {
+            FUN_458880(object, msg);
+            return 0;
+        }
+        break;
+    case 0x13:
+        FUN_4400a0(1);
+        FUN_43dd10(0x112a43);
+        object->unk24 = 1;
+        object->unk34 = 1.0f;
+        return 0;
+    case 0x14:
+        object->unk34 = 0.0f;
+        return 0;
+    case 3:
+        if (FUN_457a20(g_menuState.unk46c8) && g_menuState.unk46bc)
+        {
+            break;
+        }
+        if (object->unk1ec && !object->unk1e8 && !object->unk1f0)
+        {
+            FUN_458730(object);
+        }
+        FUN_4581b0(object);
+        switch (g_menuState.unk46c8)
+        {
+        case 1:
+            FUN_4392b0(0x20c, 0);
+            break;
+        case 2:
+            FUN_4392b0(0x213, 0);
+            break;
+        case 3:
+            FUN_4392b0(0x21a, 0);
+            break;
+        case 4:
+            FUN_4392b0(0x221, (int)FUN_441170(g_menuState.unk46cc + 0x1b7));
+            break;
+        case 5:
+            // STRING: STUNTGP_D3D 0x488cac
+            sprintf(g_627bd4, "%s - %s", FUN_441170(g_menuState.unk46cc + 0x1b7),
+                    FUN_43d550(((GhostHeader *)g_menuState.unk46d0)->frames));
+            FUN_4392b0(0x228, (int)g_627bd4);
+            break;
+        }
+        FUN_458880(object, msg);
+        break;
+    }
     return 0;
 }
 
@@ -4724,9 +4840,103 @@ void FUN_45c070(PoolObject *object)
 {
 }
 
-// STUB: STUNTGP_D3D 0x45c080
-int FUN_45c080(PoolObject *object, int msg, int arg)
+// Attract screen; unk18 is the slide position, its fraction the slide in progress.
+struct Unk45c080
 {
+    DWORD unk00[5]; // 0x00
+    int unk14;      // 0x14, frames shown
+    float unk18;    // 0x18
+    float unk1c;    // 0x1c
+    float unk20;    // 0x20
+};
+
+// GLOBAL: STUNTGP_D3D 0x627fdc
+int g_627fdc;
+
+void FUN_43b0e0(MenuRace *race);
+void FUN_43dd90(int player);
+void FUN_45c050(MenuObject *object);
+void FUN_45c320(float x, float y);
+void FUN_45c3d0(float x, float y);
+void FUN_45c480();
+void FUN_438ff0(float x, float y, int layer, int font, int textId, float size, D3DCOLOR color, int style, int row,
+                float scale, DWORD flags, int width, float fade);
+
+// Attract screen: slides through the title pictures and starts a demo race after a while.
+// FUNCTION: STUNTGP_D3D 0x45c080
+int FUN_45c080(PoolObject *base, int msg, int arg)
+{
+    Unk45c080 *object = (Unk45c080 *)base;
+    D3DCOLOR color = 0xffffffff;
+    switch (msg)
+    {
+    case 0xf:
+    case 0x10:
+        FUN_43dfa0(2, 2);
+        FUN_440890(0x10);
+        g_menuState.unk4244 = arg;
+        FUN_43dd90(arg);
+        return 0;
+    case 0x13:
+        FUN_45c050((MenuObject *)object);
+        FUN_4400a0(1);
+        FUN_43dd10(0x112a43);
+        FUN_43dd40(0x60, 0.5f, 0.3f);
+        object->unk20 = 0.0f;
+        return 0;
+    case 0x14:
+        object->unk20 = 1.0f;
+        return 0;
+    case 2:
+        object->unk1c = FUN_43d810(object->unk1c, object->unk20, 0.001f);
+        if (object->unk14 >= 600)
+        {
+            object->unk18 += 0.03f;
+        }
+        object->unk14++;
+        return 0;
+    case 1:
+        if (object->unk14 >= 0xe10)
+        {
+            FUN_43b0e0(&g_menuState.races[g_627fdc]);
+            object->unk14 = 0;
+            g_627fdc = (g_627fdc + 1) % g_menuState.numberOfRaces;
+            FUN_43dfa0(0, 0x19);
+            return 0;
+        }
+        break;
+    case 3:
+    {
+        int frame = (int)object->unk18;
+        float x = 111.5f;
+        float t = object->unk18 - frame;
+        if ((frame & 7) == 7)
+        {
+            x = 111.5f - t * 640.0f;
+        }
+        float y = 84.0f - ((float)sin(t * 3.1415927f) * 30.0f + object->unk1c * 480.0f);
+        FUN_45c320(x, y);
+        float x2 = x + 640.0f;
+        FUN_45c320(x2, y);
+        FUN_45c3d0(x, y);
+        FUN_45c3d0(x2, y);
+        if ((frame & 7) == 6)
+        {
+            t *= 480.0f;
+            FUN_438190(0.0f, t, 640.0f, t + 16.0f);
+            FUN_45c3d0(x, y);
+            FUN_45c3d0(x2, y);
+            FUN_438190(0.0f, 0.0f, 640.0f, 480.0f);
+        }
+        if ((frame & 1) == 1)
+        {
+            color = 0xffff6060;
+        }
+        FUN_438ff0(320.0f, 440.0f, 2, 4, 0x28, 1.25f, color, 4, 0, 1.0f, 0x41, 400, 0.0f);
+        FUN_45c480();
+        break;
+    }
+    }
     return 0;
 }
 

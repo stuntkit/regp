@@ -712,8 +712,8 @@ struct Unk457e70
     int unk24;                 // 0x024
     float unk28;               // 0x028
     float unk2c;               // 0x02c
-    int unk30;                 // 0x030
-    int unk34;                 // 0x034
+    float unk30;               // 0x030, prompt slide
+    float unk34;               // 0x034
     float unk38;               // 0x038
     float unk3c;               // 0x03c
     PoolObject *unk40;         // 0x040
