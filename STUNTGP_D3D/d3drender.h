@@ -92,14 +92,7 @@ struct TextureSlots
 
 extern TextureSlots g_582718;
 
-// Texture list entry: type 1 is an image (arg: compressed), 2 and 3 an empty texture (arg: size
-// code), anything else a texture file.
-struct TextureEntry
-{
-    char *name; // 0x00
-    int type;   // 0x04
-    int arg;    // 0x08
-};
+struct TextureEntry;
 
 void FUN_42c340(TextureEntry *list);
 

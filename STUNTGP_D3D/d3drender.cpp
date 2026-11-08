@@ -224,11 +224,11 @@ char **g_583324;
 int g_583328;
 
 // GLOBAL: STUNTGP_D3D 0x583334
-SpriteFile g_583334[50];
+TextureEntry g_583334[50];
 
 // Write position in g_583334.
 // GLOBAL: STUNTGP_D3D 0x58358c
-SpriteFile *g_58358c;
+TextureEntry *g_58358c;
 
 // Records a font file so it can be reloaded when surfaces are lost.
 // FUNCTION: STUNTGP_D3D 0x42be90

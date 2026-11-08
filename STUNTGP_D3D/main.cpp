@@ -460,7 +460,7 @@ extern int g_58332c;
 extern int g_583328;
 extern char **g_582f24;
 extern char **g_583324;
-extern SpriteFile *g_58358c;
+extern TextureEntry *g_58358c;
 
 int FUN_42b9a0(const char *name);
 int FUN_42bb70(char *path, char *out);
@@ -554,7 +554,7 @@ void FUN_42c0a0(int arg, int sizeCode)
     *g_582f24++ = (char *)g_58358c;
     *g_582f24 = NULL;
     g_582718.unk40c++;
-    g_58358c = (SpriteFile *)((char *)g_58358c + strlen((char *)g_58358c));
+    g_58358c = (TextureEntry *)((char *)g_58358c + strlen((char *)g_58358c));
 }
 
 // FUNCTION: STUNTGP_D3D 0x42c1d0
@@ -604,12 +604,12 @@ int FUN_42c220(char *name, int compressed)
     return 1;
 }
 
-SpriteFile *FUN_441180();
+TextureEntry *FUN_441180();
 
 // FUNCTION: STUNTGP_D3D 0x42c2e0
 int FUN_42c2e0(const char *name)
 {
-    SpriteFile *f;
+    TextureEntry *f;
     for (f = FUN_441180(); f->name; f++)
     {
         if (!_strcmpi(f->name, name))
@@ -632,8 +632,8 @@ extern char *g_582b28[255];
 extern char **g_582f24;
 extern char *g_582f28[255];
 extern char **g_583324;
-extern SpriteFile g_583334[50];
-extern SpriteFile *g_58358c;
+extern TextureEntry g_583334[50];
+extern TextureEntry *g_58358c;
 extern int g_583328;
 
 void FUN_42c0a0(int arg, int sizeCode);

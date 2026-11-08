@@ -10,7 +10,6 @@
 struct AnimDef;
 struct Light;
 struct LightRec;
-struct RenderMaterial;
 struct Unk624488;
 
 // A polygon list and its length; FUN_429ea0/FUN_42a090 fill two of them at a time.
@@ -80,7 +79,7 @@ struct RenderState
     BYTE *unk7f88; // 0x7f88
     CameraPath *unk7f8c; // 0x7f8c
     BYTE *unk7f90; // 0x7f90
-    RenderMaterial *unk7f94; // 0x7f94
+    Light *unk7f94;          // 0x7f94
     TrackOctree *unk7f98; // 0x7f98
     AnimDef *unk7f9c; // 0x7f9c
     Unk624488 *unk7fa0; // 0x7fa0

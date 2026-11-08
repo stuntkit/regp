@@ -81,28 +81,30 @@ extern int g_D3DUVFix;
 // GLOBAL: STUNTGP_D3D 0x636418
 SceneSlot g_636418[16];
 
-struct RenderMaterial
+// Track light record, 0x90 bytes.
+struct Light
 {
-    DWORD unk00;      // 0x00
-    DWORD unk04;      // 0x04
-    float alpha;      // 0x08
+    DWORD unk00;      // 0x00, set while the light is on
+    DWORD type;       // 0x04, 0 directional, 1 point
+    float range;      // 0x08
     DWORD unk0c;      // 0x0c
     Vec4 pos;         // 0x10
-    Vec4 local;       // 0x20, pos relative to the camera
+    Vec4 local;       // 0x20, pos relative to the camera or the current object
     Vec4 colour;      // 0x30, direction for directional lights
     BYTE unk40[0x10]; // 0x40
-    int unk50;        // 0x50
+    int unk50;        // 0x50, flare type
     DWORD unk54;      // 0x54
     DWORD unk58;      // 0x58
     DWORD unk5c;      // 0x5c
-    BYTE unk60[0x8];  // 0x60
+    DWORD color;      // 0x60, flare colour
+    BYTE unk64[0x4];  // 0x64
     float unk68;      // 0x68
     float unk6c;      // 0x6c
     float unk70;      // 0x70
     int unk74;        // 0x74
-    int unk78;        // 0x78
-    int unk7c;        // 0x7c
-    int unk80;        // 0x80
+    int r;            // 0x78
+    int g;            // 0x7c
+    int b;            // 0x80
     int visible;      // 0x84
     BYTE unk88[0x8];  // 0x88
 };
@@ -1772,7 +1774,7 @@ struct Unk624488
 };
 
 // GLOBAL: STUNTGP_D3D 0x589628
-RenderMaterial g_589628;
+Light g_589628;
 
 // GLOBAL: STUNTGP_D3D 0x5898d0
 Ambience g_5898d0;
@@ -1782,12 +1784,12 @@ Ambience g_5898d0;
 Unk624488 g_5898f8[64];
 
 // GLOBAL: STUNTGP_D3D 0x589e04
-RenderMaterial *g_589e04;
+Light *g_589e04;
 
 // FUNCTION: STUNTGP_D3D 0x42d970
 void FUN_42d970()
 {
-    RenderMaterial *material = g_renderState.unk7f94;
+    Light *material = g_renderState.unk7f94;
     for (DWORD i = 0; i < g_renderState.unk7fb4; i++)
     {
         if (material->unk50 == 3)
@@ -1812,22 +1814,22 @@ void FUN_42d700()
         g_renderState.unk7fac = &g_5898d0;
         g_renderState.unk7fa0 = g_5898f8;
     }
-    RenderMaterial *material = g_renderState.unk7f94;
+    Light *material = g_renderState.unk7f94;
     for (DWORD i = 0; i < g_renderState.unk7fb4; i++)
     {
-        if (material->unk00 == 1 && material->unk04 == 1)
+        if (material->unk00 == 1 && material->type == 1)
         {
-            float alpha = material->alpha * 4.75f;
-            material->alpha = alpha * alpha;
+            float range = material->range * 4.75f;
+            material->range = range * range;
         }
         else
         {
-            float g = material->unk6c * material->alpha;
-            float b = material->unk70 * material->alpha;
-            float r = material->unk68 * material->alpha;
-            material->unk78 = (int)r;
-            material->unk7c = (int)g;
-            material->unk80 = (int)b;
+            float g = material->unk6c * material->range;
+            float b = material->unk70 * material->range;
+            float r = material->unk68 * material->range;
+            material->r = (int)r;
+            material->g = (int)g;
+            material->b = (int)b;
         }
         material++;
     }
@@ -1835,23 +1837,6 @@ void FUN_42d700()
     FUN_42d7e0();
     FUN_42d970();
 }
-
-struct Light
-{
-    int unk00;        // 0x00
-    int type;         // 0x04, 0 directional, 1 point
-    float range;      // 0x08
-    int unk0c;        // 0x0c
-    Vec4 pos;         // 0x10
-    Vec4 local;       // 0x20, pos relative to the current object
-    Vec4 colour;      // 0x30
-    BYTE unk40[0x20]; // 0x40
-    DWORD color;      // 0x60, flare colour
-    BYTE unk64[0x14]; // 0x64
-    int r;            // 0x78
-    int g;            // 0x7c
-    int b;            // 0x80
-};
 
 void FUN_42d870();
 
@@ -1866,7 +1851,7 @@ void FUN_42d9b0()
     g_renderState.unk8044 = 0;
     for (DWORD i = 0; i < (DWORD)g_renderState.unk7fb8; i++)
     {
-        RenderMaterial *light = &g_renderState.unk7f94[i];
+        Light *light = &g_renderState.unk7f94[i];
         GameSlot *gs = g_4722d0;
         if (!light->unk00)
         {
@@ -1875,7 +1860,7 @@ void FUN_42d9b0()
         Vec4 d;
         int visible;
         float r;
-        switch (light->unk04)
+        switch (light->type)
         {
         case 0:
             d.x = light->pos.x - gs->cam.pos.x;
@@ -1912,7 +1897,7 @@ void FUN_42d9b0()
             d.y = light->pos.y - gs->cam.pos.y;
             d.z = light->pos.z - gs->cam.pos.z;
             light->local = d;
-            r = (light->alpha < 1.0f ? 1.0f : light->alpha) * 500.0f;
+            r = (light->range < 1.0f ? 1.0f : light->range) * 500.0f;
             visible = 1;
             if (d.z * gs->axisZ.z + d.y * gs->axisZ.y + d.x * gs->axisZ.x > gs->unk19c ||
                 d.z * gs->planeLeft.z + d.y * gs->planeLeft.y + d.x * gs->planeLeft.x > r ||
@@ -1938,7 +1923,7 @@ void FUN_42d9b0()
         default:
             continue;
         }
-        *active++ = (Light *)light;
+        *active++ = light;
         g_renderState.unk8044++;
     }
 }
@@ -2017,7 +2002,7 @@ void FUN_42e380()
     }
     for (DWORD i = 0; i < g_renderState.unk7fb4; i++)
     {
-        g_renderState.unk7f94[i].alpha = g_renderState.unk7f94[i].alpha * 255.0f * (1.0f / 255.0f);
+        g_renderState.unk7f94[i].range = g_renderState.unk7f94[i].range * 255.0f * (1.0f / 255.0f);
     }
 }
 
@@ -2277,7 +2262,7 @@ void FUN_42eee0()
 {
     g_renderState.unk7fb4 = g_58d810->unk0fc;
     g_renderState.unk7fb8 = g_58d810->unk100;
-    g_renderState.unk7f94 = (RenderMaterial *)&g_58d810->data[g_58d810->unk070];
+    g_renderState.unk7f94 = (Light *)&g_58d810->data[g_58d810->unk070];
     g_renderState.unk7fac = (Ambience *)&g_58d810->data[g_58d810->unk064];
 }
 
@@ -2412,7 +2397,7 @@ void FUN_42dcf0()
     Light **lights = g_renderState.unk804c.lights;
     for (DWORD i = 0; i < (DWORD)g_renderState.unk8044; i++)
     {
-        RenderMaterial *light = (RenderMaterial *)*lights++;
+        Light *light = *lights++;
         light->colour.x = 0.0f;
         light->colour.y = 0.0f;
         light->colour.z = 1.0f;
@@ -2448,7 +2433,7 @@ extern float g_477b80;
 // Draws the lens flare of a light: two spinning glows on the light itself and five elements
 // along the line through the view centre, and brightens the screen (g_477b80) when looking at it.
 // FUNCTION: STUNTGP_D3D 0x42dd80
-void FUN_42dd80(RenderMaterial *light)
+void FUN_42dd80(Light *light)
 {
     float focus = g_4722d0->nearZ * 1.2f;
     Vec4 c;
@@ -2489,8 +2474,8 @@ void FUN_42dd80(RenderMaterial *light)
     }
     Billboard b = g_486538;
     b.unk00 = 0x58;
-    float s = light->alpha;
-    if (light->unk04 == 0)
+    float s = light->range;
+    if (light->type == 0)
     {
         s *= 0.25f;
     }
@@ -4083,17 +4068,17 @@ void FUN_434090()
     g_5da25c->visible = 1;
     g_5da25c->flags = 0;
     g_5da25c->matrix = (Vec4 *)&g_4788c0;
-    *(WORD *)(g_5da25c->unk0c + 0x14) = 0;
-    *(WORD *)(g_5da25c->unk0c + 0x16) = 0;
+    g_5da25c->unk20 = 0;
+    g_5da25c->unk22 = 0;
     g_5da25c->vertCount = 0;
     g_5da25c->unk26 = 0;
     g_5da25c->pointCount = 0;
     g_5da25c->unk2c = (BYTE *)g_5da240;
     g_5da25c->points = g_5da23c;
     g_5da25c->verts = (BYTE *)g_5da234;
-    *(DWORD *)(g_5da25c->unk0c + 4) = 0;
-    *(DWORD *)(g_5da25c->unk0c + 8) = 0;
-    *(DWORD *)(g_5da25c->unk0c + 0xc) = 0;
+    *(DWORD *)&g_5da25c->unk10.x = 0;
+    *(DWORD *)&g_5da25c->unk10.y = 0;
+    *(DWORD *)&g_5da25c->unk10.z = 0;
     memset(g_5da260, 0, sizeof(Scene));
     g_5da260->flags = 1;
     g_5da260->camera = NULL;
@@ -4945,7 +4930,7 @@ void FUN_45e110(Unk62a078 *particle)
 // FUNCTION: STUNTGP_D3D 0x45eb90
 void FUN_45eb90(int x, int y, int z)
 {
-    RenderMaterial *material = g_renderState.unk7f94;
+    Light *material = g_renderState.unk7f94;
     x <<= 2;
     y <<= 2;
     z <<= 2;

@@ -37,10 +37,10 @@ SpriteLists g_spriteLists;
 int g_5da360[4];
 
 // GLOBAL: STUNTGP_D3D 0x47f318
-SpriteFile g_47f318[1];
+TextureEntry g_47f318[1];
 
 // GLOBAL: STUNTGP_D3D 0x480134
-SpriteFile g_480134[1];
+TextureEntry g_480134[1];
 
 // GLOBAL: STUNTGP_D3D 0x4798bc
 int g_4798bc = -1;
@@ -1767,7 +1767,7 @@ void FUN_43d250()
 }
 
 // FUNCTION: STUNTGP_D3D 0x441180
-SpriteFile *FUN_441180()
+TextureEntry *FUN_441180()
 {
     return g_480134;
 }
