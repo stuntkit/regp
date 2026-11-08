@@ -2285,9 +2285,57 @@ void FUN_431350()
 {
 }
 
-// STUB: STUNTGP_D3D 0x431360
+extern int g_D3DDeviceIndex;
+extern int g_D3DDriverIndex;
+extern int g_6244f0;
+extern int g_DD_DISPLAYRESHEIGHT;
+void FUN_42f300();
+void FUN_42f6a0();
+int FUN_42fd80(int device);
+void FUN_42ff20(int device, int driver);
+void FUN_42fff0();
+int FUN_430020(int device, int driver);
+int FUN_42f840();
+int FUN_430ff0();
+BOOL FUN_42fa80();
+void FUN_432070();
+void FUN_42f220();
+
+// Brings up DirectDraw and Direct3D on the configured device and driver; any failure ends in
+// FUN_431330.
+// FUNCTION: STUNTGP_D3D 0x431360
 void FUN_431360()
 {
+    int device = g_D3DDeviceIndex;
+    int driver = g_D3DDriverIndex;
+    g_6244f0 = 1;
+    g_58332c = 1;
+    g_477c30 = 0x3ffff8;
+    g_DD_DISPLAYRESWIDTH = g_DISPLAYRESWIDTH;
+    g_DD_DISPLAYRESHEIGHT = g_DISPLAYRESHEIGHT;
+    FUN_42f300();
+    FUN_42f6a0();
+    FUN_42fd80(device);
+    FUN_42ff20(device, driver);
+    FUN_42fff0();
+    if (!FUN_430020(device, driver))
+    {
+        FUN_431330();
+    }
+    g_d3dDevice = ((D3DDriver *)g_5ba788.deviceDesc)->device;
+    if (!FUN_42f840())
+    {
+        FUN_431330();
+    }
+    FUN_430ff0();
+    if (FUN_42fa80() != 1)
+    {
+        FUN_431330();
+    }
+    FUN_432070();
+    FUN_431350();
+    FUN_42f220();
+    FUN_431300();
 }
 
 // FUNCTION: STUNTGP_D3D 0x431420
@@ -2380,6 +2428,115 @@ struct MeshPoly
     MeshPolyVertex v[4];   // 0x30
 };
 
+// GLOBAL: STUNTGP_D3D 0x5da220
+DWORD g_5da220[4];
+
+// Empty texture list of the dynamic mesh scene.
+// GLOBAL: STUNTGP_D3D 0x5da230
+char *g_5da230;
+
+// GLOBAL: STUNTGP_D3D 0x4788a8
+DWORD *g_4788a8[2] = {g_5da220, NULL};
+
+// GLOBAL: STUNTGP_D3D 0x4788b0
+Vec4 g_4788b0 = {0.0f, 1.0f, 0.0f, 0.0f};
+
+// Identity transform of the dynamic mesh.
+// GLOBAL: STUNTGP_D3D 0x4788c0
+Camera g_4788c0 = {{0.0f, 0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.0f}, 0, NULL, NULL, 0};
+
+// Unit billboard corners, scaled by MeshPoly's size.
+// GLOBAL: STUNTGP_D3D 0x478910
+MeshPolyVertex g_478910[4] = {
+    {{-50.0f, 50.0f, 0.0f, 0.0f}, 0.0f, 0.0f, 0x1ffffff},
+    {{50.0f, 50.0f, 0.0f, 0.0f}, 0.998f, 0.0f, 0x1ffffff},
+    {{50.0f, -50.0f, 0.0f, 0.0f}, 0.998f, 0.998f, 0x1ffffff},
+    {{-50.0f, -50.0f, 0.0f, 0.0f}, 0.0f, 0.998f, 0x1ffffff},
+};
+
+void FUN_434030();
+
+// Allocates the dynamic mesh buffers and builds its one-object scene in g_636418[0].
+// FUNCTION: STUNTGP_D3D 0x434090
+void FUN_434090()
+{
+    DWORD i;
+    g_5da234 = (MeshFace *)Mem_Alloc(0x1000, 0);
+    g_5da238 = (WORD *)Mem_Alloc(0x1000, 0);
+    g_5da23c = (Vec4 *)Mem_Alloc(0x8000, 0);
+    g_5da240 = (MeshUv *)Mem_Alloc(0x8000, 0);
+    g_5da244 = (ObjectDef *)Mem_Alloc(0x40, 0);
+    g_5da248 = (Scene *)Mem_Alloc(0x68, 0);
+    g_636418[0].scene = g_5da248;
+    FUN_434030();
+    g_478910[0].pos.x = -50.0f;
+    g_478910[0].pos.y = 50.0f;
+    g_478910[0].pos.z = 0.0f;
+    g_478910[1].pos.x = 50.0f;
+    g_478910[1].pos.y = 50.0f;
+    g_478910[1].pos.z = 0.0f;
+    g_478910[2].pos.x = 50.0f;
+    g_478910[2].pos.y = -50.0f;
+    g_478910[2].pos.z = 0.0f;
+    g_478910[3].pos.x = -50.0f;
+    g_478910[3].pos.y = -50.0f;
+    g_478910[3].pos.z = 0.0f;
+    for (i = 0; i < 0x800; i++)
+    {
+        g_5da250[i] = i;
+    }
+    for (i = 0; i < 0x800; i++)
+    {
+        g_5da23c[i].x = 0;
+        g_5da23c[i].y = 0;
+        g_5da258[i].unk0a = 0;
+        g_5da23c[i].z = 0;
+    }
+    for (i = 0; i < 0x200; i++)
+    {
+        g_5da24c[i].unk04 = 0;
+    }
+    memset(g_5da25c, 0, sizeof(ObjectDef));
+    g_5da25c->visible = 1;
+    g_5da25c->flags = 0;
+    g_5da25c->matrix = (Vec4 *)&g_4788c0;
+    *(WORD *)(g_5da25c->unk0c + 0x14) = 0;
+    *(WORD *)(g_5da25c->unk0c + 0x16) = 0;
+    g_5da25c->vertCount = 0;
+    g_5da25c->unk26 = 0;
+    g_5da25c->pointCount = 0;
+    g_5da25c->unk2c = (BYTE *)g_5da240;
+    g_5da25c->points = g_5da23c;
+    g_5da25c->verts = (BYTE *)g_5da234;
+    *(DWORD *)(g_5da25c->unk0c + 4) = 0;
+    *(DWORD *)(g_5da25c->unk0c + 8) = 0;
+    *(DWORD *)(g_5da25c->unk0c + 0xc) = 0;
+    memset(g_5da260, 0, sizeof(Scene));
+    g_5da260->flags = 1;
+    g_5da260->camera = NULL;
+    *(DWORD *)(g_5da260->unk10 + 0) = 0;
+    *(DWORD *)(g_5da260->unk10 + 4) = 0;
+    *(DWORD *)(g_5da260->unk10 + 8) = 0;
+    *(WORD *)(g_5da260->unk10 + 0x10) = 0;
+    *(WORD *)(g_5da260->unk10 + 0x12) = 0;
+    g_5da260->objectCount = 1;
+    g_5da260->unk28 = (SceneEntry *)&g_4788b0;
+    g_5da260->verts = (BYTE *)g_5da234;
+    g_5da260->unk30 = (BYTE *)g_5da240;
+    g_5da260->points = g_5da23c;
+    g_5da260->unk38 = (BYTE *)g_5da238;
+    g_5da260->matrices = (BYTE *)&g_4788c0;
+    g_5da260->unk40 = (DWORD *)g_4788a8;
+    g_5da260->view = (SceneView *)g_5da244;
+    g_5da260->lods[0] = g_5da244;
+    g_5da260->lods[1] = g_5da244;
+    g_5da260->lods[2] = g_5da244;
+    g_5da260->lods[3] = g_5da244;
+    g_5da260->maxLod = 0;
+    g_5da260->lod = 0;
+    g_5da260->textures = &g_5da230;
+}
+
 // Appends a polygon to the dynamic mesh.
 // FUNCTION: STUNTGP_D3D 0x4342e0
 void FUN_4342e0(MeshPoly *poly)
@@ -2412,15 +2569,6 @@ void FUN_4342e0(MeshPoly *poly)
 }
 
 int FUN_4280a0(Vec4 *pos, Vec4 *size);
-
-// Unit billboard corners, scaled by MeshPoly's size.
-// GLOBAL: STUNTGP_D3D 0x478910
-MeshPolyVertex g_478910[4] = {
-    {{-50.0f, 50.0f, 0.0f, 0.0f}, 0.0f, 0.0f, 0x1ffffff},
-    {{50.0f, 50.0f, 0.0f, 0.0f}, 0.998f, 0.0f, 0x1ffffff},
-    {{50.0f, -50.0f, 0.0f, 0.0f}, 0.998f, 0.998f, 0x1ffffff},
-    {{-50.0f, -50.0f, 0.0f, 0.0f}, 0.0f, 0.998f, 0x1ffffff},
-};
 
 // Appends a camera-facing quad (centre unk00, half size unk00 + 0x10) to the dynamic mesh unless
 // it is outside the view.
