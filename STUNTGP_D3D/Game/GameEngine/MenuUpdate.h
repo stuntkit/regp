@@ -343,7 +343,12 @@ struct MenuState
     int unk4478; // 0x4478
     BYTE unk447c[0x44d0 - 0x447c];
     int unk44d0; // 0x44d0
-    BYTE unk44d4[0x45e8 - 0x44d4];
+    BYTE unk44d4[0x45d4 - 0x44d4];
+    int unk45d4;   // 0x45d4
+    int unk45d8;   // 0x45d8
+    int unk45dc;   // 0x45dc
+    float unk45e0; // 0x45e0
+    float unk45e4; // 0x45e4
     int unk45e8; // 0x45e8
     BYTE unk45ec[0x4694 - 0x45ec];
     ScoreList unk4694; // 0x4694, copied by FUN_459200

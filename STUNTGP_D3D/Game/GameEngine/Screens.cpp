@@ -187,7 +187,7 @@ struct Unk45b520
 {
     DWORD unk00[5];    // 0x00
     PoolObject *child; // 0x14
-    int unk18;         // 0x18
+    float unk18;       // 0x18, bob phase
 };
 
 void FUN_43bf30();
@@ -334,7 +334,7 @@ void FUN_452fd0(PoolObject *object);
 int FUN_452fe0(PoolObject *object, int msg, int arg);
 int FUN_45b520(Unk45b520 *object, int arg);
 void FUN_45b5b0(MenuHolder *object);
-int FUN_45b5d0(PoolObject *object, int msg, int arg);
+int FUN_45b5d0(Unk45b520 *object, int msg, int arg);
 int FUN_45bd70(MenuHolder *object, int arg);
 void FUN_45be00(MenuHolder *object);
 int FUN_45bf40(PoolObject *object, int msg, int arg);
@@ -478,7 +478,7 @@ PoolClass g_488f78 = {(void (*)(PoolObject *))FUN_45a7f0, FUN_45a810};
 PoolClass g_4890b0 = {(void (*)(PoolObject *))FUN_45ab70, FUN_45abb0};
 
 // GLOBAL: STUNTGP_D3D 0x489150
-PoolClass g_489150 = {(void (*)(PoolObject *))FUN_45b5b0, FUN_45b5d0};
+PoolClass g_489150 = {(void (*)(PoolObject *))FUN_45b5b0, (int (*)(PoolObject *, int, int))FUN_45b5d0};
 
 // GLOBAL: STUNTGP_D3D 0x4891d8
 PoolClass g_4891d8 = {(void (*)(PoolObject *))FUN_45b850, FUN_45b870};
@@ -1914,9 +1914,50 @@ int FUN_45b520(Unk45b520 *object, int arg)
     return 1;
 }
 
-// STUB: STUNTGP_D3D 0x45b5d0
-int FUN_45b5d0(PoolObject *object, int msg, int arg)
+// FUNCTION: STUNTGP_D3D 0x45b5d0
+int FUN_45b5d0(Unk45b520 *object, int msg, int arg)
 {
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(1);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(g_menuState.unk45d4, 0.3f, -0.5f);
+    case 0xb:
+    case 0xc:
+    case 0x14:
+        object->child->message(object->child, msg, 0);
+        return 0;
+    case 0x10:
+        object->child->message(object->child, msg, 0);
+        FUN_43eef0();
+        return 0;
+    case 0x11:
+        FUN_440880(9);
+        return 0;
+    case 2:
+    {
+        object->child->message(object->child, msg, 0);
+        float phase = g_menuState.unk45e0 + object->unk18;
+        object->unk18 = phase - (int)phase;
+        return 0;
+    }
+    case 3:
+        object->child->message(object->child, msg, 0);
+        if (g_menuState.unk45d8 && !g_menuState.unk45dc)
+        {
+            FUN_438710(320.0f, 240.0f - (float)sin(object->unk18 * 3.1415927f) * g_menuState.unk45e4, 0xc,
+                       g_menuState.unk45d8, 1.0f, 3);
+        }
+        if (g_menuState.unk45d8 && g_menuState.unk45dc)
+        {
+            FUN_438710(193.0f, 240.0f - (float)sin(object->unk18 * 3.1415927f) * g_menuState.unk45e4, 0xc,
+                       g_menuState.unk45d8, 1.0f, 3);
+            FUN_438710(448.0f, 240.0f - (float)sin(object->unk18 * 3.1415927f) * g_menuState.unk45e4, 0xc,
+                       g_menuState.unk45dc, 1.0f, 3);
+        }
+        break;
+    }
     return 0;
 }
 
