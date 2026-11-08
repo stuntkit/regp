@@ -454,6 +454,66 @@ void FUN_42bf00()
     }
 }
 
+int FUN_430730(int size, int unk);
+extern int g_582718;
+extern int g_582728[255];
+extern int g_582724;
+extern int g_58332c;
+extern int g_58271c;
+extern int g_583328;
+extern int g_582b24;
+extern char **g_582f24;
+extern char **g_583324;
+extern SpriteFile *g_58358c;
+
+// Registers a new empty texture of size code sizeCode (4..8 for 16..256 texels) and names it by
+// its slot number.
+// FUNCTION: STUNTGP_D3D 0x42c0a0
+void FUN_42c0a0(int arg, int sizeCode)
+{
+    int size;
+    switch (sizeCode)
+    {
+    case 4:
+        size = 16;
+        break;
+    case 5:
+        size = 32;
+        break;
+    case 6:
+        size = 64;
+        break;
+    case 7:
+        size = 128;
+        break;
+    case 8:
+        size = 256;
+        break;
+    }
+    g_6243b8->unk04[2] = 0;
+    g_6243b8->unk04[4] = 0;
+    int n = FUN_430730(size, arg);
+    if (g_58332c == 1)
+    {
+        g_583328 += size * size * 2;
+    }
+    else
+    {
+        g_583328 += size * size;
+    }
+    g_582728[g_582718] = g_582724 + g_582718;
+    g_582718 += n;
+    g_58271c += n;
+    // STRING: STUNTGP_D3D 0x4777e8
+    sprintf((char *)g_58358c, "%d", g_582718);
+    *g_583324++ = (char *)g_58358c;
+    *g_583324 = NULL;
+    *g_582f24++ = (char *)g_58358c;
+    *g_582f24 = NULL;
+    g_582b24++;
+    g_58358c = (SpriteFile *)((char *)g_58358c + strlen((char *)g_58358c));
+}
+
 // FUNCTION: STUNTGP_D3D 0x42c1d0
 void FUN_42c1d0()
 {

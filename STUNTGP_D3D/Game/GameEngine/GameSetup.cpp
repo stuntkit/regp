@@ -2266,6 +2266,37 @@ void FUN_42a320(Scene *scene, ObjectDef *obj)
     }
 }
 
+// Queues the polygons of both visible-mesh lists of the track.
+// FUNCTION: STUNTGP_D3D 0x42a220
+void FUN_42a220()
+{
+    FUN_429ea0((PolyRef **)&g_6243c0, g_61c518, g_61c524 - g_61c518);
+    FUN_42a090((PolyRef **)&g_6243d0, g_61c51c, g_61c528 - g_61c51c);
+}
+
+extern int g_624980;
+extern int g_57b41c;
+
+// Relights the track's lit sub-objects once, with every vertex at once.
+// FUNCTION: STUNTGP_D3D 0x42ad70
+void FUN_42ad70()
+{
+    if (g_624980 != 1 && g_57b41c != 1)
+    {
+        g_57b41c = 1;
+        g_62497c = 1;
+        Scene *scene = g_61c52c;
+        ObjectDef *obj = scene->lods[0] + 1;
+        for (DWORD i = 1; i < scene->objectCount; i++, obj++)
+        {
+            if (obj->flags & 4)
+            {
+                FUN_42a320(scene, obj);
+            }
+        }
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x42e6d0
 void FUN_42e6d0()
 {

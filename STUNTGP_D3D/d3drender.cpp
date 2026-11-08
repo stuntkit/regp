@@ -254,6 +254,9 @@ ResourceFile *g_5895bc;
 // GLOBAL: STUNTGP_D3D 0x580aec
 char *g_580aec;
 
+// GLOBAL: STUNTGP_D3D 0x582718
+int g_582718;
+
 // GLOBAL: STUNTGP_D3D 0x58271c
 int g_58271c;
 
@@ -262,6 +265,9 @@ int g_582720;
 
 // GLOBAL: STUNTGP_D3D 0x582724
 int g_582724;
+
+// GLOBAL: STUNTGP_D3D 0x582728
+int g_582728[255];
 
 // GLOBAL: STUNTGP_D3D 0x582b24
 int g_582b24;
@@ -563,7 +569,7 @@ void FUN_430100(LPDIRECTDRAWSURFACE4 surface, BYTE *image, int width, int height
 // Creates an empty size x size video-memory texture (and a second-stage copy when the device
 // supports it) in the next surface slot and texture slot.
 // FUNCTION: STUNTGP_D3D 0x430730
-int FUN_430730(int size)
+int FUN_430730(int size, int unk)
 {
     DDSURFACEDESC2 desc;
     LPDIRECTDRAWSURFACE4 sysSurface = NULL;
