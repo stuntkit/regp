@@ -1695,20 +1695,19 @@ int size_of_file(char *path);
 int bload(char *path, char *buffer, int maxSize);
 void FUN_4623c0(char *path, void *buffer, void *arg);
 extern char g_GraphicsDirectory[128];
-extern char g_GraphicsDirectory24Max[128];
 
-// Loads a width x height TGA from the 24-bit graphics directory into surface slot `slot`'s texture.
+// Loads a width x height TGA from the graphics directory into surface slot `slot`'s texture.
 // FUNCTION: STUNTGP_D3D 0x4309b0
 int FUN_4309b0(int slot, int width, int height, char *name)
 {
     char path[128];
     DDSURFACEDESC2 desc;
-    LPDIRECT3DTEXTURE2 texture = NULL;
     LPDIRECTDRAWSURFACE4 surface = NULL;
+    LPDIRECT3DTEXTURE2 texture = NULL;
     int res;
     BYTE *image = (BYTE *)Mem_Alloc(width * height * 3 + 0x100, 0);
     // STRING: STUNTGP_D3D 0x478850
-    sprintf(path, "%s\\%s.TGA", g_GraphicsDirectory24Max, name);
+    sprintf(path, "%s\\%s.TGA", g_GraphicsDirectory, name);
     FUN_4623c0(path, image, &g_571fd4);
     FUN_430280(image, (WORD *)image, width, height);
     SurfaceSlot *surfaceSlot = &g_5ba788.surfaceSlots[slot];

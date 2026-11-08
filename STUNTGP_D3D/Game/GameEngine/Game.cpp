@@ -320,6 +320,104 @@ extern DWORD g_60eff4;
 extern int g_6244fc;
 extern int g_624500;
 
+// Driver icon cell in texture 14, indexed by Driver::unk14.
+struct CarIcon
+{
+    float u0; // 0x00
+    float v0; // 0x04
+    float u1; // 0x08
+    float v1; // 0x0c
+};
+
+// GLOBAL: STUNTGP_D3D 0x485720
+CarIcon g_485720[8] = {
+    {0.0f, 640.0f, 64.0f, 700.0f},
+    {0.0f, 640.0f, 64.0f, 700.0f},
+    {64.0f, 640.0f, 128.0f, 700.0f},
+    {128.0f, 640.0f, 192.0f, 700.0f},
+    {192.0f, 640.0f, 256.0f, 700.0f},
+    {256.0f, 640.0f, 320.0f, 700.0f},
+    {320.0f, 640.0f, 384.0f, 700.0f},
+    {384.0f, 640.0f, 448.0f, 700.0f},
+};
+
+// Draws the gap bar on fader 2 with an icon per car placed by its distance from the viewing car,
+// clamped to +-100; cars that are out or flashing are skipped.
+// FUNCTION: STUNTGP_D3D 0x44a800
+void FUN_44a800()
+{
+    float y;
+    float pos;
+    g_spriteDesc.flags = 2;
+    g_spriteDesc.x = 16.0f;
+    g_spriteDesc.z = 0.93f;
+    g_spriteDesc.u0 = 64.0f;
+    g_spriteDesc.v0 = 680.0f;
+    pos = g_4722d0->data->unk23b0;
+    y = g_61b740->faders[2].y + 8.0f;
+    g_spriteDesc.u1 = 464.0f;
+    g_spriteDesc.v1 = 720.0f;
+    g_spriteDesc.width = 224.0f;
+    g_spriteDesc.height = 4.0f;
+    g_spriteDesc.texture = 11;
+    g_spriteDesc.blendMode = 0x20;
+    g_spriteDesc.y = y;
+    FUN_432e00(&g_spriteDesc);
+    g_spriteDesc.x += 3.0f;
+    g_spriteDesc.z = 0.92f;
+    g_spriteDesc.u0 = 784.0f;
+    g_spriteDesc.v0 = 716.0f;
+    g_spriteDesc.u1 = 800.0f;
+    g_spriteDesc.v1 = 732.0f;
+    g_spriteDesc.y += 3.0f;
+    FUN_432e00(&g_spriteDesc);
+    y -= 3.0f;
+    g_spriteDesc.width = 12.0f;
+    g_spriteDesc.height = 11.0f;
+    g_spriteDesc.texture = 14;
+    g_spriteDesc.alpha = 0xc0;
+    g_spriteDesc.blendMode = 0x48;
+    g_spriteDesc.y = y;
+    for (int i = g_612948.unk03c8 - 1; i >= 0; i--)
+    {
+        Car *car = g_612948.unk03cc[i];
+        if (car == g_4722d0->data)
+        {
+            g_spriteDesc.width = 16.0f;
+            g_spriteDesc.height = 15.0f;
+            g_spriteDesc.z = 0.95f;
+            g_spriteDesc.y = y - 2.0f;
+        }
+        else
+        {
+            g_spriteDesc.y = y;
+            g_spriteDesc.width = 12.0f;
+            g_spriteDesc.height = 11.0f;
+            g_spriteDesc.z = 0.94f;
+        }
+        float d = car->unk23b0 - pos;
+        if (d < -100.0f)
+        {
+            d = -100.0f;
+        }
+        else if (d > 100.0f)
+        {
+            d = 100.0f;
+        }
+        g_spriteDesc.x = d * 1.12f + 122.0f;
+        CarIcon *icon = &g_485720[g_60f02c[car - g_49a1f8].unk14];
+        g_spriteDesc.u0 = icon->u0;
+        g_spriteDesc.v0 = icon->v0;
+        g_spriteDesc.u1 = icon->u1;
+        g_spriteDesc.v1 = icon->v1;
+        if ((!car->unk24e0 || car == g_4722d0->data) &&
+            (car->unk2574 * car->unkf74 <= car->unk2570 || car->unk2578 % 15 < 7))
+        {
+            FUN_432e00(&g_spriteDesc);
+        }
+    }
+}
+
 // Cell of the large HUD digit texture.
 struct HudDigit
 {
