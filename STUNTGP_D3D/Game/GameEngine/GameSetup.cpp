@@ -12,6 +12,7 @@
 #include "../../timer.h"
 #include "../../random.h"
 #include "../../vecmath.h"
+#include "../../sintable.h"
 #include "io_wad.h"
 #include "MenuUpdate.h"
 #include "../../objects.h"
@@ -1430,6 +1431,62 @@ void FUN_42d700()
     FUN_42d970();
 }
 
+struct Light
+{
+    int unk00;        // 0x00
+    int type;         // 0x04, 0 directional, 1 point
+    float range;      // 0x08
+    int unk0c;        // 0x0c
+    Vec4 pos;         // 0x10
+    Vec4 local;       // 0x20, pos relative to the current object
+    Vec4 colour;      // 0x30
+    BYTE unk40[0x20]; // 0x40
+    DWORD color;      // 0x60, flare colour
+    BYTE unk64[0x14]; // 0x64
+    int r;            // 0x78
+    int g;            // 0x7c
+    int b;            // 0x80
+};
+
+// GLOBAL: STUNTGP_D3D 0x589df8
+DWORD g_589df8;
+
+// GLOBAL: STUNTGP_D3D 0x589dfc
+int g_589dfc;
+
+// Glow billboard on a light, fading in with distance from the camera and pulsing with g_589df8.
+// FUNCTION: STUNTGP_D3D 0x42e0a0
+void FUN_42e0a0(Light *light)
+{
+    float size = light->range * 20.0f;
+    float dx = light->pos.x - g_4722d0->cam.pos.x;
+    float dy = light->pos.y - g_4722d0->cam.pos.y;
+    float dz = light->pos.z - g_4722d0->cam.pos.z;
+    float fade = (float)sqrt(dz * dz + dy * dy + dx * dx) * 5e-05f;
+    if (fade > 1.0f)
+    {
+        fade = 1.0f;
+    }
+    Billboard billboard = g_486538;
+    float scale = fade * size + g_sinTable[g_589df8] * 0.01f;
+    int angle = -g_589dfc & 0x1fff;
+    billboard.dir.x = g_cosTable[angle];
+    billboard.dir.y = g_sinTable[angle];
+    billboard.dir.z = 0.0f;
+    billboard.pos = light->pos;
+    billboard.texture = 6;
+    billboard.unk00 = 0x60;
+    billboard.alpha = (short)(int)(fade * 192.0f);
+    billboard.size[0] = scale;
+    billboard.size[1] = scale;
+    billboard.size[2] = scale;
+    billboard.colors[0] = light->color;
+    billboard.colors[1] = light->color;
+    billboard.colors[2] = light->color;
+    billboard.colors[3] = light->color;
+    FUN_434590(&billboard);
+}
+
 // Rescales the vertex colours of every object; the scale is full brightness, so it is a no-op.
 // FUNCTION: STUNTGP_D3D 0x42e240
 void FUN_42e240(Scene *scene)
@@ -2301,21 +2358,6 @@ void FUN_42b2a0(Vec4 *out, Vec4 *dir, Scene *scene, ObjectDef *obj)
 }
 
 void FUN_44efd0(float *out, float *a, float *b);
-
-struct Light
-{
-    int unk00;        // 0x00
-    int type;         // 0x04, 0 directional, 1 point
-    float range;      // 0x08
-    int unk0c;        // 0x0c
-    Vec4 pos;         // 0x10
-    Vec4 local;       // 0x20, pos relative to the current object
-    Vec4 colour;      // 0x30
-    BYTE unk40[0x38]; // 0x40
-    int r;            // 0x78
-    int g;            // 0x7c
-    int b;            // 0x80
-};
 
 // Per-object light record in g_624530, 36 bytes.
 struct LightRec

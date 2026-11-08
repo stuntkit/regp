@@ -137,6 +137,81 @@ void FUN_45f5b0()
     g_62df00 = date->tm_year + 1900;
 }
 
+// Fixed ambient sound sources mixed into the music stream's pan and volume.
+struct SoundSource
+{
+    int active; // 0x00, 0 ends the list
+    Vec4 pos;   // 0x04
+};
+
+// GLOBAL: STUNTGP_D3D 0x489960
+SoundSource g_489960[6] = {
+    {1, {-9696.43f, 377.65768f, -11996.635f, 0.0f}},
+    {1, {28197.287f, 1044.4576f, -10692.482f, 0.0f}},
+    {1, {7018.703f, 528.0027f, 11557.975f, 0.0f}},
+    {1, {-3053.0403f, 773.41156f, 1493.3982f, 0.0f}},
+    {1, {-29832.363f, 402.98206f, -2033.9105f, 0.0f}},
+    {0},
+};
+
+void FUN_45f7d0(int pan, int volume);
+
+// Pans and fades the music towards the ambient sources within 40000 units of the camera.
+// FUNCTION: STUNTGP_D3D 0x45f640
+void FUN_45f640()
+{
+    float volume = 0.0f;
+    float pan = 0.0f;
+    DWORD count = 0;
+    if (!g_489960[0].active)
+    {
+        return;
+    }
+    SoundSource *src = g_489960;
+    do
+    {
+        Vec4 pos = src->pos;
+        Vec4 d;
+        d.x = g_4722d0->cam.pos.x - pos.x;
+        d.y = g_4722d0->cam.pos.y - pos.y;
+        d.z = g_4722d0->cam.pos.z - pos.z;
+        float side = (d.x * g_4722d0->axisX.x + d.y * g_4722d0->axisX.y + d.z * g_4722d0->axisX.z) * 0.006375f;
+        float dist;
+        FUN_44eda0(&d.x, &dist);
+        if (dist < 40000.0f)
+        {
+            float level = (40000.0f - dist) * 2.5e-05f;
+            if (level > 1.0f)
+            {
+                level = 1.0f;
+            }
+            count++;
+            volume += level * 255.0f;
+            pan += side;
+        }
+        src++;
+    } while (src->active);
+    if (count)
+    {
+        float n = count;
+        pan /= n;
+        volume = volume / n + 63.0f;
+        if (volume > 255.0f)
+        {
+            volume = 255.0f;
+        }
+        if (pan < -255.0f)
+        {
+            pan = -255.0f;
+        }
+        else if (pan > 255.0f)
+        {
+            pan = 255.0f;
+        }
+        FUN_45f7d0((int)pan, (int)volume);
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x45f7c0
 void FUN_45f7c0(int value)
 {

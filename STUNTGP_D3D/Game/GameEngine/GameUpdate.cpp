@@ -4010,24 +4010,6 @@ void FUN_45e180(Unk62a078 *p)
     }
 }
 
-// 3D billboard draw request, filled from the template g_486538.
-struct Billboard
-{
-    DWORD unk00;      // 0x00
-    short texture;    // 0x04
-    short alpha;      // 0x06
-    DWORD colors[4];  // 0x08
-    Vec4 pos;         // 0x18
-    float size[3];    // 0x28
-    int unk34;        // 0x34
-    Vec4 unk38;       // 0x38
-    Vec4 dir;         // 0x48
-    int unk58;        // 0x58
-    int unk5c;        // 0x5c
-    int unk60;        // 0x60
-    int unk64;        // 0x64
-};
-
 // GLOBAL: STUNTGP_D3D 0x486538
 Billboard g_486538 = {0x20, 1, 0x80, {0xffffff, 0xffffff, 0xffffff, 0xffffff}, {0.0f, 0.0f, 0.0f, 0.0f},
                        {1.0f, 1.0f, 1.0f}, 0, {0.0f, 0.0f, -1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.0f}, 1, 0, 0, 2};
