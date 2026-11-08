@@ -262,7 +262,8 @@ void FUN_451a80(MenuHolder *object);
 int FUN_451aa0(PoolObject *object, int msg, int arg);
 int FUN_45c4b0(Unk45c4b0 *object, int arg);
 void FUN_45c640(Unk45c670 *object);
-int FUN_45c6a0(PoolObject *object, int msg, int arg);
+struct Unk45c6a0;
+int FUN_45c6a0(Unk45c6a0 *object, int msg, int arg);
 int FUN_45d1a0(PoolObject *object, int arg);
 void FUN_45d2e0(Unk45d2e0 *object);
 int FUN_45d320(PoolObject *object, int msg, int arg);
@@ -508,7 +509,7 @@ PoolClass g_489278 = {(void (*)(PoolObject *))FUN_45be00, (int (*)(PoolObject *,
 PoolClass g_489298 = {FUN_45c070, FUN_45c080};
 
 // GLOBAL: STUNTGP_D3D 0x489510
-PoolClass g_489510 = {(void (*)(PoolObject *))FUN_45c640, FUN_45c6a0};
+PoolClass g_489510 = {(void (*)(PoolObject *))FUN_45c640, (int (*)(PoolObject *, int, int))FUN_45c6a0};
 
 // GLOBAL: STUNTGP_D3D 0x489670
 PoolClass g_489670 = {(void (*)(PoolObject *))FUN_45d2e0, FUN_45d320};
@@ -3554,9 +3555,217 @@ int FUN_45c4b0(Unk45c4b0 *object, int arg)
     return 1;
 }
 
-// STUB: STUNTGP_D3D 0x45c6a0
-int FUN_45c6a0(PoolObject *object, int msg, int arg)
+// PageSelectTrack as its handler sees it; unk28 is the arrow animation phase.
+struct Unk45c6a0
 {
+    DWORD unk00[5];    // 0x00
+    PoolObject *child; // 0x14
+    int unk18;         // 0x18
+    int unk1c;         // 0x1c, selected track
+    float unk20;       // 0x20, scroll position
+    float unk24;       // 0x24, scroll target
+    float unk28;       // 0x28
+    int unk2c;         // 0x2c, set while a record ghost is being chosen
+    int unk30;         // 0x30
+};
+
+struct Unk45d130;
+void FUN_45c670(Unk45c670 *object);
+void FUN_45cc40(int track);
+void FUN_45cc70(Unk45c4b0 *object);
+void FUN_45d130(Unk45d130 *object, float x, float y);
+
+// FUNCTION: STUNTGP_D3D 0x45c6a0
+int FUN_45c6a0(Unk45c6a0 *object, int msg, int arg)
+{
+    PoolObject *child;
+    int sel;
+    int count = g_menuState.unk4408;
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(5);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(0x60, -0.3f, -0.5f);
+    case 0xb:
+    case 0xc:
+    case 0x14:
+        object->child->message(object->child, msg, 0);
+        return 0;
+    case 0xd:
+        if (object->unk1c >= count)
+        {
+            object->unk1c = count - 1;
+        }
+        if (object->unk1c > 0)
+        {
+            object->unk1c--;
+            FUN_440890(msg);
+            FUN_440880(0x14);
+            return 0;
+        }
+        break;
+    case 0xe:
+        if (object->unk1c < count - 1)
+        {
+            object->unk1c++;
+            FUN_440890(msg);
+            FUN_440880(0x14);
+            return 0;
+        }
+        break;
+    case 0x11:
+        g_menuState.unk4404 = 1;
+        FUN_440890(msg);
+        FUN_43eef0();
+        return 0;
+    case 0x10:
+        child = object->child;
+        child->message(child, msg, 0);
+        sel = object->unk1c;
+        g_menuState.unk4474 = g_menuState.unk440c[sel];
+        switch (g_menuState.unk4230)
+        {
+        case 2:
+            switch (child->message(child, 0x1a, 0))
+            {
+            case 0:
+                FUN_45c670((Unk45c670 *)object);
+                FUN_43eef0();
+                return 0;
+            case 1:
+                if (++object->unk30 > 2)
+                {
+                    object->unk30 = 0;
+                    return 0;
+                }
+                break;
+            case 2:
+                if (++g_menuState.unk4480 > 2)
+                {
+                    g_menuState.unk4480 = 0;
+                    return 0;
+                }
+                break;
+            case 3:
+                if (++g_menuState.unk447c > 5)
+                {
+                    g_menuState.unk447c = 0;
+                    return 0;
+                }
+                break;
+            }
+            break;
+        case 3:
+            switch (child->message(child, 0x1a, 0))
+            {
+            case 0:
+                FUN_45c670((Unk45c670 *)object);
+                FUN_43eef0();
+                return 0;
+            case 2:
+                g_menuState.unk46bc = 0;
+                g_menuState.unk46c0 = 0;
+                g_menuState.unk46c8 = 5;
+                g_menuState.unk46c4 = 0;
+                g_menuState.unk46cc = g_menuState.unk440c[sel];
+                g_menuState.unk46d0 = (int)g_menuState.unk46e8;
+                g_menuState.unk46d4 = FUN_437da0(g_menuState.unk4474);
+                FUN_43dfa0(0, 0x1b);
+                return 0;
+            case 1:
+                g_menuState.unk46bc = 0;
+                g_menuState.unk46c0 = 0;
+                g_menuState.unk46c8 = 4;
+                g_menuState.unk46c4 = 0;
+                g_menuState.unk46cc = g_menuState.unk440c[sel];
+                g_menuState.unk46d0 = (int)(g_menuState.unk4718 + 0x7500);
+                g_menuState.unk46d4 = FUN_437da0(g_menuState.unk4474);
+                FUN_43dfa0(0, 0x1b);
+                object->unk2c = 1;
+                return 0;
+            }
+            break;
+        case 6:
+            switch (child->message(child, 0x1a, 0))
+            {
+            case 0:
+                FUN_45c670((Unk45c670 *)object);
+                FUN_43eef0();
+                return 0;
+            case 1:
+                if (++object->unk30 > 2)
+                {
+                    object->unk30 = 0;
+                    return 0;
+                }
+                break;
+            }
+            break;
+        case 1:
+        case 5:
+        case 7:
+            if (!child->message(child, 0x1a, 0))
+            {
+                FUN_45c670((Unk45c670 *)object);
+                FUN_43eef0();
+                return 0;
+            }
+            break;
+        }
+        break;
+    case 2:
+    {
+        object->child->message(object->child, msg, 0);
+        sel = object->unk1c;
+        float target = sel >= count ? count - 1 : sel;
+        object->unk24 = target;
+        object->unk20 = FUN_43d810(object->unk20, target, 0.001f);
+        float phase = object->unk28 + 0.03f;
+        object->unk28 = phase - (int)phase;
+        if (count > 1)
+        {
+            FUN_43df60(count, 1.0f, sel >= count ? count - 1 : sel, 0.0f, 0.0f, 0.0f);
+            return 0;
+        }
+        FUN_43df60(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        return 0;
+    }
+    case 1:
+        if (object->unk2c)
+        {
+            object->unk2c = 0;
+            if (g_menuState.unk46e0)
+            {
+                g_menuState.unk46e0 = 0;
+                object->child->message(object->child, 0x1c, 0);
+                memcpy(g_menuState.unk46e8, g_menuState.unk4718 + 0x7500, 0x7530);
+                g_menuState.unk46e4 = g_menuState.unk46cc;
+                return 0;
+            }
+        }
+        break;
+    case 3:
+        sel = object->unk1c;
+        FUN_45cba0(sel, object->unk20);
+        FUN_438190(0.0f, 0.0f, 640.0f, 480.0f);
+        if (g_menuState.unk4408 == 1)
+        {
+            FUN_4392b0(0x1b7, 0);
+        }
+        else
+        {
+            FUN_4392b0(0x1b6, 0);
+        }
+        FUN_45cc40(g_menuState.unk440c[sel]);
+        FUN_45cc70((Unk45c4b0 *)object);
+        object->child->message(object->child, msg, 0);
+        if (g_menuState.unk423c > 1)
+        {
+            FUN_45d130((Unk45d130 *)object, g_4894e0.x, g_4894e0.y);
+        }
+        break;
+    }
     return 0;
 }
 
