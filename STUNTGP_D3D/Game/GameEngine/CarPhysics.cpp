@@ -3940,6 +3940,39 @@ void FUN_415880()
 {
 }
 
+// FUNCTION: STUNTGP_D3D 0x415ac0
+void FUN_415ac0(Vec4 *pos, Vec4 *vel, float speed)
+{
+    if (g_612948.unk0458 <= 0)
+    {
+        g_612948.unk0458 = g_612948.unk0034 < 80 ? 2 : 1;
+        if ((DWORD)g_612948.unk0454 >= 32)
+        {
+            g_612948.unk0454 = 0;
+        }
+        Unk612da4 *p = &((Unk612da4 *)g_612948.unk045c)[g_612948.unk0454];
+        p->pos = *pos;
+        p->unk04 = 4;
+        p->life = FUN_42f1f0(30) + 60;
+        p->unk28 = 0.9f;
+        p->unk438 = 1.0f;
+        p->unk43c = p->life;
+        p->unk430 = 0;
+        p->unk434 = 0;
+        p->unk2c = (float)fabs(speed) * 0.25f + 0.5f;
+        p->vel = *vel;
+        Vec4 r;
+        r.x = FUN_42f1c0(8.333333f);
+        r.y = FUN_42f1c0(16.666666f) + 8.333333f;
+        r.z = FUN_42f1c0(8.333333f);
+        p->vel.x = r.x + p->vel.x;
+        p->vel.y = r.y + p->vel.y;
+        p->vel.z = r.z + p->vel.z;
+        g_612948.unk0454++;
+        g_612948.unk0450++;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x415c00
 void FUN_415c00(Vec4 *pos, Vec4 *vel, float unused)
 {
@@ -5407,6 +5440,39 @@ void FUN_414ef0(Car *car)
     car->unk2d04[1].count = 0;
 }
 
+// Turns a point in the g_4d5b30 frame into a world position on the current car.
+// FUNCTION: STUNTGP_D3D 0x415190
+void FUN_415190(Car *car, Vec4 *p, Vec4 *out)
+{
+    Vec4 t;
+    t.x = p->x * g_4d5b30[0] + (p->y * g_4d5b30[4] + p->z * g_4d5b30[8]);
+    t.y = p->x * g_4d5b30[1] + (p->y * g_4d5b30[5] + p->z * g_4d5b30[9]);
+    t.z = p->x * g_4d5b30[2] + (p->y * g_4d5b30[6] + p->z * g_4d5b30[10]);
+    t.x = -t.x;
+    Vec4 a;
+    a.x = t.x * g_4d5bb8->axisX.x;
+    a.y = t.x * g_4d5bb8->axisX.y;
+    a.z = t.x * g_4d5bb8->axisX.z;
+    t.y = 70.0f - t.y - g_4d5bb8->unk288c;
+    Vec4 b;
+    b.x = t.y * g_4d5bb8->axisY.x;
+    b.y = t.y * g_4d5bb8->axisY.y;
+    b.z = t.y * g_4d5bb8->axisY.z;
+    Vec4 c;
+    c.x = t.z * g_4d5bb8->axisZ.x;
+    c.y = t.z * g_4d5bb8->axisZ.y;
+    c.z = t.z * g_4d5bb8->axisZ.z;
+    a.x = b.x + a.x;
+    a.y = b.y + a.y;
+    a.z = b.z + a.z;
+    a.x = c.x + a.x;
+    a.y = c.y + a.y;
+    a.z = c.z + a.z;
+    out->x = g_4d5bb8->posX - a.x;
+    out->y = g_4d5bb8->posY - a.y;
+    out->z = g_4d5bb8->posZ - a.z;
+}
+
 // FUNCTION: STUNTGP_D3D 0x4152c0
 void FUN_4152c0(Car *car)
 {
@@ -5514,6 +5580,56 @@ void FUN_413500()
             g_49a1f8[i].active = 0;
         }
     }
+}
+
+void FUN_418d90(Car *car);
+
+// Resets a car's motion, controls and race-assist state.
+// FUNCTION: STUNTGP_D3D 0x413530
+void FUN_413530(Car *car)
+{
+    FUN_413470(car);
+    car->unk1cec = 0;
+    car->unk1cf0 = 0;
+    car->unk1c9c.x = 0;
+    car->unk1c9c.y = 0;
+    car->unk1c9c.z = 0;
+    car->unk1c8c.x = 0;
+    car->unk1c8c.y = 0;
+    car->unk1c8c.z = 0;
+    car->unk1cac.x = 0;
+    car->unk1cac.y = 0;
+    car->unk1cac.z = 0;
+    Matrix_Identity(car->unk1c0c);
+    Matrix_Identity(car->unk1c4c);
+    car->unk1cf8 = 0;
+    car->unk1cfc = 0;
+    car->unk2250 = 0;
+    car->unk2254 = 0;
+    car->unk2258 = 0;
+    memset(car->controls, 0, sizeof(car->controls));
+    memset(car->prevControls, 0, sizeof(car->prevControls));
+    car->unk2298 = 0;
+    car->unk229c = 0;
+    car->unk22b4 = 0;
+    car->unk22bc = 0;
+    car->unk22c0 = 0;
+    car->unk2640 = 0;
+    car->unk2644 = 0;
+    car->unk2648 = 0;
+    car->unk264c = 0;
+    car->unk2650 = 0;
+    car->catchUp = 1;
+    car->unk2634 = 1.0f;
+    car->unk2620 = 1;
+    car->unk2624 = 0;
+    car->unk2628 = 0;
+    car->unk262c = 0;
+    FUN_414d80(car);
+    FUN_414c50(car);
+    FUN_414ef0(car);
+    FUN_4152c0(car);
+    FUN_418d90(car);
 }
 
 // FUNCTION: STUNTGP_D3D 0x414f00
