@@ -3,6 +3,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+#include "../../globals.h"
+
 struct Vec4
 {
     float x; // 0x00
@@ -293,7 +295,47 @@ struct Suspension
     float maxStiffnessOut; // 0x14
 };
 
-// One of the 32 effect slots in g_612da4.
+// Collision polygon of the track octree.
+struct TrackPoly
+{
+    BYTE unk0;        // 0x0
+    BYTE vertexCount; // 0x1
+    WORD firstIndex;  // 0x2, into TrackOctree::indices
+    WORD plane;       // 0x4, into TrackOctree::planes
+    WORD surface;     // 0x6, into TrackOctree::surfaces
+};
+
+struct OctNode
+{
+    float x;          // 0x00
+    float y;          // 0x04
+    float z;          // 0x08
+    int unk0c;        // 0x0c
+    WORD children[8]; // 0x10, node index, 0 for a leaf
+    WORD leaves[8];   // 0x20, polygon list offset per octant
+};
+
+struct OctRoot
+{
+    float key;     // 0x0
+    OctNode *root; // 0x4
+};
+
+// Track collision octree; FUN_42ed80 turns its file offsets into pointers.
+struct TrackOctree
+{
+    short *polyLists;    // 0x00, -1 terminated polygon lists
+    WORD *indices;       // 0x04
+    Vec4 *vertices;      // 0x08
+    Vec4 *planes;        // 0x0c
+    TrackPoly *polys;    // 0x10
+    DWORD *surfaces;     // 0x14, low byte holds the surface flags
+    OctRoot roots[2];    // 0x18, roots[0].root is also the node array base
+};
+
+extern TrackOctree *g_624480;
+
+// One of the 32 effect slots at g_612948.unk045c.
 struct Unk612da4
 {
     int life;           // 0x000
@@ -917,12 +959,6 @@ extern GameSlot *g_4722d0;
 extern SlotFx *g_61b740;
 extern GameSlot g_498248[4];
 
-// --- frame timing ---
-extern DWORD g_612cfc;
-extern DWORD g_612d00;
-extern DWORD g_612d04;
-extern DWORD g_612d08;
-
 extern BYTE g_62dcf0[256];
 
 extern int g_60d618;
@@ -931,22 +967,9 @@ extern int g_60df9c;
 extern int g_DisableFramerateCorrection;
 extern int g_60f2c0;
 extern DWORD g_60f2c4;
-extern int g_61294c;
-extern DWORD g_612990;
 extern int g_473a24;
 extern float g_4d5b18;
 extern int g_4d5b1c;
-extern int g_61299c;
-extern int g_61b634;
-extern DWORD g_612954;
-extern int g_612958;
-extern int g_612970;
-extern int g_612bf4;
-extern int g_612950;
-extern int g_61295c;
-extern int g_612964;
-extern int g_612968;
-extern int g_61296c;
 
 // fpu
 void FUN_4294f0();

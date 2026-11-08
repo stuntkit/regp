@@ -14,8 +14,6 @@
 #include "surface.h"
 #include "windowInit.h"
 
-extern int g_61b634;
-
 void FUN_436400(const char *name, int *value);
 void FUN_439da0(int type, int layer, float x0, float y0, float x1, float y1);
 
@@ -1384,15 +1382,15 @@ void FUN_430d40(int slot, int id)
     {
         if (slot == 15)
         {
-            g_61b634 = id;
+            g_612948.unk8cec = id;
         }
-        surfaceSlot = &g_surfaceSlots[slot];
+        surfaceSlot = &g_5ba788.surfaceSlots[slot];
         memset(&desc, 0, sizeof(desc));
         desc.dwHeight = g_587998[image].height;
         desc.dwWidth = g_587998[image].width;
         desc.dwSize = sizeof(desc);
         desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
-        desc.ddpfPixelFormat = *g_5d91c0;
+        desc.ddpfPixelFormat = *g_5ba788.textureFormat;
         desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
         res = g_dd4->CreateSurface(&desc, &surface, NULL);
         if (res != DD_OK)
@@ -1461,6 +1459,33 @@ void FUN_430fa0(D3DMATERIAL *material, float r, float g, float b)
     material->dcvDiffuse.b = material->dcvAmbient.b = b;
     material->dcvDiffuse.a = material->dcvAmbient.a = 1.0f;
     material->dwRampSize = 16;
+}
+
+// GLOBAL: STUNTGP_D3D 0x5da1c0
+D3DMATERIALHANDLE g_5da1c0;
+
+// FUNCTION: STUNTGP_D3D 0x430ff0
+int FUN_430ff0()
+{
+    LPDIRECT3DMATERIAL3 material = NULL;
+    D3DMATERIAL desc;
+    int res = (*(LPDIRECT3D3 *)(g_5ba788.device + 0x2264))->CreateMaterial(&material, NULL);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    FUN_430fa0(&desc, 1.0f, 1.0f, 1.0f);
+    res = material->SetMaterial(&desc);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    res = material->GetHandle((LPDIRECT3DDEVICE3)g_5ba788.deviceDesc[0x164 / 4], &g_5da1c0);
+    if (res != DD_OK)
+    {
+        exitError(ddGetErrMessage(res));
+    }
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x437e20

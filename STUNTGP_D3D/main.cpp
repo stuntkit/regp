@@ -131,7 +131,7 @@ int FUN_44e430()
 // FUNCTION: STUNTGP_D3D 0x44e490
 void FUN_44e490()
 {
-    g_612994 = 0;
+    g_612948.unk004c = 0;
 }
 
 void FUN_44ea10();
@@ -374,13 +374,13 @@ HRESULT surfaceRestore(LPDIRECTDRAWSURFACE4 *surface)
 // FUNCTION: STUNTGP_D3D 0x4314c0
 BOOL surfaceSlotsNoneLost()
 {
-    for (DWORD i = 0; i < g_surfaceSlotCount; i++)
+    for (DWORD i = 0; i < g_5ba788.surfaceSlotCount; i++)
     {
-        if (g_surfaceSlots[i].surface && g_surfaceSlots[i].surface->IsLost())
+        if (g_5ba788.surfaceSlots[i].surface && g_5ba788.surfaceSlots[i].surface->IsLost())
         {
             return FALSE;
         }
-        if (g_surfaceSlots[i].surface2 && g_surfaceSlots[i].surface2->IsLost())
+        if (g_5ba788.surfaceSlots[i].surface2 && g_5ba788.surfaceSlots[i].surface2->IsLost())
         {
             return FALSE;
         }
@@ -401,13 +401,13 @@ void FUN_44e9d0()
 // FUNCTION: STUNTGP_D3D 0x431510
 BOOL surfaceSlotsRestore()
 {
-    for (DWORD i = 0; i < g_surfaceSlotCount; i++)
+    for (DWORD i = 0; i < g_5ba788.surfaceSlotCount; i++)
     {
-        if (g_surfaceSlots[i].surface && g_surfaceSlots[i].surface->Restore())
+        if (g_5ba788.surfaceSlots[i].surface && g_5ba788.surfaceSlots[i].surface->Restore())
         {
             return FALSE;
         }
-        if (g_surfaceSlots[i].surface2 && g_surfaceSlots[i].surface2->Restore())
+        if (g_5ba788.surfaceSlots[i].surface2 && g_5ba788.surfaceSlots[i].surface2->Restore())
         {
             return FALSE;
         }
@@ -539,8 +539,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
         return FALSE;
     }
 
-    g_612be8 = 2;
-    g_612bec = 2;
+    g_612948.unk02a0 = 2;
+    g_612948.unk02a4 = 2;
     FUN_442120();
     FUN_44e5d0();
     do
@@ -559,12 +559,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
             FUN_44e9d0();
             if (g_61c374 && !g_WindowMessage)
             {
-                if (g_612be8 == 1)
+                if (g_612948.unk02a0 == 1)
                 {
                     FUN_442810();
                     FUN_4427b0();
                 }
-                else if (g_612be8 == 2)
+                else if (g_612948.unk02a0 == 2)
                 {
                     FUN_441f00();
                     FUN_441d70();
@@ -572,7 +572,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
                 thunk_FUN_44e6b0();
             }
         }
-    } while (g_612948 != 1);
+    } while (g_612948.unk0000 != 1);
 
     FUN_44e6c0();
     FUN_442180();

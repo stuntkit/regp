@@ -58,7 +58,6 @@ extern int g_576bc8;
 extern int g_576bd8;
 extern int g_576be0;
 
-extern int *g_5d91b4;
 
 // Queued primitives per render pass.
 struct RenderBucket
@@ -133,7 +132,6 @@ int FUN_4325e0(BYTE *image, DWORD width, DWORD height);
 void FUN_42be90(char *path);
 void FUN_4234e0(BYTE *dst, BYTE *src);
 void FUN_430100(LPDIRECTDRAWSURFACE4 surface, BYTE *image, DWORD width, DWORD height, int bits);
-extern DDPIXELFORMAT *g_5d91c0;
 void FUN_42f340();
 void FUN_42f380();
 void FUN_432300(Font *font, D3DCOLOR color, DWORD flags);

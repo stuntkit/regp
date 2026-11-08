@@ -1,16 +1,7 @@
 #include "timer.h"
+#include "globals.h"
 
 #include <stdio.h>
-
-extern DWORD g_612d00;
-
-extern DWORD g_612d04;
-
-// Performance counter ticks per 1/60 s.
-extern DWORD g_612d08;
-
-// GLOBAL: STUNTGP_D3D 0x612d0c
-DWORD g_612d0c;
 
 extern FILE *g_5da2e4;
 
@@ -27,10 +18,10 @@ void Timer_Init()
 {
     LARGE_INTEGER frequency;
     QueryPerformanceFrequency(&frequency);
-    g_612d0c = frequency.LowPart;
-    g_612d08 = frequency.LowPart / 60;
-    g_612d00 = Timer_GetCounter();
-    g_612d04 = Timer_GetCounter();
+    g_612948.unk03c4 = frequency.LowPart;
+    g_612948.unk03c0 = frequency.LowPart / 60;
+    g_612948.unk03b8 = Timer_GetCounter();
+    g_612948.unk03bc = Timer_GetCounter();
 }
 
 // FUNCTION: STUNTGP_D3D 0x434890

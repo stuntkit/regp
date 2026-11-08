@@ -91,7 +91,6 @@ void FUN_4152c0(Car *car);
 CameraPath *FUN_428800(int id);
 
 extern int g_60d688[37];
-extern DWORD g_61297c;
 extern CameraPath *g_571328;
 extern float g_60e1f0[0x80];
 extern float g_60e3f0[0x80];
@@ -1419,7 +1418,7 @@ void FUN_40c5f0()
 {
     if (g_4d5bb8->controls[5] && !g_4d5bb8->prevControls[5])
     {
-        g_4d5bb8->unk7234 = g_612cfc;
+        g_4d5bb8->unk7234 = g_612948.unk03b4;
     }
     if (!g_4d5bb8->unk71ec && g_4d5bb8->unk71f0)
     {
@@ -1729,7 +1728,7 @@ void FUN_40d090()
 {
     if (g_4d5bb8->controls[5] && !g_4d5bb8->prevControls[5])
     {
-        g_4d5bb8->unk7234 = g_612cfc;
+        g_4d5bb8->unk7234 = g_612948.unk03b4;
     }
     if (!g_4d5bb8->unk71ec && g_4d5bb8->unk71f0)
     {
@@ -2789,19 +2788,14 @@ void FUN_4137b0()
     }
 }
 
-extern int g_612d98;
-extern int g_612d9c;
-extern int g_612da0;
-extern int g_612da4[0x2200];
-
 // FUNCTION: STUNTGP_D3D 0x416590
 void FUN_416590(Vec4 *pos, Vec4 *vel)
 {
-    if ((DWORD)g_612d9c >= 32)
+    if ((DWORD)g_612948.unk0454 >= 32)
     {
-        g_612d9c = 0;
+        g_612948.unk0454 = 0;
     }
-    Unk612da4 *p = &((Unk612da4 *)g_612da4)[g_612d9c];
+    Unk612da4 *p = &((Unk612da4 *)g_612948.unk045c)[g_612948.unk0454];
     p->pos = *pos;
     p->unk04 = 8;
     p->life = FUN_42f1f0(15) + 30;
@@ -2812,8 +2806,8 @@ void FUN_416590(Vec4 *pos, Vec4 *vel)
     p->unk434 = 0;
     p->unk2c = 2.5f;
     p->vel = *vel;
-    g_612d9c++;
-    g_612d98++;
+    g_612948.unk0454++;
+    g_612948.unk0450++;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4166f0
@@ -3111,7 +3105,7 @@ void FUN_41e510(Vec4 *ring, DWORD *head, DWORD *count, Vec4 *pos, TrailParams *p
 // FUNCTION: STUNTGP_D3D 0x414c60
 void FUN_414c60()
 {
-    if (g_61297c < 20)
+    if (g_612948.unk0034 < 20)
     {
         return;
     }
@@ -3130,7 +3124,7 @@ void FUN_414c60()
 // FUNCTION: STUNTGP_D3D 0x414f90
 void FUN_414f90()
 {
-    if (g_61297c >= 60 && g_4d5bb8->unk28a0)
+    if (g_612948.unk0034 >= 60 && g_4d5bb8->unk28a0)
     {
         Trail *trail = g_4d5bb8->unk2d04;
         Vec4 pos = trail[0].pos;
@@ -3143,7 +3137,7 @@ void FUN_414f90()
 // FUNCTION: STUNTGP_D3D 0x4152d0
 void FUN_4152d0()
 {
-    if (g_61297c >= 60 && g_4d5bb8->unk28a0)
+    if (g_612948.unk0034 >= 60 && g_4d5bb8->unk28a0)
     {
         TrailSlot *slot = g_4d5bb8->unk28bc;
         Vec4 pos = slot[0].trail.pos;
@@ -3280,14 +3274,14 @@ void FUN_415880()
 // FUNCTION: STUNTGP_D3D 0x415d20
 void FUN_415d20(Vec4 *pos, Vec4 *vel, int unused)
 {
-    if (g_612da0 == 2)
+    if (g_612948.unk0458 == 2)
     {
-        g_612da0 = g_61297c < 80 ? 4 : 2;
-        if ((DWORD)g_612d9c >= 32)
+        g_612948.unk0458 = g_612948.unk0034 < 80 ? 4 : 2;
+        if ((DWORD)g_612948.unk0454 >= 32)
         {
-            g_612d9c = 0;
+            g_612948.unk0454 = 0;
         }
-        Unk612da4 *p = &((Unk612da4 *)g_612da4)[g_612d9c];
+        Unk612da4 *p = &((Unk612da4 *)g_612948.unk045c)[g_612948.unk0454];
         p->vel = *vel;
         p->life = 60;
         p->pos = *pos;
@@ -3298,8 +3292,8 @@ void FUN_415d20(Vec4 *pos, Vec4 *vel, int unused)
         p->unk430 = 0;
         p->unk434 = 0;
         p->unk04 = 5;
-        g_612d9c++;
-        g_612d98++;
+        g_612948.unk0454++;
+        g_612948.unk0450++;
     }
 }
 
@@ -3696,7 +3690,7 @@ void FUN_41cd30(int wheel)
 // FUNCTION: STUNTGP_D3D 0x41d140
 void FUN_41d140()
 {
-    if (g_61297c < 80)
+    if (g_612948.unk0034 < 80)
     {
         return;
     }

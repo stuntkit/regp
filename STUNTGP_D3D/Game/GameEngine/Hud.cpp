@@ -52,8 +52,6 @@ void FUN_40d300(Car *car);
 void FUN_40d380(Car *car);
 void FUN_441e20();
 
-extern DWORD g_61297c;
-extern int g_612bec;
 extern DWORD g_60eff4;
 extern DWORD g_60eff8;
 extern char g_LevelScript[32];
@@ -223,26 +221,8 @@ char *g_482b88[76] = {
     "Car4sh",
 };
 
-// GLOBAL: STUNTGP_D3D 0x60d744
-int g_60d744;
-
-// GLOBAL: STUNTGP_D3D 0x60d748
-int g_60d748;
-
-// GLOBAL: STUNTGP_D3D 0x60d768
-DWORD g_60d768;
-
 // GLOBAL: STUNTGP_D3D 0x60dfec
 int g_60dfec;
-
-// GLOBAL: STUNTGP_D3D 0x60d73c
-DWORD g_60d73c;
-
-// GLOBAL: STUNTGP_D3D 0x60d788
-int g_60d788;
-
-// GLOBAL: STUNTGP_D3D 0x612960
-int g_612960;
 
 // GLOBAL: STUNTGP_D3D 0x61b748
 unsigned int g_61b748;
@@ -255,8 +235,8 @@ void FUN_445120()
 {
     g_60eff8 = 100;
     g_60dfec = 2;
-    g_60eff4 = g_60d768;
-    if (g_60d768 < 1200)
+    g_60eff4 = g_60d730.unk038;
+    if (g_60d730.unk038 < 1200)
     {
         g_60eff4 = 5400;
     }
@@ -265,18 +245,18 @@ void FUN_445120()
 // FUNCTION: STUNTGP_D3D 0x4452e0
 void FUN_4452e0()
 {
-    if (g_612bec == 1)
+    if (g_612948.unk02a4 == 1)
     {
-        FUN_445f70(g_60d744);
-        sprintf(g_LevelScript, g_482b88[g_60d748]);
+        FUN_445f70(g_60d730.unk014);
+        sprintf(g_LevelScript, g_482b88[g_60d730.unk018]);
     }
 }
 
 // FUNCTION: STUNTGP_D3D 0x445310
 void FUN_445310()
 {
-    g_612990 = 3600;
-    g_61299c = 1;
+    g_612948.unk0048 = 3600;
+    g_612948.unk0054 = 1;
     g_60f2c8 = 4;
     g_60f01c = 10;
     g_60eff0 = 1;
@@ -286,18 +266,18 @@ void FUN_445310()
 // FUNCTION: STUNTGP_D3D 0x445350
 void FUN_445350()
 {
-    g_60d788 = 1;
+    g_60d730.unk058 = 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x446a70
 void FUN_446a70()
 {
-    g_61297c += 10;
-    if (g_61297c > 100)
+    g_612948.unk0034 += 10;
+    if (g_612948.unk0034 > 100)
     {
-        g_61297c = 0;
+        g_612948.unk0034 = 0;
     }
-    g_60d73c = g_61297c;
+    g_60d730.unk00c = g_612948.unk0034;
 }
 
 // FUNCTION: STUNTGP_D3D 0x446a90
@@ -411,7 +391,7 @@ void FUN_446bb0()
 // FUNCTION: STUNTGP_D3D 0x446c20
 void FUN_446c20(float x, float y)
 {
-    g_485120[1].active = g_612960 != 1;
+    g_485120[1].active = g_612948.unk0018 != 1;
     if (g_60f2b0 == 3 || g_576be0)
     {
         g_485120[6].active = 0;

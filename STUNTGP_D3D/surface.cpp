@@ -39,24 +39,24 @@ void FUN_4300f0(IUnknown *object)
 // FUNCTION: STUNTGP_D3D 0x431790
 void FUN_431790()
 {
-    int i = g_surfaceSlotCount;
+    int i = g_5ba788.surfaceSlotCount;
     while (i > 0)
     {
         i--;
-        if (g_surfaceSlots[i].surface2 != g_surfaceSlots[i].surface)
+        if (g_5ba788.surfaceSlots[i].surface2 != g_5ba788.surfaceSlots[i].surface)
         {
-            ddReleaseSurface(&g_surfaceSlots[i].surface2);
+            ddReleaseSurface(&g_5ba788.surfaceSlots[i].surface2);
         }
         else
         {
-            g_surfaceSlots[i].surface2 = NULL;
+            g_5ba788.surfaceSlots[i].surface2 = NULL;
         }
-        ddReleaseSurface(&g_surfaceSlots[i].surface);
-        FUN_4300f0((IUnknown *)g_surfaceSlots[i].unk04);
-        FUN_4300f0((IUnknown *)g_surfaceSlots[i].unk0c);
+        ddReleaseSurface(&g_5ba788.surfaceSlots[i].surface);
+        FUN_4300f0((IUnknown *)g_5ba788.surfaceSlots[i].unk04);
+        FUN_4300f0((IUnknown *)g_5ba788.surfaceSlots[i].unk0c);
     }
-    g_surfaceSlotCount = 0;
-    memset(g_surfaceSlots, 0, sizeof(g_surfaceSlots));
+    g_5ba788.surfaceSlotCount = 0;
+    memset(g_5ba788.surfaceSlots, 0, sizeof(g_5ba788.surfaceSlots));
 }
 
 // FUNCTION: STUNTGP_D3D 0x431800

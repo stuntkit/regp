@@ -78,7 +78,6 @@ extern int g_6244c8;
 extern int g_6244cc;
 extern int g_6244d0;
 extern int g_61c5ec;
-extern DWORD g_61297c;
 
 // GLOBAL: STUNTGP_D3D 0x636418
 SceneSlot g_636418[16];
@@ -107,10 +106,17 @@ struct RenderMaterial
 // GLOBAL: STUNTGP_D3D 0x62447c
 RenderMaterial *g_62447c;
 
+// GLOBAL: STUNTGP_D3D 0x624480
+TrackOctree *g_624480;
+
 // Loaded track file; the offsets are relative to data.
 struct TrackHeader
 {
-    BYTE unk000[0x38];
+    BYTE unk000[0x20];
+    int unk020;               // 0x020
+    BYTE unk024[0x2c - 0x24];
+    int unk02c;               // 0x02c
+    BYTE unk030[0x38 - 0x30];
     int unk038;               // 0x038
     int unk03c;               // 0x03c
     BYTE unk040[0x58 - 0x40];
@@ -126,7 +132,13 @@ struct TrackHeader
     int unk080;               // 0x080
     int unk084;               // 0x084
     int unk088;               // 0x088
-    BYTE unk08c[0xd4 - 0x8c];
+    int unk08c;               // 0x08c
+    int unk090;               // 0x090
+    int unk094;               // 0x094
+    int unk098;               // 0x098
+    int unk09c;               // 0x09c
+    int unk0a0;               // 0x0a0
+    BYTE unk0a4[0xd4 - 0xa4];
     DWORD unk0d4;             // 0x0d4
     BYTE unk0d8[0xe4 - 0xd8];
     int unk0e4;               // 0x0e4
@@ -265,9 +277,6 @@ Unk4d5cc0 g_4d5cc0[6];
 // GLOBAL: STUNTGP_D3D 0x49a164
 int g_49a164;
 
-// GLOBAL: STUNTGP_D3D 0x60df90
-Unk4d5cc0 *g_60df90;
-
 // GLOBAL: STUNTGP_D3D 0x474670
 int g_474670 = -1;
 
@@ -297,77 +306,8 @@ int g_62d478;
 // GLOBAL: STUNTGP_D3D 0x60f02c
 Driver g_60f02c[6];
 
-// GLOBAL: STUNTGP_D3D 0x61b634
-int g_61b634;
-
-extern int g_61294c;
-
-extern int g_612958;
-
-extern int g_612968;
-
-// GLOBAL: STUNTGP_D3D 0x612974
-int g_612974;
-
-// GLOBAL: STUNTGP_D3D 0x612978
-int g_612978;
-
-// GLOBAL: STUNTGP_D3D 0x612980
-int g_612980;
-
-// GLOBAL: STUNTGP_D3D 0x612988
-int g_612988;
-
-// GLOBAL: STUNTGP_D3D 0x61298c
-int g_61298c;
-
-extern DWORD g_612990;
-
-// GLOBAL: STUNTGP_D3D 0x612998
-int g_612998;
-
-extern int g_61299c;
-
-// GLOBAL: STUNTGP_D3D 0x6129a0
-int g_6129a0;
-
-// GLOBAL: STUNTGP_D3D 0x612be4
-int g_612be4;
-
-extern int g_612bf0;
-
 // GLOBAL: STUNTGP_D3D 0x571328
 CameraPath *g_571328;
-
-// GLOBAL: STUNTGP_D3D 0x612d54
-int g_612d54[6];
-
-// GLOBAL: STUNTGP_D3D 0x612d94
-int g_612d94;
-
-// GLOBAL: STUNTGP_D3D 0x612d98
-int g_612d98;
-
-// GLOBAL: STUNTGP_D3D 0x612d9c
-int g_612d9c;
-
-// GLOBAL: STUNTGP_D3D 0x612da0
-int g_612da0;
-
-// GLOBAL: STUNTGP_D3D 0x612da4
-int g_612da4[0x2200];
-
-// GLOBAL: STUNTGP_D3D 0x61b5a4
-int g_61b5a4[0x20];
-
-// GLOBAL: STUNTGP_D3D 0x61b624
-int g_61b624;
-
-// GLOBAL: STUNTGP_D3D 0x61b628
-int g_61b628;
-
-// GLOBAL: STUNTGP_D3D 0x61b62c
-int g_61b62c;
 
 // FUNCTION: STUNTGP_D3D 0x401000
 void FUN_401000()
@@ -719,7 +659,7 @@ void FUN_429510();
 // FUNCTION: STUNTGP_D3D 0x401d40
 void FUN_401d40()
 {
-    if (g_612be8 != 2)
+    if (g_612948.unk02a0 != 2)
     {
         SceneView *view = g_636418[3].scene->view;
         g_498238 = view->unk34;
@@ -826,7 +766,7 @@ void FUN_42b740()
     g_4955e0 = &g_62f5d8;
     g_632cf8 = 0;
     g_62f5d8 = 0;
-    if (g_612be8 != 2)
+    if (g_612948.unk02a0 != 2)
     {
         if (g_636418[3].scene)
         {
@@ -1050,7 +990,7 @@ void FUN_42d970()
 // FUNCTION: STUNTGP_D3D 0x42d700
 void FUN_42d700()
 {
-    if (g_612be8 == 2)
+    if (g_612948.unk02a0 == 2)
     {
         g_589e04 = 0;
         g_62447c = &g_589628;
@@ -1191,12 +1131,12 @@ void FUN_42e820()
 {
     g_624980 = 0;
     g_624984 = 0;
-    if (g_61297c > 80)
+    if (g_612948.unk0034 > 80)
     {
         g_624980 = 1;
         g_624984 = 1;
     }
-    else if (g_61297c > 50)
+    else if (g_612948.unk0034 > 50)
     {
         g_624980 = 1;
         g_624984 = 0;
@@ -1236,6 +1176,24 @@ void FUN_42ed30()
     g_62446c = &g_58d810->data[g_58d810->unk07c];
     g_624468 = &g_58d810->data[g_58d810->unk084];
     g_624464 = &g_58d810->data[g_58d810->unk080];
+}
+
+// FUNCTION: STUNTGP_D3D 0x42ed80
+void FUN_42ed80()
+{
+    TrackHeader *header = g_58d810;
+    TrackOctree *tree = (TrackOctree *)&header->data[header->unk0a0];
+    g_624480 = tree;
+    tree->polyLists = (short *)&header->data[header->unk090] + (int)tree->polyLists;
+    tree->indices = (WORD *)&header->data[header->unk08c] + (int)tree->indices;
+    tree->vertices = (Vec4 *)&header->data[header->unk02c] + (int)tree->vertices;
+    tree->planes = (Vec4 *)&header->data[header->unk020] + (int)tree->planes;
+    tree->polys = (TrackPoly *)&header->data[header->unk098] + (int)tree->polys;
+    tree->surfaces = (DWORD *)&header->data[header->unk094] + (int)tree->surfaces;
+    for (int i = 0; i < 2; i++)
+    {
+        tree->roots[i].root = (OctNode *)&header->data[header->unk09c] + (int)tree->roots[i].root;
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x42ee50
@@ -1496,7 +1454,7 @@ void FUN_42efb0(int id)
 // FUNCTION: STUNTGP_D3D 0x42f090
 void FUN_42f090()
 {
-    if (g_612be8 == 2)
+    if (g_612948.unk02a0 == 2)
     {
         g_58c540[0].id = 0;
         g_58c808 = 0;
@@ -1516,7 +1474,7 @@ void FUN_42f090()
     int car = 0;
     for (int i = 0; i < 6; i++)
     {
-        if (g_60d78c[i].type == 2)
+        if (g_60d730.entries[i].type == 2)
         {
             g_60f02c[i].model = g_636418[g_477c4c[car]].scene;
             g_60f02c[i].unk04 = g_636418[g_477c64[car]].scene;
@@ -1736,7 +1694,7 @@ void FUN_43d1f0()
 // FUNCTION: STUNTGP_D3D 0x443050
 void FUN_443050()
 {
-    g_60df90 = &g_4d5cc0[2];
+    g_60d730.unk860 = &g_4d5cc0[2];
 }
 
 // FUNCTION: STUNTGP_D3D 0x445ad0
@@ -1762,36 +1720,36 @@ void FUN_445fa0()
     FUN_441f90();
     FUN_401000();
     FUN_45e0e0();
-    g_61b634 = 0;
-    g_612948 = 0;
-    g_61294c = 0;
-    g_612958 = 0;
-    g_612968 = 0;
-    g_612974 = 0;
-    g_612978 = 0;
-    g_612980 = 0;
-    g_frameCount = 0;
-    g_612988 = 0;
-    g_61298c = 0;
-    g_612994 = 0;
-    g_612990 = 0;
-    g_612998 = 0;
-    g_61299c = 0;
-    g_6129a0 = 0;
-    g_612be4 = 0;
-    g_612bf0 = 0;
+    g_612948.unk8cec = 0;
+    g_612948.unk0000 = 0;
+    g_612948.unk0004 = 0;
+    g_612948.unk0010 = 0;
+    g_612948.unk0020 = 0;
+    g_612948.unk002c = 0;
+    g_612948.unk0030 = 0;
+    g_612948.unk0038 = 0;
+    g_612948.frameCount = 0;
+    g_612948.unk0040 = 0;
+    g_612948.unk0044 = 0;
+    g_612948.unk004c = 0;
+    g_612948.unk0048 = 0;
+    g_612948.unk0050 = 0;
+    g_612948.unk0054 = 0;
+    g_612948.unk0058 = 0;
+    g_612948.unk029c = 0;
+    g_612948.unk02a8 = 0;
     g_571328 = 0;
-    memset(g_612d54, 0, sizeof(g_612d54));
-    g_612d94 = 0;
-    g_612d98 = 0;
-    g_612d9c = 0;
-    g_612da0 = 0;
-    memset(g_612da4, 0, sizeof(g_612da4));
-    memset(g_61b5a4, 0, sizeof(g_61b5a4));
+    memset(g_612948.unk040c, 0, sizeof(g_612948.unk040c));
+    g_612948.unk044c = 0;
+    g_612948.unk0450 = 0;
+    g_612948.unk0454 = 0;
+    g_612948.unk0458 = 0;
+    memset(g_612948.unk045c, 0, sizeof(g_612948.unk045c));
+    memset(g_612948.unk8c5c, 0, sizeof(g_612948.unk8c5c));
     g_49a164 = 0;
-    g_61b624 = 0;
-    g_61b628 = 0;
-    g_61b62c = 0;
+    g_612948.unk8cdc = 0;
+    g_612948.unk8ce0 = 0;
+    g_612948.unk8ce4 = 0;
     Timer_Reset();
     FUN_4192d0();
 }

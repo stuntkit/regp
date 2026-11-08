@@ -320,9 +320,6 @@ int g_5ff8c0;
 // GLOBAL: STUNTGP_D3D 0x5ff3e8
 FrontEnd g_frontEnd;
 
-// GLOBAL: STUNTGP_D3D 0x61297c
-DWORD g_61297c;
-
 // GLOBAL: STUNTGP_D3D 0x47966c
 Initials g_47966c = {'!', '!', '!'};
 
@@ -366,8 +363,6 @@ void FUN_462270(int a);
 int FUN_462260();
 int FUN_424a80();
 void FUN_424a90(int mode);
-extern Unk4d5cc0 *g_60df90;
-extern int g_60d744;
 float FUN_43d9e0(float value);
 int FUN_436fc0(int player, int button);
 int FUN_436fd0(int player, int button);
@@ -1871,20 +1866,19 @@ void FUN_439e30()
     memset(g_5df528, 0, sizeof(g_5df528));
 }
 
-// Start of the race state cleared by FUN_43a720; its fields are declared one by one elsewhere.
 // GLOBAL: STUNTGP_D3D 0x60d730
-int g_60d730;
+RaceState g_60d730;
 
 // FUNCTION: STUNTGP_D3D 0x43a720
 void FUN_43a720()
 {
-    memset(&g_60d730, 0, 0x868);
-    g_60df90 = g_menuState.unk13148;
+    memset(&g_60d730, 0, sizeof(g_60d730));
+    g_60d730.unk860 = g_menuState.unk13148;
     for (int i = 0; i < 4; i++)
     {
         FUN_45ecc0(i, 0xffff, i + 1);
     }
-    g_60d744 = g_menuState.unk0090;
+    g_60d730.unk014 = g_menuState.unk0090;
 }
 
 // FUNCTION: STUNTGP_D3D 0x43a760
@@ -1893,17 +1887,15 @@ void FUN_43a760(int player, int a, int b)
     FUN_45ecc0(player - 1, a, b);
 }
 
-extern DWORD g_60d73c;
-extern int g_60df94;
 void FUN_43dc40();
 
 // FUNCTION: STUNTGP_D3D 0x439e50
 void FUN_439e50()
 {
-    g_60d738 = g_menuState.sfx;
-    g_60d734 = g_menuState.music;
-    g_60d73c = g_menuState.unk0084;
-    g_60df94 = g_menuState.unk0070;
+    g_60d730.sfx = g_menuState.sfx;
+    g_60d730.music = g_menuState.music;
+    g_60d730.unk00c = g_menuState.unk0084;
+    g_60d730.unk864 = g_menuState.unk0070;
     FUN_43dc40();
 }
 
@@ -2201,7 +2193,7 @@ void FUN_43c000()
     {
         g_musicSetting = 1;
     }
-    g_61297c = g_menuState.unk0084;
+    g_612948.unk0034 = g_menuState.unk0084;
     FUN_462270(g_menuState.unk4240);
     Sound_ApplyVolumes();
 }
@@ -2231,7 +2223,7 @@ void FUN_43c060()
         g_menuState.unk0098[i].unk04 = 0;
         g_menuState.unk0098[i].unk08 = 0;
     }
-    g_menuState.unk13148 = g_60df90;
+    g_menuState.unk13148 = g_60d730.unk860;
     g_menuState.unk4240 = FUN_462260();
     if (!g_menuState.unk4240)
     {

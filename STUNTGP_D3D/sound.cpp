@@ -1,4 +1,5 @@
 #include "sound.h"
+#include "Game/GameEngine/GameSetup.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -88,12 +89,6 @@ int g_musicVolume;
 
 // GLOBAL: STUNTGP_D3D 0x62f5ac
 DWORD g_62f5ac;
-
-// GLOBAL: STUNTGP_D3D 0x60d734
-DWORD g_60d734;
-
-// GLOBAL: STUNTGP_D3D 0x60d738
-DWORD g_60d738;
 
 // FUNCTION: STUNTGP_D3D 0x45fab0
 void FUN_45fab0()
@@ -267,8 +262,8 @@ void FUN_460b80()
 // FUNCTION: STUNTGP_D3D 0x460bc0
 void Sound_ApplyVolumes()
 {
-    g_60d734 = g_musicSetting;
-    g_60d738 = g_sfxSetting;
+    g_60d730.music = g_musicSetting;
+    g_60d730.sfx = g_sfxSetting;
     g_musicVolume = g_masterVolume * g_musicSetting * 255 / 10000;
     g_sfxVolumeTarget = g_sfxVolume = g_masterVolume * g_sfxSetting * 255 / 10000;
 }
