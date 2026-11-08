@@ -1209,7 +1209,10 @@ void FUN_436f00(int player)
     }
     else
     {
-        memset(&in->held[1], 0, 7);
+        for (int i = 1; i < 8; i++)
+        {
+            in->held[i] = 0;
+        }
     }
 }
 
@@ -2544,8 +2547,15 @@ void FUN_43c130()
 // FUNCTION: STUNTGP_D3D 0x43c310
 void FUN_43c310(char value)
 {
-    memset(&g_menuState.unlocked[1], value, 21);
-    memset(&g_menuState.unlocked[25], value, 24);
+    int i;
+    for (i = 1; i < 22; i++)
+    {
+        g_menuState.unlocked[i] = value;
+    }
+    for (i = 25; i < 49; i++)
+    {
+        g_menuState.unlocked[i] = value;
+    }
     g_menuState.unk0074 = 1;
 }
 
@@ -4278,8 +4288,9 @@ int FUN_454410(Unk454b20 *object, int arg)
     object->unk38 = 0;
     object->unk14 = 0;
     object->unk4c = 0;
-    object->text[0] = g_menuState.unk44d0 = 0;
     object->unk18 = g_menuState.unk4238;
+    g_menuState.unk44d0 = 0;
+    object->text[0] = 0;
     return 1;
 }
 
