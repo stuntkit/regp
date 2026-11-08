@@ -132,10 +132,10 @@ struct Wheel
 {
     float unk00;        // 0x0000
     float unk04;        // 0x0004
-    BYTE unk0008[0x4];  // 0x0008
+    float unk08;        // 0x0008
     float unk0c;        // 0x000c
     float unk10;        // 0x0010
-    BYTE unk0014[0x4];  // 0x0014
+    float unk14;        // 0x0014
     float unk18;        // 0x0018
     float unk1c;        // 0x001c
     BYTE unk0020[0x10]; // 0x0020
@@ -744,7 +744,9 @@ struct Car
     float unk270c[16];        // 0x270c
     float wheelMatrix[4][16]; // 0x274c
     Vec4 unk284c;             // 0x284c
-    BYTE unk285c[0x30];       // 0x285c
+    Vec4 unk285c;             // 0x285c
+    Vec4 unk286c;             // 0x286c
+    Vec4 unk287c;             // 0x287c
     float unk288c;            // 0x288c
     float unk2890;            // 0x2890
     float unk2894;            // 0x2894

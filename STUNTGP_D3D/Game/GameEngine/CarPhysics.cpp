@@ -4248,10 +4248,276 @@ void FUN_40fbb0()
     }
 }
 
-// STUB: STUNTGP_D3D 0x40fc90
+extern float g_4d5b70[16];
+void FUN_413430(int wheel);
+void FUN_413450();
+void FUN_412470();
+
+// Main chassis step: spins the wheels, resolves each grounded wheel's tyre forces on the front and
+// rear axle points, then rebuilds the body frame and velocity from the two axles.
+// The original reloads every car field it has just stored.
+#pragma optimize("a", off)
+// FUNCTION: STUNTGP_D3D 0x40fc90
 void FUN_40fc90()
 {
+    FUN_40e7a0();
+    FUN_40f3c0();
+    FUN_40fb30();
+    Car *car = g_4d5bb8;
+    car->wheels[0].unk04 = car->wheels[0].unk00 + car->wheels[0].unk04;
+    car->wheels[1].unk04 = car->wheels[1].unk00 + car->wheels[1].unk04;
+    car->wheels[2].unk04 = car->wheels[2].unk00 + car->wheels[2].unk04;
+    car->wheels[3].unk04 = car->wheels[3].unk00 + car->wheels[3].unk04;
+    if (car->wheels[0].unk04 > 416.66666f)
+    {
+        car->wheels[0].unk04 = 416.66666f;
+    }
+    if (car->wheels[0].unk04 < -416.66666f)
+    {
+        car->wheels[0].unk04 = -416.66666f;
+    }
+    if (car->wheels[1].unk04 > 416.66666f)
+    {
+        car->wheels[1].unk04 = 416.66666f;
+    }
+    if (car->wheels[1].unk04 < -416.66666f)
+    {
+        car->wheels[1].unk04 = -416.66666f;
+    }
+    if (car->wheels[2].unk04 > 416.66666f)
+    {
+        car->wheels[2].unk04 = 416.66666f;
+    }
+    if (car->wheels[2].unk04 < -416.66666f)
+    {
+        car->wheels[2].unk04 = -416.66666f;
+    }
+    if (car->wheels[3].unk04 > 416.66666f)
+    {
+        car->wheels[3].unk04 = 416.66666f;
+    }
+    if (car->wheels[3].unk04 < -416.66666f)
+    {
+        car->wheels[3].unk04 = -416.66666f;
+    }
+    if ((float)fabs(car->wheels[0].unk04) < 0.0f)
+    {
+        FUN_413430(0);
+        car = g_4d5bb8;
+    }
+    if ((float)fabs(car->wheels[1].unk04) < 0.0f)
+    {
+        FUN_413430(1);
+        car = g_4d5bb8;
+    }
+    if ((float)fabs(car->wheels[3].unk04) < 0.0f)
+    {
+        FUN_413430(3);
+        car = g_4d5bb8;
+    }
+    if ((float)fabs(car->wheels[2].unk04) < 0.0f)
+    {
+        FUN_413430(2);
+        car = g_4d5bb8;
+    }
+    car->unk1f28 = 0.0f;
+    Matrix_RotationY(g_4d5b70, car->unk1cf4);
+    car = g_4d5bb8;
+    Vec4 x = car->axisX;
+    Vec4 y = car->axisY;
+    Vec4 z = car->axisZ;
+    float fx = g_4d5b70[0] * z.x + g_4d5b70[4] * z.y + g_4d5b70[8] * z.z;
+    float fy = g_4d5b70[1] * z.x + g_4d5b70[5] * z.y + g_4d5b70[9] * z.z;
+    float fz = g_4d5b70[2] * z.x + g_4d5b70[6] * z.y + g_4d5b70[10] * z.z;
+    Vec4 l;
+    l.x = g_4d5b70[0] * x.x + g_4d5b70[4] * x.y + g_4d5b70[8] * x.z;
+    l.y = g_4d5b70[1] * x.x + g_4d5b70[5] * x.y + g_4d5b70[9] * x.z;
+    l.z = g_4d5b70[2] * x.x + g_4d5b70[6] * x.y + g_4d5b70[10] * x.z;
+    float frontBias = car->unk224;
+    float rearBias = car->unk228;
+    float len = car->unk230;
+    float h = len * 0.5f;
+    car->unk284c.x = h * z.x;
+    car->unk284c.y = h * z.y;
+    car->unk284c.z = h * z.z;
+    car->unk284c.x += car->posX;
+    car->unk284c.y += car->posY;
+    car->unk284c.z += car->posZ;
+    h = len * -0.5f;
+    car->unk285c.x = h * z.x;
+    car->unk285c.y = h * z.y;
+    car->unk285c.z = h * z.z;
+    car->unk285c.x += car->posX;
+    car->unk285c.y += car->posY;
+    car->unk285c.z = car->posZ + car->unk285c.z;
+    float accR = 0.0f;
+    float accF = 0.0f;
+    float k = l.x * car->unk1c8c.x + l.y * car->unk1c8c.y + l.z * car->unk1c8c.z;
+    Vec4 p;
+    p.x = k * l.x;
+    p.y = k * l.y;
+    p.z = k * l.z;
+    float c = -(p.x * z.x + p.y * z.y + p.z * z.z);
+    if (c > 0.5f)
+    {
+        c = 0.5f;
+    }
+    else if (c < -0.5f)
+    {
+        c = -0.5f;
+    }
+    accF = c;
+    float fwd = z.x * car->unk1c8c.x + z.y * car->unk1c8c.y + z.z * car->unk1c8c.z;
+    float fwdF = fx * car->unk1c8c.x + fy * car->unk1c8c.y + fz * car->unk1c8c.z;
+    float q = (fwd * z.x) * l.x + (fwd * z.y) * l.y + (fwd * z.z) * l.z;
+    Vec4 w;
+    float nq = -q;
+    w.x = nq * l.x;
+    w.y = nq * l.y;
+    w.z = nq * l.z;
+    float s = -(w.x * x.x + w.y * x.y + w.z * x.z);
+    float ns = -s;
+    l.x = ns * x.x;
+    l.y = ns * x.y;
+    l.z = ns * x.z;
+    float side = x.x * car->unk1c8c.x + x.y * car->unk1c8c.y + x.z * car->unk1c8c.z;
+    float rear = (1.0f - frontBias) * s + side;
+    float front = (1.0f - rearBias) * s + side;
+    car->wheels[0].unk14 = front;
+    car->wheels[1].unk14 = front;
+    car->wheels[2].unk14 = rear;
+    car->wheels[3].unk14 = rear;
+    for (int i = 0; i < 4; i++)
+    {
+        car->wheels[i].unk30 = 0.0f;
+        if (car->wheels[i].unk0c > 8.515625f)
+        {
+            float *acc;
+            float v;
+            if (i < 2)
+            {
+                v = fwd;
+                acc = &accR;
+            }
+            else
+            {
+                v = fwdF;
+                acc = &accF;
+            }
+            float slip = car->wheels[i].unk04 - v;
+            FUN_40f5b0(&car->wheels[i].unk14, &slip, car->wheels[i].unk34, car->wheels[i].unk38,
+                       car->wheels[i].unk0c, i);
+            slip *= 0.5f;
+            car = g_4d5bb8;
+            car->wheels[i].unk04 -= slip;
+            *acc = slip + *acc;
+            FUN_40f3f0(&car->unkcb8[i], &car->wheels[i], v, acc, i);
+            g_4d5bb8->unk1f28 = g_4d5bb8->wheels[i].unk1c + g_4d5bb8->unk1f28;
+            FUN_40f880(i);
+            car = g_4d5bb8;
+        }
+    }
+    accF *= 0.5f;
+    accR *= 0.5f;
+    float fs = (car->wheels[1].unk14 + car->wheels[0].unk14) * 0.5f;
+    float rs = (car->wheels[3].unk14 + car->wheels[2].unk14) * 0.5f;
+    FUN_40f4a0(&accF, &accR, *(int *)&fwd);
+    accF = fwd + accF;
+    accR = fwd + accR;
+    Vec4 a;
+    a.x = accF * z.x;
+    a.y = accF * z.y;
+    a.z = accF * z.z;
+    Vec4 b;
+    b.x = accR * z.x;
+    b.y = accR * z.y;
+    b.z = accR * z.z;
+    p.x = rs * x.x;
+    p.y = rs * x.y;
+    p.z = rs * x.z;
+    l.x = p.x + l.x;
+    l.y = p.y + l.y;
+    l.z = p.z + l.z;
+    p.x = fs * x.x;
+    p.y = fs * x.y;
+    p.z = fs * x.z;
+    w = p;
+    car = g_4d5bb8;
+    car->unk286c.x = a.x + l.x;
+    car->unk286c.y = a.y + l.y;
+    car->unk286c.z = a.z + l.z;
+    car->unk287c.x = b.x + w.x;
+    car->unk287c.y = b.y + w.y;
+    car->unk287c.z = b.z + w.z;
+    FUN_40fbb0();
+    car = g_4d5bb8;
+    car->unk284c.x = car->unk286c.x + car->unk284c.x;
+    car->unk284c.y = car->unk286c.y + car->unk284c.y;
+    car->unk284c.z = car->unk286c.z + car->unk284c.z;
+    car->unk285c.x = car->unk287c.x + car->unk285c.x;
+    car->unk285c.y = car->unk287c.y + car->unk285c.y;
+    car->unk285c.z = car->unk287c.z + car->unk285c.z;
+    z.x = car->unk284c.x - car->unk285c.x;
+    z.y = car->unk284c.y - car->unk285c.y;
+    z.z = car->unk284c.z - car->unk285c.z;
+    Vec3_Normalize(&z.x);
+    x.x = y.z * z.y - y.y * z.z;
+    x.y = y.x * z.z - y.z * z.x;
+    x.z = y.y * z.x - y.x * z.y;
+    Vec3_Normalize(&x.x);
+    Matrix_FromRows(&x.x, &y.x, &z.x, g_4d5bb8->matrix);
+    car = g_4d5bb8;
+    car->axisX = x;
+    car->axisY = y;
+    car->axisZ = z;
+    Vec4 *vel = &car->unk1c8c;
+    Vec4 *old = &car->unk1c9c;
+    *old = *vel;
+    p.x = car->unk287c.x + car->unk286c.x;
+    p.y = car->unk287c.y + car->unk286c.y;
+    p.z = car->unk287c.z + car->unk286c.z;
+    vel->x = p.x * 0.5f;
+    car->unk1c8c.y = p.y * 0.5f;
+    car->unk1c8c.z = p.z * 0.5f;
+    float d = y.x * old->x + y.y * car->unk1c9c.y + y.z * car->unk1c9c.z;
+    vel->x = y.x * d + vel->x;
+    car->unk1c8c.y = y.y * d + car->unk1c8c.y;
+    car->unk1c8c.z = d * y.z + car->unk1c8c.z;
+    car->unk1cac.x = vel->x - old->x;
+    car->unk1cac.y = car->unk1c8c.y - car->unk1c9c.y;
+    car->unk1cac.z = car->unk1c8c.z - car->unk1c9c.z;
+    if (car->unk1fd8 == 1)
+    {
+        car->unk1cf0 = (float)sqrt(vel->x * vel->x + car->unk1c8c.y * car->unk1c8c.y + car->unk1c8c.z * car->unk1c8c.z);
+    }
+    else
+    {
+        car->unk1cf0 = z.x * vel->x + z.y * car->unk1c8c.y + z.z * car->unk1c8c.z;
+    }
+    Wheel *wheel = car->wheels;
+    for (int n = 4; n != 0; n--, wheel++)
+    {
+        if ((float)fabs(car->unk1cf0) < 1e-5f)
+        {
+            wheel->unk08 = 0.0f;
+        }
+        else
+        {
+            wheel->unk08 = wheel->unk04 / car->unk1cf0 - 1.0f;
+        }
+    }
+    FUN_40f250();
+    FUN_40edd0();
+    FUN_40efe0();
+    FUN_40f570();
+    FUN_40fb00();
+    FUN_413450();
+    FUN_412470();
+    FUN_4062b0();
+    FUN_40e290();
+    FUN_40f730();
 }
+#pragma optimize("", on)
 
 extern float *g_4d5b24;
 void FUN_424120(int slot);
@@ -5749,6 +6015,9 @@ void FUN_4166f0()
 
 // GLOBAL: STUNTGP_D3D 0x4d5b30
 float g_4d5b30[16];
+
+// GLOBAL: STUNTGP_D3D 0x4d5b70
+float g_4d5b70[16];
 
 // FUNCTION: STUNTGP_D3D 0x413b60
 void FUN_413b60()
