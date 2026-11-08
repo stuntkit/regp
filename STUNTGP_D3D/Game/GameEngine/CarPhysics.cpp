@@ -6224,6 +6224,90 @@ Car *FUN_407a70(Car *self)
     return ahead;
 }
 
+// Overtaking: while closing on the car ahead, counts up and pulls the target point to its side;
+// a car not much faster in front caps the speed target instead.
+// FUNCTION: STUNTGP_D3D 0x407510
+void FUN_407510()
+{
+    if (g_4d5bb8->unk1fd8 != 0)
+    {
+        return;
+    }
+    Car *other = FUN_407a70(g_4d5bb8);
+    Vec4 d;
+    d.x = other->posX - g_4d5bb8->posX;
+    d.y = other->posY - g_4d5bb8->posY;
+    d.z = other->posZ - g_4d5bb8->posZ;
+    float dv = g_4d5bb8->unk1cf0 - other->unk1cf0;
+    if (dv >= 5.0f)
+    {
+        float k = dv * 0.024f;
+        if (k < 0.4f)
+        {
+            k = 0.4f;
+        }
+        else if (k > 1.0f)
+        {
+            k = 1.0f;
+        }
+        float fwd = d.x * g_4d5bb8->axisZ.x + d.y * g_4d5bb8->axisZ.y + d.z * g_4d5bb8->axisZ.z;
+        if (fwd >= -500.0f && fwd < k * 3500.0f &&
+            (float)fabs(d.x * g_4d5bb8->axisX.x + d.y * g_4d5bb8->axisX.y + d.z * g_4d5bb8->axisX.z) < 300.0f)
+        {
+            g_4d5bb8->unk2688 = other;
+            if (g_4d5bb8->unk268c < 120)
+            {
+                g_4d5bb8->unk268c += 6;
+            }
+            goto check;
+        }
+    }
+    else
+    {
+        if (g_4d5bb8->unk268c > 30)
+        {
+            float fwd = d.x * g_4d5bb8->axisZ.x + d.y * g_4d5bb8->axisZ.y + d.z * g_4d5bb8->axisZ.z;
+            if (fwd >= -1000.0f && fwd < 500.0f)
+            {
+                float v = other->unk1cf0 - 8.333333f;
+                if (g_499fa8 > v)
+                {
+                    g_499fa8 = v;
+                    g_4d5bb8->unk1cf8 = 0.0f;
+                }
+            }
+        }
+    }
+    g_4d5bb8->unk268c--;
+check:
+    if (g_4d5bb8->unk268c <= 0)
+    {
+        g_4d5bb8->unk268c = 0;
+        return;
+    }
+    g_4d5bb8->unk268c--;
+    Car *target = g_4d5bb8->unk2688;
+    FUN_4073e0();
+    Vec4 a;
+    a.x = target->axisX.x * g_4d5bb8->unk2690;
+    a.y = target->axisX.y * g_4d5bb8->unk2690;
+    a.z = target->axisX.z * g_4d5bb8->unk2690;
+    Vec4 b;
+    b.x = a.x + target->posX;
+    b.y = a.y + target->posY;
+    b.z = a.z + target->posZ;
+    a.x = b.x - g_49a148.x;
+    a.y = b.y - g_49a148.y;
+    a.z = b.z - g_49a148.z;
+    float s = g_4d5bb8->unk268c * 0.008333334f;
+    a.x *= s;
+    a.y *= s;
+    a.z *= s;
+    g_49a148.x = g_49a148.x + a.x;
+    g_49a148.y = g_49a148.y + a.y;
+    g_49a148.z = g_49a148.z + a.z;
+}
+
 // Like FUN_407a70 but measured the other way round the lap, with negative positions wrapped.
 // FUNCTION: STUNTGP_D3D 0x407b20
 Car *FUN_407b20(Car *self)
