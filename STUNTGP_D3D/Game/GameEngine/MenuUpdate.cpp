@@ -47,10 +47,10 @@ struct Unk454b20
     int unk20;        // 0x20
     float unk24;      // 0x24, shown cursor column
     float unk28;      // 0x28, shown cursor row
-    int unk2c;        // 0x2c
-    int unk30;        // 0x30
-    int unk34;        // 0x34
-    int unk38;        // 0x38
+    float unk2c;      // 0x2c
+    float unk30;      // 0x30
+    float unk34;      // 0x34
+    float unk38;      // 0x38
     float unk3c;      // 0x3c, shown caret
     float unk40;      // 0x40
     float unk44;      // 0x44, phase
@@ -4281,6 +4281,135 @@ int FUN_454410(Unk454b20 *object, int arg)
     object->text[0] = g_menuState.unk44d0 = 0;
     object->unk18 = g_menuState.unk4238;
     return 1;
+}
+
+char FUN_43d940(char c);
+void FUN_4400a0(int value);
+void FUN_43dd40(int a, float b, float c);
+int FUN_4547e0(char c, int *column, int *row);
+void FUN_454830(Unk454b20 *object, float x, float y, float t);
+void FUN_454af0(Unk454b20 *object, char c);
+void FUN_454b20(Unk454b20 *object);
+void FUN_454b40(Unk454b40 *object, int x, int y);
+void FUN_454b70(Unk454b20 *object);
+int FUN_454c80(Unk454b20 *object, int column, int row);
+
+// Name entry panel: cursor moves, typed and picked characters, and the slide-in animation.
+// FUNCTION: STUNTGP_D3D 0x454460
+int FUN_454460(PoolObject *base, int msg, int arg)
+{
+    Unk454b20 *object = (Unk454b20 *)base;
+    int column;
+    char c;
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(1);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(0x60, -0.3f, -0.5f);
+        object->unk38 = 1.0f;
+        return 0;
+    case 0x14:
+        object->unk38 = 0.0f;
+        return 0;
+    case 0xd:
+        if (FUN_454c80(object, object->unk1c - 1, object->unk20))
+        {
+            object->unk1c--;
+            FUN_440890(msg);
+            return 0;
+        }
+        break;
+    case 0xe:
+        if (FUN_454c80(object, object->unk1c + 1, object->unk20))
+        {
+            object->unk1c++;
+            FUN_440890(msg);
+            return 0;
+        }
+        break;
+    case 0xb:
+        if (FUN_454c80(object, object->unk1c, object->unk20 - 1))
+        {
+            object->unk20--;
+            FUN_440890(msg);
+            return 0;
+        }
+        break;
+    case 0xc:
+        if (FUN_454c80(object, object->unk1c, object->unk20 + 1))
+        {
+            object->unk20++;
+            FUN_440890(msg);
+            return 0;
+        }
+        break;
+    case 0x11:
+        FUN_440890(msg);
+        g_menuState.unk44d0 = 1;
+        FUN_43eef0();
+        return 0;
+    case 0x12:
+        c = FUN_43d940((char)arg);
+        if (c == '\r')
+        {
+            FUN_454b70(object);
+            return 0;
+        }
+        if (c == '\b' && strlen(object->text) != 0)
+        {
+            FUN_454b20(object);
+            FUN_440880(5);
+            if (FUN_454c80(object, object->unk1c, object->unk20))
+            {
+                break;
+            }
+            FUN_454b40((Unk454b40 *)object, 6, 3);
+            return 0;
+        }
+        if (FUN_4547e0(c, &column, &arg) >= 0 && strlen(object->text) < 3)
+        {
+            FUN_454af0(object, g_4881b0[arg][column]);
+            FUN_440880(4);
+            if (strlen(object->text) >= 3)
+            {
+                FUN_454b40((Unk454b40 *)object, 7, 3);
+                return 0;
+            }
+            FUN_454b40((Unk454b40 *)object, 6, 3);
+            return 0;
+        }
+        break;
+    case 0x10:
+        FUN_454b70(object);
+        return 0;
+    case 1:
+        object->unk4c = 0;
+        return 0;
+    case 2:
+    {
+        float phase = object->unk44 + 0.03f;
+        arg = (int)phase;
+        object->unk44 = phase - arg;
+        object->unk34 = FUN_43d810(object->unk34, object->unk38, 0.001f);
+        float x = object->unk1c;
+        object->unk2c = x;
+        float y = object->unk20;
+        object->unk30 = y;
+        object->unk24 = FUN_43d8f0(object->unk24, x, 0.2f);
+        object->unk28 = FUN_43d8f0(object->unk28, y, 0.2f);
+        float len = (int)strlen(object->text);
+        object->unk40 = len;
+        object->unk3c = FUN_43d8f0(object->unk3c, len, 0.4f);
+        object->unk14++;
+        return 0;
+    }
+    case 3:
+        FUN_4392b0(0x183, 0);
+        FUN_454830(object, 320.0f, 216.0f, object->unk34);
+        break;
+    }
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x4547e0

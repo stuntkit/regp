@@ -1758,12 +1758,6 @@ void FUN_454450(PoolObject *object)
 {
 }
 
-// STUB: STUNTGP_D3D 0x454460
-int FUN_454460(PoolObject *object, int msg, int arg)
-{
-    return 0;
-}
-
 // FUNCTION: STUNTGP_D3D 0x454ce0
 int FUN_454ce0(MenuHolder *object, int arg)
 {
@@ -3787,9 +3781,179 @@ int FUN_45a9c0(Unk45a9c0 *object, int arg)
     return 1;
 }
 
-// STUB: STUNTGP_D3D 0x45abb0
-int FUN_45abb0(PoolObject *object, int msg, int arg)
+void FUN_45af60(Unk45a9c0 *object);
+void FUN_45b2c0(Unk45a9c0 *object);
+void FUN_45b360(Unk45a9c0 *object);
+void FUN_45b440(Unk45a9c0 *object);
+
+// Championship slot select: picks a slot, then asks its two questions through unk34 and unk38.
+// FUNCTION: STUNTGP_D3D 0x45abb0
+int FUN_45abb0(PoolObject *base, int msg, int arg)
 {
+    Unk45a9c0 *object = (Unk45a9c0 *)base;
+    PoolObject *child;
+    int mode;
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(1);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(0x5f, 0.3f, -0.5f);
+        object->unk38->message(object->unk38, msg, 0);
+        object->unk34->message(object->unk34, msg, 0);
+        object->unk18 = 1;
+        return 0;
+    case 0xb:
+        switch (object->unk14)
+        {
+        case 1:
+            if (object->unk1c > 0)
+            {
+                object->unk20 = 0;
+                object->unk1c--;
+                FUN_440890(msg);
+                return 0;
+            }
+            break;
+        case 2:
+            object->unk34->message(object->unk34, msg, 0);
+            return 0;
+        case 3:
+            object->unk38->message(object->unk38, msg, 0);
+            return 0;
+        }
+        break;
+    case 0xc:
+        switch (object->unk14)
+        {
+        case 1:
+            if (object->unk1c < 7)
+            {
+                object->unk20 = 0;
+                object->unk1c++;
+                FUN_440890(msg);
+                return 0;
+            }
+            break;
+        case 2:
+            object->unk34->message(object->unk34, msg, 0);
+            return 0;
+        case 3:
+            object->unk38->message(object->unk38, msg, 0);
+            return 0;
+        }
+        break;
+    case 0x10:
+        switch (object->unk14)
+        {
+        case 1:
+            FUN_440890(msg);
+            if (!g_menuState.unk0f1c[object->unk1c].unk000)
+            {
+                g_menuState.unk4388 = 1;
+                g_menuState.unk4384 = object->unk1c;
+                object->unk14 = 4;
+                FUN_43eef0();
+                return 0;
+            }
+            object->unk34->message(object->unk34, 0x1c, 0);
+            object->unk14 = 2;
+            return 0;
+        case 2:
+            child = object->unk34;
+            child->message(child, msg, 0);
+            switch (child->message(child, 0x1a, 0))
+            {
+            case 0:
+                g_menuState.unk4384 = object->unk1c;
+                object->unk14 = 4;
+                FUN_43eef0();
+                return 0;
+            case 1:
+                object->unk14 = 3;
+                object->unk38->message(object->unk38, 0x1c, 0);
+                return 0;
+            }
+            break;
+        case 3:
+            child = object->unk38;
+            switch (child->message(child, 0x1a, 0))
+            {
+            case 0:
+                child->message(child, msg, 0);
+                g_menuState.unk4388 = 1;
+                g_menuState.unk4384 = object->unk1c;
+                object->unk14 = 4;
+                FUN_43eef0();
+                return 0;
+            case 1:
+                object->unk14 = 1;
+                FUN_440880(2);
+                return 0;
+            }
+            break;
+        }
+        break;
+    case 0x11:
+        switch (object->unk14)
+        {
+        case 1:
+            g_menuState.unk4380 = 1;
+            FUN_440890(msg);
+            FUN_43eef0();
+            return 0;
+        case 2:
+            object->unk34->message(object->unk34, msg, 0);
+            object->unk14 = 1;
+            FUN_440890(msg);
+            return 0;
+        case 3:
+            object->unk38->message(object->unk38, msg, 0);
+            object->unk14 = 1;
+            FUN_440890(msg);
+            return 0;
+        }
+        break;
+    case 2:
+    {
+        object->unk20++;
+        float slot = object->unk1c;
+        object->unk30 = slot;
+        object->unk2c = FUN_43d810(object->unk2c, slot, 0.2f);
+        object->unk24 = FUN_43d810(object->unk24, object->unk28, 0.001f);
+    }
+    case 1:
+    case 0x14:
+        object->unk38->message(object->unk38, msg, 0);
+        child = object->unk34;
+        child->message(child, msg, 0);
+        return 0;
+    case 3:
+        FUN_4392b0(0x2c, 0);
+        FUN_45af60(object);
+        mode = object->unk14;
+        if (mode == 3 && object->unk18)
+        {
+            FUN_43dd40(0x69, 0.3f, -0.5f);
+        }
+        else
+        {
+            FUN_43dd40(0x5f, 0.3f, -0.5f);
+        }
+        switch (mode)
+        {
+        case 1:
+            FUN_45b2c0(object);
+            break;
+        case 2:
+            FUN_45b360(object);
+            return 0;
+        case 3:
+            FUN_45b440(object);
+            return 0;
+        }
+        break;
+    }
     return 0;
 }
 
