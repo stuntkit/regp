@@ -1,5 +1,6 @@
 #include "objects.h"
 #include "Game/GameEngine/MenuUpdate.h"
+#include "sprite.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -15,6 +16,11 @@ int FUN_4375a0(int *tracks, int count);
 // PageUnlock
 // PageCatalog
 // Header of a saved ghost, read by FUN_440660.
+void FUN_4400a0(int value);
+void FUN_43dd40(int a, float b, float c);
+void FUN_440890(int id);
+void FUN_438710(float x, float y, int layer, int def, float scale, DWORD flags);
+
 struct GhostHeader
 {
     BYTE unk00[0x1c]; // 0x00
@@ -236,7 +242,7 @@ void FUN_452b50(PoolObject *object);
 int FUN_452b60(PoolObject *object, int msg, int arg);
 int FUN_45bba0(MenuObject *object, int arg);
 void FUN_45bbb0(PoolObject *object);
-int FUN_45bbc0(PoolObject *object, int msg, int arg);
+int FUN_45bbc0(MenuObject *object, int msg, int arg);
 int FUN_457920(Unk457e70 *object, int arg);
 void FUN_457ea0(Unk457ea0 *object);
 int FUN_457ec0(PoolObject *object, int msg, int arg);
@@ -411,7 +417,7 @@ PoolClass g_489150 = {(void (*)(PoolObject *))FUN_45b5b0, FUN_45b5d0};
 PoolClass g_4891d8 = {(void (*)(PoolObject *))FUN_45b850, FUN_45b870};
 
 // GLOBAL: STUNTGP_D3D 0x4891f0
-PoolClass g_4891f0 = {FUN_45bbb0, FUN_45bbc0};
+PoolClass g_4891f0 = {FUN_45bbb0, (int (*)(PoolObject *, int, int))FUN_45bbc0};
 
 // GLOBAL: STUNTGP_D3D 0x489278
 PoolClass g_489278 = {(void (*)(PoolObject *))FUN_45be00, FUN_45bf40};
@@ -1703,9 +1709,59 @@ void FUN_45bbb0(PoolObject *object)
 {
 }
 
-// STUB: STUNTGP_D3D 0x45bbc0
-int FUN_45bbc0(PoolObject *object, int msg, int arg)
+// FUNCTION: STUNTGP_D3D 0x45bbc0
+int FUN_45bbc0(MenuObject *object, int msg, int arg)
 {
+    char text[0x100];
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(1);
+        FUN_43dd10(0x112a43);
+        FUN_43dd40(0x60, 0.5f, 0.3f);
+        return 0;
+    case 0x11:
+        if (FUN_43eef0())
+        {
+            FUN_440890(msg);
+        }
+        return 0;
+    case 0xb:
+        if ((object->unk14 -= 10) <= 0)
+        {
+            object->unk14 = 1;
+        }
+        FUN_440890(msg);
+        return 0;
+    case 0xc:
+        if ((object->unk14 += 10) >= 0x183)
+        {
+            object->unk14 = 0x182;
+        }
+        FUN_440890(msg);
+        return 0;
+    case 0xd:
+        if (--object->unk14 <= 0)
+        {
+            object->unk14 = 1;
+        }
+        FUN_440890(msg);
+        return 0;
+    case 0xe:
+        if (++object->unk14 >= 0x183)
+        {
+            object->unk14 = 0x182;
+        }
+        FUN_440890(msg);
+        return 0;
+    case 3:
+        int bmp = object->unk14;
+        FUN_438710(320.0f, 240.0f, 0xd, bmp, 1.0f, 3);
+        // STRING: STUNTGP_D3D 0x4891f8
+        sprintf(text, "bmp %d of %d\n", bmp, 0x182);
+        FUN_438960(320.0f, 416.0f, 2, 0, 4, text, 1.25f, 0xffffffff, 1);
+        break;
+    }
     return 0;
 }
 
