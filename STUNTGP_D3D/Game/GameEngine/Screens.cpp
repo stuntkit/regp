@@ -324,7 +324,7 @@ void FUN_4529c0(MenuHolder *object);
 int FUN_4529e0(MenuHolder *object, int msg, int arg);
 int FUN_459790(Unk459790 *object, int arg);
 void FUN_459a20(MenuHolder *object);
-int FUN_459a40(PoolObject *object, int msg, int arg);
+int FUN_459a40(Unk459790 *object, int msg, int arg);
 int FUN_45a360(MenuHolder *object, int arg);
 void FUN_45a3f0(MenuHolder *object);
 int FUN_45a410(PoolObject *object, int msg, int arg);
@@ -480,7 +480,7 @@ PoolClass g_488c90 = {(void (*)(PoolObject *))FUN_457ea0, FUN_457ec0};
 PoolClass g_488d28 = {(void (*)(PoolObject *))FUN_459300, (int (*)(PoolObject *, int, int))FUN_459320};
 
 // GLOBAL: STUNTGP_D3D 0x488dd0
-PoolClass g_488dd0 = {(void (*)(PoolObject *))FUN_459a20, FUN_459a40};
+PoolClass g_488dd0 = {(void (*)(PoolObject *))FUN_459a20, (int (*)(PoolObject *, int, int))FUN_459a40};
 
 // GLOBAL: STUNTGP_D3D 0x488e68
 PoolClass g_488e68 = {(void (*)(PoolObject *))FUN_45a3f0, FUN_45a410};
@@ -3225,11 +3225,226 @@ int FUN_459790(Unk459790 *object, int arg)
     return 1;
 }
 
-// STUB: STUNTGP_D3D 0x459a40
-int FUN_459a40(PoolObject *object, int msg, int arg)
+void FUN_459ec0(Unk459790 *object);
+void FUN_45a280(Unk459790 *object);
+void FUN_45a350();
+
+// Results screen: counts the race score, then each bonus in turn, into the total.
+// FUNCTION: STUNTGP_D3D 0x459a40
+int FUN_459a40(Unk459790 *object, int msg, int arg)
 {
+    int v;
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(1);
+        FUN_43dd10(0x114311);
+        FUN_43dd40(0x5f, 0.3f, -0.5f);
+    case 0x14:
+        object->child->message(object->child, msg, 0);
+        return 0;
+    case 0x10:
+        object->child->message(object->child, msg, 0);
+        FUN_43bf30();
+        FUN_43eef0();
+        return 0;
+    case 2:
+    {
+        object->child->message(object->child, msg, 0);
+        float *fade = object->unka0;
+        for (int i = 8; i; i--)
+        {
+            *fade = FUN_43d810(*fade, 0.0f, 0.001f);
+            fade++;
+        }
+        return 0;
+    }
+    case 1:
+        v = object->unk24;
+        if (v)
+        {
+            int step = v;
+            if (step > 1000)
+            {
+                step = 1000;
+            }
+            int frequency = (object->unk2c - v) / 20 + 20000;
+            if (frequency > 44000)
+            {
+                frequency = 44000;
+            }
+            if (object->unk20 % 3 == 0)
+            {
+                FUN_440770(11, frequency);
+            }
+            object->unk24 = v - step;
+            object->unk28 += step;
+            object->unk20++;
+            return 0;
+        }
+        if (object->unk1c)
+        {
+            object->unk1c--;
+            return 0;
+        }
+        switch (object->unk18)
+        {
+        case 0:
+            object->unk1c = 60;
+            object->unk18 = 1;
+            return 0;
+        case 1:
+            v = object->unk30;
+            if (v)
+            {
+                object->unk74 = 15;
+                object->unk70 = v;
+                object->unk1c = 60;
+                object->unk20 = 0;
+                FUN_45a350();
+            }
+            object->unk24 = v;
+            object->unk2c = v;
+            object->unk30 = 0;
+            if (!v)
+            {
+                object->unk18 = 2;
+                return 0;
+            }
+            break;
+        case 2:
+            v = object->unk38;
+            if (v)
+            {
+                if (object->unk48 == 1)
+                {
+                    object->unka0[object->unk78] = 1.0f;
+                    object->unk80[object->unk78] = 0x4d;
+                    object->unk78++;
+                }
+                if (object->unk48 == 2)
+                {
+                    object->unka0[object->unk78] = 1.0f;
+                    object->unk80[object->unk78] = 0x51;
+                    object->unk78++;
+                }
+                v = object->unk38;
+                object->unk74 = 16;
+                object->unk70 = v;
+                object->unk1c = 60;
+                object->unk20 = 0;
+                FUN_45a350();
+            }
+            object->unk24 = v;
+            object->unk2c = v;
+            object->unk38 = 0;
+            if (!v)
+            {
+                object->unk18 = 3;
+                return 0;
+            }
+            break;
+        case 3:
+            v = object->unk3c;
+            if (v)
+            {
+                if (object->unk4c == 1)
+                {
+                    object->unka0[object->unk78] = 1.0f;
+                    object->unk80[object->unk78] = 0x50;
+                    object->unk78++;
+                }
+                if (object->unk4c == 2)
+                {
+                    object->unka0[object->unk78] = 1.0f;
+                    object->unk80[object->unk78] = 0x54;
+                    object->unk78++;
+                }
+                v = object->unk3c;
+                object->unk74 = 17;
+                object->unk70 = v;
+                object->unk1c = 60;
+                object->unk20 = 0;
+                FUN_45a350();
+            }
+            object->unk24 = v;
+            object->unk2c = v;
+            object->unk3c = 0;
+            if (!v)
+            {
+                object->unk18 = 4;
+                return 0;
+            }
+            break;
+        case 4:
+            v = object->unk44;
+            if (v)
+            {
+                if (object->unk54 == 1)
+                {
+                    object->unka0[object->unk78] = 1.0f;
+                    object->unk80[object->unk78] = 0x4f;
+                    object->unk78++;
+                }
+                if (object->unk54 == 2)
+                {
+                    object->unka0[object->unk78] = 1.0f;
+                    object->unk80[object->unk78] = 0x53;
+                    object->unk78++;
+                }
+                v = object->unk44;
+                object->unk74 = 18;
+                object->unk70 = v;
+                object->unk1c = 60;
+                object->unk20 = 0;
+                FUN_45a350();
+            }
+            object->unk24 = v;
+            object->unk2c = v;
+            object->unk44 = 0;
+            if (!v)
+            {
+                object->unk18 = 5;
+                return 0;
+            }
+            break;
+        case 5:
+            v = object->unk34;
+            if (v)
+            {
+                object->unk74 = 19;
+                object->unk70 = v;
+                object->unk1c = 60;
+                object->unk20 = 0;
+                FUN_45a350();
+            }
+            object->unk24 = v;
+            object->unk2c = v;
+            object->unk34 = 0;
+            if (!v)
+            {
+                object->unk18 = 6;
+                FUN_440880(13);
+                return 0;
+            }
+            break;
+        case 6:
+            object->unk74 = 0;
+            object->unk70 = 0;
+            return 0;
+        }
+        break;
+    case 3:
+        FUN_459ec0(object);
+        FUN_45a280(object);
+        FUN_438190(0.0f, 0.0f, 640.0f, 480.0f);
+        object->child->message(object->child, msg, 0);
+        FUN_4392b0(0x1fa, 0);
+        break;
+    }
     return 0;
 }
+
 
 void FUN_438740(int layer, int def, float x, float y, float scale, DWORD flags, float fade);
 
