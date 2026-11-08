@@ -561,6 +561,23 @@ struct MenuHolder
     PoolObject *child; // 0x14
 };
 
+// Car stat screen run by FUN_453710.
+struct Unk453710
+{
+    DWORD unk00[5];    // 0x00
+    PoolObject *child; // 0x14
+    int unk18;         // 0x18
+    int unk1c;         // 0x1c
+    float unk20;       // 0x20
+    float unk24;       // 0x24
+    float unk28;       // 0x28
+    float unk2c[3];    // 0x2c, shown stat bars
+    float unk38[3];    // 0x38, stat targets
+    int unk44[3];      // 0x44
+    int unk50;         // 0x50
+    int unk54;         // 0x54
+};
+
 // Car part page with named fields; groups is laid out as in Unk451a50.
 struct Unk451aa0
 {
