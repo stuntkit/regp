@@ -654,9 +654,173 @@ void FUN_420f80()
     FUN_420f00(tree->roots[g_498240].root);
 }
 
-// STUB: STUNTGP_D3D 0x4215b0
+// Moves the sphere from unk04 along unk28 * unk90 in radius-sized steps, stopping at the first contact; on a hit
+// unk90 becomes the fraction left and the sphere is backed off the contact along its normal.
+// FUNCTION: STUNTGP_D3D 0x420fe0
+int FUN_420fe0()
+{
+    Vec4 start = g_cameraSweep.unk04;
+    g_cameraSweep.unk14 = start;
+    Vec4 step;
+    step.x = g_cameraSweep.unk90 * g_cameraSweep.unk28.x;
+    step.y = g_cameraSweep.unk28.y * g_cameraSweep.unk90;
+    step.z = g_cameraSweep.unk28.z * g_cameraSweep.unk90;
+    g_cameraSweep.unk68 = step;
+    g_cameraSweep.unk124 = 0;
+    float len;
+    FUN_44eda0(&g_cameraSweep.unk68.x, &len);
+    float n = (float)ceil(len / (g_cameraSweep.unk94 + g_cameraSweep.unk94));
+    int hit = 0;
+    float i = 0.0f;
+    while (i < n && !hit)
+    {
+        i += 1.0f;
+        g_cameraSweep.unk04 = g_cameraSweep.unk14;
+        float f = i / n;
+        Vec4 m;
+        m.x = f * step.x;
+        m.y = f * step.y;
+        m.z = f * step.z;
+        g_cameraSweep.unk14.x = start.x + m.x;
+        g_cameraSweep.unk14.y = start.y + m.y;
+        g_cameraSweep.unk14.z = start.z + m.z;
+        g_cameraSweep.unk58.x = g_cameraSweep.unk14.x - g_cameraSweep.unk04.x;
+        g_cameraSweep.unk58.y = g_cameraSweep.unk14.y - g_cameraSweep.unk04.y;
+        g_cameraSweep.unk58.z = g_cameraSweep.unk14.z - g_cameraSweep.unk04.z;
+        g_cameraSweep.unk88 = (float)sqrt(g_cameraSweep.unk58.x * g_cameraSweep.unk58.x +
+                                          g_cameraSweep.unk58.y * g_cameraSweep.unk58.y +
+                                          g_cameraSweep.unk58.z * g_cameraSweep.unk58.z);
+        FUN_420f80();
+        FUN_420ca0((WORD *)(g_renderState.unk7f98->polyLists + g_49823c), &hit);
+    }
+    if (!hit)
+    {
+        return 0;
+    }
+    Vec4 d;
+    d.x = g_cameraSweep.unke8.x - start.x;
+    d.y = g_cameraSweep.unke8.y - start.y;
+    d.z = g_cameraSweep.unke8.z - start.z;
+    g_cameraSweep.unk04 = g_cameraSweep.unke8;
+    g_cameraSweep.unk90 = (len - (float)sqrt(d.x * d.x + d.y * d.y + d.z * d.z)) / len;
+    Vec4 m;
+    m.x = g_cameraSweep.unkd8.x * 0.1f;
+    m.y = g_cameraSweep.unkd8.y * 0.1f;
+    m.z = g_cameraSweep.unkd8.z * 0.1f;
+    g_cameraSweep.unk04.x = g_cameraSweep.unk04.x + m.x;
+    g_cameraSweep.unk04.y = g_cameraSweep.unk04.y + m.y;
+    g_cameraSweep.unk04.z = g_cameraSweep.unk04.z + m.z;
+    return hit;
+}
+
+// FUN_420fe0 against the polygon planes only, for unk90 in [0, 1].
+// FUNCTION: STUNTGP_D3D 0x4212a0
+int FUN_4212a0()
+{
+    g_4754a0 = 2;
+    if (g_cameraSweep.unk90 >= 0.0f && g_cameraSweep.unk90 <= 1.0f)
+    {
+        Vec4 start = g_cameraSweep.unk04;
+        g_cameraSweep.unk14 = start;
+        Vec4 step;
+        step.x = g_cameraSweep.unk28.x * g_cameraSweep.unk90;
+        step.y = g_cameraSweep.unk28.y * g_cameraSweep.unk90;
+        step.z = g_cameraSweep.unk28.z * g_cameraSweep.unk90;
+        g_cameraSweep.unk68 = step;
+        g_cameraSweep.unk124 = 0;
+        float len;
+        FUN_44eda0(&g_cameraSweep.unk68.x, &len);
+        float n = (float)ceil(len / (g_cameraSweep.unk94 + g_cameraSweep.unk94));
+        int hit = 0;
+        float i = 0.0f;
+        while (i < n && !hit)
+        {
+            i += 1.0f;
+            g_cameraSweep.unk04 = g_cameraSweep.unk14;
+            float f = i / n;
+            Vec4 m;
+            m.x = f * step.x;
+            m.y = f * step.y;
+            m.z = f * step.z;
+            g_cameraSweep.unk14.x = start.x + m.x;
+            g_cameraSweep.unk14.y = start.y + m.y;
+            g_cameraSweep.unk14.z = start.z + m.z;
+            g_cameraSweep.unk58.x = g_cameraSweep.unk14.x - g_cameraSweep.unk04.x;
+            g_cameraSweep.unk58.y = g_cameraSweep.unk14.y - g_cameraSweep.unk04.y;
+            g_cameraSweep.unk58.z = g_cameraSweep.unk14.z - g_cameraSweep.unk04.z;
+            g_cameraSweep.unk88 = (float)sqrt(g_cameraSweep.unk58.x * g_cameraSweep.unk58.x +
+                                              g_cameraSweep.unk58.y * g_cameraSweep.unk58.y +
+                                              g_cameraSweep.unk58.z * g_cameraSweep.unk58.z);
+            FUN_420f80();
+            FUN_420ca0((WORD *)(g_renderState.unk7f98->polyLists + g_49823c), &hit);
+        }
+        g_4754a0 = 1;
+        if (hit)
+        {
+            Vec4 d;
+            d.x = g_cameraSweep.unke8.x - start.x;
+            d.y = g_cameraSweep.unke8.y - start.y;
+            d.z = g_cameraSweep.unke8.z - start.z;
+            g_cameraSweep.unk04 = g_cameraSweep.unke8;
+            g_cameraSweep.unk90 = (len - (float)sqrt(d.x * d.x + d.y * d.y + d.z * d.z)) / len;
+            Vec4 m;
+            m.x = g_cameraSweep.unkd8.x * 0.1f;
+            m.y = g_cameraSweep.unkd8.y * 0.1f;
+            m.z = g_cameraSweep.unkd8.z * 0.1f;
+            g_cameraSweep.unk04.x = g_cameraSweep.unk04.x + m.x;
+            g_cameraSweep.unk04.y = g_cameraSweep.unk04.y + m.y;
+            g_cameraSweep.unk04.z = g_cameraSweep.unk04.z + m.z;
+            return hit;
+        }
+    }
+    return 0;
+}
+
+// Steps the sphere along unk28 in radius-sized steps against the polygon planes only; 1 at the first contact,
+// with the sphere left at the step before it.
+// FUNCTION: STUNTGP_D3D 0x4215b0
 int FUN_4215b0()
 {
+    g_cameraSweep.unk14 = g_cameraSweep.unk04;
+    g_cameraSweep.unk68 = g_cameraSweep.unk28;
+    g_4754a0 = 2;
+    g_cameraSweep.unk124 = 0;
+    g_cameraSweep.unkd8.x = 0.0f;
+    g_cameraSweep.unkd8.y = 0.0f;
+    g_cameraSweep.unkd8.z = 0.0f;
+    FUN_44eda0(&g_cameraSweep.unk68.x, &g_cameraSweep.unk88);
+    unsigned int n = (unsigned int)ceil(g_cameraSweep.unk88 / (g_cameraSweep.unk94 + g_cameraSweep.unk94));
+    float f = 1.0f / n;
+    Vec4 step;
+    step.x = g_cameraSweep.unk28.x * f;
+    step.y = g_cameraSweep.unk28.y * f;
+    step.z = g_cameraSweep.unk28.z * f;
+    for (; n > 0; n--)
+    {
+        g_cameraSweep.unk04 = g_cameraSweep.unk14;
+        g_cameraSweep.unk14.x = g_cameraSweep.unk14.x + step.x;
+        g_cameraSweep.unk14.y = g_cameraSweep.unk14.y + step.y;
+        g_cameraSweep.unk14.z = g_cameraSweep.unk14.z + step.z;
+        g_cameraSweep.unk58.x = g_cameraSweep.unk14.x - g_cameraSweep.unk04.x;
+        g_cameraSweep.unk58.y = g_cameraSweep.unk14.y - g_cameraSweep.unk04.y;
+        g_cameraSweep.unk58.z = g_cameraSweep.unk14.z - g_cameraSweep.unk04.z;
+        g_cameraSweep.unk88 = (float)sqrt(g_cameraSweep.unk58.x * g_cameraSweep.unk58.x +
+                                          g_cameraSweep.unk58.y * g_cameraSweep.unk58.y +
+                                          g_cameraSweep.unk58.z * g_cameraSweep.unk58.z);
+        FUN_420f80();
+        WORD *list = (WORD *)(g_renderState.unk7f98->polyLists + g_49823c);
+        while (*list != 0xffff)
+        {
+            if (FUN_420c40(&g_renderState.unk7f98->polys[*list++]) == 1)
+            {
+                g_cameraSweep.unk14 = g_cameraSweep.unk04;
+                g_4754a0 = 1;
+                return 1;
+            }
+        }
+    }
+    g_cameraSweep.unk04 = g_cameraSweep.unk14;
+    g_4754a0 = 1;
     return 0;
 }
 

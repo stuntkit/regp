@@ -997,9 +997,77 @@ void FUN_410a10(int index)
     FUN_4109e0(index);
 }
 
-// STUB: STUNTGP_D3D 0x415df0
+void FUN_41e6e0(Vec4 *ring, DWORD *head, DWORD *count, Vec4 *pos, TrailParams *params);
+int FUN_4215b0();
+void FUN_421c30(float bounce);
+extern TrailParams g_474af8;
+
+// Moves the live effect slots, bouncing them off the scenery from race state 0x50 on, and queues each for drawing.
+// FUNCTION: STUNTGP_D3D 0x415df0
 void FUN_415df0()
 {
+    if (g_612948.unk0458)
+    {
+        g_612948.unk0458--;
+    }
+    g_612948.unk8cdc = (int)g_612948.unk8c5c;
+    if (g_612948.unk0450)
+    {
+        Unk612da4 *p = (Unk612da4 *)g_612948.unk045c;
+        for (int n = 32; n != 0; n--, p++)
+        {
+            if (p->life > 0)
+            {
+                if (--p->life <= 0)
+                {
+                    g_612948.unk0450--;
+                }
+                if (g_612948.unk0034 >= 0x50)
+                {
+                    g_cameraSweep.unk00 = 1.0f;
+                    g_cameraSweep.unk94 = 25.0f;
+                    g_cameraSweep.unk98 = 625.0f;
+                    g_cameraSweep.unk90 = 1.0f;
+                    g_cameraSweep.unk04 = p->pos;
+                    g_cameraSweep.unk28 = p->vel;
+                    g_cameraSweep.unk8c = (float)sqrt(g_cameraSweep.unk28.x * g_cameraSweep.unk28.x +
+                                                      g_cameraSweep.unk28.y * g_cameraSweep.unk28.y +
+                                                      g_cameraSweep.unk28.z * g_cameraSweep.unk28.z);
+                    unsigned int k = 0;
+                    do
+                    {
+                        if (FUN_4215b0() != 1)
+                        {
+                            break;
+                        }
+                        FUN_421c30(1.0f);
+                    } while (k++ < 8);
+                    p->pos = g_cameraSweep.unk14;
+                    p->vel = g_cameraSweep.unk28;
+                }
+                else
+                {
+                    p->pos.x = p->vel.x + p->pos.x;
+                    p->pos.y = p->vel.y + p->pos.y;
+                    p->pos.z = p->vel.z + p->pos.z;
+                }
+                FUN_401d70(&p->vel.x, 1.0f);
+                p->vel.x = p->unk28 * p->vel.x;
+                p->vel.y = p->unk28 * p->vel.y;
+                p->vel.z = p->unk28 * p->vel.z;
+                if (p->unk43c)
+                {
+                    p->vel.x = FUN_42f1c0(3.0f) * p->unk438 + p->vel.x;
+                    p->vel.y = (float)fabs(FUN_42f1c0(2.0f)) * p->unk438 + p->vel.y;
+                    p->vel.z = FUN_42f1c0(3.0f) * p->unk438 + p->vel.z;
+                }
+                FUN_41e6e0((Vec4 *)p->unk030, (DWORD *)&p->unk430, (DWORD *)&p->unk434, &p->pos,
+                           &(&g_474af8)[p->unk04]);
+                *(Unk612da4 **)g_612948.unk8cdc = p;
+                g_612948.unk8cdc += 4;
+            }
+        }
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x40e340
