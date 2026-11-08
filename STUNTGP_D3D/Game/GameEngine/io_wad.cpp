@@ -483,9 +483,9 @@ void FUN_4622c0(BYTE *tga, BYTE *dst, void *palette, int size)
         // STRING: STUNTGP_D3D 0x48a588
         FUN_4234d0("Unsupported TGA format...\n");
     }
-    g_62f5c8 = tga[0x10];
     g_489714 = g_48971c = *(WORD *)(tga + 0xc);
     g_489718 = g_489720 = *(WORD *)(tga + 0xe);
+    g_62f5c8 = tga[0x10];
     g_62f5d0 = tga + tga[0] + 0x12;
     if (!(type & 0x20))
     {
