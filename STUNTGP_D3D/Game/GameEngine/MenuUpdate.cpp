@@ -137,14 +137,6 @@ struct Unk457e70
 
 typedef Unk457e70 Unk458860;
 
-struct Unk486b88
-{
-    int text;      // 0x00
-    int id;        // 0x04
-    int unk08[32]; // 0x08
-    int unk88[32]; // 0x88
-};
-
 // GLOBAL: STUNTGP_D3D 0x4865a0
 MenuItem g_4865a0[2] = {
     {0, 0xffc8c8ff, 0xffffffff, 0x17, 0, 1, 0, 0},

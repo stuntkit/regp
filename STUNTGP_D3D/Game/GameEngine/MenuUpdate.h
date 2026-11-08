@@ -431,6 +431,17 @@ struct Unk457770
 
 extern PoolClass g_menuListClass;
 
+// Shop category: text id, FUN_437a90 id, then the entries FUN_4522c0 fills in.
+struct Unk486b88
+{
+    int text;      // 0x00
+    int id;        // 0x04
+    int unk08[32]; // 0x08
+    int unk88[32]; // 0x88
+};
+
+extern Unk486b88 g_486b88[13];
+
 int FUN_43c860(MenuList *list, MenuDef *def);
 void FUN_424bd0(float x, float y);
 int FUN_43d790(int value, int min, int max);
