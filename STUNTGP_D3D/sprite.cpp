@@ -407,7 +407,7 @@ void FUN_438590(int layer, int sub, SpriteNode *node)
 void FUN_438740(int layer, int def, float x, float y, float scale, DWORD flags, float fade);
 
 // FUNCTION: STUNTGP_D3D 0x438710
-void FUN_438710(int layer, int def, float x, float y, float scale, DWORD flags)
+void FUN_438710(float x, float y, int layer, int def, float scale, DWORD flags)
 {
     FUN_438740(layer, def, x, y, scale, flags, 1.0f);
 }

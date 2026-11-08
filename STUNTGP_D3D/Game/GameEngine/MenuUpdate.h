@@ -261,7 +261,8 @@ struct MenuLanguage
 // Front-end state, cleared as a whole by FUN_43d0b0.
 struct MenuState
 {
-    BYTE unk0000[8];
+    int saveSize;              // 0x0000, 0x211c in a setup save
+    unsigned int saveChecksum; // 0x0004, FUN_43d5d0 over the save with this field 0
     BYTE unlocked[0x34];      // 0x0008
     BYTE unlockedSaved[0x34]; // 0x003c
     int unk0070;              // 0x0070

@@ -3844,6 +3844,14 @@ int FUN_4547e0(char c, int *column, int *row)
     return -1;
 }
 
+void FUN_438710(float x, float y, int layer, int def, float scale, DWORD flags);
+
+// FUNCTION: STUNTGP_D3D 0x454ac0
+void FUN_454ac0(float x, float y, int def)
+{
+    FUN_438710(x, y, 2, def, 1.0f, 0x103);
+}
+
 // FUNCTION: STUNTGP_D3D 0x454af0
 void FUN_454af0(Unk454b20 *object, char c)
 {
@@ -4597,6 +4605,42 @@ void FUN_458d00(Unk457e70 *object)
     }
 }
 
+int FUN_4406a0(void *buffer, int size, int ghost);
+int FUN_440660(void *buffer, int size, int ghost);
+int FUN_4404d0(void *buffer, int size);
+int FUN_4403a0(void *buffer, int size);
+unsigned int FUN_43d5d0(BYTE *data, int len);
+void FUN_458ea0();
+
+// FUNCTION: STUNTGP_D3D 0x458e10
+int FUN_458e10()
+{
+    return FUN_4406a0((void *)g_menuState.unk46d0, g_menuState.unk46d4, g_menuState.unk46cc);
+}
+
+// FUNCTION: STUNTGP_D3D 0x458e30
+int FUN_458e30()
+{
+    return FUN_440660((void *)g_menuState.unk46d0, g_menuState.unk46d4, g_menuState.unk46cc);
+}
+
+// Saves the setup part of the front-end state to the current card.
+// FUNCTION: STUNTGP_D3D 0x458e50
+int FUN_458e50()
+{
+    g_menuState.saveSize = 0x211c;
+    g_menuState.saveChecksum = 0;
+    g_menuState.saveChecksum = FUN_43d5d0((BYTE *)&g_menuState, 0x211c);
+    int result = FUN_4404d0(&g_menuState, 0x211c);
+    FUN_43d370();
+    if (result)
+    {
+        return result;
+    }
+    FUN_458ea0();
+    return 0;
+}
+
 void FUN_43bf30();
 
 // FUNCTION: STUNTGP_D3D 0x458ea0
@@ -4604,6 +4648,42 @@ void FUN_458ea0()
 {
     FUN_43bf30();
     FUN_43c400();
+}
+
+// Setup save as read from the card: the first 0x211c bytes of MenuState.
+struct MenuSave
+{
+    int saveSize;              // 0x0000
+    unsigned int saveChecksum; // 0x0004
+    BYTE data[0x211c - 8];     // 0x0008
+};
+
+// GLOBAL: STUNTGP_D3D 0x625938
+MenuSave g_625938;
+
+// Loads the setup save into the front-end state if its size and checksum are good.
+// FUNCTION: STUNTGP_D3D 0x458eb0
+int FUN_458eb0()
+{
+    int result = FUN_4403a0(&g_625938, 0x211c);
+    if (result)
+    {
+        return result;
+    }
+    if (g_625938.saveSize != 0x211c)
+    {
+        return 9;
+    }
+    unsigned int checksum = g_625938.saveChecksum;
+    g_625938.saveChecksum = 0;
+    if (checksum != FUN_43d5d0((BYTE *)&g_625938, 0x211c))
+    {
+        return 9;
+    }
+    memcpy(&g_menuState, &g_625938, 0x211c);
+    FUN_43d280();
+    FUN_458ea0();
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x459300
