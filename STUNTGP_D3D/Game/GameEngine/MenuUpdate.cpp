@@ -45,15 +45,15 @@ struct Unk454b20
     int unk18;        // 0x18
     int unk1c;        // 0x1c
     int unk20;        // 0x20
-    int unk24;        // 0x24
-    int unk28;        // 0x28
+    float unk24;      // 0x24, shown cursor column
+    float unk28;      // 0x28, shown cursor row
     int unk2c;        // 0x2c
     int unk30;        // 0x30
     int unk34;        // 0x34
     int unk38;        // 0x38
-    int unk3c;        // 0x3c
-    int unk40;        // 0x40
-    int unk44;        // 0x44
+    float unk3c;      // 0x3c, shown caret
+    float unk40;      // 0x40
+    float unk44;      // 0x44, phase
     char text[4];     // 0x48
     int unk4c;        // 0x4c
 };
@@ -4302,6 +4302,50 @@ int FUN_4547e0(char c, int *column, int *row)
 }
 
 void FUN_438710(float x, float y, int layer, int def, float scale, DWORD flags);
+
+void FUN_454ac0(float x, float y, int def);
+
+// Name entry: the character grid with its cursor, then the entered name with the caret below.
+// FUNCTION: STUNTGP_D3D 0x454830
+void FUN_454830(Unk454b20 *object, float x, float y, float t)
+{
+    int column;
+    int row;
+    float left = x - 224.0f - 32.0f;
+    float top = y - 96.0f - 32.0f;
+    float x1 = x + 256.0f;
+    float y1 = y + 128.0f;
+    x -= 224.0f;
+    y -= 96.0f;
+    FUN_439450(left, top, x1, y1, 10, 0x6e, 0x40);
+    for (row = 0; row < 4; row++)
+    {
+        for (column = 0; column < 8; column++)
+        {
+            FUN_438710(column * 64.0f + x, row * 64.0f + y, 12, column + row * 8 + 0x136, 1.0f, 3);
+        }
+    }
+    FUN_454ac0(object->unk24 * 64.0f + x, object->unk28 * 64.0f + y, 0x6c);
+    y = (1.0f - t) * 200.0f + y1 + 64.0f;
+    top = y - 32.0f;
+    y1 = top + 64.0f;
+    FUN_439450(192.0f, top, 448.0f, y1, 10, 0x6f, 0x40);
+    FUN_439380(192.0f, top, 448.0f, y1, 13, 0, 0, 0.0f);
+    int i = 0;
+    while (object->text[i])
+    {
+        FUN_438710(i * 64.0f + 224.0f, y, 12, FUN_4547e0(object->text[i], &column, &row) + 0x136, 1.0f, 3);
+        i++;
+    }
+    FUN_438710(i * 64.0f + 224.0f, y, 12, FUN_4547e0(g_4881b0[object->unk20][object->unk1c], &column, &row) + 0x136, 1.0f, 3);
+    FUN_454ac0(object->unk3c * 64.0f + 224.0f, y, 0x6d);
+    if (g_menuState.unk423c > 1)
+    {
+        x = 224.0f - ((float)sin(object->unk44 * 3.1415927f) * 20.0f + 80.0f);
+        FUN_438710(x, y, 13, object->unk18 + 0x35, 1.0f, 0x203);
+        FUN_438710(x, y, 12, object->unk18 + 0x31, 1.0f, 0x103);
+    }
+}
 
 // FUNCTION: STUNTGP_D3D 0x454ac0
 void FUN_454ac0(float x, float y, int def)
