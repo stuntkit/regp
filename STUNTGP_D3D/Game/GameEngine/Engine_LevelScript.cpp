@@ -13,6 +13,9 @@ char g_GraphicsDirectory[128] = "D:\\Game\\Graphics24\\";
 // GLOBAL: STUNTGP_D3D 0x484a1c
 char g_SoundDirectory[128] = "D:\\Game\\Sound";
 
+extern DWORD g_60effc;
+extern DWORD g_60f000[4];
+
 // GLOBAL: STUNTGP_D3D 0x589604
 char g_LevelScript[32];
 
@@ -250,9 +253,60 @@ void FUN_42cb70(char *script)
     }
 }
 
+// Reads the rolling demo script names from the -ROLLINGDEMOLIST section.
+// FUNCTION: STUNTGP_D3D 0x42cfa0
+void FUN_42cfa0(char *script)
+{
+    char name[64];
+    char *value;
+    char *dest = g_612948.demoNames;
+    // STRING: STUNTGP_D3D 0x477944
+    Script_FindKey(script, &value, "-ROLLINGDEMOLIST");
+    // STRING: STUNTGP_D3D 0x477958
+    g_ScriptSectionEnd = strstr(value, "-END");
+    memset(g_612948.demoScripts, 0, sizeof(g_612948.demoScripts));
+    DWORD count = 0;
+    int n = 0;
+    for (char *pos = value; pos < g_ScriptSectionEnd; pos = value + 8)
+    {
+        if (count >= 16)
+        {
+            return;
+        }
+        // STRING: STUNTGP_D3D 0x477960
+        if (Script_FindKey(pos, &value, "DEMOSCRIPT") == 1)
+        {
+            Script_ReadString(value, NULL, name);
+            sprintf(dest, name);
+            g_612948.demoScripts[n++] = dest;
+            dest += strlen(name) + 1;
+        }
+        count++;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x42d060
 void FUN_42d060(char *script, char *key)
 {
+}
+
+// Writes the best lap time (frames at 60 per second) over the LAPRECORD value in place.
+// FUNCTION: STUNTGP_D3D 0x42d170
+void FUN_42d170(char *script)
+{
+    DWORD time = g_60f000[0];
+    if (time != g_60effc)
+    {
+        // STRING: STUNTGP_D3D 0x477998
+        Script_FindKey(script, &script, "LAPRECORD");
+        script[1] = time / 3600 + '0';
+        DWORD seconds = time / 60 % 60;
+        script[3] = seconds / 10 + '0';
+        script[4] = seconds % 10 + '0';
+        DWORD hundredths = time * 100 / 60;
+        script[6] = hundredths / 10 % 10 + '0';
+        script[7] = hundredths % 10 + '0';
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x42d2e0

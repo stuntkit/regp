@@ -49,6 +49,9 @@ void Vec3_Normalize(float *v)
 // GLOBAL: STUNTGP_D3D 0x61c3e8
 float g_61c3e8[16];
 
+// GLOBAL: STUNTGP_D3D 0x61c428
+float g_61c428[16];
+
 // GLOBAL: STUNTGP_D3D 0x61c468
 float g_61c468[16];
 

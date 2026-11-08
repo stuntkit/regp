@@ -1790,6 +1790,26 @@ void FUN_429510()
     FUN_4294f0();
 }
 
+extern int g_61c510;
+
+// Transforms points by g_61c428 and projects them into the g_61c510 vertex buffer.
+// FUNCTION: STUNTGP_D3D 0x429660
+void FUN_429660(Vec4 *in, DWORD count)
+{
+    float *out = (float *)g_61c510;
+    for (DWORD i = 0; i < count; i++, in++, out += 8)
+    {
+        Vec4 t;
+        t.x = g_61c428[0] * in->x + g_61c428[8] * in->z + g_61c428[4] * in->y + g_61c428[12];
+        t.y = g_61c428[1] * in->x + g_61c428[9] * in->z + g_61c428[5] * in->y + g_61c428[13];
+        t.z = g_61c428[2] * in->x + g_61c428[10] * in->z + g_61c428[6] * in->y + g_61c428[14];
+        out[7] = t.z;
+        out[0] = g_61c3e8[0] * t.x;
+        out[1] = g_61c3e8[5] * t.y;
+        out[2] = g_61c3e8[10] * t.z + g_61c3e8[14];
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x431810
 void FUN_431810()
 {

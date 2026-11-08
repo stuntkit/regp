@@ -2067,6 +2067,41 @@ void FUN_42e420()
     g_61c5e4 = -1;
 }
 
+void FUN_42f2e0(char *dst, const char *src);
+
+// Flags ATI Radeon and Intel i740/i810/i815 cards, which get a reduced render path.
+// FUNCTION: STUNTGP_D3D 0x42f220
+void FUN_42f220()
+{
+    DDDEVICEIDENTIFIER id;
+    char desc[516];
+    g_dd4->GetDeviceIdentifier(&id, 0);
+    FUN_42f2e0(desc, id.szDescription);
+    switch (id.dwVendorId)
+    {
+    case 0x8086:
+        // STRING: STUNTGP_D3D 0x478118
+        if (strstr(desc, "intel(r) 82740") ||
+            // STRING: STUNTGP_D3D 0x478128
+            strstr(desc, "intel(r) 82810") ||
+            // STRING: STUNTGP_D3D 0x478138
+            strstr(desc, "intel(r) 82815"))
+        {
+            g_589e08 = 1;
+            g_592050 = 0;
+        }
+        break;
+    case 0x1002:
+        // STRING: STUNTGP_D3D 0x478110
+        if (strstr(desc, "radeon"))
+        {
+            g_589e08 = 1;
+            g_592050 = 0;
+        }
+        break;
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x42f2e0
 void FUN_42f2e0(char *dst, const char *src)
 {

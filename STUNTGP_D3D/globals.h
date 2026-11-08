@@ -119,7 +119,8 @@ struct GameState
     int unk0050;             // 0x0050
     int unk0054;             // 0x0054
     int unk0058;             // 0x0058
-    BYTE unk005c[0x240];     // 0x005c
+    char demoNames[0x200];   // 0x005c, storage for demoScripts
+    char *demoScripts[16];   // 0x025c, rolling demo script names
     int unk029c;             // 0x029c
     int unk02a0;             // 0x02a0
     int unk02a4;             // 0x02a4
