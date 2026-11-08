@@ -166,6 +166,56 @@ int FUN_41f970(TrackPoly *poly, Vec4 *p)
     return 1;
 }
 
+int FUN_420690(TrackPoly *poly, Vec4 *p);
+
+// 1 when p lies within the sphere radius of the plane and inside the polygon.
+// FUNCTION: STUNTGP_D3D 0x41fa80
+int FUN_41fa80(TrackPoly *poly, Vec4 *p)
+{
+    Vec4 v;
+    v.x = p->x - g_49815c->x;
+    v.y = p->y - g_49815c->y;
+    v.z = p->z - g_49815c->z;
+    float d = v.x * g_498160->x + v.y * g_498160->y + v.z * g_498160->z;
+    float ad = (float)fabs(d);
+    if (ad < g_498154 - 0.01f && FUN_420690(poly, p) == 1)
+    {
+        if (ad < g_498154 - 0.01f)
+        {
+            FUN_41f920(poly, d);
+        }
+        return 1;
+    }
+    return 0;
+}
+
+// Body the camera sphere ignores.
+// GLOBAL: STUNTGP_D3D 0x4981cc
+Body *g_4981cc;
+
+// FUNCTION: STUNTGP_D3D 0x41fde0
+int FUN_41fde0(Car *car)
+{
+    Body *body = &car->body;
+    if (body == g_4981cc)
+    {
+        return 0;
+    }
+    for (DWORD i = 0; i < body->numPoints; i++)
+    {
+        Vec4 d;
+        d.x = body->points[i].prev.x - g_4980c4.x;
+        d.y = body->points[i].prev.y - g_4980c4.y;
+        d.z = body->points[i].prev.z - g_4980c4.z;
+        float dist = (float)sqrt(d.x * d.x + d.y * d.y + d.z * d.z);
+        if (dist < g_498154 + body->points[i].radius - 1.0f)
+        {
+            FUN_41f920(NULL, dist);
+        }
+    }
+    return 0;
+}
+
 // 1 when the point lies inside every edge of the polygon, seen along the g_498160 normal.
 // FUNCTION: STUNTGP_D3D 0x420690
 int FUN_420690(TrackPoly *poly, Vec4 *p)
@@ -1220,6 +1270,28 @@ int FUN_421960(Body *body, int i)
     g_4981b8.z = g_4981b8.z + p->z;
     g_498188 = g_4981b8;
     return 1;
+}
+
+// GLOBAL: STUNTGP_D3D 0x5715cc
+int g_5715cc;
+
+// Tests every vertex of the polygon with FUN_41ffa0, remembering the polygon on a hit.
+// FUNCTION: STUNTGP_D3D 0x420190
+void FUN_420190(TrackPoly *poly, int *hit)
+{
+    WORD *idx = g_624480->indices + poly->firstIndex;
+    unsigned int n = poly->vertexCount;
+    for (unsigned int i = 0; i < n; i++)
+    {
+        int r = FUN_41ffa0(&g_624480->vertices[*idx]);
+        *hit |= r;
+        if (r == 1)
+        {
+            g_498164 = poly;
+            g_5715cc = 3;
+        }
+        idx++;
+    }
 }
 
 // Uniform cubic B-spline basis weights, written to m[0], m[4], m[8], m[12].

@@ -6908,6 +6908,25 @@ void FUN_40bde0()
     g_4d5bb8->unk28a8 = 1;
     FUN_4436e0(g_4d5bb8);
 }
+// Reloads the config of every active car into its slot.
+// FUNCTION: STUNTGP_D3D 0x40bec0
+void FUN_40bec0()
+{
+    Car *saved = g_474630;
+    Car *car = g_49a1f8;
+    for (int i = 0; i < 6; i++)
+    {
+        if (car->active == 1)
+        {
+            g_474630 = car;
+            g_472c74 = g_60f02c[i].unk0c;
+            FUN_40bde0();
+        }
+        car++;
+    }
+    g_474630 = saved;
+}
+
 
 
 // STUB: STUNTGP_D3D 0x412bf0
