@@ -79,14 +79,20 @@ struct ImageLoader
 
 extern ImageLoader g_5895b0;
 
-// Texture list entry: type 1 is an image (arg: compressed), 2 and 3 an empty texture (arg: size
-// code), anything else a texture file.
-struct TextureEntry
+// Texture slot counters; one aggregate, the original reloads unk00 after each unk10[] store.
+struct TextureSlots
 {
-    char *name; // 0x00
-    int type;   // 0x04
-    int arg;    // 0x08
+    int unk00;      // 0x00, next texture slot
+    int unk04;      // 0x04, slots allocated, compared against g_583590
+    int unk08;      // 0x08
+    int unk0c;      // 0x0c, first slot of the current level
+    int unk10[255]; // 0x10, first slot of each registered texture file
+    int unk40c;     // 0x40c, registered file count
 };
+
+extern TextureSlots g_582718;
+
+struct TextureEntry;
 
 void FUN_42c340(TextureEntry *list);
 

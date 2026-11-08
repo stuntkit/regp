@@ -456,16 +456,11 @@ void FUN_42bf00()
 }
 
 int FUN_430730(int size, int unk);
-extern int g_582718;
-extern int g_582728[255];
-extern int g_582724;
 extern int g_58332c;
-extern int g_58271c;
 extern int g_583328;
-extern int g_582b24;
 extern char **g_582f24;
 extern char **g_583324;
-extern SpriteFile *g_58358c;
+extern TextureEntry *g_58358c;
 
 int FUN_42b9a0(const char *name);
 int FUN_42bb70(char *path, char *out);
@@ -486,13 +481,13 @@ void FUN_42bf60(char *path, int highDetail)
         FUN_42bb70(path, name);
         FUN_42bcf0(name, file, highDetail);
         g_renderState.unk7ed0->unk04[2] = 0;
-        if ((DWORD)g_58271c < (DWORD)g_583590)
+        if ((DWORD)g_582718.unk04 < (DWORD)g_583590)
         {
             g_renderState.unk7ed0->unk04[4] = 0;
         }
         else
         {
-            g_renderState.unk7ed0->unk04[4] = g_582718;
+            g_renderState.unk7ed0->unk04[4] = g_582718.unk00;
         }
         int n = FUN_4306c0(g_489714, g_489714, 0, 0, file);
         if (g_58332c == 1)
@@ -503,15 +498,15 @@ void FUN_42bf60(char *path, int highDetail)
         {
             g_583328 += g_489718 * g_489714;
         }
-        g_582728[g_582718] = g_582724 + g_582718;
-        g_582718 += n;
-        g_58271c += n;
+        g_582718.unk10[g_582718.unk00] = g_582718.unk0c + g_582718.unk00;
+        g_582718.unk00 += n;
+        g_582718.unk04 += n;
         *g_583324++ = path;
         *g_583324 = NULL;
     }
     *g_582f24++ = path;
     *g_582f24 = NULL;
-    g_582b24++;
+    g_582718.unk40c++;
 }
 
 // Registers a new empty texture of size code sizeCode (4..8 for 16..256 texels) and names it by
@@ -549,17 +544,17 @@ void FUN_42c0a0(int arg, int sizeCode)
     {
         g_583328 += size * size;
     }
-    g_582728[g_582718] = g_582724 + g_582718;
-    g_582718 += n;
-    g_58271c += n;
+    g_582718.unk10[g_582718.unk00] = g_582718.unk0c + g_582718.unk00;
+    g_582718.unk00 += n;
+    g_582718.unk04 += n;
     // STRING: STUNTGP_D3D 0x4777e8
-    sprintf((char *)g_58358c, "%d", g_582718);
+    sprintf((char *)g_58358c, "%d", g_582718.unk00);
     *g_583324++ = (char *)g_58358c;
     *g_583324 = NULL;
     *g_582f24++ = (char *)g_58358c;
     *g_582f24 = NULL;
-    g_582b24++;
-    g_58358c = (SpriteFile *)((char *)g_58358c + strlen((char *)g_58358c));
+    g_582718.unk40c++;
+    g_58358c = (TextureEntry *)((char *)g_58358c + strlen((char *)g_58358c));
 }
 
 // FUNCTION: STUNTGP_D3D 0x42c1d0
@@ -609,12 +604,12 @@ int FUN_42c220(char *name, int compressed)
     return 1;
 }
 
-SpriteFile *FUN_441180();
+TextureEntry *FUN_441180();
 
 // FUNCTION: STUNTGP_D3D 0x42c2e0
 int FUN_42c2e0(const char *name)
 {
-    SpriteFile *f;
+    TextureEntry *f;
     for (f = FUN_441180(); f->name; f++)
     {
         if (!_strcmpi(f->name, name))
@@ -637,12 +632,9 @@ extern char *g_582b28[255];
 extern char **g_582f24;
 extern char *g_582f28[255];
 extern char **g_583324;
-extern SpriteFile g_583334[50];
-extern SpriteFile *g_58358c;
+extern TextureEntry g_583334[50];
+extern TextureEntry *g_58358c;
 extern int g_583328;
-extern int g_582b24;
-extern int g_58271c;
-extern int g_582720;
 
 void FUN_42c0a0(int arg, int sizeCode);
 extern int g_587990;
@@ -660,8 +652,8 @@ void FUN_42c340(TextureEntry *list)
         }
     }
     g_583590 = empty;
-    g_582724 = g_582b24;
-    g_582718 = 0;
+    g_582718.unk0c = g_582718.unk40c;
+    g_582718.unk00 = 0;
     int *slot = g_583594;
     for (; list->name; list++, slot++)
     {
@@ -698,8 +690,8 @@ extern int g_6249a0;
 // FUNCTION: STUNTGP_D3D 0x42c440
 void FUN_42c440(char **names)
 {
-    g_582718 = 0;
-    g_582724 = g_582b24;
+    g_582718.unk00 = 0;
+    g_582718.unk0c = g_582718.unk40c;
     for (int i = 0; names[i]; i++)
     {
         FUN_42bf60(names[i], g_6249a0);
@@ -722,9 +714,9 @@ void FUN_42c480()
     g_58358c = g_583334;
     FUN_42bc00();
     g_583328 = 0;
-    g_582b24 = 0;
-    g_58271c = 0;
-    g_582720 = 0;
+    g_582718.unk40c = 0;
+    g_582718.unk04 = 0;
+    g_582718.unk08 = 0;
     g_57b420 = 0;
     g_57e308 = 0;
 }

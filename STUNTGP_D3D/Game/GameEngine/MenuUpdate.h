@@ -146,7 +146,7 @@ struct MenuRound
 struct ShopItem
 {
     int price;    // 0x000
-    int unk004;   // 0x004
+    float unk004; // 0x004
     float unk008; // 0x008
     float unk00c; // 0x00c
     float unk010; // 0x010
@@ -511,9 +511,8 @@ struct MenuState
     char unk4714[4]; // 0x4714
     BYTE unk4718[0x13148 - 0x4718];
     Unk4d5cc0 *unk13148; // 0x13148
-    ShopCar cars[21];    // 0x1314c, [1..20] used
-    BYTE unk144a8[0x14594 - 0x144a8];
-    // Shop catalogue: [1..20] cars, then the part groups returned by FUN_43db20.
+    ShopCar cars[22];    // 0x1314c, [1..21] read by FUN_434b50
+    // Shop catalogue: [1..21] cars, then the part groups returned by FUN_43db20.
     ShopItem items[75];    // 0x14594
     int unk19d78;          // 0x19d78, index into unk0f1c
     MenuSlot160 unk19d7c;  // 0x19d7c

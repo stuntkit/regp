@@ -382,29 +382,30 @@ struct TrackPoly
     WORD surface;     // 0x6, into TrackOctree::surfaces
 };
 
-// Light record; g_589e04 is the scene's sun.
-struct RenderMaterial
+// Track light record, 0x90 bytes; g_589e04 is the scene's sun.
+struct Light
 {
-    DWORD unk00;      // 0x00
-    DWORD unk04;      // 0x04
-    float alpha;      // 0x08
+    DWORD unk00;      // 0x00, set while the light is on
+    DWORD type;       // 0x04, 0 directional, 1 point
+    float range;      // 0x08
     DWORD unk0c;      // 0x0c
     Vec4 pos;         // 0x10
-    Vec4 local;       // 0x20, pos relative to the camera
+    Vec4 local;       // 0x20, pos relative to the camera or the current object
     Vec4 colour;      // 0x30, direction for directional lights
     BYTE unk40[0x10]; // 0x40
-    int unk50;        // 0x50
+    int unk50;        // 0x50, flare type
     DWORD unk54;      // 0x54
     DWORD unk58;      // 0x58
     DWORD unk5c;      // 0x5c
-    BYTE unk60[0x8];  // 0x60
+    DWORD color;      // 0x60, flare colour
+    BYTE unk64[0x4];  // 0x64
     float unk68;      // 0x68
     float unk6c;      // 0x6c
     float unk70;      // 0x70
     int unk74;        // 0x74
-    int unk78;        // 0x78
-    int unk7c;        // 0x7c
-    int unk80;        // 0x80
+    int r;            // 0x78
+    int g;            // 0x7c
+    int b;            // 0x80
     int visible;      // 0x84
     BYTE unk88[0x8];  // 0x88
 };

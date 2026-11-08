@@ -1,5 +1,6 @@
 #include "GameUpdate.h"
 #include "Game.h"
+#include "GameSetup.h"
 
 // 128-byte PCX file header.
 struct PcxHeader
@@ -4675,6 +4676,131 @@ void FUN_444c50()
                 g_4722d0->data->unk767c = 0;
             }
         }
+    }
+}
+
+extern char *g_482b88[76];
+extern DWORD g_477c30;
+
+// Fills the drivers from the race entries and queues each car's model files.
+// FUNCTION: STUNTGP_D3D 0x444db0
+void FUN_444db0()
+{
+    RaceEntry *first;
+    int firstIdx;
+    unsigned int copies;
+    unsigned int humans;
+    int slot;
+    int k;
+    int i;
+    RaceEntry *e;
+
+    memset(g_49a1f8, 0, sizeof(g_49a1f8));
+    copies = 0;
+    first = NULL;
+    slot = 4;
+    e = g_60d730.entries;
+    humans = 0;
+    for (i = 0; i < 6; i++, e++)
+    {
+        if (e->type == 2)
+        {
+            humans++;
+        }
+    }
+    firstIdx = 0;
+    e = g_60d730.entries;
+    for (i = 0; i < 6; i++, e++)
+    {
+        if (e->type != 2)
+        {
+            continue;
+        }
+        strcpy(g_60f02c[i].name, (char *)e->unk010);
+        if (e->unk030)
+        {
+            g_60f02c[i].unk10 = e->unk030;
+        }
+        if (e->unk028)
+        {
+            g_60f02c[i].unk0c = e->unk028;
+        }
+        g_60f02c[i].unk08 = e->unk024;
+        if (e->unk02c != 8)
+        {
+            g_60f02c[i].unk14 = e->unk02c;
+        }
+        if (!e->unk004)
+        {
+            e->unk008 = 1;
+        }
+        if (e->unk008)
+        {
+            g_60f02c[i].unk1c = e->unk008;
+        }
+        if (e->unk008 != 1000)
+        {
+            g_60f02c[i].unk20 = e->unk00c;
+        }
+        if (g_477c30 <= 0x400000 && humans >= 6)
+        {
+            if (first && e->unk004 && copies < 1)
+            {
+                copies++;
+                g_60f02c[i] = g_60f02c[firstIdx];
+                if (e->unk008)
+                {
+                    g_60f02c[i].unk1c = e->unk008;
+                }
+                if (e->unk008 != 1000)
+                {
+                    g_60f02c[i].unk20 = e->unk00c;
+                }
+                if (e->unk030)
+                {
+                    g_60f02c[i].unk10 = e->unk030;
+                }
+                strcpy(g_60f02c[i].name, (char *)e->unk010);
+                k = first->unk024;
+            }
+            else
+            {
+                k = e->unk024;
+            }
+            strcpy((char *)g_58c234, g_482b88[k * 2 + 32]);
+            g_58c540[g_58c808].id = g_58c234;
+            g_58c540[g_58c808].slot = slot;
+            g_58c234 += strlen((char *)g_58c234) + 1;
+            g_58c808++;
+            g_58c540[g_58c808].id = 0;
+            strcpy((char *)g_58c234, g_482b88[47]);
+            g_58c540[g_58c808].id = g_58c234;
+            g_58c540[g_58c808].slot = slot + 1;
+            g_58c234 += strlen((char *)g_58c234) + 1;
+            g_58c808++;
+            g_58c540[g_58c808].id = 0;
+            if (!first && e->unk004)
+            {
+                first = e;
+                firstIdx = i;
+            }
+        }
+        else
+        {
+            strcpy((char *)g_58c234, g_482b88[e->unk024 * 2 + 32]);
+            g_58c540[g_58c808].id = g_58c234;
+            g_58c540[g_58c808].slot = slot;
+            g_58c234 += strlen((char *)g_58c234) + 1;
+            g_58c808++;
+            g_58c540[g_58c808].id = 0;
+            strcpy((char *)g_58c234, g_482b88[e->unk024 * 2 + 33]);
+            g_58c540[g_58c808].id = g_58c234;
+            g_58c540[g_58c808].slot = slot + 1;
+            g_58c234 += strlen((char *)g_58c234) + 1;
+            g_58c808++;
+            g_58c540[g_58c808].id = 0;
+        }
+        slot += 2;
     }
 }
 

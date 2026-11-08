@@ -6625,7 +6625,7 @@ void FUN_41bea0()
 }
 
 int FUN_4212a0();
-extern RenderMaterial *g_589e04;
+extern Light *g_589e04;
 
 // Sweeps a sphere from the sun to the two front wheels and the rear axle midpoint; when all three are shadowed,
 // fits the shadow plane (centre unk3934, normal unk3944, forward unk3954) and its fade terms.

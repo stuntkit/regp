@@ -37,10 +37,10 @@ SpriteLists g_spriteLists;
 int g_5da360[4];
 
 // GLOBAL: STUNTGP_D3D 0x47f318
-SpriteFile g_47f318[1];
+TextureEntry g_47f318[1];
 
 // GLOBAL: STUNTGP_D3D 0x480134
-SpriteFile g_480134[1];
+TextureEntry g_480134[1];
 
 // GLOBAL: STUNTGP_D3D 0x4798bc
 int g_4798bc = -1;
@@ -1767,7 +1767,7 @@ void FUN_43d250()
 }
 
 // FUNCTION: STUNTGP_D3D 0x441180
-SpriteFile *FUN_441180()
+TextureEntry *FUN_441180()
 {
     return g_480134;
 }
@@ -1792,9 +1792,689 @@ void FUN_441340()
     }
 }
 
-// STUB: STUNTGP_D3D 0x441380
-void FUN_441380(SpriteDef *def, int id)
+int FUN_43d9b0(int value);
+
+// Texture page and texel rectangle of each sprite id.
+// FUNCTION: STUNTGP_D3D 0x441380
+int FUN_441380(SpriteDef *def, int id)
 {
+    int x0;
+    int y0;
+    int x1;
+    int y1;
+    int texture;
+    int n;
+
+    switch (id)
+    {
+    case 0x4d:
+    case 0x4e:
+    case 0x4f:
+    case 0x50:
+    case 0x51:
+    case 0x52:
+    case 0x53:
+    case 0x54:
+    case 0x55:
+    case 0x56:
+        n = id - 0x4d;
+        texture = 0x1002c;
+        x0 = (n & 3) * 0x40 + 1;
+        y0 = (n / 4) * 0x40 + 1;
+        x1 = x0 + 0x3e;
+        y1 = y0 + 0x3e;
+        break;
+    case 0x25:
+    case 0x26:
+    case 0x27:
+    case 0x28:
+    case 0x29:
+    case 0x2a:
+    case 0x2b:
+    case 0x2c:
+    case 0x2d:
+    case 0x2e:
+    case 0x2f:
+    case 0x30:
+        x0 = 1;
+        y0 = 0x40;
+        x1 = 0xff;
+        y1 = 0xc0;
+        texture = id + 0x10020;
+        break;
+    case 0xd:
+    case 0xe:
+    case 0xf:
+    case 0x10:
+    case 0x11:
+    case 0x12:
+    case 0x13:
+    case 0x14:
+        n = id - 0x0d;
+        texture = 0x10037;
+        x0 = (n & 1) * 0x80;
+        y0 = (n / 2) * 0x40;
+        x1 = x0 + 0x80;
+        y1 = y0 + 0x40;
+        break;
+    case 0x15:
+    case 0x16:
+    case 0x17:
+    case 0x18:
+    case 0x19:
+    case 0x1a:
+    case 0x1b:
+    case 0x1c:
+        n = id - 0x15;
+        texture = 0x10038;
+        x0 = (n & 1) * 0x80;
+        y0 = (n / 2) * 0x40;
+        x1 = x0 + 0x80;
+        y1 = y0 + 0x40;
+        break;
+    case 0x1:
+    case 0x2:
+    case 0x3:
+    case 0x4:
+    case 0x5:
+    case 0x6:
+    case 0x7:
+    case 0x8:
+    case 0x9:
+    case 0xa:
+    case 0xb:
+    case 0xc:
+        x0 = 1;
+        y0 = 1;
+        x1 = 0xff;
+        y1 = 0xff;
+        texture = id + 0x10038;
+        break;
+    case 0x3d:
+    case 0x3e:
+    case 0x3f:
+    case 0x40:
+        y0 = 0xc1;
+        y1 = 0xd0;
+        x0 = (id - 0x3d) * 17 + 1;
+        texture = 0x1002b;
+        x1 = x0 + 15;
+        break;
+    case 0x41:
+    case 0x42:
+    case 0x43:
+        y0 = 0xc1;
+        y1 = 0xd0;
+        x0 = (id - 0x41) * 17 + 0xc1;
+        texture = 0x10025;
+        x1 = x0 + 15;
+        break;
+    case 0x44:
+    case 0x45:
+    case 0x46:
+        y0 = 0xd2;
+        y1 = 0xe1;
+        x0 = (id - 0x44) * 17 + 0xc1;
+        texture = 0x10025;
+        x1 = x0 + 15;
+        break;
+    case 0x47:
+    case 0x48:
+    case 0x49:
+        y0 = 0xe3;
+        y1 = 0xf2;
+        x0 = (id - 0x47) * 17 + 0xc1;
+        texture = 0x10025;
+        x1 = x0 + 15;
+        break;
+    case 0x4a:
+    case 0x4b:
+    case 0x4c:
+        x0 = 0x41;
+        y0 = (id - 0x4a) * 16 + 0xc1;
+        x1 = 0x5b;
+        y1 = y0 + 14;
+        texture = 0x10025;
+        break;
+    case 0x31:
+    case 0x32:
+    case 0x33:
+    case 0x34:
+        x0 = (id - 0x31) * 0x40 + 1;
+        y0 = 1;
+        y1 = 0x3f;
+        x1 = x0 + 0x3e;
+        texture = 0x1002b;
+        break;
+    case 0x35:
+    case 0x36:
+    case 0x37:
+    case 0x38:
+        x0 = (id - 0x35) * 0x40 + 1;
+        y0 = 0x41;
+        y1 = 0x7f;
+        x1 = x0 + 0x3e;
+        texture = 0x1002b;
+        break;
+    case 0x1d:
+        x0 = 0x36;
+        y0 = 0x53;
+        x1 = 0xff;
+        y1 = 0xff;
+        texture = 0x10051;
+        break;
+    case 0x1e:
+        x0 = 1;
+        y0 = 0x53;
+        x1 = 0xd6;
+        y1 = 0xff;
+        texture = 0x10052;
+        break;
+    case 0x1f:
+        x0 = 0x36;
+        y0 = 1;
+        x1 = 0xff;
+        y1 = 0xb3;
+        texture = 0x10053;
+        break;
+    case 0x20:
+        x0 = 1;
+        y0 = 1;
+        x1 = 0xd6;
+        y1 = 0xb3;
+        texture = 0x10054;
+        break;
+    case 0x21:
+        x0 = 0x36;
+        y0 = 0x53;
+        x1 = 0xff;
+        y1 = 0xff;
+        texture = 0x10055;
+        break;
+    case 0x22:
+        x0 = 1;
+        y0 = 0x53;
+        x1 = 0xd6;
+        y1 = 0xff;
+        texture = 0x10056;
+        break;
+    case 0x23:
+        x0 = 0x36;
+        y0 = 1;
+        x1 = 0xff;
+        y1 = 0xb3;
+        texture = 0x10057;
+        break;
+    case 0x24:
+        x0 = 1;
+        y0 = 1;
+        x1 = 0xd6;
+        y1 = 0xb3;
+        texture = 0x10058;
+        break;
+    case 0x39:
+        x0 = 0;
+        y0 = 0;
+        x1 = 0xff;
+        y1 = 0x100;
+        texture = 0x10059;
+        break;
+    case 0x3a:
+        x0 = 1;
+        y0 = 0;
+        x1 = 0x100;
+        y1 = 0x100;
+        texture = 0x1005a;
+        break;
+    case 0x3b:
+        x0 = 0;
+        y0 = 0;
+        x1 = 0xff;
+        y1 = 0x100;
+        texture = 0x1005b;
+        break;
+    case 0x3c:
+        x0 = 1;
+        y0 = 0;
+        x1 = 0x100;
+        y1 = 0x100;
+        texture = 0x1005c;
+        break;
+    case 0x57:
+    case 0x58:
+    case 0x59:
+    case 0x5a:
+        x0 = 0;
+        y0 = 1;
+        x1 = 0x100;
+        y1 = 0x1f;
+        texture = id + 0xffcf;
+        break;
+    case 0x5b:
+        x0 = 0;
+        y0 = 1;
+        x1 = 0x100;
+        y1 = 0x3f;
+        texture = 0x1002a;
+        break;
+    case 0x5c:
+    case 0x5d:
+    case 0x5e:
+    case 0x5f:
+    case 0x60:
+    case 0x61:
+    case 0x62:
+    case 0x63:
+    case 0x64:
+    case 0x65:
+    case 0x66:
+    case 0x67:
+    case 0x68:
+    case 0x69:
+    case 0x6a:
+    case 0x6b:
+        x0 = 0;
+        y0 = 0;
+        x1 = 0x100;
+        y1 = 0x100;
+        texture = id - 0x5b;
+        break;
+    case 0x6c:
+    case 0x6d:
+        x0 = (id - 0x6c) * 0x40 + 1;
+        y0 = 0x81;
+        y1 = 0xbf;
+        x1 = x0 + 0x3e;
+        texture = 0x1002b;
+        break;
+    case 0x76:
+        x0 = 0x81;
+        y0 = 0xc1;
+        x1 = 0x87;
+        y1 = 0xc7;
+        texture = 0x10025;
+        break;
+    case 0x6e:
+    case 0x6f:
+    case 0x70:
+    case 0x71:
+        x0 = (id - 0x6e) * 0x40 + 1;
+        y0 = 1;
+        y1 = 0x3f;
+        x1 = x0 + 0x3e;
+        texture = 0x10025;
+        break;
+    case 0x72:
+    case 0x73:
+    case 0x74:
+    case 0x75:
+        x0 = 1;
+        y0 = (id - 0x72) * 15 + 0xc1;
+        x1 = 0x0e;
+        y1 = y0 + 13;
+        texture = 0x10025;
+        break;
+    case 0x77:
+    case 0x78:
+    case 0x79:
+    case 0x7a:
+    case 0x7b:
+    case 0x7c:
+    case 0x7d:
+    case 0x7e:
+    case 0x7f:
+    case 0x80:
+    case 0x81:
+    case 0x82:
+    case 0x83:
+    case 0x84:
+    case 0x85:
+    case 0x86:
+    case 0x87:
+    case 0x88:
+    case 0x89:
+    case 0x8a:
+    case 0x8b:
+    case 0x8c:
+    case 0x8d:
+    case 0x8e:
+    case 0x8f:
+    case 0x90:
+    case 0x91:
+    case 0x92:
+    case 0x93:
+    case 0x94:
+    case 0x95:
+    case 0x96:
+    case 0x97:
+    case 0x98:
+    case 0x99:
+    case 0x9a:
+        x0 = 0x1e;
+        y0 = 0x1e;
+        x1 = 0xe2;
+        y1 = 0xe2;
+        texture = id + 0xffe6;
+        break;
+    case 0x9b:
+    case 0x9c:
+    case 0x9d:
+    case 0x9e:
+    case 0x9f:
+    case 0xa0:
+    case 0xa1:
+    case 0xa2:
+    case 0xa3:
+    case 0xa4:
+    case 0xa5:
+    case 0xa6:
+    case 0xa7:
+    case 0xa8:
+    case 0xa9:
+    case 0xaa:
+    case 0xab:
+    case 0xac:
+    case 0xad:
+    case 0xae:
+    case 0xaf:
+    case 0xb0:
+    case 0xb1:
+    case 0xb2:
+    case 0xb3:
+    case 0xb4:
+    case 0xb5:
+    case 0xb6:
+    case 0xb7:
+    case 0xb8:
+    case 0xb9:
+    case 0xba:
+    case 0xbb:
+    case 0xbc:
+    case 0xbd:
+    case 0xbe:
+        x0 = 0x1e;
+        y0 = 0x1e;
+        x1 = 0xe2;
+        y1 = 0xe2;
+        texture = id + 0xffe6;
+        break;
+    case 0xbf:
+    case 0xc0:
+    case 0xc1:
+    case 0xc2:
+    case 0xc3:
+    case 0xc4:
+    case 0xc5:
+    case 0xc6:
+    case 0xc7:
+    case 0xc8:
+    case 0xc9:
+    case 0xca:
+    case 0xcb:
+    case 0xcc:
+    case 0xcd:
+    case 0xce:
+    case 0xcf:
+    case 0xd0:
+    case 0xd1:
+    case 0xd2:
+    case 0xd3:
+    case 0xd4:
+    case 0xd5:
+    case 0xd6:
+    case 0xd7:
+    case 0xd8:
+    case 0xd9:
+        x0 = 0x1e;
+        y0 = 0x1e;
+        x1 = 0xe2;
+        y1 = 0xe2;
+        texture = id + 0xffe6;
+        break;
+    case 0xda:
+    case 0xdb:
+    case 0xdc:
+    case 0xdd:
+    case 0xde:
+    case 0xdf:
+    case 0xe0:
+    case 0xe1:
+    case 0xe2:
+    case 0xe3:
+    case 0xe4:
+    case 0xe5:
+    case 0xe6:
+    case 0xe7:
+    case 0xe8:
+    case 0xe9:
+    case 0xea:
+    case 0xeb:
+    case 0xec:
+    case 0xed:
+    case 0xee:
+    case 0xef:
+    case 0xf0:
+    case 0xf1:
+    case 0x10a:
+    case 0x10b:
+    case 0x10c:
+    case 0x10d:
+    case 0x10e:
+    case 0x10f:
+    case 0x110:
+    case 0x111:
+    case 0x112:
+    case 0x113:
+    case 0x114:
+    case 0x115:
+    case 0x116:
+    case 0x117:
+    case 0x118:
+    case 0x119:
+    case 0x11a:
+    case 0x11b:
+    case 0x11c:
+    case 0x11d:
+    case 0x11e:
+        x0 = 0;
+        y0 = 0;
+        x1 = 0xff;
+        y1 = 0x100;
+        texture = id + 0xffe6;
+        break;
+    case 0xf2:
+    case 0xf3:
+    case 0xf4:
+    case 0xf5:
+    case 0xf6:
+    case 0xf7:
+    case 0xf8:
+    case 0xf9:
+    case 0xfa:
+    case 0xfb:
+    case 0xfc:
+    case 0xfd:
+    case 0xfe:
+    case 0xff:
+    case 0x100:
+    case 0x101:
+    case 0x102:
+    case 0x103:
+    case 0x104:
+    case 0x105:
+    case 0x106:
+    case 0x107:
+    case 0x108:
+    case 0x109:
+    case 0x11f:
+    case 0x120:
+    case 0x121:
+    case 0x122:
+    case 0x123:
+    case 0x124:
+    case 0x125:
+    case 0x126:
+    case 0x127:
+    case 0x128:
+    case 0x129:
+    case 0x12a:
+    case 0x12b:
+    case 0x12c:
+    case 0x12d:
+    case 0x12e:
+    case 0x12f:
+    case 0x130:
+    case 0x131:
+    case 0x132:
+    case 0x133:
+        x0 = 1;
+        y0 = 0;
+        x1 = 0x100;
+        y1 = 0x100;
+        texture = id + 0xffe6;
+        break;
+    case 0x134:
+    case 0x135:
+        x0 = 0;
+        y0 = 0;
+        x1 = 0x100;
+        y1 = 0x100;
+        texture = id + 0xff01;
+        break;
+    case 0x136:
+    case 0x137:
+    case 0x138:
+    case 0x139:
+    case 0x13a:
+    case 0x13b:
+    case 0x13c:
+    case 0x13d:
+    case 0x13e:
+    case 0x13f:
+    case 0x140:
+    case 0x141:
+    case 0x142:
+    case 0x143:
+    case 0x144:
+    case 0x145:
+        n = id - 0x136;
+        texture = 0x10035;
+        x0 = (n & 3) * 0x40;
+        y0 = (n >> 2) * 0x40;
+        x1 = x0 + 0x40;
+        y1 = y0 + 0x40;
+        break;
+    case 0x146:
+    case 0x147:
+    case 0x148:
+    case 0x149:
+    case 0x14a:
+    case 0x14b:
+    case 0x14c:
+    case 0x14d:
+    case 0x14e:
+    case 0x14f:
+    case 0x150:
+    case 0x151:
+    case 0x152:
+    case 0x153:
+    case 0x154:
+    case 0x155:
+        n = id - 0x146;
+        texture = 0x10036;
+        x0 = (n & 3) * 0x40;
+        y0 = (n >> 2) * 0x40;
+        x1 = x0 + 0x40;
+        y1 = y0 + 0x40;
+        break;
+    case 0x156:
+    case 0x157:
+    case 0x158:
+    case 0x159:
+    case 0x15a:
+    case 0x15b:
+    case 0x15c:
+    case 0x15d:
+    case 0x15e:
+    case 0x15f:
+    case 0x160:
+    case 0x161:
+    case 0x162:
+        n = id - 0x156;
+        x0 = (n % 4 & 1) * 0x80 + 1;
+        y0 = (n % 4 >> 1) * 0x80 + 1;
+        x1 = x0 + 0x7e;
+        y1 = y0 + 0x7e;
+        texture = n / 4 + 0x1002d;
+        break;
+    case 0x163:
+    case 0x164:
+    case 0x165:
+    case 0x166:
+    case 0x167:
+    case 0x168:
+    case 0x169:
+    case 0x16a:
+    case 0x16b:
+    case 0x16c:
+    case 0x16d:
+    case 0x16e:
+    case 0x16f:
+        n = id - 0x163;
+        x0 = (n % 4 & 1) * 0x80 + 1;
+        y0 = (n % 4 >> 1) * 0x80 + 1;
+        x1 = x0 + 0x7e;
+        y1 = y0 + 0x7e;
+        texture = n / 4 + 0x10031;
+        break;
+    case 0x170:
+        x0 = 1;
+        y0 = 1;
+        x1 = 0x7f;
+        y1 = 0x7f;
+        texture = 0x1011a;
+        break;
+    case 0x171:
+    case 0x172:
+    case 0x173:
+    case 0x174:
+    case 0x175:
+    case 0x176:
+    case 0x177:
+    case 0x178:
+    case 0x179:
+    case 0x17a:
+    case 0x17b:
+    case 0x17c:
+    case 0x17d:
+    case 0x17e:
+    case 0x17f:
+        x0 = 1;
+        y0 = 1;
+        x1 = 0x7f;
+        y1 = 0x7f;
+        texture = id + 0xffaa;
+        break;
+    case 0x180:
+    case 0x181:
+    case 0x182:
+        x0 = 1;
+        y0 = 1;
+        x1 = 0xff;
+        y1 = 0xff;
+        texture = id + 0xffaa;
+        break;
+    default:
+        return 0;
+    }
+    def->u0 = x0 * 4.0f;
+    def->v0 = y0 * 4.0f;
+    def->u1 = x1 * 4.0f;
+    def->v1 = y1 * 4.0f;
+    def->width = FUN_43d9b0(x1 - x0);
+    def->height = FUN_43d9b0(y1 - y0);
+    def->texture = texture;
+    return 1;
 }
 
 // FUNCTION: STUNTGP_D3D 0x441240

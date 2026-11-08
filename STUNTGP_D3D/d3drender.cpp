@@ -207,22 +207,7 @@ ResourceFile *g_5895bc;
 char *g_580aec;
 
 // GLOBAL: STUNTGP_D3D 0x582718
-int g_582718;
-
-// GLOBAL: STUNTGP_D3D 0x58271c
-int g_58271c;
-
-// GLOBAL: STUNTGP_D3D 0x582720
-int g_582720;
-
-// GLOBAL: STUNTGP_D3D 0x582724
-int g_582724;
-
-// GLOBAL: STUNTGP_D3D 0x582728
-int g_582728[255];
-
-// GLOBAL: STUNTGP_D3D 0x582b24
-int g_582b24;
+TextureSlots g_582718;
 
 // Write position in g_582b28.
 // GLOBAL: STUNTGP_D3D 0x582f24
@@ -239,18 +224,18 @@ char **g_583324;
 int g_583328;
 
 // GLOBAL: STUNTGP_D3D 0x583334
-SpriteFile g_583334[50];
+TextureEntry g_583334[50];
 
 // Write position in g_583334.
 // GLOBAL: STUNTGP_D3D 0x58358c
-SpriteFile *g_58358c;
+TextureEntry *g_58358c;
 
 // Records a font file so it can be reloaded when surfaces are lost.
 // FUNCTION: STUNTGP_D3D 0x42be90
 void FUN_42be90(char *path)
 {
     g_5895bc->name = g_580aec;
-    g_5895bc->slot = g_58271c;
+    g_5895bc->slot = g_582718.unk04;
     g_5895bc++;
     g_5895bc->name = NULL;
     strcpy(g_580aec, path);
@@ -2359,7 +2344,7 @@ void FUN_42bdd0()
 void FUN_42be20(char *path)
 {
     g_582710->name = g_580aec;
-    g_582710->slot = g_58271c;
+    g_582710->slot = g_582718.unk04;
     g_582710++;
     g_582710->name = NULL;
     strcpy(g_580aec, path);

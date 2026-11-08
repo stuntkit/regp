@@ -97,12 +97,14 @@ struct SpriteLists
 
 extern SpriteLists g_spriteLists;
 
-// Entry of the front-end sprite file table at 0x47f318.
-struct SpriteFile
+// Texture list entry: type 1 is an image (arg: compressed), 2 and 3 an empty texture (arg: size
+// code), anything else a texture file.
+// Also the front-end sprite file tables at 0x47f318 and 0x480134.
+struct TextureEntry
 {
-    char *name;
-    int unk04;
-    int unk08;
+    char *name; // 0x00
+    int type;   // 0x04
+    int arg;    // 0x08
 };
 
 // Sprite template, copied into a SpriteData before it is queued.
@@ -117,7 +119,7 @@ struct ScreenRect
 };
 
 extern int g_5da360[4];
-extern SpriteFile g_47f318[1];
+extern TextureEntry g_47f318[1];
 extern SpriteDef g_spriteDefs[0x183];
 
 void FUN_437e40(char *name);
@@ -130,7 +132,7 @@ BOOL FUN_440380(char *path);
 int FUN_440250(char *dir);
 char *FUN_4401e0(int card);
 void FUN_441340();
-void FUN_441380(SpriteDef *def, int id);
+int FUN_441380(SpriteDef *def, int id);
 void FUN_4411c0();
 void FUN_437ec0();
 void FUN_437ed0();

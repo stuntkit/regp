@@ -383,6 +383,81 @@ void FUN_445360()
     g_60f284 = g_60d730.unk844;
 }
 
+void FUN_444db0();
+extern int g_60dfa4;
+extern char g_60dfac[0x40];
+extern DWORD g_60f000[4];
+extern DWORD g_60effc;
+
+// Applies the race settings picked in the front end.
+// FUNCTION: STUNTGP_D3D 0x4453a0
+void FUN_4453a0()
+{
+    if (g_612948.unk02a4 == 1)
+    {
+        g_60d730.unk058 = 0;
+        g_60dfa4 = g_60d730.unk000;
+        if (!g_60d730.unk000)
+        {
+            g_60dfa4 = 1;
+        }
+        g_60f2c8 = g_60d730.unk054;
+        g_576be0 = g_60d730.unk020;
+        g_sfxSetting = g_60d730.sfx;
+        g_musicSetting = g_60d730.music;
+        Sound_ApplyVolumes();
+        g_612948.unk0034 = g_60d730.unk00c;
+        g_612948.unk0018 = g_60d730.unk010;
+        g_60f020 = g_60d730.unk864;
+        if (!g_60d730.unk864)
+        {
+            g_60f020 = 1;
+        }
+        if (g_60d730.unk01c != 8)
+        {
+            g_60dfec = g_60d730.unk01c;
+            strcpy(g_60dfac, g_482b88[g_60d730.unk01c + 25]);
+        }
+        if (g_60d730.unk034)
+        {
+            g_60eff8 = g_60d730.unk034;
+        }
+        if (g_60d730.unk04c)
+        {
+            g_60df98 = g_60d730.unk04c;
+        }
+        if (g_60df98 == 5)
+        {
+            g_60eff8 = 100;
+        }
+        g_60eff0 = g_60d730.unk050;
+        if (!g_60d730.unk050)
+        {
+            g_60eff0 = 1;
+        }
+        g_612948.unk0048 = 0;
+        g_612948.unk0054 = 0;
+        if (g_60d730.unk840)
+        {
+            FUN_445310();
+        }
+        if (g_60df98 == 4)
+        {
+            FUN_445360();
+        }
+        FUN_444db0();
+        if (g_60df98 == 3)
+        {
+            FUN_445120();
+        }
+        g_60f000[0] = g_60d730.unk03c[0];
+        g_60effc = g_60d730.unk03c[0];
+        g_60f000[1] = g_60d730.unk03c[1];
+        g_60f000[2] = g_60d730.unk03c[2];
+        g_60f000[3] = g_60d730.unk03c[3];
+    }
+}
+
 // FUNCTION: STUNTGP_D3D 0x446a70
 void FUN_446a70()
 {
@@ -1008,6 +1083,7 @@ void FUN_448e00(int *digits, int frames, float x, float y, int roll, int hide)
 
 void FUN_4482a0(DWORD frames, DWORD *digits);
 extern DWORD g_60f000[4];
+extern DWORD g_60effc;
 
 // Draws the race clock on fader 3 and, once one is set, the best-lap clock on fader 4.
 // FUNCTION: STUNTGP_D3D 0x4490e0
