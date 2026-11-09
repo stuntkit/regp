@@ -6149,10 +6149,11 @@ void FUN_413e60()
         p.y += v.y;
         p.z += v.z;
         CarWobble *w = car->unk315c;
+        Vec4 r;
         Vec4 *m = car->unk26b0->lods[car->unk26b0->lod][11].matrix;
         do
         {
-            Vec4 r = w->dir;
+            r = w->dir;
             v = w->dir;
             r.x = g_4d5b30[0] * v.x + g_4d5b30[4] * v.y + g_4d5b30[8] * v.z;
             r.y = g_4d5b30[1] * v.x + g_4d5b30[5] * v.y + g_4d5b30[9] * v.z;
@@ -6168,29 +6169,28 @@ void FUN_413e60()
             w++;
             m += 5;
         } while (--n);
-        Vec4 q = p;
-        float t = -q.x;
-        Vec4 a;
-        a.x = t * car->axisX.x;
-        a.y = t * car->axisX.y;
-        a.z = t * car->axisX.z;
-        t = 70.0f - q.y;
+        r = p;
+        float t = -r.x;
+        p.x = t * car->axisX.x;
+        p.y = t * car->axisX.y;
+        p.z = t * car->axisX.z;
+        t = 70.0f - r.y;
         v.x = t * car->axisY.x;
         v.y = t * car->axisY.y;
         v.z = t * car->axisY.z;
         Vec4 c;
-        c.x = q.z * car->axisZ.x;
-        c.y = q.z * car->axisZ.y;
-        c.z = q.z * car->axisZ.z;
-        a.x += v.x;
-        a.y += v.y;
-        a.z += v.z;
-        a.x += c.x;
-        a.y += c.y;
-        a.z += c.z;
-        car->unk327c.x = car->posX - a.x;
-        car->unk327c.y = car->posY - a.y;
-        car->unk327c.z = car->posZ - a.z;
+        c.x = r.z * car->axisZ.x;
+        c.y = r.z * car->axisZ.y;
+        c.z = r.z * car->axisZ.z;
+        p.x += v.x;
+        p.y += v.y;
+        p.z += v.z;
+        p.x += c.x;
+        p.y += c.y;
+        p.z += c.z;
+        car->unk327c.x = car->posX - p.x;
+        car->unk327c.y = car->posY - p.y;
+        car->unk327c.z = car->posZ - p.z;
     }
 }
 
@@ -7367,7 +7367,7 @@ void FUN_417800()
     {
         return;
     }
-    if (car->unk7620)
+    if (car->unk7620 > 0)
     {
         car->unk7620--;
         return;
@@ -7384,7 +7384,7 @@ void FUN_417800()
         {
             if (car->wheels[i].unk70 > 4)
             {
-                if (kind != 2)
+                if (kind != t)
                 {
                     FUN_4174e0(&p);
                     car = g_4d5bb8;
@@ -7411,7 +7411,7 @@ void FUN_417800()
         {
             if (car->wheels[i].unk70 > 4)
             {
-                if (kind != 3)
+                if (kind != t)
                 {
                     FUN_4176f0(&p);
                     car = g_4d5bb8;
@@ -7436,9 +7436,9 @@ void FUN_417800()
         }
         else if (t == 4)
         {
-            if (car->wheels[i].unk70 > 4)
+            if (car->wheels[i].unk70 > t)
             {
-                if (kind != 4)
+                if (kind != t)
                 {
                     FUN_4175e0(&p);
                     car = g_4d5bb8;
@@ -7462,7 +7462,15 @@ void FUN_417800()
             }
         }
     }
-    if (kind == 2 || kind == 3)
+    if (kind == 2)
+    {
+        car->unk7620 = (unsigned int)(100.0f / car->unk1cf0);
+        if (car->unk7620 < 4)
+        {
+            car->unk7620 = 4;
+        }
+    }
+    else if (kind == 3)
     {
         car->unk7620 = (unsigned int)(100.0f / car->unk1cf0);
         if (car->unk7620 < 4)
