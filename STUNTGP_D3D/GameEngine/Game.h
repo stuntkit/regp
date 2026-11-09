@@ -3,6 +3,6 @@
 #include <cstdio>
 #include <windows.h>
 
-#include "../../globals.h"
+#include "../globals.h"
 
 void GetGameBuildVersion();

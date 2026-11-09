@@ -1,8 +1,8 @@
-#include <cstring>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
-#include "../../globals.h"
+#include "../globals.h"
 
 void WAD_SplitFileName(char *path, char *y, char *u);
 // bool WAD_CacheNewWadFile(char * param_1);

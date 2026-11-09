@@ -19,6 +19,10 @@ In theory, when enough work is done, you could just put the compiled executables
 
 - Fullscreen window gets created, no DirectX surface yet
 
+## Work in progress
+
+- Memory management - A 24% and 61% matching
+
 ## What's broken
 
 - WAD file support is just a few stub functions

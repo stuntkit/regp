@@ -6,8 +6,8 @@
 #include <ddraw.h>
 #include <windows.h>
 
-#include "Game/GameEngine/Engine_LevelScript.h"
-#include "Game/GameEngine/Game.h"
+#include "GameEngine/Engine_LevelScript.h"
+#include "GameEngine/Game.h"
 #include "windowInit.h"
 
 #include "globals.h"
@@ -271,6 +271,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
     g_DISPLAYRESWIDTH = 640;
     g_DISPLAYRESHEIGHT = 480;
     g_DISPLAYRESDEPTH = 8;
+
+#if !defined(SGP_DEBUG)
+    ShowCursor(false);
+#endif
+
+    Script_ParseGameConfig();
+    GetGameBuildVersion();
+
     BOOL windowCreated = windowCreate(hInstance, hPrevInstance);
     if (!windowCreated)
     {
@@ -280,13 +288,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 #if defined(SGP_DEBUG)
     OutputDebugString("Woo, window created!");
 #endif
-
-#if !defined(SGP_DEBUG)
-    ShowCursor(false);
-#endif
-
-    Script_ParseGameConfig();
-    GetGameBuildVersion();
 
     // srand(time(NULL));
 
