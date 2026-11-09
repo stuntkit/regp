@@ -2666,9 +2666,10 @@ void FUN_4258a0()
     }
 }
 
-// STUB: STUNTGP_D3D 0x425ad0
+// FUNCTION: STUNTGP_D3D 0x425ad0
 void FUN_425ad0()
 {
+    FUN_4258a0();
 }
 
 // Collects the frame's lights and turns each one's angles (unk54..unk5c) into its direction.
