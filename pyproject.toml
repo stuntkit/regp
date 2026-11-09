@@ -1,0 +1,10 @@
+[project]
+name = "regp"
+version = "0.1.0"
+description = "Stunt GP decompilation project"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["reccmp"]
+
+[tool.uv.sources]
+reccmp = { git = "https://github.com/isledecomp/reccmp" }
