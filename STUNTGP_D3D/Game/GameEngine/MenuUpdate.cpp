@@ -1132,7 +1132,7 @@ void FUN_436400(const char *name, int *value)
 }
 
 // FUNCTION: STUNTGP_D3D 0x436410
-void FUN_436410()
+void FUN_436410(const char *name, ShopItem *item)
 {
 }
 
@@ -2497,6 +2497,58 @@ void FUN_439e90()
 RaceState g_60d730;
 
 void FUN_43a4a0(RaceEntry *entry, int *out, ShopItem *item, int car, int team);
+void FUN_43a430(RaceEntry *entry, int *out, int car, int team);
+void FUN_43a720();
+void FUN_43a760(int player, int a, int b);
+Initials *FUN_43d690(Initials *name);
+
+// Starts a mode-1 race for the six cars of src; unk00 marks the human car.
+// FUNCTION: STUNTGP_D3D 0x43a2a0
+void FUN_43a2a0(RaceSetup1 *src, RaceResults *dst)
+{
+    g_5df528.src1 = src;
+    g_5df528.mode = 1;
+    g_5df528.dst1 = dst;
+    FUN_43d420();
+    FUN_43a720();
+    g_60d730.unk010 = 1;
+    g_60d730.unk04c = 2;
+    g_60d730.unk050 = 1;
+    g_60d730.unk054 = 4;
+    g_60d730.unk83c = 1;
+    g_60d730.unk000 = ((int(*)[6])g_menuState.unk1d618)[src->track][0];
+    g_60d730.unk01c = ((int(*)[6])g_menuState.unk1d618)[src->track][1];
+    g_60d730.unk018 = src->track - 1;
+    g_60d730.unk034 = src->unkac;
+    g_60d730.unk020 = 0;
+    g_60d730.unk840 = 0;
+    g_60d730.unk03c[0] = src->unkb0;
+    g_60d730.unk03c[1] = src->unkb4;
+    g_60d730.unk03c[2] = src->unkb8;
+    g_60d730.unk03c[3] = src->unkbc;
+    for (int i = 0; i < 6; i++)
+    {
+        RaceSetupCar *car = &src->cars[i];
+        int e = car->car - 1;
+        RaceEntry *entry = &g_60d730.entries[e];
+        strcpy((char *)entry->unk010, (char *)FUN_43d690((Initials *)&car->unk04));
+        entry->type = 2;
+        if (car->unk00)
+        {
+            entry->unk004 = 0;
+            FUN_43a760(g_menuState.unk4244, e, 1);
+            g_60d730.unk024[0] = e;
+        }
+        else
+        {
+            entry->unk004 = 1;
+            entry->unk008 = car->unk18;
+            entry->unk00c = car->unk14;
+        }
+        FUN_43a430(entry, &entry->unk034, car->unk08, car->unk10);
+    }
+    FUN_43d420();
+}
 
 // Race entry for a shop car: its stats as bought with its standard parts.
 // FUNCTION: STUNTGP_D3D 0x43a430
@@ -2606,6 +2658,53 @@ void FUN_43a760(int player, int a, int b)
     FUN_45ecc0(player - 1, a, b);
 }
 
+// Starts a mode-2 race for the first count cars of src.
+// FUNCTION: STUNTGP_D3D 0x43a780
+void FUN_43a780(RaceSetup2 *src)
+{
+    g_5df528.mode = 2;
+    int count = src->count;
+    FUN_43d420();
+    FUN_43a720();
+    g_60d730.unk010 = 0;
+    g_60d730.unk020 = 0;
+    g_60d730.unk04c = 2;
+    g_60d730.unk000 = ((int(*)[6])g_menuState.unk1d618)[src->track][0];
+    g_60d730.unk01c = ((int(*)[6])g_menuState.unk1d618)[src->track][2];
+    g_60d730.unk018 = src->track - 1;
+    g_60d730.unk034 = src->unkb0;
+    g_60d730.unk050 = 1;
+    g_60d730.unk054 = 4;
+    g_60d730.unk840 = 0;
+    g_60d730.unk83c = 1;
+    g_60d730.unk03c[0] = 7200;
+    g_60d730.unk03c[1] = 36000;
+    g_60d730.unk03c[2] = 0;
+    g_60d730.unk03c[3] = 0;
+    for (int i = 0; i < src->count; i++)
+    {
+        RaceSetupCar *car = &src->cars[i];
+        int e = car->car - 1;
+        RaceEntry *entry = &g_60d730.entries[e];
+        strcpy((char *)entry->unk010, (char *)FUN_43d690((Initials *)&car->unk04));
+        entry->type = 2;
+        if (car->unk00)
+        {
+            entry->unk004 = 0;
+            FUN_43a760(g_menuState.unk4244, e, 1);
+            g_60d730.unk024[0] = e;
+        }
+        else
+        {
+            entry->unk004 = 1;
+            entry->unk008 = car->unk18;
+            entry->unk00c = car->unk14;
+        }
+        FUN_43a430(entry, &entry->unk034, car->unk08, car->unk10);
+    }
+    FUN_43d420();
+}
+
 Initials *FUN_43d690(Initials *name);
 
 // Starts a mode-3 race from src.
@@ -2712,6 +2811,72 @@ void FUN_43aa50(RaceSetup6 *src, RaceResults6 *dst)
     FUN_43d420();
 }
 
+// Starts a mode-7 race for the count cars of src, players of them human.
+// FUNCTION: STUNTGP_D3D 0x43ac00
+void FUN_43ac00(RaceSetup7 *src, RaceResults7 *dst)
+{
+    g_5df528.mode = 7;
+    g_5df528.src7 = src;
+    int count = src->count;
+    g_5df528.dst7 = dst;
+    FUN_43d420();
+    FUN_43a720();
+    g_60d730.unk010 = 0;
+    g_60d730.unk020 = 0;
+    g_60d730.unk000 = ((int(*)[6])g_menuState.unk1d618)[src->track][0];
+    g_60d730.unk04c = 2;
+    g_60d730.unk01c = ((int(*)[6])g_menuState.unk1d618)[src->track][3];
+    g_60d730.unk018 = src->track - 1;
+    g_60d730.unk034 = src->unkcc;
+    g_60d730.unk050 = 1;
+    g_60d730.unk054 = 4;
+    g_60d730.unk83c = 1;
+    g_60d730.unk840 = 0;
+    g_60d730.unk03c[0] = 7200;
+    g_60d730.unk03c[1] = 36000;
+    g_60d730.unk03c[2] = 0;
+    g_60d730.unk03c[3] = 0;
+    switch (src->players)
+    {
+    case 1:
+        g_60d730.unk020 = 0;
+        break;
+    case 2:
+        g_60d730.unk020 = 2;
+        break;
+    case 3:
+        g_60d730.unk020 = 3;
+        break;
+    case 4:
+        g_60d730.unk020 = 4;
+        break;
+    default:
+        return;
+    }
+    for (int i = 0; i < count; i++)
+    {
+        int e = src->cars[i].car - 1;
+        RaceEntry *entry = &g_60d730.entries[e];
+        entry->type = 2;
+        strcpy((char *)entry->unk010, src->cars[i].name);
+        if (src->cars[i].unk00)
+        {
+            entry->unk004 = 0;
+            FUN_43a760(src->cars[i].unk00, e, i + 1);
+            g_60d730.unk024[i] = e;
+            FUN_43a430(entry, &entry->unk034, src->cars[i].unk10, 0);
+        }
+        else
+        {
+            entry->unk004 = 1;
+            entry->unk008 = src->cars[i].unk1c;
+            entry->unk00c = src->cars[i].unk18;
+            FUN_43a430(entry, &entry->unk034, src->cars[i].unk10, src->cars[i].unk14);
+        }
+    }
+    FUN_43d420();
+}
+
 // Starts a mode-4 race from src: the player's car alone on the track against the clock.
 // FUNCTION: STUNTGP_D3D 0x43ae00
 void FUN_43ae00(RaceSetup4 *src, RaceResults4 *dst)
@@ -2743,6 +2908,57 @@ void FUN_43ae00(RaceSetup4 *src, RaceResults4 *dst)
     g_60d730.entries[0].unk004 = 0;
     FUN_43a430(&g_60d730.entries[0], &g_60d730.entries[0].unk034, src->car, 8);
     g_60d730.unk024[0] = 0;
+    FUN_43d420();
+}
+
+// Starts a mode-5 race for the six cars of src; the human car takes src's own stats.
+// FUNCTION: STUNTGP_D3D 0x43af20
+void FUN_43af20(RaceSetup5 *src, RaceResults *dst)
+{
+    g_5df528.dst5 = dst;
+    g_5df528.mode = 5;
+    g_5df528.src5 = src;
+    // STRING: STUNTGP_D3D 0x479410
+    FUN_436410("PlayerDynamics", &src->item);
+    FUN_43d420();
+    FUN_43a720();
+    g_60d730.unk010 = 1;
+    g_60d730.unk04c = 2;
+    g_60d730.unk050 = 1;
+    g_60d730.unk000 = ((int(*)[6])g_menuState.unk1d618)[src->track][0];
+    g_60d730.unk054 = 4;
+    g_60d730.unk83c = 1;
+    g_60d730.unk01c = ((int(*)[6])g_menuState.unk1d618)[src->track][5];
+    g_60d730.unk018 = src->track - 1;
+    g_60d730.unk034 = src->unk1d8;
+    g_60d730.unk020 = 0;
+    g_60d730.unk840 = 0;
+    g_60d730.unk03c[0] = src->unk1dc;
+    g_60d730.unk03c[1] = src->unk1e0;
+    g_60d730.unk03c[2] = src->unk1e4;
+    g_60d730.unk03c[3] = src->unk1e8;
+    for (int i = 0; i < 6; i++)
+    {
+        RaceSetupCar *car = &src->cars[i];
+        int e = car->car - 1;
+        RaceEntry *entry = &g_60d730.entries[e];
+        strcpy((char *)entry->unk010, (char *)FUN_43d690((Initials *)&car->unk04));
+        entry->type = 2;
+        if (car->unk00)
+        {
+            FUN_43a760(g_menuState.unk4244, e, 1);
+            g_60d730.unk024[0] = e;
+            entry->unk004 = 0;
+            FUN_43a4a0(entry, &entry->unk034, &src->item, car->unk08, car->unk10);
+        }
+        else
+        {
+            entry->unk004 = 1;
+            entry->unk008 = car->unk18;
+            entry->unk00c = car->unk14;
+            FUN_43a430(entry, &entry->unk034, car->unk08, car->unk10);
+        }
+    }
     FUN_43d420();
 }
 
@@ -2996,6 +3212,94 @@ int FUN_43b5f0(int value, BitWriter *writer)
     return 1;
 }
 
+// Delta-encodes a recorded replay into out: the header and first frame verbatim, then each frame
+// against the decoder's running copy. Returns the bytes written, 0 if out is too small.
+// FUNCTION: STUNTGP_D3D 0x43b640
+int FUN_43b640(BYTE *out, int size, Replay *replay)
+{
+    ReplayFrame prev;
+    BitWriter writer;
+    int vx = 0;
+    int vy = 0;
+    int vz = 0;
+    int w0 = 0;
+    int w1 = 0;
+    int w2 = 0;
+    int w3 = 0;
+    if (size < 0xac)
+    {
+        return 0;
+    }
+    memcpy(out, replay, 0xac);
+    FUN_43b270(&writer, out + 0xac, size - 0xac);
+    prev = replay->frames[0];
+    ReplayFrame *f = &replay->frames[1];
+    while (!(prev.flags & 1))
+    {
+        if (writer.count > writer.size - 0x80)
+        {
+            return 0;
+        }
+        vx += FUN_43b4f0(5, f->pos[0] - prev.pos[0] - vx, &writer, 0);
+        vy += FUN_43b4f0(5, f->pos[1] - prev.pos[1] - vy, &writer, 1);
+        vz += FUN_43b4f0(5, f->pos[2] - prev.pos[2] - vz, &writer, 0);
+        prev.pos[0] += vx;
+        prev.pos[1] += vy;
+        prev.pos[2] += vz;
+        int d0 = FUN_43b210(f->wheelAngle[0], prev.wheelAngle[0]) - w0;
+        int d1 = FUN_43b210(f->wheelAngle[1], prev.wheelAngle[1]) - w1;
+        int d2 = FUN_43b210(f->wheelAngle[2], prev.wheelAngle[2]) - w2;
+        int d3 = FUN_43b210(f->wheelAngle[3], prev.wheelAngle[3]) - w3;
+        w0 += FUN_43b4f0(5, d0, &writer, 0);
+        w1 += FUN_43b4f0(5, d1, &writer, 0);
+        w2 += FUN_43b4f0(5, d2, &writer, 0);
+        w3 += FUN_43b4f0(5, d3, &writer, 0);
+        prev.wheelAngle[0] += w0;
+        prev.wheelAngle[1] += w1;
+        prev.wheelAngle[2] += w2;
+        prev.wheelAngle[3] += w3;
+        prev.unk14[0] += FUN_43b4f0(4, (f->unk14[0] - prev.unk14[0]) / 8, &writer, 1) * 8;
+        prev.unk14[1] += FUN_43b4f0(4, (f->unk14[1] - prev.unk14[1]) / 8, &writer, 1) * 8;
+        prev.unk14[2] += FUN_43b4f0(4, (f->unk14[2] - prev.unk14[2]) / 8, &writer, 1) * 8;
+        prev.unk14[3] += FUN_43b4f0(4, (f->unk14[3] - prev.unk14[3]) / 8, &writer, 1) * 8;
+        prev.unk1c[0] += FUN_43b4f0(3, f->unk1c[0] - prev.unk1c[0], &writer, 1);
+        prev.unk1c[1] += FUN_43b4f0(3, f->unk1c[1] - prev.unk1c[1], &writer, 1);
+        prev.unk1c[2] += FUN_43b4f0(3, f->unk1c[2] - prev.unk1c[2], &writer, 1);
+        prev.unk1c[3] += FUN_43b4f0(3, f->unk1c[3] - prev.unk1c[3], &writer, 1);
+        prev.axisZ[0] += FUN_43b4f0(4, f->axisZ[0] - prev.axisZ[0], &writer, 1);
+        prev.axisZ[1] += FUN_43b4f0(4, f->axisZ[1] - prev.axisZ[1], &writer, 1);
+        prev.axisZ[2] += FUN_43b4f0(4, f->axisZ[2] - prev.axisZ[2], &writer, 1);
+        prev.axisY[0] += FUN_43b4f0(4, f->axisY[0] - prev.axisY[0], &writer, 1);
+        prev.axisY[1] += FUN_43b4f0(4, f->axisY[1] - prev.axisY[1], &writer, 1);
+        prev.axisY[2] += FUN_43b4f0(4, f->axisY[2] - prev.axisY[2], &writer, 1);
+        prev.unk20 += FUN_43b4f0(5, f->unk20 - prev.unk20, &writer, 0);
+        prev.unk22 += FUN_43b5f0(f->unk22 - prev.unk22, &writer);
+        prev.unk23 += FUN_43b5f0(f->unk23 - prev.unk23, &writer);
+        if (prev.unk25 != f->unk25)
+        {
+            FUN_43b300(&writer, 1, 1);
+            FUN_43b2a0(&writer, f->unk25);
+            prev.unk25 = f->unk25;
+        }
+        else
+        {
+            FUN_43b300(&writer, 0, 1);
+        }
+        if (prev.flags != f->flags)
+        {
+            FUN_43b300(&writer, 1, 1);
+            FUN_43b2a0(&writer, f->flags);
+            prev.flags = f->flags;
+        }
+        else
+        {
+            FUN_43b300(&writer, 0, 1);
+        }
+        f++;
+    }
+    return writer.count;
+}
+
 // FUNCTION: STUNTGP_D3D 0x43bb00
 int FUN_43bb00(int bits, BitReader *reader, int flag)
 {
@@ -3024,6 +3328,76 @@ int FUN_43bb90(BitReader *reader)
         return 0;
     }
     return FUN_43b3b0(reader) ? 1 : -1;
+}
+
+// Inverse of FUN_43b640: rebuilds the replay frames into out and returns its size in bytes.
+// FUNCTION: STUNTGP_D3D 0x43bbb0
+int FUN_43bbb0(Replay *out, BYTE *in)
+{
+    BitReader reader;
+    ReplayFrame prev;
+    ReplayFrame frame;
+    int vx = 0;
+    int vy = 0;
+    int vz = 0;
+    int w0 = 0;
+    int w1 = 0;
+    int w2 = 0;
+    int w3 = 0;
+    ReplayFrame *dst;
+    memcpy(out, in, 0xac);
+    int count = 1;
+    FUN_43b380(&reader, in + 0xac, 0);
+    prev = out->frames[0];
+    dst = &out->frames[1];
+    while (!(prev.flags & 1))
+    {
+        vx += FUN_43bb00(5, &reader, 0);
+        vy += FUN_43bb00(5, &reader, 1);
+        vz += FUN_43bb00(5, &reader, 0);
+        prev.pos[0] += vx;
+        prev.pos[1] += vy;
+        prev.pos[2] += vz;
+        w0 += FUN_43bb00(5, &reader, 0);
+        w1 += FUN_43bb00(5, &reader, 0);
+        w2 += FUN_43bb00(5, &reader, 0);
+        w3 += FUN_43bb00(5, &reader, 0);
+        prev.wheelAngle[0] += w0;
+        prev.wheelAngle[1] += w1;
+        prev.wheelAngle[2] += w2;
+        prev.wheelAngle[3] += w3;
+        prev.unk14[0] += FUN_43bb00(4, &reader, 1) << 3;
+        prev.unk14[1] += FUN_43bb00(4, &reader, 1) << 3;
+        prev.unk14[2] += FUN_43bb00(4, &reader, 1) << 3;
+        prev.unk14[3] += FUN_43bb00(4, &reader, 1) << 3;
+        prev.unk1c[0] += FUN_43bb00(3, &reader, 1);
+        prev.unk1c[1] += FUN_43bb00(3, &reader, 1);
+        prev.unk1c[2] += FUN_43bb00(3, &reader, 1);
+        prev.unk1c[3] += FUN_43bb00(3, &reader, 1);
+        prev.axisZ[0] += FUN_43bb00(4, &reader, 1);
+        prev.axisZ[1] += FUN_43bb00(4, &reader, 1);
+        prev.axisZ[2] += FUN_43bb00(4, &reader, 1);
+        prev.axisY[0] += FUN_43bb00(4, &reader, 1);
+        prev.axisY[1] += FUN_43bb00(4, &reader, 1);
+        prev.axisY[2] += FUN_43bb00(4, &reader, 1);
+        prev.unk20 += FUN_43bb00(5, &reader, 0);
+        prev.unk22 += FUN_43bb90(&reader);
+        prev.unk23 += FUN_43bb90(&reader);
+        if (FUN_43b3b0(&reader))
+        {
+            prev.unk25 = FUN_43b370(&reader);
+        }
+        if (FUN_43b3b0(&reader))
+        {
+            prev.flags = FUN_43b370(&reader);
+        }
+        frame = prev;
+        FUN_43b470(&frame.axisZ[0], &frame.axisZ[1], &frame.axisZ[2]);
+        FUN_43b470(&frame.axisY[0], &frame.axisY[1], &frame.axisY[2]);
+        *dst++ = frame;
+        count++;
+    }
+    return count * sizeof(ReplayFrame) + 0x80;
 }
 
 // Clears the new-entry flag of every high score.

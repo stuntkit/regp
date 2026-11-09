@@ -1848,9 +1848,65 @@ void FUN_452fd0(PoolObject *object)
 {
 }
 
-// STUB: STUNTGP_D3D 0x452fe0
+void FUN_44b5e0(PoolObject *object);
+void FUN_44c0a0(PoolObject *object);
+void FUN_44cd70(PoolObject *object);
+void FUN_44d100(PoolObject *object);
+void FUN_44d4c0(PoolObject *object);
+void FUN_44d740(PoolObject *object);
+void FUN_44dd10(PoolObject *object);
+
+struct Unk452fe0
+{
+    PoolObject base; // 0x00
+    int started;     // 0x14
+};
+
+// PageGameLoop: once shown, steps the state machine of the current game mode every update.
+// FUNCTION: STUNTGP_D3D 0x452fe0
 int FUN_452fe0(PoolObject *object, int msg, int arg)
 {
+    switch (msg)
+    {
+    case 0x13:
+        FUN_4400a0(0);
+        FUN_43dd10(0);
+        FUN_43dd40(0, 0.0f, 0.0f);
+        if (!((Unk452fe0 *)object)->started)
+        {
+            ((Unk452fe0 *)object)->started = 1;
+        }
+        break;
+    case 1:
+        if (((Unk452fe0 *)object)->started)
+        {
+            switch (g_menuState.unk4230)
+            {
+            case 1:
+                FUN_44b5e0(object);
+                return 0;
+            case 2:
+                FUN_44cd70(object);
+                return 0;
+            case 3:
+                FUN_44d740(object);
+                return 0;
+            case 4:
+                FUN_44d4c0(object);
+                return 0;
+            case 5:
+                FUN_44c0a0(object);
+                return 0;
+            case 6:
+                FUN_44d100(object);
+                return 0;
+            case 7:
+                FUN_44dd10(object);
+                break;
+            }
+        }
+        break;
+    }
     return 0;
 }
 
