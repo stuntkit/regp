@@ -1817,7 +1817,8 @@ void FUN_4093e0(DWORD i)
         FUN_4091e0(i);
         Car *car = g_4d5bb8;
         car->wheels[i].unk4c = g_cameraSweep.unkd8;
-        g_49a1e4 = -((g_cameraSweep.unkd8.x * body->points[i].unk30.x + g_cameraSweep.unkd8.y * body->points[i].unk30.y +
+        g_49a1e4 = -((g_cameraSweep.unkd8.x * body->points[i].unk30.x +
+                      g_cameraSweep.unkd8.y * body->points[i].unk30.y +
                       g_cameraSweep.unkd8.z * body->points[i].unk30.z) *
                      scale);
         car->wheels[i].unk70 = 8;
@@ -4331,13 +4332,13 @@ void FUN_40fc90()
     Vec4 x = car->axisX;
     Vec4 y = car->axisY;
     Vec4 z = car->axisZ;
-    float fx = g_4d5b70[0] * z.x + g_4d5b70[4] * z.y + g_4d5b70[8] * z.z;
-    float fy = g_4d5b70[1] * z.x + g_4d5b70[5] * z.y + g_4d5b70[9] * z.z;
-    float fz = g_4d5b70[2] * z.x + g_4d5b70[6] * z.y + g_4d5b70[10] * z.z;
+    float fx = ((g_4d5b70[8] * z.z) + (g_4d5b70[4] * z.y)) + (g_4d5b70[0] * z.x);
+    float fy = ((g_4d5b70[9] * z.z) + (g_4d5b70[5] * z.y)) + (g_4d5b70[1] * z.x);
+    float fz = ((g_4d5b70[10] * z.z) + (g_4d5b70[6] * z.y)) + (g_4d5b70[2] * z.x);
     Vec4 l;
-    l.x = g_4d5b70[0] * x.x + g_4d5b70[4] * x.y + g_4d5b70[8] * x.z;
-    l.y = g_4d5b70[1] * x.x + g_4d5b70[5] * x.y + g_4d5b70[9] * x.z;
-    l.z = g_4d5b70[2] * x.x + g_4d5b70[6] * x.y + g_4d5b70[10] * x.z;
+    l.x = ((g_4d5b70[8] * x.z) + (g_4d5b70[4] * x.y)) + (g_4d5b70[0] * x.x);
+    l.y = ((g_4d5b70[9] * x.z) + (g_4d5b70[5] * x.y)) + (g_4d5b70[1] * x.x);
+    l.z = ((g_4d5b70[10] * x.z) + (g_4d5b70[6] * x.y)) + (g_4d5b70[2] * x.x);
     float frontBias = car->unk224;
     float rearBias = car->unk228;
     float len = car->unk230;
@@ -4357,12 +4358,12 @@ void FUN_40fc90()
     car->unk285c.z = car->posZ + car->unk285c.z;
     float accR = 0.0f;
     float accF = 0.0f;
-    float k = l.x * car->unk1c8c.x + l.y * car->unk1c8c.y + l.z * car->unk1c8c.z;
+    float k = ((l.x * car->unk1c8c.x) + (l.y * car->unk1c8c.y)) + (l.z * car->unk1c8c.z);
     Vec4 p;
     p.x = k * l.x;
     p.y = k * l.y;
     p.z = k * l.z;
-    float c = -(p.x * z.x + p.y * z.y + p.z * z.z);
+    float c = -(((p.z * z.z) + (p.y * z.y)) + (p.x * z.x));
     if (c > 0.5f)
     {
         c = 0.5f;
@@ -4372,20 +4373,20 @@ void FUN_40fc90()
         c = -0.5f;
     }
     accF = c;
-    float fwd = z.x * car->unk1c8c.x + z.y * car->unk1c8c.y + z.z * car->unk1c8c.z;
-    float fwdF = fx * car->unk1c8c.x + fy * car->unk1c8c.y + fz * car->unk1c8c.z;
-    float q = (fwd * z.x) * l.x + (fwd * z.y) * l.y + (fwd * z.z) * l.z;
+    float fwd = ((z.x * car->unk1c8c.x) + (z.y * car->unk1c8c.y)) + (z.z * car->unk1c8c.z);
+    float fwdF = ((fx * car->unk1c8c.x) + (fy * car->unk1c8c.y)) + (fz * car->unk1c8c.z);
+    float q = (((fwd * z.z) * l.z) + ((fwd * z.y) * l.y)) + ((fwd * z.x) * l.x);
     Vec4 w;
     float nq = -q;
     w.x = nq * l.x;
     w.y = nq * l.y;
     w.z = nq * l.z;
-    float s = -(w.x * x.x + w.y * x.y + w.z * x.z);
+    float s = -(((w.z * x.z) + (w.y * x.y)) + (w.x * x.x));
     float ns = -s;
     l.x = ns * x.x;
     l.y = ns * x.y;
     l.z = ns * x.z;
-    float side = x.x * car->unk1c8c.x + x.y * car->unk1c8c.y + x.z * car->unk1c8c.z;
+    float side = ((x.x * car->unk1c8c.x) + (x.y * car->unk1c8c.y)) + (x.z * car->unk1c8c.z);
     float rear = (1.0f - frontBias) * s + side;
     float front = (1.0f - rearBias) * s + side;
     car->wheels[0].unk14 = front;
@@ -4484,7 +4485,7 @@ void FUN_40fc90()
     vel->x = p.x * 0.5f;
     car->unk1c8c.y = p.y * 0.5f;
     car->unk1c8c.z = p.z * 0.5f;
-    float d = y.x * old->x + y.y * car->unk1c9c.y + y.z * car->unk1c9c.z;
+    float d = ((y.z * car->unk1c9c.z) + (y.x * old->x)) + (y.y * car->unk1c9c.y);
     vel->x = y.x * d + vel->x;
     car->unk1c8c.y = y.y * d + car->unk1c8c.y;
     car->unk1c8c.z = d * y.z + car->unk1c8c.z;
@@ -4493,11 +4494,14 @@ void FUN_40fc90()
     car->unk1cac.z = car->unk1c8c.z - car->unk1c9c.z;
     if (car->unk1fd8 == 1)
     {
-        car->unk1cf0 = (float)sqrt(vel->x * vel->x + car->unk1c8c.y * car->unk1c8c.y + car->unk1c8c.z * car->unk1c8c.z);
+        float vz = car->unk1c8c.z;
+        float vy = car->unk1c8c.y;
+        float vx = vel->x;
+        car->unk1cf0 = (float)sqrt(((vx * vx) + (vy * vy)) + (vz * vz));
     }
     else
     {
-        car->unk1cf0 = z.x * vel->x + z.y * car->unk1c8c.y + z.z * car->unk1c8c.z;
+        car->unk1cf0 = ((z.x * vel->x) + (z.y * car->unk1c8c.y)) + (z.z * car->unk1c8c.z);
     }
     Wheel *wheel = car->wheels;
     for (int n = 4; n != 0; n--, wheel++)
