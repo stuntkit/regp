@@ -290,9 +290,9 @@ struct Body
     float mat1[16];        // 0x088
     float mat2[16];        // 0x0c8
     float *unk108;         // 0x108, 3x3 matrix
-    BYTE unk10c[0x10];     // 0x10c
+    Vec4 unk10c;           // 0x10c, mat0 rows 0-2
     Vec4 spin;             // 0x11c
-    BYTE unk12c[0x10];     // 0x12c
+    Vec4 unk12c;           // 0x12c
 
     DWORD numPoints;       // 0x13c
 
@@ -417,7 +417,7 @@ struct CameraSweep
     float unk00; // 0x00
     Vec4 unk04; // 0x04
     Vec4 unk14; // 0x14
-    BYTE unk24[0x4]; // 0x24
+    float *unk24; // 0x24
     Vec4 unk28; // 0x28
     BYTE unk38[0x20]; // 0x38
     Vec4 unk58; // 0x58
@@ -444,10 +444,13 @@ struct CameraSweep
     float unk108; // 0x108
     // Body the camera sphere ignores.
     Body *unk10c; // 0x10c
-    BYTE unk110[0x14]; // 0x110
+    BodyPoint *unk110; // 0x110
+    BYTE unk114[0x10]; // 0x114
     // 1 once a sweep has found a contact.
     int unk124;        // 0x124
-    BYTE unk128[0x48]; // 0x128
+    BYTE unk128[0x40]; // 0x128
+    Car *unk168;       // 0x168
+    BYTE unk16c[0x4];  // 0x16c
 };
 
 extern CameraSweep g_cameraSweep;
