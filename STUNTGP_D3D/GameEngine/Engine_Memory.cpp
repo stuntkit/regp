@@ -133,7 +133,7 @@ void Mem_InitMemoryManager()
     MEM_ALWAYS_ZERO = 0;
 }
 
-// STUB: STUNTGP_D3D 0x42eab0
+// FUNCTION: STUNTGP_D3D 0x42eab0
 void Mem_InitMemoryManager_Once()
 {
     // TODO: loop sth
