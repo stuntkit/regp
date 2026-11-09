@@ -360,8 +360,11 @@ void FUN_405c80()
         n.y = ez * g_482688.x - ex * g_482688.z;
         n.z = ex * g_482688.y - ey * g_482688.x;
         Vec3_Normalize(&n.x);
-        float bend =
-            (float)fabs(((r2.x - r1.x) * n.x + (r2.y - r1.y) * n.y + (r2.z - r1.z) * n.z) * 0.0004f);
+        Vec4 e;
+        e.x = r2.x - r1.x;
+        e.y = r2.y - r1.y;
+        e.z = r2.z - r1.z;
+        float bend = (float)fabs((e.x * n.x + e.y * n.y + e.z * n.z) * 0.0004f);
         if (bend >= 0.2f)
         {
             FUN_405be0(g_472b78[g_4d5bb8->race.unk80[5]] - bend * 100.0f + 16.666666f);
@@ -1739,8 +1742,8 @@ void FUN_4093e0(DWORD i)
 {
     Body *body = g_49a178;
     float s = 0.05f;
-    g_49a1dc = g_cameraSweep.unkd8.x * g_cameraSweep.unk28.x + g_cameraSweep.unkd8.y * g_cameraSweep.unk28.y +
-               g_cameraSweep.unkd8.z * g_cameraSweep.unk28.z;
+    g_49a1dc = ((g_cameraSweep.unkd8.x * g_cameraSweep.unk28.x) + (g_cameraSweep.unkd8.y * g_cameraSweep.unk28.y)) +
+               (g_cameraSweep.unkd8.z * g_cameraSweep.unk28.z);
     float scale = body->points[i].unk44 * g_4d5bb8->unk2618;
     DWORD idx = (DWORD)((float)fabs(g_49a1dc) * 128.0f / (g_482670 * 4.0f));
     if (idx < 0x80)
@@ -3610,9 +3613,11 @@ void FUN_40e7a0()
     {
         slip = 0.0f;
     }
-    float d = FUN_40e710(slip * car->unk2618) + 50.0f;
-    float f = g_4d5bb8->unkc7c[gear + 1] * g_4d5bb8->unk1f08 * g_4d5bb8->unkc7c[0] * g_4d5bb8->unkca4 *
-              g_4d5bb8->unk1cf8 / d;
+    float d = FUN_40e710(slip * car->unk2618);
+    d += 50.0f;
+    float f = ((((g_4d5bb8->unkc7c[gear + 1] * g_4d5bb8->unk1f08) * g_4d5bb8->unkc7c[0]) * g_4d5bb8->unkca4) *
+               g_4d5bb8->unk1cf8) /
+              d;
     f = ((f * 100.0f) * 0.00027777778f) * 3.0f;
     FUN_40d650(&f);
     float c = r * 6.2831855f;
@@ -5305,7 +5310,7 @@ void FUN_411950()
     Vec4 p;
     Vec4 s;
     Vec4 v;
-    float d = g_482688.x * car->unk1c8c.x + g_482688.z * car->unk1c8c.z + g_482688.y * car->unk1c8c.y;
+    float d = ((g_482688.y * car->unk1c8c.y) + (g_482688.z * car->unk1c8c.z)) + (g_482688.x * car->unk1c8c.x);
     p.x = g_482688.x * d;
     p.y = g_482688.y * d;
     p.z = g_482688.z * d;
