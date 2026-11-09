@@ -1218,13 +1218,13 @@ void FUN_407010()
         return;
     }
     int chance;
-    if (car->unk266c < 0.0f)
+    if (car->unk266c >= 0.0f)
     {
-        chance = (int)((float)fabs(car->unk266c) * 60.0f + 10.0f);
+        chance = (int)((float)fabs(car->unk266c) * 20.0f + 10.0f);
     }
     else
     {
-        chance = (int)((float)fabs(car->unk266c) * 20.0f + 10.0f);
+        chance = (int)((float)fabs(car->unk266c) * 60.0f + 10.0f);
     }
     if (abs(FUN_42f1f0(100)) > chance)
     {
