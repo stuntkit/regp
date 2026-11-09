@@ -2062,9 +2062,9 @@ int FUN_409b60(int a)
         }
         if (g_49a1f0 == 1)
         {
-            g_49a18c.x = g_49a1e0 * g_49a18c.x;
-            g_49a18c.y = g_49a1e0 * g_49a18c.y;
-            g_49a18c.z = g_49a1e0 * g_49a18c.z;
+            g_49a18c.x *= g_49a1e0;
+            g_49a18c.y *= g_49a1e0;
+            g_49a18c.z *= g_49a1e0;
             body->pos = g_49a18c;
         }
     }
