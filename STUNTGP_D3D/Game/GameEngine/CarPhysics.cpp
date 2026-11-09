@@ -4426,37 +4426,38 @@ void FUN_40fc90()
     car->wheels[1].unk04 = car->wheels[1].unk00 + car->wheels[1].unk04;
     car->wheels[2].unk04 = car->wheels[2].unk00 + car->wheels[2].unk04;
     car->wheels[3].unk04 = car->wheels[3].unk00 + car->wheels[3].unk04;
-    if (car->wheels[0].unk04 > 416.66666f)
+    Wheel *wh = car->wheels;
+    if (wh[0].unk04 > 416.66666f)
     {
-        car->wheels[0].unk04 = 416.66666f;
+        wh[0].unk04 = 416.66666f;
     }
-    if (car->wheels[0].unk04 < -416.66666f)
+    if (wh[0].unk04 < -416.66666f)
     {
-        car->wheels[0].unk04 = -416.66666f;
+        wh[0].unk04 = -416.66666f;
     }
-    if (car->wheels[1].unk04 > 416.66666f)
+    if (wh[1].unk04 > 416.66666f)
     {
-        car->wheels[1].unk04 = 416.66666f;
+        wh[1].unk04 = 416.66666f;
     }
-    if (car->wheels[1].unk04 < -416.66666f)
+    if (wh[1].unk04 < -416.66666f)
     {
-        car->wheels[1].unk04 = -416.66666f;
+        wh[1].unk04 = -416.66666f;
     }
-    if (car->wheels[2].unk04 > 416.66666f)
+    if (wh[2].unk04 > 416.66666f)
     {
-        car->wheels[2].unk04 = 416.66666f;
+        wh[2].unk04 = 416.66666f;
     }
-    if (car->wheels[2].unk04 < -416.66666f)
+    if (wh[2].unk04 < -416.66666f)
     {
-        car->wheels[2].unk04 = -416.66666f;
+        wh[2].unk04 = -416.66666f;
     }
-    if (car->wheels[3].unk04 > 416.66666f)
+    if (wh[3].unk04 > 416.66666f)
     {
-        car->wheels[3].unk04 = 416.66666f;
+        wh[3].unk04 = 416.66666f;
     }
-    if (car->wheels[3].unk04 < -416.66666f)
+    if (wh[3].unk04 < -416.66666f)
     {
-        car->wheels[3].unk04 = -416.66666f;
+        wh[3].unk04 = -416.66666f;
     }
     if ((float)fabs(car->wheels[0].unk04) < 0.0f)
     {
@@ -6312,6 +6313,7 @@ void FUN_413e60()
         CarWobble *w = car->unk315c;
         Vec4 r;
         Vec4 *m = car->unk26b0->lods[car->unk26b0->lod][11].matrix;
+        int k = 0;
         do
         {
             r = w->dir;
@@ -6319,20 +6321,22 @@ void FUN_413e60()
             r.x = g_4d5b30[0] * v.x + g_4d5b30[4] * v.y + g_4d5b30[8] * v.z;
             r.y = g_4d5b30[1] * v.x + g_4d5b30[5] * v.y + g_4d5b30[9] * v.z;
             r.z = g_4d5b30[2] * v.x + g_4d5b30[6] * v.y + g_4d5b30[10] * v.z;
-            m[2] = r;
+            m[k + 2] = r;
             v.x = r.x * car->unk3158;
             v.y = r.y * car->unk3158;
             v.z = r.z * car->unk3158;
-            m[0] = p;
+            m[k] = p;
             p.x += v.x;
             p.y += v.y;
             p.z += v.z;
             w++;
-            m += 5;
+            k += 5;
         } while (--n);
         r = p;
+        // x is negated on its own; only y and z share -r.x.
+        p.x = -p.x;
+        p.x *= car->axisX.x;
         float t = -r.x;
-        p.x = t * car->axisX.x;
         p.y = t * car->axisX.y;
         p.z = t * car->axisX.z;
         t = 70.0f - r.y;
