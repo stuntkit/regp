@@ -1127,10 +1127,7 @@ void FUN_418970()
     }
 }
 
-// STUB: STUNTGP_D3D 0x409b60
-void FUN_409b60(int a)
-{
-}
+int FUN_409b60(int a);
 
 // Flags cars that have fallen off or left the world.
 // FUNCTION: STUNTGP_D3D 0x4189e0

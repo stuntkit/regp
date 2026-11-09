@@ -1275,12 +1275,10 @@ void FUN_407010()
             level = 2;
         }
         break;
-    default:
-        if (level == 3)
-        {
-            return;
-        }
-        break;
+    }
+    if (level == 3)
+    {
+        return;
     }
     car->unk7234 = g_612948.unk03b4;
     int r = abs(FUN_42f1f0(8));
@@ -1933,6 +1931,160 @@ void FUN_4098a0()
     FUN_41d270(a, b);
     FUN_410b00(-12);
     g_4d5bb8->unk2670 = 60;
+}
+
+// GLOBAL: STUNTGP_D3D 0x472c20
+float g_472c20[16] = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+
+int FUN_421b80();
+void FUN_41d2c0();
+void FUN_4088b0(Body *body);
+void FUN_408920(Body *body);
+void FUN_44f8e0(float *m);
+void FUN_421cc0(Body *body, int i);
+void FUN_421d90(Body *body, int i);
+int FUN_420fe0();
+void FUN_421e70(Body *body);
+void FUN_421fa0(Body *body);
+
+// Integrates the current car's rigid body for one tick, sweeping each body point against the track.
+// FUNCTION: STUNTGP_D3D 0x409b60
+int FUN_409b60(int a)
+{
+    if (g_4d5bb8->unk7640 == 0 && FUN_421b80() == 1)
+    {
+        FUN_4098a0();
+    }
+    FUN_41d2c0();
+    Body *body = &g_4d5bb8->body;
+    g_49a178 = body;
+    FUN_4088b0(body);
+    Matrix_Identity(g_49a19c);
+    g_49a1e0 = 1.0f / body->numPoints;
+    body->unk40 = g_4d5bb8->unk2618;
+    body->prevPos = body->pos;
+    g_49a17c.x = 0.0f;
+    g_49a17c.y = 0.0f;
+    g_49a17c.z = 0.0f;
+    g_49a18c.x = 0.0f;
+    g_49a18c.y = 0.0f;
+    g_49a18c.z = 0.0f;
+    body->pos.x += body->vel[0];
+    body->pos.y += body->vel[1];
+    body->pos.z += body->vel[2];
+    Matrix_Multiply3(body->mat0, body->mat1);
+    FUN_44f8e0(body->mat0);
+    body->unk108 = g_472c20;
+    g_49a1f0 = 0;
+    body->unk10c = *(Vec4 *)&body->mat0[0];
+    body->spin = *(Vec4 *)&body->mat0[4];
+    body->unk12c = *(Vec4 *)&body->mat0[8];
+    Car *car;
+    int i = 0;
+    if (body->numPoints > 0)
+    {
+        for (; i < body->numPoints; i++)
+        {
+            FUN_421cc0(body, i);
+            FUN_421d90(body, i);
+            g_cameraSweep.unk24 = body->mat1;
+            g_cameraSweep.unk00 = body->unk40;
+            g_cameraSweep.unk94 = body->points[i].radius;
+            g_cameraSweep.unk98 = g_cameraSweep.unk94 * g_cameraSweep.unk94;
+            g_cameraSweep.unk90 = 1.0f;
+            g_cameraSweep.unk10c = body;
+            g_cameraSweep.unk28.x = body->points[i].world.x - body->points[i].prev.x;
+            g_cameraSweep.unk04 = body->points[i].prev;
+            g_cameraSweep.unk28.y = body->points[i].world.y - body->points[i].prev.y;
+            g_cameraSweep.unk168 = g_4d5bb8;
+            g_cameraSweep.unk110 = &body->points[i];
+            g_49a1ec = 0;
+            g_49a1e4 = 0.0f;
+            DWORD tries = 0;
+            g_cameraSweep.unk28.z = body->points[i].world.z - body->points[i].prev.z;
+            g_cameraSweep.unk8c = (float)sqrt(((g_cameraSweep.unk28.z * g_cameraSweep.unk28.z) +
+                                               (g_cameraSweep.unk28.y * g_cameraSweep.unk28.y)) +
+                                              (g_cameraSweep.unk28.x * g_cameraSweep.unk28.x));
+            int hit;
+            do
+            {
+                hit = FUN_420fe0();
+                if (hit == 1)
+                {
+                    if (g_cameraSweep.unk124 == 1)
+                    {
+                        FUN_4093e0(i);
+                    }
+                }
+                else if (tries == 0 && hit == 0)
+                {
+                    body->points[i].unk40 = 0;
+                }
+                tries++;
+                if (tries > 0x40)
+                {
+                    g_4d5bb8->unk763c = 1;
+                    return 1;
+                }
+            } while (hit == 1);
+            if (i <= 3)
+            {
+                float t = g_4d5bb8->wheels[i].unk0c - g_49a1e4;
+                g_4d5bb8->wheels[i].unk80 = g_49a1e4;
+                if (t < 0.0f && t < -6000.0f)
+                {
+                    t = -6000.0f;
+                }
+                g_4d5bb8->wheels[i].unk0c -= t * 0.125f;
+                if (--g_4d5bb8->wheels[i].unk70 < 0)
+                {
+                    g_4d5bb8->wheels[i].unk0c = 0.0f;
+                }
+            }
+            car = g_4d5bb8;
+            if (g_49a1ec == 1)
+            {
+                if (g_cameraSweep.unk8c > 24.0f && g_49a1dc <= (g_482670 * g_49a1e0) * -0.25f)
+                {
+                    FUN_415ac0(&body->points[i].world, &body->points[i].unk30, g_49a1dc);
+                    car = g_4d5bb8;
+                }
+                if (g_49a1dc < 0.0f)
+                {
+                    car->unk236c = 16;
+                    car->unk2360 = (car->unk2360 - g_49a1dc) * 0.5f;
+                }
+            }
+            g_49a18c.x += g_cameraSweep.unk14.x;
+            body->points[i].world = g_cameraSweep.unk14;
+            g_49a18c.y += g_cameraSweep.unk14.y;
+            g_49a18c.z += g_cameraSweep.unk14.z;
+        }
+        if (g_49a1f0 == 1)
+        {
+            g_49a18c.x *= g_49a1e0;
+            g_49a18c.y *= g_49a1e0;
+            g_49a18c.z *= g_49a1e0;
+            body->pos = g_49a18c;
+        }
+    }
+    else
+    {
+        car = g_4d5bb8;
+    }
+    if ((float)sqrt(((g_49a17c.z * g_49a17c.z) + (g_49a17c.y * g_49a17c.y)) + (g_49a17c.x * g_49a17c.x)) > 250.0f)
+    {
+        car->unk763c = 1;
+    }
+    body->vel[0] += g_49a17c.x;
+    body->vel[1] += g_49a17c.y;
+    body->vel[2] += g_49a17c.z;
+    Matrix_Multiply3(body->mat1, g_49a19c);
+    FUN_421e70(body);
+    FUN_421fa0(body);
+    FUN_4092d0(body->mat1);
+    FUN_408920(body);
+    return 0;
 }
 
 // FUNCTION: STUNTGP_D3D 0x40a0d0
@@ -4274,37 +4426,38 @@ void FUN_40fc90()
     car->wheels[1].unk04 = car->wheels[1].unk00 + car->wheels[1].unk04;
     car->wheels[2].unk04 = car->wheels[2].unk00 + car->wheels[2].unk04;
     car->wheels[3].unk04 = car->wheels[3].unk00 + car->wheels[3].unk04;
-    if (car->wheels[0].unk04 > 416.66666f)
+    Wheel *wh = car->wheels;
+    if (wh[0].unk04 > 416.66666f)
     {
-        car->wheels[0].unk04 = 416.66666f;
+        wh[0].unk04 = 416.66666f;
     }
-    if (car->wheels[0].unk04 < -416.66666f)
+    if (wh[0].unk04 < -416.66666f)
     {
-        car->wheels[0].unk04 = -416.66666f;
+        wh[0].unk04 = -416.66666f;
     }
-    if (car->wheels[1].unk04 > 416.66666f)
+    if (wh[1].unk04 > 416.66666f)
     {
-        car->wheels[1].unk04 = 416.66666f;
+        wh[1].unk04 = 416.66666f;
     }
-    if (car->wheels[1].unk04 < -416.66666f)
+    if (wh[1].unk04 < -416.66666f)
     {
-        car->wheels[1].unk04 = -416.66666f;
+        wh[1].unk04 = -416.66666f;
     }
-    if (car->wheels[2].unk04 > 416.66666f)
+    if (wh[2].unk04 > 416.66666f)
     {
-        car->wheels[2].unk04 = 416.66666f;
+        wh[2].unk04 = 416.66666f;
     }
-    if (car->wheels[2].unk04 < -416.66666f)
+    if (wh[2].unk04 < -416.66666f)
     {
-        car->wheels[2].unk04 = -416.66666f;
+        wh[2].unk04 = -416.66666f;
     }
-    if (car->wheels[3].unk04 > 416.66666f)
+    if (wh[3].unk04 > 416.66666f)
     {
-        car->wheels[3].unk04 = 416.66666f;
+        wh[3].unk04 = 416.66666f;
     }
-    if (car->wheels[3].unk04 < -416.66666f)
+    if (wh[3].unk04 < -416.66666f)
     {
-        car->wheels[3].unk04 = -416.66666f;
+        wh[3].unk04 = -416.66666f;
     }
     if ((float)fabs(car->wheels[0].unk04) < 0.0f)
     {
@@ -6160,6 +6313,7 @@ void FUN_413e60()
         CarWobble *w = car->unk315c;
         Vec4 r;
         Vec4 *m = car->unk26b0->lods[car->unk26b0->lod][11].matrix;
+        int k = 0;
         do
         {
             r = w->dir;
@@ -6167,20 +6321,22 @@ void FUN_413e60()
             r.x = g_4d5b30[0] * v.x + g_4d5b30[4] * v.y + g_4d5b30[8] * v.z;
             r.y = g_4d5b30[1] * v.x + g_4d5b30[5] * v.y + g_4d5b30[9] * v.z;
             r.z = g_4d5b30[2] * v.x + g_4d5b30[6] * v.y + g_4d5b30[10] * v.z;
-            m[2] = r;
+            m[k + 2] = r;
             v.x = r.x * car->unk3158;
             v.y = r.y * car->unk3158;
             v.z = r.z * car->unk3158;
-            m[0] = p;
+            m[k] = p;
             p.x += v.x;
             p.y += v.y;
             p.z += v.z;
             w++;
-            m += 5;
+            k += 5;
         } while (--n);
         r = p;
+        // x is negated on its own; only y and z share -r.x.
+        p.x = -p.x;
+        p.x *= car->axisX.x;
         float t = -r.x;
-        p.x = t * car->axisX.x;
         p.y = t * car->axisX.y;
         p.z = t * car->axisX.z;
         t = 70.0f - r.y;
