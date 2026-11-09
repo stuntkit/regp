@@ -1275,12 +1275,10 @@ void FUN_407010()
             level = 2;
         }
         break;
-    default:
-        if (level == 3)
-        {
-            return;
-        }
-        break;
+    }
+    if (level == 3)
+    {
+        return;
     }
     car->unk7234 = g_612948.unk03b4;
     int r = abs(FUN_42f1f0(8));
@@ -1982,92 +1980,93 @@ int FUN_409b60(int a)
     body->spin = *(Vec4 *)&body->mat0[4];
     body->unk12c = *(Vec4 *)&body->mat0[8];
     Car *car;
+    int i = 0;
     if (body->numPoints > 0)
     {
-    for (int i = 0; i < body->numPoints; i++)
-    {
-        FUN_421cc0(body, i);
-        FUN_421d90(body, i);
-        g_cameraSweep.unk94 = body->points[i].radius;
-        g_cameraSweep.unk98 = g_cameraSweep.unk94 * g_cameraSweep.unk94;
-        g_cameraSweep.unk24 = body->mat1;
-        g_cameraSweep.unk00 = body->unk40;
-        g_cameraSweep.unk90 = 1.0f;
-        g_cameraSweep.unk10c = body;
-        g_cameraSweep.unk28.x = body->points[i].world.x - body->points[i].prev.x;
-        g_cameraSweep.unk04 = body->points[i].prev;
-        g_cameraSweep.unk28.y = body->points[i].world.y - body->points[i].prev.y;
-        g_cameraSweep.unk28.z = body->points[i].world.z - body->points[i].prev.z;
-        g_cameraSweep.unk110 = &body->points[i];
-        g_cameraSweep.unk168 = g_4d5bb8;
-        g_49a1ec = 0;
-        g_49a1e4 = 0.0f;
-        DWORD tries = 0;
-        g_cameraSweep.unk8c = (float)sqrt(((g_cameraSweep.unk28.z * g_cameraSweep.unk28.z) +
-                                           (g_cameraSweep.unk28.y * g_cameraSweep.unk28.y)) +
-                                          (g_cameraSweep.unk28.x * g_cameraSweep.unk28.x));
-        int hit;
-        do
+        for (; i < body->numPoints; i++)
         {
-            hit = FUN_420fe0();
-            if (hit == 1)
+            FUN_421cc0(body, i);
+            FUN_421d90(body, i);
+            g_cameraSweep.unk24 = body->mat1;
+            g_cameraSweep.unk00 = body->unk40;
+            g_cameraSweep.unk94 = body->points[i].radius;
+            g_cameraSweep.unk98 = g_cameraSweep.unk94 * g_cameraSweep.unk94;
+            g_cameraSweep.unk90 = 1.0f;
+            g_cameraSweep.unk10c = body;
+            g_cameraSweep.unk28.x = body->points[i].world.x - body->points[i].prev.x;
+            g_cameraSweep.unk04 = body->points[i].prev;
+            g_cameraSweep.unk28.y = body->points[i].world.y - body->points[i].prev.y;
+            g_cameraSweep.unk168 = g_4d5bb8;
+            g_cameraSweep.unk110 = &body->points[i];
+            g_49a1ec = 0;
+            g_49a1e4 = 0.0f;
+            DWORD tries = 0;
+            g_cameraSweep.unk28.z = body->points[i].world.z - body->points[i].prev.z;
+            g_cameraSweep.unk8c = (float)sqrt(((g_cameraSweep.unk28.z * g_cameraSweep.unk28.z) +
+                                               (g_cameraSweep.unk28.y * g_cameraSweep.unk28.y)) +
+                                              (g_cameraSweep.unk28.x * g_cameraSweep.unk28.x));
+            int hit;
+            do
             {
-                if (g_cameraSweep.unk124 == 1)
+                hit = FUN_420fe0();
+                if (hit == 1)
                 {
-                    FUN_4093e0(i);
+                    if (g_cameraSweep.unk124 == 1)
+                    {
+                        FUN_4093e0(i);
+                    }
+                }
+                else if (tries == 0 && hit == 0)
+                {
+                    body->points[i].unk40 = 0;
+                }
+                tries++;
+                if (tries > 0x40)
+                {
+                    g_4d5bb8->unk763c = 1;
+                    return 1;
+                }
+            } while (hit == 1);
+            if (i <= 3)
+            {
+                float t = g_4d5bb8->wheels[i].unk0c - g_49a1e4;
+                g_4d5bb8->wheels[i].unk80 = g_49a1e4;
+                if (t < 0.0f && t < -6000.0f)
+                {
+                    t = -6000.0f;
+                }
+                g_4d5bb8->wheels[i].unk0c -= t * 0.125f;
+                if (--g_4d5bb8->wheels[i].unk70 < 0)
+                {
+                    g_4d5bb8->wheels[i].unk0c = 0.0f;
                 }
             }
-            else if (tries == 0 && hit == 0)
+            car = g_4d5bb8;
+            if (g_49a1ec == 1)
             {
-                body->points[i].unk40 = 0;
+                if (g_cameraSweep.unk8c > 24.0f && g_49a1dc <= (g_482670 * g_49a1e0) * -0.25f)
+                {
+                    FUN_415ac0(&body->points[i].world, &body->points[i].unk30, g_49a1dc);
+                    car = g_4d5bb8;
+                }
+                if (g_49a1dc < 0.0f)
+                {
+                    car->unk236c = 16;
+                    car->unk2360 = (car->unk2360 - g_49a1dc) * 0.5f;
+                }
             }
-            tries++;
-            if (tries > 0x40)
-            {
-                g_4d5bb8->unk763c = 1;
-                return 1;
-            }
-        } while (hit == 1);
-        car = g_4d5bb8;
-        if (i <= 3)
-        {
-            float t = car->wheels[i].unk0c - g_49a1e4;
-            car->wheels[i].unk80 = g_49a1e4;
-            if (t < 0.0f && t < -6000.0f)
-            {
-                t = -6000.0f;
-            }
-            car->wheels[i].unk0c -= t * 0.125f;
-            if (--car->wheels[i].unk70 < 0)
-            {
-                car->wheels[i].unk0c = 0.0f;
-            }
+            g_49a18c.x += g_cameraSweep.unk14.x;
+            body->points[i].world = g_cameraSweep.unk14;
+            g_49a18c.y += g_cameraSweep.unk14.y;
+            g_49a18c.z += g_cameraSweep.unk14.z;
         }
-        if (g_49a1ec == 1)
+        if (g_49a1f0 == 1)
         {
-            if (g_cameraSweep.unk8c > 24.0f && g_49a1dc <= (g_482670 * g_49a1e0) * -0.25f)
-            {
-                FUN_415ac0(&body->points[i].world, &body->points[i].unk30, g_49a1dc);
-                car = g_4d5bb8;
-            }
-            if (g_49a1dc < 0.0f)
-            {
-                car->unk236c = 16;
-                car->unk2360 = (car->unk2360 - g_49a1dc) * 0.5f;
-            }
+            g_49a18c.x = g_49a1e0 * g_49a18c.x;
+            g_49a18c.y = g_49a1e0 * g_49a18c.y;
+            g_49a18c.z = g_49a1e0 * g_49a18c.z;
+            body->pos = g_49a18c;
         }
-        g_49a18c.x += g_cameraSweep.unk14.x;
-        body->points[i].world = g_cameraSweep.unk14;
-        g_49a18c.y += g_cameraSweep.unk14.y;
-        g_49a18c.z += g_cameraSweep.unk14.z;
-    }
-    if (g_49a1f0 == 1)
-    {
-        g_49a18c.x = g_49a1e0 * g_49a18c.x;
-        g_49a18c.y = g_49a1e0 * g_49a18c.y;
-        g_49a18c.z = g_49a1e0 * g_49a18c.z;
-        body->pos = g_49a18c;
-    }
     }
     else
     {
