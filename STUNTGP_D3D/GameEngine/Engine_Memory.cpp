@@ -1,7 +1,8 @@
 #include "Engine_Memory.h"
 
+// for whatever reason Mem_FreeAllMemory expects additional one entry at the end
 // GLOBAL: STUNTGP_D3D 0X589e2c
-Mem_Entry MEM_DATA[MEM_SIZE];
+Mem_Entry MEM_DATA[MEM_SIZE + 1];
 
 // GLOBAL: STUNTGP_D3D 0X589e10
 int MEM_INITIALIZED;
@@ -34,7 +35,7 @@ void *Mem_Alloc(size_t size, MemAllocType type)
     {
         if (el->dataWithPadding == NULL)
         {
-            int totalSize = size + 0x24;
+            size_t totalSize = size + 0x24;
             void *dataTotal = malloc(totalSize);
             void *dataActual = (void *)((unsigned int)(&dataTotal + 0x20) & 0xffffffe0);
             el->data = dataActual;
@@ -119,9 +120,29 @@ size_t Mem_Free(void *mem)
     return 0;
 }
 
-// STUB: STUNTGP_D3D 0x42ea00
+// FUNCTION: STUNTGP_D3D 0x42ea00
 void Mem_FreeAllMemory()
 {
+    // TODO: what is going on in here?
+    if (MEM_INITIALIZED == 1)
+    {
+        int i = MEM_SIZE;
+        do
+        {
+            i--;
+            MemAllocType *typePointer = &MEM_DATA[0].type;
+            do
+            {
+                if (((Mem_Entry *)(typePointer - 0x10) != NULL) && (typePointer[1] == MEM_ALWAYS_ZERO + i) &&
+                    ((*typePointer != MEM_RESILIENT || (MEM_CLEANUP_ONCE != 0))))
+                {
+                    // TODO: wrong calcualtions, we ned to get front of the struct
+                    Mem_Free((Mem_Entry *)(typePointer - 0x10));
+                };
+                typePointer++;
+            } while (typePointer < &MEM_DATA[MEM_SIZE].type);
+        } while (0 < i);
+    }
 }
 
 // FUNCTION: STUNTGP_D3D 0x42ea80
@@ -138,7 +159,7 @@ void Mem_InitMemoryManager_Once()
 {
     // TODO: loop sth
     // TODO: this might be inlined array cleanup
-    memset(MEM_DATA, 0, sizeof(MEM_DATA));
+    memset(MEM_DATA, 0, sizeof(Mem_Entry) * MEM_SIZE);
     MEM_INITIALIZED = 0;
     MEM_KIND_NORMAL = 0;
     MEM_KIND_RESILIENT = 0;
